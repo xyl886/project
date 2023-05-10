@@ -1,0 +1,18 @@
+{
+  "properties": [
+    {
+      "name": "token",
+      "type": "java.lang.String",
+      "description": "Description for token."
+    },
+    {
+      "name": "token.config.secret",
+      "type": "java.lang.String",
+      "description": "Description for token.config.secret."
+    },
+    {
+      "name": "spring.redis.max-active",
+      "type": "java.lang.String",
+      "description": "Description for spring.redis.max-active."
+    }
+  ] }

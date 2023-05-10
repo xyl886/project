@@ -1,0 +1,73 @@
+mybatis-plus:
+  mapper-locations: classpath*:mapper/*.xml
+  type-aliases-package: com.love.*.mapper
+  #配置mybatisPlus日志
+  configuration:
+      log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+server:
+  # 应用服务 WEB 访问端口
+  port: 8089
+logging:
+  level:
+    root: info
+  file:
+      # 默认情况下：会在项目的根目录下生成/output/logs/spring.log，默认的日志名是：spring.log
+    path: logs
+      # 如果不想把日志存放在logging.file.path目录下，可以采用name来重新定义存储的位置和日志文件的名称
+  pattern:
+    console: "%d{yyyy/MM/dd-HH:mm:ss} [%thread] %-5level %logger{50}- %msg%n"
+    file: "%d{yyyy/MM/dd-HH:mm:ss} ---- [%thread] %-5level %logger{50}- %msg%n"
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: root
+    url: jdbc:mysql://localhost:3306/school?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowMultiQueries=true&useAffectedRows=true&allowPublicKeyRetrieval=true
+  redis:
+    database: 0
+    host: 127.0.0.1
+    max-active: 20
+    max-idle: 0
+    max-wait: 1
+    min-idle: 0
+    password: root
+    port: 6379
+    timeout: 2000
+  servlet:
+    multipart:
+      max-file-size: -1
+      max-request-size: -1
+token:
+  config:
+    accessTokenValidity: 1800
+    clientId: SOJ_DEMO
+    grantTypes: password
+    refreshTokenValidity: 36000
+    scopes: all
+    secret: soj@123
+  isRefreshToken: false
+  resourceId: SOJ_DEMO
+  signingKey: SOJ_SYMMETRY
+
+# 图片上传地址
+file-upload-config:
+  #图片存储路径
+  image-real-path: D:\school\image\
+  #图片的映射路径
+  image-mapper-path: /image/
+  #后端地址
+  host-ip: http://127.0.0.1:8089
+  #默认头像
+  default-avatar: /image/default-avatar.png
+  #默认昵称
+  default-nickname: 菜鸟学霸
+
+#阿里云 OSS
+aliyun:
+  oss:
+    endpoint: oss-cn-hangzhou.aliyuncs.com
+    accessKeyId: LTAI5tGJNawrKddsDfHy4Wh7
+    accessKeySecret: 9UK615Nd0YMQgIgguAxCaFJnKt6j7O
+    bucketName: 18066
+

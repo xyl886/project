@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.love.product.mapper.PostsLikeMapper">
+
+    <insert id="add" parameterType="com.love.product.entity.PostsLike" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO
+        posts_like
+        (
+        id,
+        user_id,
+        posts_id,
+        posts_user_id,
+        deleted,
+        create_time,
+        update_time
+        )
+        values
+        (
+            #{id},
+            #{userId},
+            #{postsId},
+            #{postsUserId},
+            #{deleted},
+            #{createTime},
+            #{updateTime}
+        )
+        ON DUPLICATE KEY UPDATE
+        deleted = values(deleted),
+        update_time = values(update_time)
+    </insert>
+
+</mapper>
