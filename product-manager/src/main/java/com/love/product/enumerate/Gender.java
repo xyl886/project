@@ -1,7 +1,7 @@
 package com.love.product.enumerate;
 
 /**
- * @author hjf
+ * @author Administrator
  * @date 2022-10-19 10:35
  * @describe 性别
  */

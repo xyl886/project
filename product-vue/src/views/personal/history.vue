@@ -1,97 +1,91 @@
 <template>
-  <div style="font-size: 14px;padding: 10px 0 0 20px;background-color: #ffffff;" v-loading="loading">
+  <div style="font-size: 14px;padding: 10px 0 0 20px;background-color: #f5f7f9;" v-loading="loading">
     <div style="border-bottom: 1px solid #ccc;font-weight: bolder;font-size: 24px;line-height: 50px;">浏览记录</div>
-    <div class="history-box">
-      <div class="history-item" v-for="(item,index) in history" :key="index">
-        <div>
-          <el-image :src="item.userInfo.avatar" class="history-item-img"></el-image>
-        </div>
-        <div>
-          <div class="history-item-nickname">
-            {{item.userInfo.nickname}}
-          </div>
-          <div class="history-item-time">
-            {{item.createTime}} {{item.followStatus === 2?' Ta关注了你':(item.followStatus === 1?'你关注了Ta':'你们已互关')}}
-          </div>
-        </div>
-        <div class="history-item-but-box">
-          <el-button round :type="item.followStatus !== 2?'':'primary'" @click="addHistoryFun(item.userInfo,item.followStatus !== 2?'1':'0')">
-            {{item.followStatus !== 2?'取消关注':'关注'}}
-          </el-button>
-        </div>
-      </div>
-    </div>
-
-    <div v-if="history.length > 0" style="text-align: center;margin: 50px 0 30px 0;">
-      <el-pagination
-        background
-        :current-page.sync="page.currentPage"
-        :page-sizes="[10, 30, 50, 100]"
-        :page-size="page.pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="page.total"
-        @size-change="sizeChange"
-        @current-change="currentChange"
-      />
-    </div>
-
-    <div v-if="history.length === 0">
-      <el-empty description="暂无数据"></el-empty>
-    </div>
+    <el-tabs v-model="activeName"  @tab-click="handleClick">
+      <el-tab-pane label="商品"  name="1" ></el-tab-pane>
+      <el-tab-pane label="帖子" name="2" ></el-tab-pane>
+      <el-tab-pane label="点赞" name="0" ></el-tab-pane>
+    </el-tabs>
+    <historylist ref="hs" :postType="activeName" :activeLabel="activeLabel" :removeType="removeName"/>
   </div>
 </template>
 
 <script>
 // 这里可以导入其他文件（比如：组件，工具js，第三方插件js，json文件，图片文件等等）
 // 例如：import 《组件名称》 from ‘《组件路径》‘;
+import historylist from './historylist'
 export default {
   // import引入的组件需要注入到对象中才能使用
-  components: {},
+  components: {
+    historylist
+  },
   data () {
     return {
+      index: 0,
+      activeName: 'commoditys',
+      activeLabel: '商品',
+      removeList: ['goods_id', 'content_id'],
+      removeName: 'goods_id',
       loading: false,
       history: [],
       page: {
         total: 0,
         pageSize: 9,
-        currentPage: 1,
-        followType: 1
+        currentPage: 1
       }
     }
   },
   mounted () {
-    this.getPageFun()
+    // this.$refs[this.activeName].init(this.activeName)
   },
   methods: {
+    handleClick (tab) {
+      this.activeLabel = tab.label
+      this.removeName = this.removeList[tab.index]
+    },
+    //   handleSizeChange(val) {
+    //     this.currentPage1 = 1;
+    //     this.pageSize = val;
+    //   },
+    //   handleCurrentChange(val) {
+    //     this.currentPage1 = val;
+    //   }
+    // },
     sizeChange (pageSize) { // 页数
       this.page.pageSize = pageSize
-      this.getPageFun()
+      // this.getPageFun()
     },
     currentChange (currentPage) { // 当前页
       this.page.currentPage = currentPage
-      this.getPageFun()
-    },
-    getPageFun () {
-      this.loading = true
-      this.follows = []
-      // getPage(this.page).then(res => {
-      //   this.loading = false
-      //   if (res.code === 200) {
-      //     this.follows = res.data
-      //     this.page.total = res.dataTotal
-      //   }
-      // }, error => {
-      //   this.loading = false
-      // })
-    },
-    addHistoryFun (item, deleted) {
-      // addHistory(item.id, deleted).then(res => {
-      //   if (res.code === 200) {
-      //     this.getPageFun()
-      //     this.$message.success(res.msg)
-      //   }
-      // })
+      // this.getPageFun()
     }
+    // getPageFun () {
+    //   this.loading = true
+    //   this.history = []
+    //   getPage(this.page).then(res => {
+    //     this.loading = false
+    //     if (res.code === 200) {
+    //       console.log(res.data)
+    //       let count = 0
+    //       let arr = []
+    //       for (let i = 0; i < res.data.length; i++) {
+    //         count++
+    //         if (count <= 3) {
+    //           arr.push(res.data[i])
+    //         }
+    //         if (count === 3 || i === (res.data.length - 1)) {
+    //           this.history.push(arr)
+    //           console.log(this.history)
+    //           arr = []
+    //           count = 0
+    //         }
+    //       }
+    //       this.page.total = res.dataTotal
+    //     }
+    //   }, error => {
+    //     this.loading = false
+    //   })
+    // }
   },
   // 监听属性 类似于data概念
   computed: {},

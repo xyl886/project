@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 /**
- * @author hjf
+ * @author Administrator
  * @date 2022-12-28 9:23
  * @describe 关注请求体
  */

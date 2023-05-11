@@ -4,14 +4,13 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.love.product.entity.UserInfo;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.vo.UserInfoVO;
-import com.love.product.util.JwtUtil;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
 
 /**
- * @author hjf
+ * @author Administrator
  * @date 2022-10-19 10:26
  * @describe 用户service
  */

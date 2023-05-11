@@ -18,6 +18,7 @@ export const addCollect = (postsId, deleted) => {
  * 分页
  */
 export const getPage = (data) => {
+  console.log('data' + JSON.stringify(data))
   return request({
     url: '/api/collect/getPage',
     method: 'post',

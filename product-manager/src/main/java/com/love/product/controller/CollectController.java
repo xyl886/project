@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 
 /**
- * @author hjf
+ * @author Administrator
  * @date 2022-10-19 10:26
  * @describe 收藏controller
  */

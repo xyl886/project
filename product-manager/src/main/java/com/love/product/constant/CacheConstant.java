@@ -3,7 +3,7 @@ package com.love.product.constant;
 import java.io.Serializable;
 
 /**
- * @author hjf
+ * @author Administrator
  * @date 2023-01-03 16:08
  * @describe 缓存根目录
  */

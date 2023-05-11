@@ -1,7 +1,7 @@
 package com.love.product.enumerate;
 
 /**
- * @author hjf
+ * @author Administrator
  * @date 2022-10-19 10:26
  * @describe 支付状态 1待支付 2待发货 3已发货 4已完成 5已取消
  */

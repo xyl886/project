@@ -247,7 +247,7 @@ export default {
       this.$refs.upload.clearFiles()
       this.fileList.splice(null, 1)
       this.box = false
-    },
+    }
   }
 }
 </script>

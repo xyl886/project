@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author hjf
+ * @author Administrator
  * @date 2022-10-19 10:26
  */
 public interface PostsService extends IService<Posts> {

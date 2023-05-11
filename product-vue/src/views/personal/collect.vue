@@ -4,6 +4,14 @@
       <div class="collect-box" v-for="(item,index) in collects" :key="index">
         <div class="collect-item" v-for="(item2,index2) in item" :key="item2.id">
           <el-card>
+            <div style="cursor: pointer;" @click="detailFun(item2.posts)">
+              <div style="text-align: center;">
+                <el-image :src="item2.posts.coverPath" class="collect-box-img"></el-image>
+              </div>
+              <div class="collect-box-title">
+                {{item2.posts.title}}
+              </div>
+            </div>
             <div slot="header">
               <span style="color: #999;">收藏于:{{item2.createTime}}</span>
               <el-dropdown style="float: right;">
@@ -12,14 +20,6 @@
                   <el-dropdown-item @click.native="addCollectFun(item2.posts)">取消收藏</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
-            </div>
-            <div style="cursor: pointer;" @click="detailFun(item2.posts)">
-              <div style="text-align: center;">
-                <el-image :src="item2.posts.coverPath" class="collect-box-img"></el-image>
-              </div>
-              <div class="collect-box-title">
-                {{item2.posts.title}}
-              </div>
             </div>
           </el-card>
         </div>
@@ -86,7 +86,7 @@ export default {
             }
             if (count === 3 || i === (res.data.length - 1)) {
               this.collects.push(arr)
-              // console.log('arr:' + arr)
+              console.log(this.collects)
               arr = []
               count = 0
             }

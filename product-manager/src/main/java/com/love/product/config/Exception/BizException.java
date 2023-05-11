@@ -1,7 +1,7 @@
 package com.love.product.config.Exception;
 
 /**
- * @author hjf
+ * @author Administrator
  * @date 2022-10-19 11:55
  * @describe 自定义异常处理类
  */

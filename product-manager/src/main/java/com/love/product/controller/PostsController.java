@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 
 /**
- * @author hjf
+ * @author Administrator
  * @date 2022-10-19 10:26
  * @describe 帖子controller
  */
@@ -73,6 +73,7 @@ public class PostsController {
 
     @ApiOperation("详情")
     @GetMapping("/getDetail")
+    @ApiImplicitParam(name = "id", value = "帖子主键", required = true, dataType = "String", paramType = "query")
     public Result<PostsVO> getDetail(@RequestParam("id") Long id) {
         return postsService.getDetail(JwtUtil.getUserId(),id);
     }
@@ -103,7 +104,7 @@ public class PostsController {
             @RequestParam("content") String content,
             @RequestParam(value = "files",required = false) MultipartFile[] files
     ) {
-        {
+
             PostsReq postsReq = new PostsReq();
             postsReq.setId(id);
             postsReq.setTitle(title);
@@ -113,7 +114,7 @@ public class PostsController {
 
             log.info("当前用户id为:"+JwtUtil.getUserId()+";帖子修改为:"+postsReq+","+files.length+","+id+","+title+","+content+","+school);
             return postsService.update(id,postsReq,title,content,school);
-        }
+
     }
 
     @ApiOperation("删除")

@@ -3,7 +3,7 @@ package com.love.product.service;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * @author hjf
+ * @author Administrator
  * @date 2022-12-27 14:44
  * @describe 文件上传
  */

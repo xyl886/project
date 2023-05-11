@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * @author hjf
+ * @author Administrator
  * @date 2022-10-19 11:56
  * @describe 全局异常封装返回
  */

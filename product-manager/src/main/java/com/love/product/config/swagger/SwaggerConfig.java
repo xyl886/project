@@ -18,7 +18,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2WebMvc;
 
 
 /**
- * @author
+ * @author Administrator
  * @date 2022-10-11 12:11
  * @describe Swagger开发文档
  */

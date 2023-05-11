@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 /**
- * @author hjf
+ * @author Administrator
  * @date 2022-10-29 14:51
  * @describe 首页轮播图
  */

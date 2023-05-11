@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * @author hjf
+ * @author Administrator
  * @date 2022-12-28 9:23
  * @describe 帖子请求体
  */

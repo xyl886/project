@@ -10,7 +10,7 @@ import com.love.product.entity.vo.FollowVO;
 import java.util.List;
 
 /**
- * @author hjf
+ * @author Administrator
  * @date 2022-10-19 10:26
  */
 public interface FollowService extends IService<Follow> {

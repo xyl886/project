@@ -13,3 +13,15 @@ export const addLike = (postsId, deleted) => {
     }
   })
 }
+/**
+ * 查询
+ */
+export const getPostLike = (userId) => {
+  return request({
+    url: '/api/postsLike/get',
+    method: 'get',
+    params: {
+      userId: userId
+    }
+  })
+}

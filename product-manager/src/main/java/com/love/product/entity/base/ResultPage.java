@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * @author hjf
+ * @author Administrator
  * @date 2022-10-19 10:26
  * @describe 分页查询封装
  */

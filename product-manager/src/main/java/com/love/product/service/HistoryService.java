@@ -2,6 +2,12 @@ package com.love.product.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.love.product.entity.History;
+import com.love.product.entity.base.PageQuery;
+import com.love.product.entity.base.ResultPage;
+import com.love.product.entity.req.PostsPageReq;
+import com.love.product.entity.vo.HistoryVO;
+
+import java.util.List;
 
 /**
  * @PackageName: com.love.product.service
@@ -17,4 +23,6 @@ public interface HistoryService extends IService<History> {
     void updateHistory(History existingHistory);
 
     void saveHistory(History history);
+
+    ResultPage<HistoryVO> getPage(Long userId, PageQuery pageQuery);
 }

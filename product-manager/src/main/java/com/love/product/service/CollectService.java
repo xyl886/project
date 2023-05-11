@@ -10,7 +10,7 @@ import com.love.product.entity.vo.CollectVO;
 import com.love.product.entity.vo.PostsVO;
 
 /**
- * @author hjf
+ * @author Administrator
  * @date 2022-10-19 10:26
  */
 public interface CollectService extends IService<Collect> {

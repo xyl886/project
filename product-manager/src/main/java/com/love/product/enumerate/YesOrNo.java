@@ -1,7 +1,7 @@
 package com.love.product.enumerate;
 
 /**
- * @author hjf
+ * @author Administrator
  * @date 2022-10-19 10:26
  * @describe 是否: 0否  1是 / 逻辑删除标记: 0正常  1已删除  / 是否已读 0否  1是  /  是否禁用 0否  1是
  */

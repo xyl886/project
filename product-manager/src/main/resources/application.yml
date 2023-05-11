@@ -50,7 +50,7 @@ token:
   resourceId: SOJ_DEMO
   signingKey: SOJ_SYMMETRY
 
-# 图片上传地址
+# 本地存储图片上传地址
 file-upload-config:
   #图片存储路径
   image-real-path: D:\school\image\
@@ -63,7 +63,7 @@ file-upload-config:
   #默认昵称
   default-nickname: 菜鸟学霸
 
-#阿里云 OSS
+#阿里云 OSS存储
 aliyun:
   oss:
     endpoint: oss-cn-hangzhou.aliyuncs.com

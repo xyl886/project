@@ -200,6 +200,7 @@ export default {
             spinner: 'el-icon-loading'
           })
           userRegister(this.loginForm).then(res => {
+            console.log(res)
             if (res.code === 200) {
               this.$notify({
                 title: '注册成功',

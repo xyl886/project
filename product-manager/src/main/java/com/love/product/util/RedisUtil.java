@@ -9,7 +9,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author hjf
+ * @author Administrator
  * @date 2022-11-01 10:34
  * @describe redis工具类
  */

@@ -22,6 +22,7 @@ import java.util.Date;
 @AllArgsConstructor
 @TableName(value ="history")
 public class History extends BaseEntity {
+
     @ApiModelProperty(value = "帖子主键")
     public Long postsId;
 
