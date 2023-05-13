@@ -1,6 +1,8 @@
 package com.love.product.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.love.product.entity.base.BaseEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -21,9 +23,11 @@ import lombok.NoArgsConstructor;
 public class Follow extends BaseEntity {
 
     @ApiModelProperty(value = "用户主键")
+    @JsonSerialize(using = ToStringSerializer.class)
     public Long userId;
 
     @ApiModelProperty(value = "被关注用户主键")
+    @JsonSerialize(using = ToStringSerializer.class)
     public Long beFollowedUserId;
 
     /**

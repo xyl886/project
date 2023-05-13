@@ -19,6 +19,20 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class HistoryVO extends History {
 
-    @ApiModelProperty(value = "帖子")
-    private PostsVO posts;
+    @ApiModelProperty(value = "帖子标题")
+    private String postTitle;
+
+    @ApiModelProperty(value = "帖子封面路径")
+    private String postCoverPath;
+
+    @ApiModelProperty(value = "用户昵称")
+    public String nickname;
+
+    @ApiModelProperty(value = "头像")
+    public String avatar;
+    /**
+     * {@link com.love.product.enumerate.PostsType}
+     */
+    @ApiModelProperty(value = "帖子类型 1闲置帖 2校园帖")
+    public Integer postType;
 }

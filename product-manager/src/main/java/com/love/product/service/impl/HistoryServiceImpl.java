@@ -7,11 +7,13 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.love.product.entity.Collect;
 import com.love.product.entity.History;
 import com.love.product.entity.base.PageQuery;
+import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.req.PostsPageReq;
 import com.love.product.entity.vo.CollectVO;
 import com.love.product.entity.vo.HistoryVO;
 import com.love.product.entity.vo.PostsVO;
+import com.love.product.entity.vo.UserInfoVO;
 import com.love.product.mapper.HistoryMapper;
 import com.love.product.service.HistoryService;
 import com.love.product.service.PostsService;
@@ -37,6 +39,8 @@ import java.util.stream.Collectors;
 public class HistoryServiceImpl extends ServiceImpl<HistoryMapper, History> implements HistoryService {
     @Resource
     private PostsService postsService;
+    @Resource
+    private UserInfoService userInfoService;
     @Override
     public History findHistory(Long userId, Long id) {
         LambdaQueryWrapper<History> queryWrapper=new LambdaQueryWrapper();
@@ -76,16 +80,32 @@ public class HistoryServiceImpl extends ServiceImpl<HistoryMapper, History> impl
                 return historyVO;
             }).collect(Collectors.toList());
         }
+        // 获取帖子信息
         Map<Long, PostsVO> postsHashMap;
-        if(list.size() > 0){
+        if (!postsIds.isEmpty()) {
             postsHashMap = postsService.listByIds(postsIds);
-            Map<Long, PostsVO> finalPostsHashMap = postsHashMap;
-            list.forEach(item -> {
-                PostsVO postsVO = finalPostsHashMap.get(item.getPostsId());
-                item.setPosts(postsVO);
-            });
+            for (HistoryVO historyVO : list) {
+                PostsVO postsVO = postsHashMap.get(historyVO.getPostsId());
+                // 设置帖子标题和封面路径
+                if (postsVO != null) {
+                    historyVO.setPostTitle(postsVO.getTitle());
+                    historyVO.setPostCoverPath(postsVO.getCoverPath());
+                    historyVO.setPostType(postsVO.getPostsType());
+                }
+            }
         }
+        // 获取用户nickname
+        for (HistoryVO historyVO : list) {
+            UserInfoVO userInfoVO = userInfoService.getUserInfoById(historyVO.getUserId());
+            historyVO.setNickname(userInfoVO.getNickname());
+            historyVO.setAvatar(userInfoVO.getAvatar());
+        }
+        log.info("浏览记录："+list);
         return ResultPage.OK(page.getTotal(), page.getCurrent(), page.getSize(), list);
     }
 
+    @Override
+    public Result<?> del(Long userId, Long id) {
+        return null;
+    }
 }

@@ -1,6 +1,8 @@
 package com.love.product.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.love.product.entity.base.BaseEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -23,6 +25,7 @@ import java.math.BigDecimal;
 public class Posts extends BaseEntity {
 
     @ApiModelProperty(value = "帖子所属用户主键")
+    @JsonSerialize(using = ToStringSerializer.class)
     public Long userId;
 
     /**

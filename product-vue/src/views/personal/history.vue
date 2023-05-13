@@ -22,7 +22,7 @@ export default {
   data () {
     return {
       index: 0,
-      activeName: 'commoditys',
+      activeName: '1',
       activeLabel: '商品',
       removeList: ['goods_id', 'content_id'],
       removeName: 'goods_id',
@@ -43,14 +43,6 @@ export default {
       this.activeLabel = tab.label
       this.removeName = this.removeList[tab.index]
     },
-    //   handleSizeChange(val) {
-    //     this.currentPage1 = 1;
-    //     this.pageSize = val;
-    //   },
-    //   handleCurrentChange(val) {
-    //     this.currentPage1 = val;
-    //   }
-    // },
     sizeChange (pageSize) { // 页数
       this.page.pageSize = pageSize
       // this.getPageFun()
@@ -59,33 +51,6 @@ export default {
       this.page.currentPage = currentPage
       // this.getPageFun()
     }
-    // getPageFun () {
-    //   this.loading = true
-    //   this.history = []
-    //   getPage(this.page).then(res => {
-    //     this.loading = false
-    //     if (res.code === 200) {
-    //       console.log(res.data)
-    //       let count = 0
-    //       let arr = []
-    //       for (let i = 0; i < res.data.length; i++) {
-    //         count++
-    //         if (count <= 3) {
-    //           arr.push(res.data[i])
-    //         }
-    //         if (count === 3 || i === (res.data.length - 1)) {
-    //           this.history.push(arr)
-    //           console.log(this.history)
-    //           arr = []
-    //           count = 0
-    //         }
-    //       }
-    //       this.page.total = res.dataTotal
-    //     }
-    //   }, error => {
-    //     this.loading = false
-    //   })
-    // }
   },
   // 监听属性 类似于data概念
   computed: {},

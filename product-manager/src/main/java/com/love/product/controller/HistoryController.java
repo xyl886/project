@@ -39,5 +39,9 @@ public class HistoryController {
     public ResultPage<HistoryVO> getPage(@RequestBody PageQuery pageQuery) {
         return historyService.getPage(JwtUtil.getUserId(),pageQuery);
     }
-
+    @ApiOperation("清空")
+    @DeleteMapping("/del")
+    public Result<?> del(Long userId,Long id) {
+        return historyService.del(userId, id);
+    }
 }

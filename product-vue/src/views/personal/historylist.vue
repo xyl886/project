@@ -4,13 +4,12 @@
       <el-button
         size="mini"
         @click="removeAll"
-        v-show="postType !== '0'&& total!==0"
+        v-show="postType !== '0'&& page.total!==0"
         round
-      >清空记录</el-button
-      >
+      >清空记录</el-button>
     </div>
     <div class="block">
-      <div v-if="total == 0" style="text-align: center">
+      <div v-if="page.total == 0" style="text-align: center">
         <span style="color: #999aaa; font-size: 15px">近期没有浏览记录</span>
       </div>
       <div v-if="postType == '1'">
@@ -20,23 +19,22 @@
           shadow="hover"
         >
           <el-row type="flex" justify="space-between">
-            <el-col :span="3" v-show="item.posts.coverPath != null">
+            <el-col :span="3" v-show="item.postCoverPath != null">
               <el-image
                 style="width: 118px; height: 74px; border-radius: 4px"
                 fit="cover"
-                :src="item.posts.coverPath"
-              ></el-image
-              ></el-col>
+                :src="item.postCoverPath"
+              ></el-image></el-col>
             <el-col :span="17" style="margin: 3px 0 0 10px ;">
               <h3 ><router-link target="_blank"
                                 :to="{
-              name: 'details',
+              path: '/detail',
               params: { postsId: item.postsId, userId: item.userId },
-            }">{{ item.product_titleditys }}</router-link></h3>
+            }">{{ item.postTitle}}</router-link></h3>
               <div class="user">
                 <el-avatar
-                  :src="axiosimagesurl + item.image"
-                  :key="axiosimagesurl + item.image"
+                  :src="item.avater"
+                  :key="item.avater"
                   :size="25"
                 ></el-avatar>
                 <span class="userName">{{ item.nickname }}</span>
@@ -122,7 +120,7 @@
 // import { UserPostLike } from '@/api/PostLike'
 import { MessageBox } from 'element-ui'
 import {del, getPage} from '../../api/history'
-import {mapGetters} from 'vuex'
+
 export default {
   name: 'HistoryList',
   props: {
@@ -138,7 +136,7 @@ export default {
         total: 0,
         pageSize: 9,
         currentPage: 1,
-        postType: null
+        postType: '1'
       },
       historyGoodsList: [],
       historyPostList: [],
@@ -153,9 +151,6 @@ export default {
     }
   },
   computed: {
-    ...mapGetters([
-      'userInfo'
-    ]),
     noMore () {
       return this.page.currentPage >= this.page.pageTotal
     },
@@ -172,58 +167,33 @@ export default {
       this.page.pageSize = 9
       this.page.total = 0
       this.page.currentPage = 1
-      this.page.historyName = historyName
+      this.page.postType = historyName
       console.log(this.page)
       this.getList()
     },
     getList () {
       this.loading = true
-      if (this.historyName == 'commoditys') {
-        getPage(this.page).then((res) => {
-          this.historyGoodsList.push.apply(
-            this.historyGoodsList,
-            res.data.list
-          )
-          this.total = res.data.total
-          res.data.list.map((element, index) => {
-            this.historyGoodsList[this.listLength + index].create_time =
-              this.dateTime(element.create_time)
-            return element
-          })
-          this.listLength = this.historyGoodsList.length
-          this.loading = false
-        })
-      } else if (this.historyName == 'campussharing') {
-        getPage(this.page).then((res) => {
-          this.historyPostList.push.apply(
-            this.historyPostList,
-            res.data.list
-          )
-          this.total = res.data.total
-          res.data.list.map((element, index) => {
-            this.historyPostList[this.listLength + index].create_time =
-              this.dateTime(element.create_time)
-            return element
-          })
-          this.listLength = this.historyPostList.length
-          this.loading = false
-        })
-      } else {
-        getPage(this.page).then((result) => {
-          this.historyLikeList.push.apply(
-            this.historyLikeList,
-            result.data.list
-          )
-          this.total = result.data.total
-          result.data.list.map((element, index) => {
-            this.historyLikeList[this.listLength + index].create_time =
-              this.dateTime(element.create_time)
-            return element
-          })
-          this.listLength = this.historyLikeList.length
-          this.loading = false
-        })
-      }
+      getPage(this.page).then((res) => {
+        this.loading = false
+        if (res.code === 200) {
+          console.log(res.data)
+          for (let i = 0; i < res.data.length; i++) {
+            if (res.data[i].postType == '1') {
+              this.historyGoodsList.push(res.data[i])
+            } else if (res.data[i].postType == '2') {
+              this.historyPostList.push(res.data[i])
+            } else {
+              this.historyLikeList.push(res.data[i])
+            }
+          }
+          console.log(this.historyGoodsList)
+          console.log(this.historyPostList)
+          console.log(this.historyLikeList)
+          this.page.total = res.dataTotal
+        }
+        this.listLength = this.historyGoodsList.length
+        this.loading = false
+      })
     },
     removeAll () {
       MessageBox.confirm(
@@ -240,8 +210,8 @@ export default {
       )
         .then(() => {
           del({
-            userId: this.$store.state.userInfo.id,
-            removeType: this.removeType
+            userId: this.$store.state.userId,
+            postType: this.postType
           }).then(() => {
             this.init()
           })
@@ -259,7 +229,7 @@ export default {
     }
   },
   created () {
-    // this.getList()
+    this.getList()
   }
 }
 </script>

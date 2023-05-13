@@ -34,7 +34,7 @@ public class BannerController {
     }
 
     @ApiOperation("修改")
-    @GetMapping("/add")
+    @GetMapping("/update")
     public Result<List<Banner>> updateBanner() {
         return bannerService.updateBanner();
     }

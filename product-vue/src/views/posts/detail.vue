@@ -82,9 +82,14 @@ export default {
     ])
   },
   mounted () {
+    if (this.$route.params.postsId != null) {
+      this.id = this.$route.params.postsId
+    }
     let obj = getStore({name: 'posts'})
+    console.log(obj)
     if (obj) {
       this.id = obj.id
+      console.log(this.id)
       this.bigImgPath = obj.coverPath
       this.getDetailFun()
       let that = this
