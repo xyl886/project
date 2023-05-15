@@ -25,11 +25,11 @@ public class PostsVO extends Posts {
     private UserInfoVO userInfo;
 
     @ApiModelProperty(value = "是否收藏")
-    private boolean collect;
+    private Boolean collect;
 
     @ApiModelProperty(value = "是否关注")
-    private boolean follow;
+    private Boolean follow;
 
     @ApiModelProperty(value = "是否点赞")
-    private boolean like;
+    private Boolean like;
 }

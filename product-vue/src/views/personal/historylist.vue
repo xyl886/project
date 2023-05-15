@@ -12,12 +12,8 @@
       <div v-if="page.total == 0" style="text-align: center">
         <span style="color: #999aaa; font-size: 15px">近期没有浏览记录</span>
       </div>
-      <div v-if="postType == '1'">
-        <el-card
-          v-for="(item, index) in historyGoodsList"
-          :key="index"
-          shadow="hover"
-        >
+      <div v-if="postType == '1'"  v-for="(item, index) in historyGoodsList" :key="index">
+          <el-card shadow="hover" >
           <el-row type="flex" justify="space-between">
             <el-col :span="3" v-show="item.postCoverPath != null">
               <el-image
@@ -26,11 +22,7 @@
                 :src="item.postCoverPath"
               ></el-image></el-col>
             <el-col :span="17" style="margin: 3px 0 0 10px ;">
-              <h3 ><router-link target="_blank"
-                                :to="{
-              path: '/detail',
-              params: { postsId: item.postsId, userId: item.userId },
-            }">{{ item.postTitle}}</router-link></h3>
+              <h3 :key="item.id" @click="detailFun(item.posts)">{{ item.postTitle}}</h3>
               <div class="user">
                 <el-avatar
                   :src="item.avater"
@@ -120,6 +112,7 @@
 // import { UserPostLike } from '@/api/PostLike'
 import { MessageBox } from 'element-ui'
 import {del, getPage} from '../../api/history'
+import {setStore} from '../../utils/store'
 
 export default {
   name: 'HistoryList',
@@ -194,6 +187,10 @@ export default {
         this.listLength = this.historyGoodsList.length
         this.loading = false
       })
+    },
+    detailFun (item) {
+      setStore({ name: 'posts', content: item })
+      this.$router.push({path: '/detail'})
     },
     removeAll () {
       MessageBox.confirm(

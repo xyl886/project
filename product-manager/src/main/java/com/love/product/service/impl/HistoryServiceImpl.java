@@ -91,6 +91,7 @@ public class HistoryServiceImpl extends ServiceImpl<HistoryMapper, History> impl
                     historyVO.setPostTitle(postsVO.getTitle());
                     historyVO.setPostCoverPath(postsVO.getCoverPath());
                     historyVO.setPostType(postsVO.getPostsType());
+                    historyVO.setPosts(postsVO);
                 }
             }
         }

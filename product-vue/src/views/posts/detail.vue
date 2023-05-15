@@ -55,11 +55,11 @@
 </template>
 
 <script>
-import {getDetail, browse} from '@/api/posts'
-import {getStore} from '@/utils/store'
+import {browse, getDetail} from '@/api/posts'
 import {addCollect} from '@/api/collect'
 import {addFollow} from '@/api/follow'
-import { mapGetters } from 'vuex'
+import {mapGetters} from 'vuex'
+import {getStore} from '../../utils/store'
 
 export default {
   data () {
@@ -82,15 +82,13 @@ export default {
     ])
   },
   mounted () {
-    if (this.$route.params.postsId != null) {
-      this.id = this.$route.params.postsId
-    }
     let obj = getStore({name: 'posts'})
     console.log(obj)
     if (obj) {
       this.id = obj.id
       console.log(this.id)
-      this.bigImgPath = obj.coverPath
+      this.bigImgPath = this.posts.imgPath ? this.posts.imgPath.split(',')[0] : ''
+      this.selImg(this.bigImgPath)
       this.getDetailFun()
       let that = this
       setTimeout(function () {
@@ -100,8 +98,6 @@ export default {
   },
   methods: {
     backFun () {
-      // this.$router.push({path: '/'});
-      // history.go(-1)
       history.back()
     },
     selImg (url) {
@@ -114,7 +110,7 @@ export default {
           this.posts = res.data
           this.bigImgPath = res.data.coverPath
           console.log(res.data)
-          console.log(res.data.coverPath)
+          console.log(this.bigImgPath)
         }
         this.loading = false
         // eslint-disable-next-line handle-callback-err

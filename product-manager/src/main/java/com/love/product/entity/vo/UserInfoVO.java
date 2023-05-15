@@ -25,8 +25,8 @@ public class UserInfoVO extends UserInfo {
     public String genderText;
 
     @ApiModelProperty(value = "关注数量")
-    public int followNum;
+    public Integer followNum;
 
     @ApiModelProperty(value = "粉丝数量")
-    public int fansNum;
+    public Integer fansNum;
 }

@@ -19,6 +19,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class HistoryVO extends History {
 
+    @ApiModelProperty(value = "帖子")
+    private PostsVO posts;
+
     @ApiModelProperty(value = "帖子标题")
     private String postTitle;
 

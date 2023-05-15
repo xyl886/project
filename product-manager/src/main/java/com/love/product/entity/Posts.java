@@ -56,19 +56,19 @@ public class Posts extends BaseEntity {
     public String imgPath;
 
     @ApiModelProperty(value = "浏览数量")
-    public int browseNum;
+    public Integer browseNum;
 
     @ApiModelProperty(value = "收藏数量")
-    public int collectNum;
+    public Integer collectNum;
 
     @ApiModelProperty(value = "点赞数量")
-    public int likeNum;
+    public Integer likeNum;
 
     @ApiModelProperty(value = "评论数量")
-    public int commentNum;
+    public Integer commentNum;
 
     @ApiModelProperty(value = "版本号")
-    public int version;
+    public Integer version;
 
     /**
      * {@link com.love.product.enumerate.YesOrNo}
