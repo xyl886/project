@@ -73,24 +73,6 @@ export default {
     background-attachment: fixed;
     overflow: scroll;
   }
-  .search{
-    display: inline-block;
-    background-color: #ffffff!important;
-    float: right;
-    position: relative;
-    width: 300px;
-    height: 60px;
-    top: 0;
-    margin-right: 299.5px;
-  }
-  .input-with-select{
-    width: 200px;
-    height: 60px;
-    margin-left: -110px;
-    float: right;
-    line-height: 60px;
-    margin-top: auto;
-  }
   .share-tab .el-tabs__header{
     background-color: #ffffff!important;
     padding: 0 20px!important;
@@ -99,4 +81,24 @@ export default {
     height: 60px!important;
     line-height: 60px!important;
   }
+</style>
+<style scoped>
+.search{
+  display: inline-block;
+  background-color: #ffffff!important;
+  float: right;
+  position: relative;
+  width: 300px;
+  height: 60px;
+  top: 0;
+  margin-right: 299.5px;
+}
+.input-with-select{
+  width: 200px;
+  height: 60px;
+  margin-left: -110px;
+  float: right;
+  line-height: 60px;
+  margin-top: auto;
+}
 </style>

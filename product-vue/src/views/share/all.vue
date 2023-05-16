@@ -27,8 +27,8 @@
               {{item.createTime}}来自:{{item.schoolName}}
             </div>
           </div>
-          <div class="share-item-content">
-            <el-input type="textarea" resize="none" :autosize="true" :readonly="true" v-model="item.content"></el-input>
+          <div class="share-item-content" :key="item.id" @click="detailFun(item)">
+            <el-input type="textarea" resize="none" :autosize="true" :readonly="true" v-model="item.title"></el-input>
           </div>
           <div>
             <el-image v-for="(item2,index2) in item.imgPath?item.imgPath.split(','):[]" :key="item2" :preview-src-list="item.imgPath?item.imgPath.split(','):[]" fit="contain" :src="item2" style="width: 175px;height: 110px;border-radius: 5px;margin: 0 10px 10px 0;"></el-image>
@@ -182,6 +182,7 @@ import {addComment, del, listByPostsId} from '@/api/posts_comment'
 import {mapGetters} from 'vuex'
 import {getToken} from '../../utils/auth'
 import {Picker} from 'emoji-mart-vue'
+import {setStore} from '../../utils/store'
 
 export default {
   components: { // 注册组件，不能全局挂载
@@ -228,7 +229,6 @@ export default {
       },
       dialogImageUrl: '',
       dialogVisible: false,
-      disabled: false
     }
   },
   computed: {
@@ -347,7 +347,6 @@ export default {
       }
     },
     handleChange (file, fileList) { // 更改
-      // console.info('fileList:' + fileList)
       this.form.files = fileList
       console.log('handleChange-file:' + JSON.stringify(file))
     },
@@ -488,6 +487,10 @@ export default {
           this.init()
         }
       })
+    },
+    detailFun (posts) {
+      setStore({name: 'posts', content: posts})
+      this.$router.push({path: '/detail'})
     },
     likeFun (item) {
       let deleted = 0

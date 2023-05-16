@@ -2,7 +2,7 @@
     <div style="font-size: 14px;">
 <!--      <div style="height: 26px;background-color: #0c93c7;">-->
 <!--      </div>-->
-      <div style="margin: auto 20%;background-color:#ffffff;display: flex;">
+      <div style="margin: auto 15%;background-color:#ffffff;display: flex;">
         <div style="width: 200px;border-right: 1px solid #e6e6e6;">
           <div style="font-size: 24px;text-align: center;line-height: 50px;color: #303133;">
             个人中心

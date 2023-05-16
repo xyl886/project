@@ -9,17 +9,31 @@
     </div>
 
     <div style="margin: 20px 0;">
-      <h2>闲置帖子列表</h2>
+      <el-row>
+        <el-col :span="16"><div class="grid-content bg-purple">
+          <h2 style="display: inline-block">闲置帖子列表</h2></div></el-col>
+        <el-col :span="8"><div class="grid-content bg-purple-light">
+          <!-- 搜索框 -->
+          <div style="display:inline-block;margin-top: 12px;" v-if="$route.path==='/index'">
+            <el-input placeholder="请输入内容"  v-model="searchText" class="input-with-select">
+              <el-select style="width:100px" v-model="select" slot="prepend" placeholder="请选择" value="1">
+                <el-option label="1" value="1"></el-option>
+                <el-option label="2" value="2"></el-option>
+                <el-option label="3" value="3"></el-option>
+              </el-select>
+              <el-button slot="append" icon="el-icon-search"></el-button>
+            </el-input>
+          </div></div></el-col>
+      </el-row>
     </div>
-
     <div class="posts-box" v-for="(item,index) in posts" :key="index">
       <div class="posts-item" v-for="(item2,index2) in item" :key="item2.id" @click="detailFun(item2)">
-        <div style="padding: 10px 20px;">
+        <div style="padding: 15px 15px;">
           <div style="text-align: center;">
             <el-image :src="item2.coverPath" style="width: 100%;height: 170px;"></el-image>
           </div>
           <div style="height: 36px;;overflow: hidden;margin-top: 20px;">
-            <div style="overflow: hidden;text-overflow: ellipsis;">
+            <div style="overflow: hidden;text-overflow: ellipsis;font-size: 15px;color: #18191c;">
               {{item2.title}}
             </div>
           </div>
@@ -29,8 +43,7 @@
             </div>
             <div class="posts-item-des">
               {{item2.schoolName}}
-              |
-              {{item2.browseNum}}次浏览
+              <i class="el-icon-view" style="margin-left: 2px;"/>{{item2.browseNum}}
             </div>
           </div>
         </div>
@@ -70,7 +83,7 @@ export default {
       posts: [],
       page: {
         total: 0,
-        pageSize: 25,
+        pageSize: 15,
         currentPage: 1,
         postsType: 1
       }
@@ -130,7 +143,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
   .posts-box{
     display: flex;
   }

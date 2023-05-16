@@ -95,7 +95,6 @@
             <version>2.3.0-b170127.1453</version>
         </dependency>
 
-
         <!-- spring security + OAuth2 + JWT    start  -->
         <dependency>
             <groupId>org.springframework.security</groupId>

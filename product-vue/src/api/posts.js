@@ -4,7 +4,7 @@ import request from '@/utils/request'
  * 帖子分页
  */
 export const getPage = (data) => {
-  console.log('getpage.data' + JSON.stringify(data))
+  // console.log('getpage.data' + JSON.stringify(data))
   return request({
     url: '/api/posts/getPage',
     method: 'post',

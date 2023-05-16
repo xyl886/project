@@ -1,12 +1,14 @@
 <template>
   <div class="history" v-loading="loading" v-infinite-scroll="getList"  infinite-scroll-disabled="disabled">
+    <div>
+    </div>
     <div class="clea">
       <el-button
         size="mini"
         @click="removeAll"
         v-show="postType !== '0'&& page.total!==0"
         round
-      >清空记录</el-button>
+      >清空历史</el-button>
     </div>
     <div class="block">
       <div v-if="page.total == 0" style="text-align: center">
@@ -24,11 +26,12 @@
             <el-col :span="17" style="margin: 3px 0 0 10px ;">
               <h3 :key="item.id" @click="detailFun(item.posts)">{{ item.postTitle}}</h3>
               <div class="user">
-                <el-avatar
-                  :src="item.avater"
-                  :key="item.avater"
-                  :size="25"
-                ></el-avatar>
+<!--                <el-avatar-->
+<!--                  :src="item.avater"-->
+<!--                  :key="item.avater"-->
+<!--                  :size="25"-->
+<!--                ></el-avatar>-->
+                <el-image :src="item.avatar" style="width: 25px;height: 25px;border-radius: 50%;"></el-image>
                 <span class="userName">{{ item.nickname }}</span>
               </div>
             </el-col>

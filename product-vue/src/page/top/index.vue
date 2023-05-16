@@ -5,24 +5,13 @@
         <img src="../../../public/img/logo.png" style="width: 50px;height: 50px;margin: 5px 0;">
       </div>
       <div style="font-size: 28px;font-weight: 700;line-height: 60px;margin-left: 10px;">
-        Tao-fetch
+      校园墙
       </div>
     </div>
     <div style="margin-left: 100px;flex: 1;">
       <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal">
         <el-menu-item v-for="(item,index) in menus" :index="item.path" :key="item.path" @click="pathFun(item.path)">{{item.name}}</el-menu-item>
       </el-menu>
-    </div>
-    <!-- 搜索框 -->
-    <div style="margin-top: 12px;" v-if="$route.path==='/index'">
-      <el-input placeholder="请输入内容"  v-model="searchText" class="input-with-select">
-        <el-select v-model="select" slot="prepend" placeholder="请选择" value="1">
-          <el-option label="1" value="1"></el-option>
-          <el-option label="2" value="2"></el-option>
-          <el-option label="3" value="3"></el-option>
-        </el-select>
-        <el-button slot="append" icon="el-icon-search"></el-button>
-      </el-input>
     </div>
   <div style="width: 150px;text-align: right">
       <div v-if="!userInfo || !userInfo.id" style="line-height: 60px;">

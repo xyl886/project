@@ -20,6 +20,15 @@ export const constantRoutes = [
     redirect: '/index'
   },
   {
+    path: '/share',
+    component: Layout,
+    children: [{
+      path: '',
+      name: '校园分享',
+      component: () => import(/* webpackChunkName: "views" */ '@/views/share/index')
+    }]
+  },
+  {
     path: '/publish',
     name: '发布帖子',
     // component: () =>
@@ -48,15 +57,6 @@ export const constantRoutes = [
       path: '',
       name: '关于我们',
       component: () => import(/* webpackChunkName: "views" */ '@/views/about_us/index')
-    }]
-  },
-  {
-    path: '/share',
-    component: Layout,
-    children: [{
-      path: '',
-      name: '校园分享',
-      component: () => import(/* webpackChunkName: "views" */ '@/views/share/index')
     }]
   },
   {

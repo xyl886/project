@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public interface PostsService extends IService<Posts> {
 
-    Result<Posts> add(Long userId, PostsReq postsReq) throws IOException;
+    Result<Posts> add(Long userId, PostsReq postsReq);
 
     ResultPage<PostsVO> getPage(Long userId,PostsPageReq postsPageReq);
 

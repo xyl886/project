@@ -3,8 +3,8 @@
       <div style="border-bottom: 1px solid #ccc;font-weight: bolder;font-size: 24px;line-height: 50px;">我的收藏</div>
       <div class="collect-box" v-for="(item,index) in collects" :key="index">
         <div class="collect-item" v-for="(item2,index2) in item" :key="item2.id">
-          <el-card>
-            <div style="cursor: pointer;" @click="detailFun(item2.posts)">
+          <el-card style="padding: 0;">
+            <div slot="header" style="cursor: pointer;" @click="detailFun(item2.posts)">
               <div style="text-align: center;">
                 <el-image :src="item2.posts.coverPath" class="collect-box-img"></el-image>
               </div>
@@ -12,7 +12,7 @@
                 {{item2.posts.title}}
               </div>
             </div>
-            <div slot="header">
+            <div>
               <span style="color: #999;">收藏于:{{item2.createTime}}</span>
               <el-dropdown style="float: right;">
                 <el-button style="padding: 3px 0" type="text"><i class="el-icon-more"></i></el-button>
@@ -46,6 +46,7 @@
 <script>
 import {getPage, addCollect} from '@/api/collect'
 import {setStore} from '@/utils/store'
+import dayjs from 'dayjs'
 export default {
   data () {
     return {
@@ -70,6 +71,17 @@ export default {
       this.page.currentPage = currentPage
       this.getPageFun()
     },
+    formatDate (date) {
+      const currentDate = dayjs()
+      const targetDate = dayjs(date)
+      if (currentDate.day() === targetDate.day()) {
+        return targetDate.format('今天 HH:mm')
+      } else if (currentDate.year() === targetDate.year()) { // 如果日期的年份与当前年份相同，则只显示月日
+        return targetDate.format('M-D')
+      } else {
+        return targetDate.format('YYYY-M-D')
+      }
+    },
     getPageFun () {
       this.loading = true
       this.collects = []
@@ -80,6 +92,9 @@ export default {
           let count = 0
           let arr = []
           for (let i = 0; i < res.data.length; i++) {
+            console.log(res.data[i].createTime)
+            res.data[i].createTime = this.formatDate(res.data[i].createTime)
+            console.log(res.data[i].createTime)
             count++
             if (count <= 3) {
               arr.push(res.data[i])
@@ -130,7 +145,6 @@ export default {
   }
   .collect-box-img{
     width: 100%;
-    height: 200px;
   }
   .collect-box-title{
     height: 20px;

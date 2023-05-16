@@ -8,7 +8,7 @@
 
 <script>
 import top from '../top/index.vue'
-import foot from '../foot/index'
+import foot from '../foot/index.vue'
 
 export default {
   components: {

@@ -67,8 +67,9 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
     /**
      * 发布帖子
      */
+    @SneakyThrows
     @Override
-    public Result<Posts> add(Long userId, PostsReq postsReq) throws IOException {
+    public Result<Posts> add(Long userId, PostsReq postsReq) {
         PostsType postsType = PostsType.valueOf(postsReq.getPostsType());
         School school = School.valueOf(postsReq.getSchool());
         if(postsType == null){
@@ -326,8 +327,7 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
         Posts post = getById(id);
         if(post != null){
             if(post.getUserId().equals(userId)){
-                String filelist = post.getImgPath();
-                String[] imageUrls = filelist.split(",");
+                String[] imageUrls = post.getImgPath().split(",");
                 List<String> imageUrlList = Arrays.asList(imageUrls);
                 log.info("图片："+imageUrlList);
                 for (String file : imageUrlList) {
