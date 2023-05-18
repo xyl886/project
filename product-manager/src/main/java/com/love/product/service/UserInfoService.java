@@ -43,4 +43,6 @@ public interface UserInfoService extends IService<UserInfo> {
     Result<UserInfoVO> update(Long userId, String nickname, MultipartFile file,Integer  gender,String hobby,String remark);
 
     UserInfoVO getUserInfoAndFansById(Long id);
+
+    Result<UserInfoVO> update(String phone, String password);
 }

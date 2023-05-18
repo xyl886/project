@@ -7,6 +7,7 @@ import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.req.PostsPageReq;
 import com.love.product.entity.vo.HistoryVO;
+import com.love.product.enumerate.PostsType;
 
 import java.util.List;
 
@@ -27,5 +28,5 @@ public interface HistoryService extends IService<History> {
 
     ResultPage<HistoryVO> getPage(Long userId, PageQuery pageQuery);
 
-    Result<?> del(Long userId, Long id);
+    Result<?> del( Long id);
 }

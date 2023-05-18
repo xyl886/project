@@ -193,6 +193,8 @@ export default {
           this.user = res.data
         }
       }, error => {
+        console.log('error submit!!', error)
+        this.loading = false
       })
     },
     updateModal () {

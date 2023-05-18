@@ -1,84 +1,78 @@
 <template>
-  <div id="body">
-    <div style="display: flex;width: 100%;height: 100%;overflow: hidden;">
-      <div style="height: 50px;line-height: 50px;display: flex;">
-        <el-button type="text" style="margin-left: 10px; color: #000c17" @click="backFun">&lt;返回</el-button>
-      </div>
-      <div class="login-modal">
-        <div class="title">
-          {{loginType === 'login'?'登录':(loginType==='forget'?'重置密码':'注册')}}
+  <el-dialog :visible.sync="dialogVisible">
+        <div class="login-modal">
+          <div class="title">
+            {{loginType === 'login'?'登录':(loginType==='forget'?'重置密码':'注册')}}
+          </div>
+          <el-form class="login-form"
+                   :rules="loginRules"
+                   ref="loginForm"
+                   :model="loginForm"
+                   label-width="0">
+            <el-form-item prop="phone">
+              <el-input
+                  placeholder="请输入手机号"
+                  prefix-icon="el-icon-mobile-phone"
+                  v-model.number="loginForm.phone"
+                  clearable>
+              </el-input>
+            </el-form-item>
+            <el-form-item prop="password">
+              <el-input
+                  :type="passwordType"
+                  placeholder="请输入密码"
+                  prefix-icon="el-icon-lock"
+                  v-model="loginForm.password"
+                  clearable>
+              </el-input>
+            </el-form-item>
+
+            <el-form-item prop="confirmPassword" v-show="loginType === 'register'">
+              <el-input
+                  :type="passwordType"
+                  placeholder="请再次输入密码"
+                  prefix-icon="el-icon-lock"
+                  v-model="loginForm.confirmPassword"
+                  clearable>
+              </el-input>
+            </el-form-item>
+
+            <el-form-item>
+              <el-row :span="24">
+                <el-col :span="12">
+                  <el-checkbox v-model="loginForm.rememberPwd" @change="handleChange">记住密码</el-checkbox>
+                </el-col>
+                <el-col :span="12">
+                  <el-popover
+                      placement="top-start"
+                      title=""
+                      width="200"
+                      v-if="loginType === 'login'"
+                      trigger="hover"
+                      content="忘记密码请联系系统管理员">
+                    <span style="color: #1890ff;float: right;" slot="reference">忘记密码</span>
+                  </el-popover>
+                </el-col>
+              </el-row>
+            </el-form-item>
+
+            <el-form-item>
+              <el-button :type="loginType === 'login'?'success':'danger'"
+                         style="width: 100%;"
+                         @click.native.prevent="handleLogin"
+                         class="login-submit">
+                {{loginType === 'login'?'登录':(loginType==='forget'?'重置密码':'注册')}}
+              </el-button>
+            </el-form-item>
+            <div v-if="loginType === 'login'" style="text-align: center;font-size: 14px;">
+              没有账号？<span style="cursor: pointer;color: #df1f20;" @click="changeModalType('register')">免费注册</span>
+            </div>
+            <div v-if="loginType !== 'login'" style="text-align: center;font-size: 14px;">
+              已有账号？<span style="cursor: pointer;color: #df1f20;" @click="changeModalType('login')">返回登录</span>
+            </div>
+          </el-form>
         </div>
-        <el-form class="login-form"
-                 :rules="loginRules"
-                 ref="loginForm"
-                 :model="loginForm"
-                 label-width="0">
-
-          <el-form-item prop="phone">
-            <el-input
-              placeholder="请输入手机号"
-              prefix-icon="el-icon-mobile-phone"
-              v-model.number="loginForm.phone"
-              clearable>
-            </el-input>
-          </el-form-item>
-
-          <el-form-item prop="password">
-            <el-input
-              :type="passwordType"
-              placeholder="请输入密码"
-              prefix-icon="el-icon-lock"
-              v-model="loginForm.password"
-              clearable>
-            </el-input>
-          </el-form-item>
-
-          <el-form-item prop="confirmPassword" v-show="loginType === 'register'">
-            <el-input
-              :type="passwordType"
-              placeholder="请再次输入密码"
-              prefix-icon="el-icon-lock"
-              v-model="loginForm.confirmPassword"
-              clearable>
-            </el-input>
-          </el-form-item>
-
-          <el-form-item>
-            <el-row :span="24">
-              <el-col :span="12">
-                <el-checkbox v-model="loginForm.rememberPwd" @change="handleChange">记住密码</el-checkbox>
-              </el-col>
-              <el-col :span="12">
-                <el-popover
-                  placement="top-start"
-                  title=""
-                  width="200"
-                  trigger="hover"
-                  content="忘记密码请联系系统管理员">
-                  <span style="color: #1890ff;float: right;" slot="reference">忘记密码</span>
-                </el-popover>
-              </el-col>
-            </el-row>
-          </el-form-item>
-
-          <el-form-item>
-            <el-button :type="loginType === 'login'?'success':'danger'"
-                       style="width: 100%;"
-                       @click.native.prevent="handleLogin"
-                       class="login-submit">
-              {{loginType === 'login'?'登录':(loginType==='forget'?'重置密码':'注册')}}
-            </el-button>
-          </el-form-item>
-          <div v-if="loginType === 'login'" style="text-align: center;font-size: 14px;">
-            没有账号？<span style="cursor: pointer;color: #df1f20;" @click="changeModalType('register')">免费注册</span>
-          </div>
-          <div v-if="loginType !== 'login'" style="text-align: center;font-size: 14px;">
-            已有账号？<span style="cursor: pointer;color: #df1f20;" @click="changeModalType('login')">返回登录</span>
-          </div>
-        </el-form>
-      </div>
-    </div>
-  </div>
+  </el-dialog>
 </template>
 
 <script>
@@ -86,9 +80,10 @@ import {userRegister} from '@/api/login'
 import {mapGetters} from 'vuex'
 
 export default {
-  name: 'index',
+  name: 'login',
   data () {
     return {
+      dialogVisible: false,
       loginType: 'login',
       passwordType: 'password',
       loginForm: {
@@ -138,6 +133,12 @@ export default {
     }
   },
   methods: {
+    showDialog () {
+      this.dialogVisible = true
+      this.$nextTick(() => {
+        this.$refs.loginForm.resetFields()
+      })
+    },
     handleChange () {
       console.log(this.loginForm.rememberPwd ? '选中' : '未选中')
     },
@@ -183,7 +184,8 @@ export default {
                 message: res.data.nickname + '，欢迎您！',
                 type: 'success'
               })
-              this.$router.push({path: '/'})
+              this.dialogVisible = false
+              // this.$router.push({path: '/'})
             }
           }).finally(() =>
             loading.close()
@@ -207,6 +209,7 @@ export default {
                 message: '请登录',
                 type: 'success'
               })
+              this.dialogVisible = false
             }
           }).finally(() =>
             loading.close()
@@ -219,31 +222,32 @@ export default {
 </script>
 
 <style scoped>
-  #body{
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    background-size: 100% 100%;
-    background-image: linear-gradient(to top, rgba(255, 95, 45, 0.27), rgba(211, 155, 5, 0.2)), url("../../../public/img/login-bg.png");
-    background-repeat: no-repeat;
-  }
-  .name{
-    line-height: 50px;
-    font-size: 30px;
-    font-weight: 700;
-    color: #FFFFFF;
-    margin-left: 10px;
-  }
+  /*#body{*/
+  /*  margin: 0;*/
+  /*  padding: 0;*/
+  /*  width: 100%;*/
+  /*  height: 100%;*/
+  /*  background-size: 100% 100%;*/
+  /*  background-image: linear-gradient(to top, rgba(255, 95, 45, 0.27), rgba(211, 155, 5, 0.2)), url("../../../public/img/login-bg.png");*/
+  /*  background-repeat: no-repeat;*/
+  /*}*/
+  /*.name{*/
+  /*  line-height: 50px;*/
+  /*  font-size: 30px;*/
+  /*  font-weight: 700;*/
+  /*  color: #FFFFFF;*/
+  /*  margin-left: 10px;*/
+  /*}*/
   .login-modal{
+    /*text-align: center;*/
     position: relative;
     width: 420px;
-    height: 450px;
+    /*height: 450px;*/
     top: 50%;
-    margin: -225px auto 0;
     background-color: #FFFFFF;
     border-radius: 5px;
   }
+
   .title{
     height: 80px;
     line-height: 100px;

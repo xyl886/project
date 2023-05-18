@@ -62,31 +62,31 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
      */
     @Override
     public Result<UserInfoVO> login(String phone, String password){
-        UserInfoVO userInfoVo = getByPhone(phone);
-        if(userInfoVo != null){
-            if(userInfoVo.getDeleted().equals(YesOrNo.YES.getValue())){
+        UserInfoVO userInfoVO = getByPhone(phone);
+        if(userInfoVO != null){
+            if(userInfoVO.getDeleted().equals(YesOrNo.YES.getValue())){
                 return Result.failMsg("登录失败，账号已注销");
             }
-            if(userInfoVo.getStatus().equals(YesOrNo.YES.getValue())){
+            if(userInfoVO.getStatus().equals(YesOrNo.YES.getValue())){
                 return Result.failMsg("登录失败，账号已禁用，请联系客服人员");
             }
             PasswordEncoder encoder = new BCryptPasswordEncoder();
-            boolean matches = encoder.matches(password, userInfoVo.getPassword());
+            boolean matches = encoder.matches(password, userInfoVO.getPassword());
             if (!matches) {
                 return Result.failMsg("账号或密码错误");
             }
             //一定要在获取token前缓存redis，否则可能报错
-            RedisUtil.setUser(userInfoVo);
-            String accessToken = getOAuthToken(userInfoVo);
+            RedisUtil.setUser(userInfoVO);
+            String accessToken = getOAuthToken(userInfoVO);
             if(accessToken == null){
                 return Result.failMsg("登录失败，请重试");
             }
-            userInfoVo.setAccessToken(accessToken);
-            userInfoVo.setPhone(phone);
-            userInfoVo.setPassword(password);
-            log.info(String.valueOf(userInfoVo));
+            userInfoVO.setAccessToken(accessToken);
+            userInfoVO.setPhone(phone);
+            userInfoVO.setPassword(password);
 
-            return Result.OK(userInfoVo);
+            log.info(String.valueOf(userInfoVO));
+            return Result.OK(userInfoVO);
         }else{
             return Result.failMsg("账号或密码错误");
         }
@@ -274,5 +274,18 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             userInfoVO.setFansNum(fansNum);
         }
         return userInfoVO;
+    }
+/*
+修改密码
+*/
+    @Override
+    public Result<UserInfoVO> update(String phone, String password) {
+        UserInfo userInfo=getByPhone(phone);
+        if(userInfo!=null){
+           userInfo.setPassword(password);
+           saveOrUpdate(userInfo);
+           return Result.OKMsg("修改成功");
+        }
+        return Result.failMsg("用户不存在");
     }
 }

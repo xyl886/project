@@ -149,8 +149,8 @@ const actions = {
   DEL_TAG_OTHER ({ commit }, data) {
     commit('DEL_TAG_OTHER', data)
   },
-  SET_FULLSCREN ({ commit }, data) {
-    commit('SET_FULLSCREN', data)
+  SET_FULLSCREEN ({ commit }, data) {
+    commit('SET_FULLSCREEN', data)
   },
   SET_LOCK_PASSWD ({ commit }, data) {
     commit('SET_LOCK_PASSWD', data)

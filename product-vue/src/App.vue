@@ -25,11 +25,10 @@ export default {
   },
   watch: {},
   created () {
-    let times = '500'// 加载延时loading
     let that = this
     setTimeout(function () {
       that.loadingIndex = false
-    }, times)
+    }, 500)
   },
   methods: {},
   computed: {}

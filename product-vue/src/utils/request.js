@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { Message, Notification } from 'element-ui'
+import {Message, Notification} from 'element-ui'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router from '@/router'
 
@@ -62,8 +62,8 @@ service.interceptors.response.use(
       return Promise.reject(new Error(res.msg || 'Error'))
     }
     return res
-    // const res = response.data;
-    // if the custom code is not 20000, it is judged as an error.
+    // const res = response.data
+    // // if the custom code is not 20000, it is judged as an error.
     // if (res.code !== 200) {
     //   Message({
     //     message: res.message || 'Error',
@@ -79,7 +79,7 @@ service.interceptors.response.use(
     //       cancelButtonText: 'Cancel',
     //       type: 'warning'
     //     }).then(() => {
-    //       store.dispatch('user/resetToken').then(() => {
+    //       this.$store.dispatch('user/resetToken').then(() => {
     //         location.reload()
     //       })
     //     })

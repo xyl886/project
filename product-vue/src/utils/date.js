@@ -1,5 +1,5 @@
 // 日期格式化
-export function formatDate(date) {
+export function formatDate (date) {
   const dt = new Date(date)
   const y = dt.getFullYear()
   const m = (dt.getMonth() + 1 + '').padStart(2, '0')
@@ -39,7 +39,7 @@ export const calcDate = (date1, date2) => {
 /**
  * 日期格式化
  */
-export function dateFormat(date, format) {
+export function dateFormat (date, format) {
   format = format || 'yyyy-MM-dd hh:mm:ss'
   if (date !== 'Invalid Date') {
     const o = {

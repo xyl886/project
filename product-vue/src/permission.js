@@ -5,7 +5,8 @@
 import router from './router/index'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
-import { getToken } from '@/utils/auth' // get token from cookie
+import { getToken } from '@/utils/auth'
+// get token from cookie
 
 const whiteList = ['/login', '/index', '/', '/403', '/404', '/detail', '/about-us', '/share']// 白名单路由
 

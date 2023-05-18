@@ -4,6 +4,7 @@ import com.love.product.entity.base.PageQuery;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.vo.HistoryVO;
+import com.love.product.enumerate.PostsType;
 import com.love.product.service.HistoryService;
 import com.love.product.util.JwtUtil;
 import io.swagger.annotations.Api;
@@ -11,6 +12,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @PackageName: com.love.product.controller
@@ -31,9 +33,10 @@ public class HistoryController {
     public ResultPage<HistoryVO> getPage(@RequestBody PageQuery pageQuery) {
         return historyService.getPage(JwtUtil.getUserId(),pageQuery);
     }
+
     @ApiOperation("清空")
     @DeleteMapping("/del")
-    public Result<?> del(Long userId,Long id) {
-        return historyService.del(userId, id);
+    public Result<?> del(Long id) {
+        return historyService.del(id);
     }
 }

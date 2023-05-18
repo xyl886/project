@@ -1,20 +1,25 @@
 <template>
   <div style="font-size: 14px;margin: 20px 150px;" v-loading="loading">
     <div>
-      <el-carousel height="500px" >
+<!--      <el-carousel height="500px" >-->
+<!--        <el-carousel-item v-for="(item,index) in banners" :key="index">-->
+<!--         <el-image :src="item.imgPath" style="width: 100%;height: 500px;"></el-image>-->
+<!--        </el-carousel-item>-->
+<!--      </el-carousel>-->
+      <el-carousel height="500px" direction="vertical" :interval="2000" :autoplay="true">
         <el-carousel-item v-for="(item,index) in banners" :key="index">
-         <el-image :src="item.imgPath" style="width: 100%;height: 500px;"></el-image>
+          <el-image :src="item.imgPath" style="width: 100%;height: 500px;"></el-image>
         </el-carousel-item>
       </el-carousel>
     </div>
 
     <div style="margin: 20px 0;">
       <el-row>
-        <el-col :span="16"><div class="grid-content bg-purple">
+        <el-col :span="8"><div class="grid-content bg-purple">
           <h2 style="display: inline-block">闲置帖子列表</h2></div></el-col>
         <el-col :span="8"><div class="grid-content bg-purple-light">
           <!-- 搜索框 -->
-          <div style="display:inline-block;margin-top: 12px;" v-if="$route.path==='/index'">
+          <div style="display:inline-block;margin-top: 12px;">
             <el-input placeholder="请输入内容"  v-model="searchText" class="input-with-select">
               <el-select style="width:100px" v-model="select" slot="prepend" placeholder="请选择" value="1">
                 <el-option label="1" value="1"></el-option>
@@ -24,6 +29,7 @@
               <el-button slot="append" icon="el-icon-search"></el-button>
             </el-input>
           </div></div></el-col>
+        <el-col :span="8"></el-col>
       </el-row>
     </div>
     <div class="posts-box" v-for="(item,index) in posts" :key="index">
@@ -81,6 +87,8 @@ export default {
       loading: false,
       banners: [],
       posts: [],
+      searchText: '',
+      select: '',
       page: {
         total: 0,
         pageSize: 15,

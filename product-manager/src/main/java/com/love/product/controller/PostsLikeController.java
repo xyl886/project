@@ -32,4 +32,5 @@ public class PostsLikeController {
     public Result<?> add(@RequestParam("postsId") Long postsId, @RequestParam("deleted") Integer deleted) {
         return postsLikeService.add(JwtUtil.getUserId(),postsId,deleted);
     }
+
 }
