@@ -22,6 +22,8 @@
 
 <script>
 
+import {updatePwd} from '../../api/user_info'
+
 export default {
   data () {
     return {
@@ -60,8 +62,30 @@ export default {
     updatePassword () {
       this.$refs.passwordForm.validate(valid => {
         if (valid) {
+          const loading = this.$loading({
+            lock: true,
+            text: '修改中,请稍后。。。',
+            spinner: 'el-icon-loading'
+          })
+          updatePwd(this.passwordForm).then(res => {
+            console.log(res)
+            if (res.code === 200) {
+              console.log('密码修改成功')
+              this.$store.dispatch('logout').then((res) => {
+                if (res.code === 200) {
+                  this.$notify({
+                    title: '修改成功',
+                    message: '请重新登录',
+                    type: 'success'
+                  })
+                }
+              })
+              this.dialogVisible = false
+            }
+          }).finally(() =>
+            loading.close()
+          )
           // 执行修改密码的操作，例如调用API发送请求
-          console.log('密码修改成功')
           this.dialogVisible = false
         }
       })

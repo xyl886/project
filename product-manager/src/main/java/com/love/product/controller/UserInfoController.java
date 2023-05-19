@@ -45,11 +45,12 @@ public class UserInfoController {
     }
     @ApiOperation(value = "修改密码",notes = "修改密码")
     @PostMapping("/updateUserPassword")
-    public Result<UserInfoVO> userUpdatePassword(
-            @ApiParam("邮箱") @RequestParam("phone") String phone,
-            @ApiParam("密码") @RequestParam("password") String password
+    public Result<?> userUpdatePassword(
+            @ApiParam("当前密码") @RequestParam("currentPassword") String currentPassword,
+            @ApiParam("新密码") @RequestParam("newPassword") String newPassword,
+            @ApiParam("确认密码") @RequestParam("confirmPassword") String confirmPassword
     ){
-        return userInfoService.update(phone,password);
+        return userInfoService.update(JwtUtil.getUserId(),currentPassword,newPassword,confirmPassword);
     }
 
     @ApiOperation(value = "用户详情", notes = "用户详情")

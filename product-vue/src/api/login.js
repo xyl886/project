@@ -4,6 +4,7 @@ import request from '@/utils/request'
  * 登录
  */
 export const userLogin = (params) => {
+  console.log(params)
   return request({
     url: '/api/login/userLogin',
     method: 'get',

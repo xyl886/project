@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :visible.sync="dialogVisible">
+  <el-dialog :visible.sync="dialogVisible" :width="'450px'">
         <div class="login-modal">
           <div class="title">
             {{loginType === 'login'?'登录':(loginType==='forget'?'重置密码':'注册')}}
@@ -9,11 +9,11 @@
                    ref="loginForm"
                    :model="loginForm"
                    label-width="0">
-            <el-form-item prop="phone">
+            <el-form-item prop="email">
               <el-input
-                  placeholder="请输入手机号"
-                  prefix-icon="el-icon-mobile-phone"
-                  v-model.number="loginForm.phone"
+                  placeholder="请输入邮箱"
+                  prefix-icon="el-icon-user"
+                  v-model="loginForm.email"
                   clearable>
               </el-input>
             </el-form-item>
@@ -40,7 +40,7 @@
             <el-form-item>
               <el-row :span="24">
                 <el-col :span="12">
-                  <el-checkbox v-model="loginForm.rememberPwd" @change="handleChange">记住密码</el-checkbox>
+                  <el-checkbox v-if="loginType==='login'" v-model="loginForm.rememberPwd" @change="handleChange">记住密码</el-checkbox>
                 </el-col>
                 <el-col :span="12">
                   <el-popover
@@ -78,6 +78,7 @@
 <script>
 import {userRegister} from '@/api/login'
 import {mapGetters} from 'vuex'
+import Vue from 'vue'
 
 export default {
   name: 'login',
@@ -87,15 +88,15 @@ export default {
       loginType: 'login',
       passwordType: 'password',
       loginForm: {
-        phone: '',
+        email: '',
         password: '',
         confirmPassword: '',
         rememberPwd: false
       },
       loginRules: {
-        phone: [
-          { required: true, message: '请输入手机号', trigger: ['blur', 'change'] },
-          { pattern: /^1[3456789]\d{9}$/, message: '手机号格式错误', trigger: ['blur', 'change'] }
+        email: [
+          { required: true, message: '请输入邮箱', trigger: ['blur', 'change'] },
+          { pattern: /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/, message: '邮箱格式错误', trigger: ['blur', 'change'] }
         ],
         password: [
           {required: true, message: '请输入密码', trigger: 'change'},
@@ -113,21 +114,23 @@ export default {
   },
   mounted () {
     // 在组件挂载时，检查是否已记住密码
-    // 从 localstorage 中获取数据并解密
-    this.loginForm.phone = localStorage.getItem('phone')
+    this.loginForm.email = localStorage.getItem('email')
     this.loginForm.password = localStorage.getItem('password')
+    Vue.prototype.$bus.$on('showLoginDialog', () => {
+      this.dialogVisible = true
+    })
   },
   watch: {
     // 当“记住密码”复选框被勾选或取消勾选时，保存或清除密码到localStorage中
     'loginForm.rememberPwd' () {
       if (this.loginForm.rememberPwd === true) {
         // 将加密后的数据存储到 localstorage 中
-        const encryptedPhone = this.loginForm.phone
+        const encryptedEmail = this.loginForm.email
         const encryptedPwd = this.loginForm.password
-        localStorage.setItem('phone', encryptedPhone)
+        localStorage.setItem('email', encryptedEmail)
         localStorage.setItem('password', encryptedPwd)
       } else {
-        localStorage.removeItem('phone')
+        localStorage.removeItem('email')
         localStorage.removeItem('password')
       }
     }
@@ -156,7 +159,11 @@ export default {
     changeModalType (type) {
       this.loginType = type
       this.$refs.loginForm.resetFields()
+      this.loginForm.email = null
+      this.loginForm.password = null
       if (type === 'login') {
+        this.loginForm.email = localStorage.getItem('email')
+        this.loginForm.password = localStorage.getItem('password')
         this.loginRules['confirmPassword'][0]['required'] = false
       } else {
         this.loginRules['confirmPassword'][0]['required'] = true

@@ -34,7 +34,7 @@ public class LoginController {
     @ApiOperation(value = "账密登录", notes = "账密登录")
     @GetMapping("/userLogin")
     public Result<UserInfoVO> login(
-            @ApiParam("电话") @RequestParam("phone") String phone,
+            @ApiParam("邮箱") @RequestParam("email") String email,
             @ApiParam("密码") @RequestParam("password") String password,
             HttpServletRequest request, HttpServletResponse response
     ) {
@@ -42,17 +42,17 @@ public class LoginController {
         if (authentication != null) {   //清除认证
             new SecurityContextLogoutHandler().logout(request, response, authentication);
         }
-        return userInfoService.login(phone,password);
+        return userInfoService.login(email,password);
     }
 
     @ApiOperation(value = "用户注册", notes = "用户注册")
     @GetMapping("/userRegister")
     public Result<UserInfoVO> userRegister(
-            @ApiParam("电话") @RequestParam("phone") String phone,
+            @ApiParam("电话") @RequestParam("email") String email,
             @ApiParam("密码") @RequestParam("password") String password,
             @ApiParam("确认密码") @RequestParam("confirmPassword") String confirmPassword
     ) {
-        return userInfoService.userRegister(phone,password,confirmPassword);
+        return userInfoService.userRegister(email,password,confirmPassword);
     }
 
     @ApiOperation(value = "用户退出登录", notes = "用户退出登录")

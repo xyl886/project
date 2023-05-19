@@ -1,6 +1,5 @@
 package com.love.product.config.security;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.love.product.entity.UserInfo;
 import com.love.product.enumerate.YesOrNo;
 import com.love.product.service.UserInfoService;
@@ -33,7 +32,7 @@ public class UserDetailService implements UserDetailsService {
         // 从user获取正确的用户信息，包括密码和权限等。
 
         // 查询用户
-        UserInfo userInfo = userInfoService.getByPhone(username);
+        UserInfo userInfo = userInfoService.getByEmail(username);
         if (userInfo != null) {
             if(userInfo.getDeleted().equals(YesOrNo.YES.getValue())){
                 throw new UsernameNotFoundException("登录失败，账号已注销");

@@ -20,3 +20,10 @@ export const update = (data) => {
     data
   })
 }
+export const updatePwd = (params) => {
+  return request({
+    url: '/api/user/updateUserPassword',
+    method: 'post',
+    params: params
+  })
+}

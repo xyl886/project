@@ -139,7 +139,6 @@ export default {
       loading: false,
       searchText: '',
       InputActive: false,
-      InputFocused: false,
       page: {
         total: 0,
         pageSize: 9,
@@ -197,7 +196,9 @@ export default {
     formatDate (date) {
       const currentDate = dayjs()
       const targetDate = dayjs(date)
-      if (currentDate.day() === targetDate.day()) {
+      if (currentDate.diff(targetDate, 'minute') < 1) {
+        return targetDate.format('刚刚')
+      } else if (currentDate.day() === targetDate.day()) {
         return targetDate.format('今天 HH:mm')
       } else if (currentDate.diff(targetDate, 'day') === 1) { // 当前日期与目标日期相差1天，即为昨天
         return targetDate.format('昨天 HH:mm')
