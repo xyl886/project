@@ -12,7 +12,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -34,25 +37,25 @@ public class LoginController {
     @ApiOperation(value = "账密登录", notes = "账密登录")
     @GetMapping("/userLogin")
     public Result<UserInfoVO> login(
-            @ApiParam("邮箱") @RequestParam("email") String email,
+            @ApiParam("电话") @RequestParam("phone") String phone,
             @ApiParam("密码") @RequestParam("password") String password,
             HttpServletRequest request, HttpServletResponse response
     ) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null) {   //清除认证
+        if (authentication != null) {//清除认证
             new SecurityContextLogoutHandler().logout(request, response, authentication);
         }
-        return userInfoService.login(email,password);
+        return userInfoService.login(phone,password);
     }
 
     @ApiOperation(value = "用户注册", notes = "用户注册")
     @GetMapping("/userRegister")
     public Result<UserInfoVO> userRegister(
-            @ApiParam("电话") @RequestParam("email") String email,
+            @ApiParam("电话") @RequestParam("phone") String phone,
             @ApiParam("密码") @RequestParam("password") String password,
             @ApiParam("确认密码") @RequestParam("confirmPassword") String confirmPassword
     ) {
-        return userInfoService.userRegister(email,password,confirmPassword);
+        return userInfoService.userRegister(phone,password,confirmPassword);
     }
 
     @ApiOperation(value = "用户退出登录", notes = "用户退出登录")

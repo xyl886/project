@@ -104,19 +104,19 @@ public class OauthInterceptor extends OAuth2AuthenticationEntryPoint {
                     response.getWriter().flush();
                     return;
                 }
-                String email = (String)userMap.get("email");
+                String phone = (String)userMap.get("phone");
                 Long userId = (Long)userMap.get("userId");
 
                 //根据用户名称，从数据库获取用户的刷新令牌 todo redis
                 String refresh_token = RedisUtil.getRefreshToken(userId);
                 if(refresh_token != null){
                     //获取当前用户信息
-                    UserInfoVO userInfoVO  = userInfoService.getByEmail(email);
+                    UserInfoVO userInfoVO  = userInfoService.getByPhone(phone);
 
                     //获取OAuth2框架的配置信息，用于访问刷新令牌接口
                     Map<String, String> tokenMap = tokenConfig.getConfig();
                     Map<String,String> mapParam = new HashMap<>();
-                    mapParam.put("email", userInfoVO.getEmail());
+                    mapParam.put("phone", userInfoVO.getPhone());
                     mapParam.put("password", userInfoVO.getOriginalPassword());
                     mapParam.put("client_id", tokenMap.get("clientId"));
                     mapParam.put("client_secret", tokenMap.get("secret"));
@@ -127,7 +127,7 @@ public class OauthInterceptor extends OAuth2AuthenticationEntryPoint {
                         @SuppressWarnings("unchecked")
                         Map<String, String> mapResult = restTemplate
                                 .getForObject(
-                                        "http://localhost:"+port+"/oauth/token?username={email}&password={password}&client_id={client_id}&client_secret={client_secret}&grant_type={grant_type}&refresh_token={refresh_token}",
+                                        "http://localhost:"+port+"/oauth/token?username={phone}&password={password}&client_id={client_id}&client_secret={client_secret}&grant_type={grant_type}&refresh_token={refresh_token}",
                                         Map.class, mapParam);
                         if(mapResult != null){
                             // 如果刷新成功 跳转到原来需要访问的页面
@@ -135,7 +135,7 @@ public class OauthInterceptor extends OAuth2AuthenticationEntryPoint {
                             RedisUtil.setUser(userInfoVO);
                             List<GrantedAuthority> grantedAuthorityList = new ArrayList<>();
                             UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
-                                    userInfoVO.getEmail(), userInfoVO.getOriginalPassword(), grantedAuthorityList);
+                                    userInfoVO.getPhone(), userInfoVO.getOriginalPassword(), grantedAuthorityList);
                             Authentication authentications = authenticationManager
                                     .authenticate(authRequest);
                             SecurityContextHolder.getContext().setAuthentication(

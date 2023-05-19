@@ -25,9 +25,9 @@ export function validUsername (str) {
  */
 export function isAndroid () {
   let u = navigator.userAgent
-  // android终端
+  let isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1 // android终端
   // let isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
-  return u.indexOf('Android') > -1 || u.indexOf('Adr') > -1
+  return isAndroid
 }
 
 /**
@@ -36,8 +36,8 @@ export function isAndroid () {
  */
 export function isIos () {
   let u = navigator.userAgent
-  // ios终端
-  return !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/)
+  let isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/) // ios终端
+  return isiOS
 }
 
 /**

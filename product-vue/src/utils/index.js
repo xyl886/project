@@ -110,7 +110,8 @@ export function param2Obj (url) {
     const index = v.indexOf('=')
     if (index !== -1) {
       const name = v.substring(0, index)
-      obj[name] = v.substring(index + 1, v.length)
+      const val = v.substring(index + 1, v.length)
+      obj[name] = val
     }
   })
   return obj

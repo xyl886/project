@@ -54,7 +54,7 @@
             <div style="font-size: 16px;">电话</div>
           </el-col>
           <el-col :span="21">
-            <div style="font-size: 16px;color: #666;">{{user.email}}</div>
+            <div style="font-size: 16px;color: #666;">{{user.phone}}</div>
           </el-col>
         </el-row>
         <el-row style="margin: 30px 0;">
@@ -193,17 +193,15 @@ export default {
           this.user = res.data
         }
       }, error => {
-        console.log('error submit!!', error)
-        this.loading = false
       })
     },
     updateModal () {
       if (this.$refs.form) {
         this.$refs.form.resetFields()
       }
-      this.form = {...this.user}
+      this.form = this.user
       this.form.gender = this.form.gender + ''
-      console.log(this.form + ',' + this.form.gender)
+      console.info(this.form)
       this.box = true
     },
     updateFun () {
@@ -228,7 +226,6 @@ export default {
                 this.$message.success(res.msg)
                 this.$refs.form.resetFields()
                 this.box = false
-                this.detailFun()
               }
             }, error => {
               console.log('error submit!!', error)

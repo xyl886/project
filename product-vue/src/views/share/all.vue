@@ -150,6 +150,7 @@
                 :before-upload="beforeUpload"
                 :on-change="handleChange"
                 :on-remove="handleRemove"
+                :on-success="handleSuccess"
                 :on-preview="handlePictureCardPreview"
                 :disabled="disabled"
                 :multiple="true">
@@ -227,7 +228,7 @@ export default {
         'Content-Type': 'multipart/form-data'
       },
       dialogImageUrl: '',
-      dialogVisible: false
+      dialogVisible: false,
     }
   },
   computed: {
@@ -243,14 +244,14 @@ export default {
     }
   },
   watch: {
-    // 'form.postsType': function () {
-    //   if (this.form.postsType == '1') {
-    //     this.rules['price'][0]['required'] = true
-    //   } else {
-    //     this.form.price = null
-    //     this.rules['price'][0]['required'] = false
-    //   }
-    // },
+    'form.postsType': function () {
+      if (this.form.postsType == '1') {
+        this.rules['price'][0]['required'] = true
+      } else {
+        this.form.price = null
+        this.rules['price'][0]['required'] = false
+      }
+    },
     'form.files': function () {
       console.info(this.form.files.length)
       if (this.form.files.length >= 9) {
@@ -349,17 +350,17 @@ export default {
       this.form.files = fileList
       console.log('handleChange-file:' + JSON.stringify(file))
     },
-    // // 图片上传成功的回调
-    // handleSuccess (res, file, fileList) {
-    //   this.fileList = fileList
-    //   // 将上传成功的文件信息保存到form.images中
-    //   this.fileList.push({
-    //     name: res.name,
-    //     url: res.url,
-    //     uid: res.uid,
-    //     status: 'success'
-    //   })
-    // },
+    // 图片上传成功的回调
+    handleSuccess (res, file, fileList) {
+      this.fileList = fileList
+      // 将上传成功的文件信息保存到form.images中
+      this.fileList.push({
+        name: res.name,
+        url: res.url,
+        uid: res.uid,
+        status: 'success'
+      })
+    },
     handlePictureCardPreview (file) { // 点击预览
       // console.log(file)
       this.dialogImageUrl = file.url
@@ -385,7 +386,7 @@ export default {
         console.log('file:' + JSON.stringify(arr))
         this.form.files = []
         this.fileList = []
-        for (const file of arr) { // 使用 for...of 遍历数组
+        for (const file in arr) {
           this.form.files.push({
             name: file.name,
             raw: file,
@@ -502,8 +503,8 @@ export default {
             item.likeNum = parseInt(item.likeNum) - 1
             item.like = false
           } else {
-            item.likeNum = parseInt(item.likeNum) + 1
             item.like = true
+            item.likeNum = parseInt(item.likeNum) + 1
           }
         }
       })
@@ -548,16 +549,20 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(() => {
-        del(item2.id).then(res => {
-          if (res.code === 200) {
-            item1.commentNum = parseInt(item1.commentNum) - 1
-            this.$message.success(res.msg)
-            this.getComment(item1)
-          }
-        }, error => {
-        })
       })
+        .then(() => {
+          del(item2.id).then(res => {
+            if (res.code === 200) {
+              // this.$notify({
+              //   title: '删除成功',
+              //   type: 'success'
+              // })
+              item1.commentNum = parseInt(item1.commentNum) - 1
+              this.$message.success(res.msg)
+              this.getComment(item1)
+            }
+          })
+        })
     },
     resetForm () {
       this.$refs.form.resetFields()

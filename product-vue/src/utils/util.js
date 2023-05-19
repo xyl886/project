@@ -33,7 +33,8 @@ export const listenfullscreen = (callback) => {
  * 浏览器判断是否全屏
  */
 export const fullscreenEnable = () => {
-  return document.isFullScreen || document.mozIsFullScreen || document.webkitIsFullScreen
+  var isFullscreen = document.isFullScreen || document.mozIsFullScreen || document.webkitIsFullScreen
+  return isFullscreen
 }
 
 /**

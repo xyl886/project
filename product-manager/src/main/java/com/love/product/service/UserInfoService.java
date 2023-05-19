@@ -18,13 +18,10 @@ public interface UserInfoService extends IService<UserInfo> {
 
     /**
      * 用户登录
-     * @param email
-     * @param password
-     * @return Result<UserInfoVO>
      */
-    Result<UserInfoVO> login(String email, String password);
+    Result<UserInfoVO> login(String phone, String password);
 
-    UserInfoVO getByEmail(String email);
+    UserInfoVO getByPhone(String phone);
 
     /**
      * 用户详情
@@ -43,16 +40,7 @@ public interface UserInfoService extends IService<UserInfo> {
      */
     Map<Long, UserInfoVO> listByIds(List<Long> ids);
 
-    /**
-     * 更新用户信息
-     */
     Result<UserInfoVO> update(Long userId, String nickname, MultipartFile file,Integer  gender,String hobby,String remark);
-    /**
-     * 获取用户详情
-     */
+
     UserInfoVO getUserInfoAndFansById(Long id);
-    /**
-     * 修改密码
-     */
-    Result<?> update(Long id, String currentPassword, String newPassword, String confirmPassword);
 }

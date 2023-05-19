@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Layout from '../page/index/index'
-import login from '../page/login/login'
+import Layout from '@/page/index/index'
 
 Vue.use(Router)
 
@@ -12,7 +11,7 @@ export const constantRoutes = [
     children: [{
       path: '',
       name: '主页',
-      component: () => import('@/views/home/index')
+      component: () => import(/* webpackChunkName: "views" */ '@/views/home/index')
     }]
   },
   {
@@ -26,28 +25,30 @@ export const constantRoutes = [
     children: [{
       path: '',
       name: '校园分享',
-      component: () => import('@/views/share/index')
+      component: () => import(/* webpackChunkName: "views" */ '@/views/share/index')
     }]
   },
   {
     path: '/publish',
     name: '发布帖子',
+    // component: () =>
+    //     import(/* webpackChunkName: "views" */ '@/views/publish/index')
     component: Layout,
     children: [{
       path: '',
       name: '发布帖子',
-      component: () => import('@/views/publish/index')
+      component: () => import(/* webpackChunkName: "views" */ '@/views/publish/index')
     }]
   },
   {
     path: '/login',
     name: '登录',
-    component: login
+    component: () => import(/* webpackChunkName: "views" */ '@/page/login/index')
   },
   {
     path: '/detail',
     name: '帖子详情',
-    component: () => import('@/views/posts/detail')
+    component: () => import(/* webpackChunkName: "views" */ '@/views/posts/detail')
   },
   {
     path: '/about-us',
@@ -55,7 +56,7 @@ export const constantRoutes = [
     children: [{
       path: '',
       name: '关于我们',
-      component: () => import('@/views/about_us/index')
+      component: () => import(/* webpackChunkName: "views" */ '@/views/about_us/index')
     }]
   },
   {
@@ -65,7 +66,7 @@ export const constantRoutes = [
     children: [{
       path: 'user_info',
       name: '个人中心',
-      component: () => import('@/views/personal/index'),
+      component: () => import(/* webpackChunkName: "views" */ '@/views/personal/index'),
       redirect: '/personal/user_info',
       children: [
         {

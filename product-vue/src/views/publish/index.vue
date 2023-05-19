@@ -104,6 +104,9 @@ export default {
         price: [
           { required: false, message: '请输入价格', trigger: 'change' }
         ]
+        // files: [
+        //   { required: false, message: '请输入价格', trigger: 'change' }
+        // ]
       },
       dialogImageUrl: '',
       dialogVisible: false,

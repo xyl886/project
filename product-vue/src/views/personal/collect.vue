@@ -1,21 +1,21 @@
 <template>
     <div style="font-size: 14px;padding: 10px 0 0 20px;background-color: #f5f7f9;" v-loading="loading">
-<!--      <div style="border-bottom: 1px solid #ccc;font-weight: bolder;font-size: 24px;line-height: 50px;">我的收藏</div>-->
-          <div class="collect-box" v-for="(item,index) in collects" :key="index">
+      <div style="border-bottom: 1px solid #ccc;font-weight: bolder;font-size: 24px;line-height: 50px;">我的收藏</div>
+      <div class="collect-box" v-for="(item,index) in collects" :key="index">
         <div class="collect-item" v-for="(item2,index2) in item" :key="item2.id">
-          <el-card>
-            <div slot="header" style="cursor: pointer;"  @click="detailFun(item2.posts)">
+          <el-card style="padding: 0;">
+            <div slot="header" style="cursor: pointer;" @click="detailFun(item2.posts)">
               <div style="text-align: center;">
                 <el-image :src="item2.posts.coverPath" class="collect-box-img"></el-image>
               </div>
               <div class="collect-box-title">
-              {{item2.posts.title}}
+                {{item2.posts.title}}
               </div>
             </div>
             <div>
               <span style="color: #999;">收藏于:{{item2.createTime}}</span>
               <el-dropdown style="float: right;">
-                <el-button style="padding:0" type="text"><i class="el-icon-more"></i></el-button>
+                <el-button style="padding: 3px 0" type="text"><i class="el-icon-more"></i></el-button>
                 <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item @click.native="addCollectFun(item2.posts)">取消收藏</el-dropdown-item>
                 </el-dropdown-menu>
@@ -24,6 +24,7 @@
           </el-card>
         </div>
       </div>
+
       <div v-if="collects.length > 0" style="text-align: center;margin: 50px 0 30px 0;">
         <el-pagination
           background
@@ -133,21 +134,19 @@ export default {
   }
   .collect-item{
     width: calc(33.3% - 10px);
-    margin: 10px 10px;
+    margin: 10px 10px 5px 0;
   }
   .collect-item:hover{
     box-shadow: 1px 1px 10px rgba(0,0,0, 0.2);
     transform: translate(0px, 0px) scale(1.01) rotate(0deg);
   }
   .collect-item:hover .collect-box-title{
-    color: #00a6ff;
+    color: #ff3300;
   }
   .collect-box-img{
     width: 100%;
   }
   .collect-box-title{
-    /*margin: 20px;*/
-    padding-top: 20px;
     height: 20px;
     overflow: hidden;
   }

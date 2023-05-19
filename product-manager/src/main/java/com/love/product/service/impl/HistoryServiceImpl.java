@@ -14,7 +14,6 @@ import com.love.product.entity.vo.CollectVO;
 import com.love.product.entity.vo.HistoryVO;
 import com.love.product.entity.vo.PostsVO;
 import com.love.product.entity.vo.UserInfoVO;
-import com.love.product.enumerate.PostsType;
 import com.love.product.mapper.HistoryMapper;
 import com.love.product.service.HistoryService;
 import com.love.product.service.PostsService;
@@ -107,7 +106,7 @@ public class HistoryServiceImpl extends ServiceImpl<HistoryMapper, History> impl
     }
 
     @Override
-    public Result<?> del( Long id) {
+    public Result<?> del(Long userId, Long id) {
         return null;
     }
 }

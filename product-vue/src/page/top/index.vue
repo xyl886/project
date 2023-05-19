@@ -30,21 +30,17 @@
             <el-dropdown-item @click.native="personalPage">个人中心</el-dropdown-item>
             <el-dropdown-item @click.native="publish">发布帖子</el-dropdown-item>
             <el-dropdown-item @click.native="myMessage">我的消息</el-dropdown-item>
-            <el-dropdown-item @click.native="showDialog">修改密码</el-dropdown-item>
+            <el-dropdown-item @click.native="updatePwd">修改密码</el-dropdown-item>
             <el-dropdown-item style="color:red;" @click.native="logoutFun">退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </div>
     </div>
-    <update-pwd-dialog ref="updatePwdDialog"></update-pwd-dialog>
-    <login ref="loginFormDialog"></login>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import updatePwdDialog from '../login/updatePwdDialog'
-import login from '../login/login'
 
 export default {
   data () {
@@ -71,10 +67,6 @@ export default {
       that.activeIndex = that.$router.currentRoute.path
     }, 1000)
   },
-  components: {
-    updatePwdDialog,
-    login
-  },
   methods: {
     pathFun (path) {
       this.$router.push({path: path})
@@ -83,7 +75,7 @@ export default {
       this.$router.push({path: '/index'})
     },
     toLogin () {
-      this.$refs.loginFormDialog.showDialog()
+      this.$router.push({path: '/login'})
     },
     personalPage () {
       this.$router.push({path: '/personal'})
@@ -94,8 +86,8 @@ export default {
     myMessage () {
 
     },
-    showDialog () {
-      this.$refs.updatePwdDialog.showDialog()
+    updatePwd () {
+
     },
     getDataList () {
 
@@ -113,7 +105,7 @@ export default {
                 title: '退出成功',
                 type: 'success'
               })
-              // this.toLogin()
+              this.toLogin()
             }
           })
         })

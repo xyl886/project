@@ -15,7 +15,6 @@ import com.love.product.config.Exception.BizException;
 import com.love.product.config.fileupload.AliyunOSS;
 import com.love.product.entity.base.Result;
 import com.love.product.service.OssService;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,7 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-@Slf4j
+
 @Service
 public class OssServiceImpl implements OssService {
     @Override
@@ -75,8 +74,10 @@ public class OssServiceImpl implements OssService {
     }
 /**
  * 删除oss图片
+ *
+ * @return
  */
-    public void delFile(String filePath) {
+    public Result<?> delFile(String filePath) {
         String endpoint = AliyunOSS.END_POINT;
         String accessKeyId = AliyunOSS.ACCESS_KEY_ID;
         String accessKeySecret = AliyunOSS.ACCESS_KEY_SECRET;
@@ -84,12 +85,11 @@ public class OssServiceImpl implements OssService {
         OSS ossClient = new OSSClient(endpoint, accessKeyId, accessKeySecret);
         boolean exist = ossClient.doesObjectExist(bucketName, filePath);
         if (!exist) {
-            log.info("图片不存在！");
-            return;
+            return Result.failMsg("图片不存在！");
         }
         ossClient.deleteObject(bucketName, filePath);
         ossClient.shutdown();
-       log.info("图片删除成功！");
+        return Result.OK("图片删除成功！");
     }
     /**
      * 传进 .jpg  类似的格式 判断是否时图片格式

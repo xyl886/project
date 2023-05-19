@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 @Data
 @Configuration
 @ConfigurationProperties("file-upload-config")
-public class FileUploadConfig  {
+public class FileUploadConfig {
 
 
 	private String imageRealPath;//图片存储路径

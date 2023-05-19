@@ -4,7 +4,10 @@ import com.love.product.entity.base.Result;
 import com.love.product.entity.vo.UserInfoVO;
 import com.love.product.service.UserInfoService;
 import com.love.product.util.JwtUtil;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -42,15 +45,6 @@ public class UserInfoController {
             @RequestParam("remark") String remark
     ) {
         return userInfoService.update(JwtUtil.getUserId(),nickname,file,gender,hobby,remark);
-    }
-    @ApiOperation(value = "修改密码",notes = "修改密码")
-    @PostMapping("/updateUserPassword")
-    public Result<?> userUpdatePassword(
-            @ApiParam("当前密码") @RequestParam("currentPassword") String currentPassword,
-            @ApiParam("新密码") @RequestParam("newPassword") String newPassword,
-            @ApiParam("确认密码") @RequestParam("confirmPassword") String confirmPassword
-    ){
-        return userInfoService.update(JwtUtil.getUserId(),currentPassword,newPassword,confirmPassword);
     }
 
     @ApiOperation(value = "用户详情", notes = "用户详情")
