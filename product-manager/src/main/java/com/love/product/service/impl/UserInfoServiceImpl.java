@@ -61,8 +61,8 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
      * @return Result<UserInfo>
      */
     @Override
-    public Result<UserInfoVO> login(String phone, String password){
-        UserInfoVO userInfoVo = getByPhone(phone);
+    public Result<UserInfoVO> login(String email, String password){
+        UserInfoVO userInfoVo = getByEmail(email);
         if(userInfoVo != null){
             if(userInfoVo.getDeleted().equals(YesOrNo.YES.getValue())){
                 return Result.failMsg("登录失败，账号已注销");
@@ -82,7 +82,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
                 return Result.failMsg("登录失败，请重试");
             }
             userInfoVo.setAccessToken(accessToken);
-            userInfoVo.setPhone(phone);
+            userInfoVo.setEmail(email);
             userInfoVo.setPassword(password);
             log.info(String.valueOf(userInfoVo));
 
@@ -93,10 +93,10 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     }
 
     @Override
-    public UserInfoVO getByPhone(String phone){
+    public UserInfoVO getByEmail(String email){
         UserInfoVO userInfoVO = null;
         LambdaQueryWrapper<UserInfo> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(UserInfo::getPhone,phone).last("LIMIT 1");
+        queryWrapper.eq(UserInfo::getEmail,email).last("LIMIT 1");
         UserInfo userInfo = getOne(queryWrapper);
         if(userInfo != null){
             userInfoVO = new UserInfoVO();
@@ -136,7 +136,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         //获取OAuth2框架的配置信息，用于访问刷新令牌接口
         Map<String, String> tokenMap = tokenConfig.getConfig();
         Map<String,String> mapParam = new HashMap<>();
-        mapParam.put("phone", userInfoVO.getPhone());
+        mapParam.put("email", userInfoVO.getEmail());
         mapParam.put("nickname", userInfoVO.getNickname());
         mapParam.put("password", userInfoVO.getOriginalPassword());
         mapParam.put("client_id", tokenMap.get("clientId"));
@@ -146,7 +146,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             @SuppressWarnings("unchecked")
             Map<String, String> mapResult = restTemplate
                     .getForObject(
-                            "http://localhost:"+port+"/oauth/token?username={phone}&password={password}&client_id={client_id}&client_secret={client_secret}&grant_type={grant_type}",
+                            "http://localhost:"+port+"/oauth/token?username={email}&password={password}&client_id={client_id}&client_secret={client_secret}&grant_type={grant_type}",
                             Map.class, mapParam);
             if(mapResult != null){
                 try {
@@ -179,18 +179,18 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
      * @return Result<UserInfo>
      */
     @Override
-    public Result<UserInfoVO> userRegister(String phone, String password, String confirmPassword){
+    public Result<UserInfoVO> userRegister(String email, String password, String confirmPassword){
         if(!password.equals(confirmPassword)){
             return Result.failMsg("两次输入密码不一致，请重新输入");
         }
-        UserInfoVO userInfoVO = getByPhone(phone);
+        UserInfoVO userInfoVO = getByEmail(email);
         if(userInfoVO != null){
             return Result.failMsg("手机号已存在，请修改");
         }
         LocalDateTime now = LocalDateTime.now();
         userInfoVO = new UserInfoVO();
         userInfoVO.setId(IdWorker.getId());
-        userInfoVO.setPhone(phone);
+        userInfoVO.setEmail(email);
         userInfoVO.setNickname(fileUploadConfig.getDefaultNickname());
         userInfoVO.setOriginalPassword(password);
         userInfoVO.setPassword(new BCryptPasswordEncoder().encode(password));
@@ -203,7 +203,29 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         save(userInfoVO);
         return Result.OK(userInfoVO);
     }
-
+    /**
+     * 修改密码
+     */
+    @Override
+    public Result<?> updatePwd(Long id, String currentPassword, String newPassword, String confirmPassword) {
+        UserInfo userInfo = getById(id);
+        if (userInfo != null) {
+            if (!currentPassword.equals(userInfo.getOriginalPassword())) {
+                return Result.failMsg("当前密码不正确！");
+            }
+            if (currentPassword.equals(newPassword)){
+                return Result.failMsg("您的密码并未改动！");
+            }
+            if (!newPassword.equals(confirmPassword)) {
+                return Result.failMsg("新密码与确认密码不匹配！");
+            }
+            userInfo.setOriginalPassword(newPassword);
+            userInfo.setPassword(new BCryptPasswordEncoder().encode(newPassword));
+            saveOrUpdate(userInfo);
+            return Result.OKMsg("修改成功！");
+        }
+        return Result.failMsg("用户不存在！");
+    }
     /**
      * 用户列表
      */

@@ -19,9 +19,9 @@ public interface UserInfoService extends IService<UserInfo> {
     /**
      * 用户登录
      */
-    Result<UserInfoVO> login(String phone, String password);
+    Result<UserInfoVO> login(String email, String password);
 
-    UserInfoVO getByPhone(String phone);
+    UserInfoVO getByEmail(String email);
 
     /**
      * 用户详情
@@ -32,6 +32,10 @@ public interface UserInfoService extends IService<UserInfo> {
 
     /**
      * 用户注册
+     * @param userName
+     * @param password
+     * @param confirmPassword
+     * @return
      */
     Result<UserInfoVO> userRegister(String userName, String password, String confirmPassword);
 
@@ -40,7 +44,28 @@ public interface UserInfoService extends IService<UserInfo> {
      */
     Map<Long, UserInfoVO> listByIds(List<Long> ids);
 
+    /**
+     * 修改用户信息
+     * @param userId
+     * @param nickname
+     * @param file
+     * @param gender
+     * @param hobby
+     * @param remark
+     * @return
+     */
     Result<UserInfoVO> update(Long userId, String nickname, MultipartFile file,Integer  gender,String hobby,String remark);
 
     UserInfoVO getUserInfoAndFansById(Long id);
+
+    /**
+     * 修改用户密码
+     * @param id
+     * @param currentPassword
+     * @param newPassword
+     * @param confirmPassword
+     * @return
+     */
+
+   Result<?> updatePwd(Long id, String currentPassword, String newPassword, String confirmPassword);
 }

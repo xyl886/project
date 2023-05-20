@@ -78,6 +78,8 @@ import {setStore} from '@/utils/store'
 export default {
   data () {
     return {
+      searchText: '',
+      select: '',
       loading: false,
       banners: [],
       posts: [],

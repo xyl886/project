@@ -5,9 +5,10 @@
 import router from './router/index'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
-import { getToken } from '@/utils/auth' // get token from cookie
-
-const whiteList = ['/login', '/index', '/', '/403', '/404', '/detail', '/about-us', '/share']// 白名单路由
+import { getToken } from '@/utils/auth'
+import Vue from 'vue' // get token from cookie
+Vue.prototype.$bus = new Vue()
+const whiteList = ['/index', '/', '/403', '/404', '/detail', '/about-us', '/share']// 白名单路由
 
 router.beforeEach(function (to, from, next) {
   // start progress bar
@@ -26,7 +27,8 @@ router.beforeEach(function (to, from, next) {
     next()
     NProgress.done()
   } else {
-    next({ path: '/login' })
+    Vue.prototype.$bus.$emit('showLoginDialog')
+    next(false) // 停止路由导航
     NProgress.done()
   }
 })

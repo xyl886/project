@@ -3,21 +3,9 @@
     <div style="font-size: 14px;width: 1400px;margin: auto auto  150px auto;">
       <div class="share-tab" style=" display: inline-block;width: 800px;">
        <el-tabs style="max-width: 800px" v-model="activeName" @tab-click="handleClick">
-          <el-tab-pane label="全部" name="first">
-            <all ref="first"></all>
-          </el-tab-pane>
-          <el-tab-pane label="官塘校区" name="second">
-            <all ref="second"></all>
-          </el-tab-pane>
-          <el-tab-pane label="社湾校区" name="third">
-            <all ref="third"></all>
-          </el-tab-pane>
-          <el-tab-pane label="我的分享" name="fourth">
-            <all ref="fourth"></all>
-          </el-tab-pane>
-          <el-tab-pane label="我的关注" name="fifth">
-            <all ref="fifth"></all>
-          </el-tab-pane>
+         <el-tab-pane v-for="tab in tabs" :label="tab.label" :name="tab.name" :key="tab.name">
+           <All :ref="tab.name"></All>
+         </el-tab-pane>
         </el-tabs>
       </div>
       <div class="search">
@@ -30,20 +18,29 @@
 </template>
 
 <script>
-import all from './all.vue'
+import All from './all.vue'
 export default {
   components: {
-    all
+    All
   },
   data () {
     return {
       searchText: '',
       activeName: 'first',
+      tabs: [
+        { label: '全部', name: 'first' },
+        { label: '官塘校区', name: 'second' },
+        { label: '社湾校区', name: 'third' },
+        { label: '我的分享', name: 'fourth' },
+        { label: '我的关注', name: 'fifth' }
+      ],
       school: null
     }
   },
   mounted () {
-    this.$refs[this.activeName].init(this.school)
+    this.$nextTick(() => {
+      this.$refs[this.activeName][0].init(this.school)
+    })
   },
   methods: {
     handleClick (tab, event) {
@@ -52,11 +49,12 @@ export default {
       } else {
         this.school = null
       }
-      this.$refs[tab.name].init(this.school)
+      this.$refs[tab.name][0].init(this.school)
       console.log(tab, event)
     },
     loadFun () {
-      this.$refs[this.activeName].load()
+      console.log(this.activeName)
+      this.$refs[this.activeName][0].load()
     }
   }
 }
@@ -91,7 +89,7 @@ export default {
   width: 300px;
   height: 60px;
   top: 0;
-  margin-right: 299.5px;
+  margin-right: 300px;
 }
 .input-with-select{
   width: 200px;

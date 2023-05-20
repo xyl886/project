@@ -14,6 +14,7 @@ import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 
 import '@/permission' // permission control
+// import 'default-passive-events'
 
 Vue.use(Element)
 Vue.use(VueQuillEditor)

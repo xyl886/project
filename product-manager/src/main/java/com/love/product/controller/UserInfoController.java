@@ -57,4 +57,13 @@ public class UserInfoController {
             return Result.fail();
         }
     }
+    @PostMapping ("/updateUserPwd")
+    @ApiOperation(value = "更新用户信息", notes = "更新用户信息")
+    public Result<?> updateUserPwd(
+            @RequestParam("currentPassword") String currentPassword,
+            @RequestParam("newPassword") String newPassword,
+            @RequestParam("confirmPassword") String confirmPassword
+    ) {
+        return userInfoService.updatePwd(JwtUtil.getUserId(), currentPassword, newPassword, confirmPassword);
+    }
 }

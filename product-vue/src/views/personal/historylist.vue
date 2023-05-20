@@ -1,5 +1,5 @@
 <template>
-  <div class="history" v-loading="loading" v-infinite-scroll="getList"  infinite-scroll-disabled="disabled">
+  <div class="history" v-loading="loading">
     <div>
     </div>
     <div class="clea">
@@ -14,98 +14,44 @@
       <div v-if="page.total == 0" style="text-align: center">
         <span style="color: #999aaa; font-size: 15px">近期没有浏览记录</span>
       </div>
-      <div v-if="postType == '1'"  v-for="(item, index) in historyGoodsList" :key="index">
-          <el-card shadow="hover" >
-          <el-row type="flex" justify="space-between">
-            <el-col :span="3" v-show="item.postCoverPath != null">
-              <el-image
-                style="width: 118px; height: 74px; border-radius: 4px"
-                fit="cover"
-                :src="item.postCoverPath"
-              ></el-image></el-col>
-            <el-col :span="17" style="margin: 3px 0 0 10px ;">
-              <h3 :key="item.id" @click="detailFun(item.posts)">{{ item.postTitle}}</h3>
-              <div class="user">
-<!--                <el-avatar-->
-<!--                  :src="item.avater"-->
-<!--                  :key="item.avater"-->
-<!--                  :size="25"-->
-<!--                ></el-avatar>-->
-                <el-image :src="item.avatar" style="width: 25px;height: 25px;border-radius: 50%;"></el-image>
-                <span class="userName">{{ item.nickname }}</span>
-              </div>
-            </el-col>
-            <el-col :span="3">
-              <span class="time">{{ item.updateTime }}</span>
-            </el-col>
-          </el-row>
-        </el-card>
+      <div class="search-box" :class="{ active: InputFocused }">
+        <div class="el-icon-search" @click="handleSearch"></div>
+        <input
+          type="text"
+          v-model="searchText"
+          placeholder="请输入搜索内容"
+          @input="handleInput"
+          @focus="InputFocused = true"
+          @blur="InputFocused = false"
+          class="search-box-input"
+        />
+        <div v-show="searchText" class="el-icon-close" @click="handleClear"></div>
       </div>
-
-      <div v-if="postType == '2'">
-        <el-card
-          v-for="(item, index) in historyPostList"
-          :key="index"
-          shadow="hover"
-        >
-          <el-row type="flex" justify="space-between">
-            <el-col :span="3" v-show="item.cam_image != null">
-              <el-image
-                style="width: 118px; height: 74px; border-radius: 4px"
-                fit="cover"
-                :src="axiosimagesurl + item.image"
-              ></el-image
-              ></el-col>
-            <el-col :span="17" style="margin: 3px 0 0 10px ;">
-              <h3><router-link  target="_blank" :to="{path:'/CampusSharing/CampusSharingContent',query:{postid:item.contentId}}">{{ item.title }}</router-link></h3>
-              <div class="user">
-                <el-avatar
-                  :src="axiosimagesurl + item.image"
-                  :key="axiosimagesurl + item.image"
-                  :size="25"
-                ></el-avatar>
-
-                <span class="userName">{{ item.users_name }}</span>
-              </div>
-            </el-col>
-            <el-col :span="3">
-              <span class="time">{{ item.create_time }}</span>
-            </el-col>
-          </el-row>
-        </el-card>
-      </div>
-
-      <div v-if="postType == '0'">
-        <el-card
-          v-for="(item, index) in historyLikeList"
-          :key="index"
-          shadow="hover"
-        >
-          <el-row type="flex" justify="space-between">
-            <el-col :span="3" v-show="item.cam_image != null">
-              <el-image
-                style="width: 118px; height: 74px; border-radius: 4px"
-                fit="cover"
-                :src="axiosimagesurl + item.cam_image"
-              ></el-image
-              ></el-col>
-            <el-col :span="17" style="margin: 3px 0 0 10px ;">
-              <h3><router-link target="_blank" :to="{path:'/CampusSharing/CampusSharingContent',query:{postid:item.contentId}}">{{ item.title }}</router-link></h3>
-              <div class="user">
-                <el-avatar
-                  :src="axiosimagesurl + item.image"
-                  :key="axiosimagesurl + item.image"
-                  :size="25"
-                ></el-avatar>
-
-                <span class="userName">{{ item.nickname }}</span>
-              </div>
-            </el-col>
-            <el-col :span="3">
-              <span class="time">{{ item.updateTime }}</span>
-            </el-col>
-          </el-row>
-        </el-card>
+      <div v-if="postType === '1'">
+        <el-timeline >
+          <el-timeline-item  :timestamp="item.updateTime"  v-for="(item, index) in historyGoodsList" :key="index" placement="top">
+            <el-card shadow="hover">
+              <el-row type="flex" justify="space-between">
+                <el-col :span="3" style="cursor: pointer;" v-show="item.postCoverPath != null">
+                  <el-image
+                    style="width: 118px; height: 74px; border-radius: 4px"
+                    fit="cover"
+                    :src="item.postCoverPath"
+                  ></el-image></el-col>
+                <el-col :span="16" style="cursor: pointer;margin: 3px 0 0 10px ;">
+                  <h3 :key="item.id" @click="detailFun(item.posts)">{{ item.postTitle}}</h3>
+                  <div class="user">
+                    <el-image :src="item.avatar" style="cursor: pointer;width: 25px;height: 25px;border-radius: 50%;"></el-image>
+                    <span class="userName">{{ item.nickname }}</span>
+                  </div>
+                </el-col>
+                <el-col :span="3">
+                  <i class="el-icon-delete" style="cursor: pointer;"></i>
+                </el-col>
+              </el-row>
+            </el-card>
+          </el-timeline-item>
+        </el-timeline>
       </div>
     </div>
   </div>
@@ -116,6 +62,7 @@
 import { MessageBox } from 'element-ui'
 import {del, getPage} from '../../api/history'
 import {setStore} from '../../utils/store'
+import dayjs from 'dayjs'
 
 export default {
   name: 'HistoryList',
@@ -126,6 +73,8 @@ export default {
   },
   data () {
     return {
+      InputFocused: false,
+      searchText: '',
       loading: false,
       history: [],
       page: {
@@ -156,16 +105,46 @@ export default {
     }
   },
   methods: {
-    init (historyName) {
-      this.historyGoodsList = []
-      this.historyPostList = []
-      this.historyLikeList = []
-      this.page.pageSize = 9
-      this.page.total = 0
-      this.page.currentPage = 1
-      this.page.postType = historyName
-      console.log(this.page)
-      this.getList()
+    // init (historyName) {
+    //   this.historyGoodsList = []
+    //   this.historyPostList = []
+    //   this.historyLikeList = []
+    //   this.page.pageSize = 9
+    //   this.page.total = 0
+    //   this.page.currentPage = 1
+    //   this.page.postType = historyName
+    //   console.log(this.page)
+    //   this.getList()
+    // },
+    handleInput () {
+      // 输入框内容变化时触发
+    },
+    handleSearch () {
+      // 点击搜索按钮触发
+      if (this.searchText) {
+        // 执行搜索操作
+        console.log('搜索：', this.searchText)
+      }
+    },
+    handleClear () {
+      // 点击清除按钮触发
+      this.searchText = ''
+    },
+    formatDate (date) {
+      const currentDate = dayjs()
+      const targetDate = dayjs(date)
+
+      if (currentDate.diff(targetDate, 'minute') < 1) {
+        return targetDate.format('刚刚')
+      } else if (currentDate.day() === targetDate.day()) {
+        return targetDate.format('今天 HH:mm')
+      } else if (currentDate.diff(targetDate, 'day') === 1) {
+        return targetDate.format('昨天 HH:mm')
+      } else if (currentDate.year() === targetDate.year()) {
+        return targetDate.format('M-D')
+      } else {
+        return targetDate.format('YYYY-M-D')
+      }
     },
     getList () {
       this.loading = true
@@ -174,6 +153,7 @@ export default {
         if (res.code === 200) {
           console.log(res.data)
           for (let i = 0; i < res.data.length; i++) {
+            res.data[i].updateTime = this.formatDate(res.data[i].updateTime)
             if (res.data[i].postType == '1') {
               this.historyGoodsList.push(res.data[i])
             } else if (res.data[i].postType == '2') {
@@ -182,12 +162,8 @@ export default {
               this.historyLikeList.push(res.data[i])
             }
           }
-          console.log(this.historyGoodsList)
-          console.log(this.historyPostList)
-          console.log(this.historyLikeList)
           this.page.total = res.dataTotal
         }
-        this.listLength = this.historyGoodsList.length
         this.loading = false
       })
     },
@@ -385,6 +361,32 @@ h3{
 }
 .block >>> .el-timeline-item__wrapper {
   padding-left: 20px;
+}
+.search-box {
+  display: flex;
+  width: 180px;
+  align-items: center;
+  border: 1px solid #ccc;
+  padding: 4px;
+  border-radius: 20px;
+  transition: border-color 0.3s;
+}
+.search-box.active {
+  border-color: #007bff; /* 修改为你想要的激活状态的边框颜色 */
+}
+.search-box-input {
+  border: none;
+  outline: none;
+  width: 120px;
+  height: 30px;
+  display: inline-block;
+}
+.el-icon-search,
+.el-icon-close {
+  /* 根据需要设置图标样式 */
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
 }
 .time {
   position: absolute;

@@ -140,11 +140,11 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
             @Override
             public OAuth2AccessToken enhance(OAuth2AccessToken accessToken, OAuth2Authentication authentication) {
                 Authentication user = authentication.getUserAuthentication();
-                String phone = user.getName();
-                if(phone == null){
+                String email = user.getName();
+                if(email == null){
                     throw new BizException(403,"请重新登录");
                 }
-                UserInfoVO userInfoVO = userInfoService.getByPhone(phone);
+                UserInfoVO userInfoVO = userInfoService.getByEmail(email);
                 if(userInfoVO == null){
                     throw new BizException(403,"请重新登录");
                 }
@@ -155,7 +155,7 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
                 // Map假装用户实体
                 Map<String, Object> userinfo = new HashMap<>();
                 userinfo.put("userId", userInfoVO.getId());
-                userinfo.put("phone", userInfoVO.getPhone());
+                userinfo.put("email", userInfoVO.getEmail());
                 userinfo.put("nickname", userInfoVO.getNickname());
                 userinfo.put("authOrity", authority);
                 additionalInformation.put("userinfo", JSON.toJSONString(userinfo));

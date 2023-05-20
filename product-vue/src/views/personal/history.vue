@@ -2,27 +2,30 @@
   <div style="font-size: 14px;padding: 10px 0 0 20px;background-color: #f5f7f9;" v-loading="loading">
     <div style="border-bottom: 1px solid #ccc;font-weight: bolder;font-size: 24px;line-height: 50px;">浏览记录</div>
     <el-tabs v-model="activeName"  @tab-click="handleClick">
-      <el-tab-pane label="商品"  name="1" ></el-tab-pane>
-      <el-tab-pane label="帖子" name="2" ></el-tab-pane>
-      <el-tab-pane label="点赞" name="0" ></el-tab-pane>
+      <el-tab-pane v-for="tab in tabs" :label="tab.label" :name="tab.name" :key="tab.name"></el-tab-pane>
     </el-tabs>
-    <historylist ref="hs" :postType="activeName" :activeLabel="activeLabel" :removeType="removeName"/>
+    <HistoryList ref="hs" :postType="activeName" :activeLabel="activeLabel" :removeType="removeName"/>
   </div>
 </template>
 
 <script>
 // 这里可以导入其他文件（比如：组件，工具js，第三方插件js，json文件，图片文件等等）
 // 例如：import 《组件名称》 from ‘《组件路径》‘;
-import historylist from './historylist'
+import HistoryList from './historylist'
 export default {
   // import引入的组件需要注入到对象中才能使用
   components: {
-    historylist
+    HistoryList
   },
   data () {
     return {
       index: 0,
       activeName: '1',
+      tabs: [
+        { label: '商品', name: '1' },
+        { label: '帖子', name: '2' },
+        { label: '点赞', name: '0' }
+      ],
       activeLabel: '商品',
       removeList: ['goods_id', 'content_id'],
       removeName: 'goods_id',

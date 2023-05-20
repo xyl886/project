@@ -54,7 +54,7 @@
             <div style="font-size: 16px;">电话</div>
           </el-col>
           <el-col :span="21">
-            <div style="font-size: 16px;color: #666;">{{user.phone}}</div>
+            <div style="font-size: 16px;color: #666;">{{user.email}}</div>
           </el-col>
         </el-row>
         <el-row style="margin: 30px 0;">
@@ -67,7 +67,7 @@
         </el-row>
       </div>
 
-      <!-- 登录弹窗 -->
+      <!-- 修改弹窗 -->
       <el-dialog
         title="修改信息"
         @close="close(form.files)"
@@ -199,7 +199,7 @@ export default {
       if (this.$refs.form) {
         this.$refs.form.resetFields()
       }
-      this.form = this.user
+      this.form = { ...this.user }
       this.form.gender = this.form.gender + ''
       console.info(this.form)
       this.box = true

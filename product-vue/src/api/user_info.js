@@ -20,3 +20,13 @@ export const update = (data) => {
     data
   })
 }
+/**
+ * 更新用户密码
+ */
+export const updateUserPwd = (params) => {
+  return request({
+    url: '/api/user/updateUserPwd',
+    method: 'post',
+    params: params
+  })
+}

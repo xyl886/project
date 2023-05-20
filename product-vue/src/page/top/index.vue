@@ -36,11 +36,15 @@
         </el-dropdown>
       </div>
     </div>
+    <updatePwd ref="updatePasswordDialog"></updatePwd>
+    <login ref="loginDialog"></login>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
+import updatePwd from '../login/updatePwd'
+import login from '../login/login'
 
 export default {
   data () {
@@ -51,10 +55,14 @@ export default {
       menus: [
         {name: '首页', path: '/index'},
         {name: '校园分享', path: '/share'},
-        {name: '发布帖子', path: '/publish'},
+        {name: '个人中心', path: '/personal'},
         {name: '关于我们', path: '/about-us'}
       ]
     }
+  },
+  components: {
+    updatePwd,
+    login
   },
   computed: {
     ...mapGetters([
@@ -75,7 +83,7 @@ export default {
       this.$router.push({path: '/index'})
     },
     toLogin () {
-      this.$router.push({path: '/login'})
+      this.$refs.loginDialog.showDialog()
     },
     personalPage () {
       this.$router.push({path: '/personal'})
@@ -87,7 +95,7 @@ export default {
 
     },
     updatePwd () {
-
+      this.$refs.updatePasswordDialog.showDialog()
     },
     getDataList () {
 
@@ -105,7 +113,7 @@ export default {
                 title: '退出成功',
                 type: 'success'
               })
-              this.toLogin()
+              // this.toLogin()
             }
           })
         })

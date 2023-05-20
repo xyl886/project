@@ -31,19 +31,12 @@ export const constantRoutes = [
   {
     path: '/publish',
     name: '发布帖子',
-    // component: () =>
-    //     import(/* webpackChunkName: "views" */ '@/views/publish/index')
     component: Layout,
     children: [{
       path: '',
       name: '发布帖子',
       component: () => import(/* webpackChunkName: "views" */ '@/views/publish/index')
     }]
-  },
-  {
-    path: '/login',
-    name: '登录',
-    component: () => import(/* webpackChunkName: "views" */ '@/page/login/index')
   },
   {
     path: '/detail',
