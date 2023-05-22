@@ -55,9 +55,10 @@
                     hidden :showSearch="false"
                     :showPreview="false"
                     :showCategories="false"
-                    @select="addEmoji(item, $event)"
+                    @select="addEmoji(item ,$event)"
                     ref="picker"/>
-                  <el-button slot="reference" style="line-height:1px;height: 33px;">😃</el-button>
+                  <el-button slot="reference" style="line-height:1px;height: 33px;">
+                    😃</el-button>
                 </el-popover>
               <el-button type="primary" style="width: 100px;line-height:1px;height:33px;margin-left: 10px;" @click="addCommentFun(item)">发布</el-button>
             </div>
@@ -126,7 +127,7 @@ export default {
   },
   data () {
     return {
-      dialogVisible: false,
+      // dialogVisible: false,
       loading: false,
       posts: [],
       box: false,
@@ -185,14 +186,14 @@ export default {
         this.getPageFun()
       }
     },
-    sizeChange (pageSize) { // 页数
-      this.page.pageSize = pageSize
-      this.getPageFun()
-    },
-    currentChange (currentPage) { // 当前页
-      this.page.currentPage = currentPage
-      this.getPageFun()
-    },
+    // sizeChange (pageSize) { // 页数
+    //   this.page.pageSize = pageSize
+    //   this.getPageFun()
+    // },
+    // currentChange (currentPage) { // 当前页
+    //   this.page.currentPage = currentPage
+    //   this.getPageFun()
+    // },
     addEmoji (item, event) {
       const emojiNative = event.native
       if (item.commentContent === undefined) {
@@ -211,7 +212,6 @@ export default {
             this.posts = []
             console.log('getPage:')
             console.log(this.posts)
-            // console.log(this.form)
           }
           res.data.forEach(ele => {
             ele['comment'] = false

@@ -1,7 +1,7 @@
 <template>
   <div style="font-size: 14px;margin: 20px 150px;" v-loading="loading">
     <div>
-      <el-carousel height="500px" >
+      <el-carousel height="500px" direction="vertical" :autoplay="true" :interval="3000">
         <el-carousel-item v-for="(item,index) in banners" :key="index">
          <el-image :src="item.imgPath" style="width: 100%;height: 500px;"></el-image>
         </el-carousel-item>
@@ -42,7 +42,7 @@
               ¥{{item2.price}}
             </div>
             <div class="posts-item-des">
-              {{item2.schoolName}}
+              {{item2.nickname}}
               <i class="el-icon-view" style="margin-left: 2px;"/>{{item2.browseNum}}
             </div>
           </div>
@@ -127,6 +127,7 @@ export default {
             }
             if (count === 5 || i === (res.data.length - 1)) {
               this.posts.push(arr)
+              console.log(this.posts)
               arr = []
               count = 0
             }
@@ -134,6 +135,7 @@ export default {
           this.page.total = res.dataTotal
         }
       }, error => {
+        console.log(error)
         this.loading = false
       })
     },

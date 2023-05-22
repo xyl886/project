@@ -94,7 +94,11 @@
             <artifactId>jaxb-runtime</artifactId>
             <version>2.3.0-b170127.1453</version>
         </dependency>
-
+        <!-- rabbitmq -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
         <!-- spring security + OAuth2 + JWT    start  -->
         <dependency>
             <groupId>org.springframework.security</groupId>

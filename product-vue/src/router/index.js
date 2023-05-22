@@ -1,13 +1,18 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Layout from '@/page/index/index'
+import Index from '@/page/index/index'
 
 Vue.use(Router)
 
 export const constantRoutes = [
   {
+    path: '/',
+    name: '主页',
+    redirect: '/index'
+  },
+  {
     path: '/index',
-    component: Layout,
+    component: Index,
     children: [{
       path: '',
       name: '主页',
@@ -15,13 +20,8 @@ export const constantRoutes = [
     }]
   },
   {
-    path: '/',
-    name: '主页',
-    redirect: '/index'
-  },
-  {
     path: '/share',
-    component: Layout,
+    component: Index,
     children: [{
       path: '',
       name: '校园分享',
@@ -31,7 +31,7 @@ export const constantRoutes = [
   {
     path: '/publish',
     name: '发布帖子',
-    component: Layout,
+    component: Index,
     children: [{
       path: '',
       name: '发布帖子',
@@ -45,7 +45,7 @@ export const constantRoutes = [
   },
   {
     path: '/about-us',
-    component: Layout,
+    component: Index,
     children: [{
       path: '',
       name: '关于我们',
@@ -54,7 +54,7 @@ export const constantRoutes = [
   },
   {
     path: '/personal',
-    component: Layout,
+    component: Index,
     redirect: '/personal/user_info',
     children: [{
       path: 'user_info',

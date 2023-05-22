@@ -2,7 +2,7 @@
   <div style="font-size: 14px;display: flex;height: 60px;padding: 0 30px;background-color: #ffffff;">
     <div style="display: flex;">
       <div>
-        <img src="../../../public/img/logo.png" style="width: 50px;height: 50px;margin: 5px 0;">
+        <img src="../../../public/img/logo.png" style="width: 50px;height: 50px;margin: 5px 0;" alt="">
       </div>
       <div style="font-size: 28px;font-weight: 700;line-height: 60px;margin-left: 10px;">
       校园墙
@@ -27,7 +27,7 @@
             </span>
           </div>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item @click.native="personalPage">个人中心</el-dropdown-item>
+<!--            <el-dropdown-item @click.native="personalPage">个人中心</el-dropdown-item>-->
             <el-dropdown-item @click.native="publish">发布帖子</el-dropdown-item>
             <el-dropdown-item @click.native="myMessage">我的消息</el-dropdown-item>
             <el-dropdown-item @click.native="updatePwd">修改密码</el-dropdown-item>
@@ -36,14 +36,14 @@
         </el-dropdown>
       </div>
     </div>
-    <updatePwd ref="updatePasswordDialog"></updatePwd>
+    <UpdatePwd ref="updatePasswordDialog"></UpdatePwd>
     <login ref="loginDialog"></login>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import updatePwd from '../login/updatePwd'
+import UpdatePwd from '../login/UpdatePwd'
 import login from '../login/login'
 
 export default {
@@ -61,7 +61,7 @@ export default {
     }
   },
   components: {
-    updatePwd,
+    UpdatePwd,
     login
   },
   computed: {
@@ -85,9 +85,9 @@ export default {
     toLogin () {
       this.$refs.loginDialog.showDialog()
     },
-    personalPage () {
-      this.$router.push({path: '/personal'})
-    },
+    // personalPage () {
+    //   this.$router.push({path: '/personal'})
+    // },
     publish () {
       this.$router.push({path: '/publish'})
     },
@@ -113,7 +113,7 @@ export default {
                 title: '退出成功',
                 type: 'success'
               })
-              // this.toLogin()
+              this.$router.push({path: '/index'})
             }
           })
         })

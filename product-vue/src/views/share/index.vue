@@ -1,18 +1,36 @@
 <template>
   <div class="body" v-infinite-scroll="loadFun">
-    <div style="font-size: 14px;width: 1400px;margin: auto auto  150px auto;">
+    <div style="font-size: 14px;margin: 0  320px;">
       <div class="share-tab" style=" display: inline-block;width: 800px;">
        <el-tabs style="max-width: 800px" v-model="activeName" @tab-click="handleClick">
-         <el-tab-pane v-for="tab in tabs" :label="tab.label" :name="tab.name" :key="tab.name">
-           <All :ref="tab.name"></All>
+         <el-tab-pane label="全部" name="first">
+           <All ref="first"></All>
+         </el-tab-pane>
+         <el-tab-pane label="官塘校区" name="second">
+           <All ref="second"></All>
+         </el-tab-pane>
+         <el-tab-pane label="社湾校区" name="third">
+           <All ref="third"></All>
+         </el-tab-pane>
+         <el-tab-pane label="我的分享" name="fourth">
+           <All ref="fourth"></All>
+         </el-tab-pane>
+         <el-tab-pane label="我的关注" name="fifth">
+           <All ref="fifth"></All>
+         </el-tab-pane>
+<!--         <el-tab-pane v-for="tab in tabs" @tab-click="handleClick" :label="tab.label" :name="tab.name" :key="tab.name">-->
+<!--           <All :ref="tab.name"></All>-->
+<!--         </el-tab-pane>-->
+         <el-tab-pane>
+           <el-input v-model="searchText" name="search" slot="label" placeholder="搜索"></el-input>
          </el-tab-pane>
         </el-tabs>
       </div>
-      <div class="search">
-          <el-input  placeholder="请输入内容" v-model="searchText" class="input-with-select">
-            <el-button slot="append" icon="el-icon-search"></el-button>
-          </el-input>
-      </div>
+<!--      <div class="search">-->
+<!--          <el-input  placeholder="请输入内容" v-model="searchText" class="input-with-select">-->
+<!--            <el-button slot="append" icon="el-icon-search"></el-button>-->
+<!--          </el-input>-->
+<!--      </div>-->
     </div>
   </div>
 </template>
@@ -27,19 +45,19 @@ export default {
     return {
       searchText: '',
       activeName: 'first',
-      tabs: [
-        { label: '全部', name: 'first' },
-        { label: '官塘校区', name: 'second' },
-        { label: '社湾校区', name: 'third' },
-        { label: '我的分享', name: 'fourth' },
-        { label: '我的关注', name: 'fifth' }
-      ],
+      // tabs: [
+      //   { label: '全部', name: 'first' },
+      //   { label: '官塘校区', name: 'second' },
+      //   { label: '社湾校区', name: 'third' },
+      //   { label: '我的分享', name: 'fourth' },
+      //   { label: '我的关注', name: 'fifth' }
+      // ],
       school: null
     }
   },
   mounted () {
     this.$nextTick(() => {
-      this.$refs[this.activeName][0].init(this.school)
+      this.$refs[this.activeName].init(this.school)
     })
   },
   methods: {
@@ -49,12 +67,11 @@ export default {
       } else {
         this.school = null
       }
-      this.$refs[tab.name][0].init(this.school)
+      this.$refs[tab.name].init(this.school)
       console.log(tab, event)
     },
     loadFun () {
-      console.log(this.activeName)
-      this.$refs[this.activeName][0].load()
+      this.$refs[this.activeName].load()
     }
   }
 }

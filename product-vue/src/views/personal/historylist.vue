@@ -176,8 +176,8 @@ export default {
         '确定清空' + this.activeLabel + '的浏览记录吗',
         '确认提示',
         {
-          confirmButtonText: '确定',
           cancelButtonText: '取消',
+          confirmButtonText: '确定',
           cancelButtonClass: 'cancel',
           confirmButtonClass: 'config',
           closeOnClickModal: false,
