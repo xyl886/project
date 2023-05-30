@@ -1,36 +1,42 @@
 <template>
   <div class="body" v-infinite-scroll="loadFun">
-    <div style="font-size: 14px;margin: 0  320px;">
-      <div class="share-tab" style=" display: inline-block;width: 800px;">
-       <el-tabs style="max-width: 800px" v-model="activeName" @tab-click="handleClick">
-         <el-tab-pane label="全部" name="first">
-           <All ref="first"></All>
+    <div style="font-size: 14px;margin: 0 160px;">
+      <div class="share-tab" style=" display: inline-block;width: 1200px;">
+        <el-row>
+          <el-col :span="18">
+          <el-tabs style="" v-model="activeName" @tab-click="handleClick">
+         <el-tab-pane v-for="tab in tabs" @tab-click="handleClick" :label="tab.label" :name="tab.name" :key="tab.name">
+           <All :ref="tab.name"></All>
          </el-tab-pane>
-         <el-tab-pane label="官塘校区" name="second">
-           <All ref="second"></All>
-         </el-tab-pane>
-         <el-tab-pane label="社湾校区" name="third">
-           <All ref="third"></All>
-         </el-tab-pane>
-         <el-tab-pane label="我的分享" name="fourth">
-           <All ref="fourth"></All>
-         </el-tab-pane>
-         <el-tab-pane label="我的关注" name="fifth">
-           <All ref="fifth"></All>
-         </el-tab-pane>
-<!--         <el-tab-pane v-for="tab in tabs" @tab-click="handleClick" :label="tab.label" :name="tab.name" :key="tab.name">-->
-<!--           <All :ref="tab.name"></All>-->
-<!--         </el-tab-pane>-->
-         <el-tab-pane>
-           <el-input v-model="searchText" name="search" slot="label" placeholder="搜索"></el-input>
-         </el-tab-pane>
-        </el-tabs>
+          </el-tabs>
+        </el-col>
+        <el-col :span="6">
+          <div class="recommendation">
+            <el-input v-model="searchText" name="search" slot="label" placeholder="搜索"></el-input>
+            <div style="margin:0 0 5px 15px;"><b>向你推荐</b></div>
+            <div class="title"  v-for="(item, index) in recommendationItems" :key="index">
+<!--              <img src="../assets/hot.png" width="14" height="14" style="margin:12px 5px 0 0 ;"/>-->
+              <router-link class="titlea"
+                           target="_blank"
+                           :to="{
+                  path: '/CampusSharing/CampusSharingContent',
+                  query: { postid: item.id },
+                }"
+              >{{ item.title }}</router-link
+              >
+            </div>
+<!--            <div class="recommendation-title">{{ title }}</div>-->
+<!--            <div class="recommendation-list">-->
+<!--              <div v-for="(item, index) in recommendationItems" :key="item.id" class="recommendation-item">-->
+<!--                <el-row>-->
+<!--                  <el-col :span="4">  <div class="item-index">{{ index + 1 }}</div></el-col>-->
+<!--                  <el-col :span="20">  <div class="item-content">{{ item.content }}</div></el-col>-->
+<!--                  </el-row>-->
+<!--              </div>-->
+<!--            </div>-->
+          </div>
+      </el-col></el-row>
       </div>
-<!--      <div class="search">-->
-<!--          <el-input  placeholder="请输入内容" v-model="searchText" class="input-with-select">-->
-<!--            <el-button slot="append" icon="el-icon-search"></el-button>-->
-<!--          </el-input>-->
-<!--      </div>-->
     </div>
   </div>
 </template>
@@ -45,19 +51,30 @@ export default {
     return {
       searchText: '',
       activeName: 'first',
-      // tabs: [
-      //   { label: '全部', name: 'first' },
-      //   { label: '官塘校区', name: 'second' },
-      //   { label: '社湾校区', name: 'third' },
-      //   { label: '我的分享', name: 'fourth' },
-      //   { label: '我的关注', name: 'fifth' }
-      // ],
+      tabs: [
+        { label: '全部', name: 'first' },
+        { label: '学习', name: 'second' },
+        { label: '生活', name: 'third' },
+        { label: '娱乐', name: 'fourth' },
+        { label: '求助', name: 'fifth' },
+        { label: '就业', name: 'sixth' },
+        { label: '新闻/公告', name: 'seventh' },
+        { label: '我的分享', name: 'eighth' },
+        { label: '我的关注', name: 'ninth' }
+      ],
+      title: '向你推荐',
+      recommendationItems: [
+        { id: 1, title: '推荐内容1' },
+        { id: 2, title: '推荐内容2' },
+        { id: 3, title: '推荐内容3' }
+        // ... 还可以添加更多推荐内容
+      ],
       school: null
     }
   },
   mounted () {
     this.$nextTick(() => {
-      this.$refs[this.activeName].init(this.school)
+      this.$refs[this.activeName][0].init(this.school)
     })
   },
   methods: {
@@ -67,11 +84,11 @@ export default {
       } else {
         this.school = null
       }
-      this.$refs[tab.name].init(this.school)
+      this.$refs[tab.name][0].init(this.school)
       console.log(tab, event)
     },
     loadFun () {
-      this.$refs[this.activeName].load()
+      this.$refs[this.activeName][0].load()
     }
   }
 }
@@ -115,5 +132,16 @@ export default {
   float: right;
   line-height: 60px;
   margin-top: auto;
+}
+.BulletinBoard {
+  width: 353px;
+  height: 440px;
+  background-color: white;
+  border-radius: 5px;
+  position: -webkit-sticky;
+  position: sticky;
+  top: -10px;
+  margin-top: 70px;
+  padding: 10px 0 0  ;
 }
 </style>

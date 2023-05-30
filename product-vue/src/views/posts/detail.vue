@@ -4,7 +4,23 @@
       <div style="line-height: 50px;color: gray;">
         <span style="cursor: pointer;margin-left: 20px;" @click="backFun"><i class="el-icon-arrow-left"></i>返回</span>
       </div>
-
+      <div style="float: right;margin-top: -25px;">
+        <el-dropdown>
+          <div style="display: flex;">
+                        <span style="line-height: 20px;font-size: 22px;">
+                          <i class="el-icon-more"></i>
+                        </span>
+          </div>
+          <el-dropdown-menu slot="dropdown">
+            <el-button
+              type="primary"
+              icon="el-icon-edit-outline"
+              v-if="posts.userId === posts.userInfo.id"
+              @click.native="edit(posts)">编辑</el-button>
+            <el-dropdown-item style="color:red;" @click.native="delMypost(posts)">删除</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+      </div>
       <div style="display: flex;margin-top: 30px;height: 60px;">
         <div style="margin-left: 50px;">
           <el-image :src="posts.userInfo.avatar" style="width: 60px;height: 60px;border-radius: 50%;"></el-image>
@@ -43,14 +59,22 @@
         <div style="width: 50%;text-align: center;">
           <div style="font-size: 20px;font-weight: 700;">{{posts.title}}</div>
           <div class="my-content">
-            <div class="textarea"><el-input type="textarea" resize="none" :readonly="true" :autosize="{ minRows: 2, maxRows: 22}" v-model="posts.content"></el-input></div>
+              <article
+                id="write"
+                class="article-content markdown-body"
+                v-html="posts.content"
+                ref="article"
+              />
+<!--              <el-input type="textarea" resize="none" :readonly="true" :autosize="{ minRows: 2, maxRows: 22}" v-model="posts.content"></el-input>-->
             <div class="posts-item-price" style="color:#e9384d; display: block;margin-top: 20px;">
               ¥{{posts.price}}
             </div>
+            <el-button type="primary" @click="chat(userInfo.id)">想要</el-button>
           </div>
         </div>
       </div>
     </div>
+      <UpdateDialog ref="updateDialog" :Form="form"/>
   </div>
 </template>
 
@@ -60,8 +84,13 @@ import {addCollect} from '@/api/collect'
 import {addFollow} from '@/api/follow'
 import {mapGetters} from 'vuex'
 import {getStore} from '../../utils/store'
+import {delMypost} from '../../api/posts'
+import UpdateDialog from './UpdateDialog'
 
 export default {
+  components: {
+    UpdateDialog
+  },
   data () {
     return {
       loading: false,
@@ -72,6 +101,13 @@ export default {
         },
         collect: false,
         follow: false
+      },
+      form: {
+        id: '',
+        title: '',
+        content: '',
+        school: '',
+        files: []
       },
       bigImgPath: ''
     }
@@ -93,7 +129,7 @@ export default {
       let that = this
       setTimeout(function () {
         that.browseFun()
-      }, 2000)
+      }, 1000)
     }
   },
   methods: {
@@ -103,11 +139,16 @@ export default {
     selImg (url) {
       this.bigImgPath = url
     },
+    chat () {
+      this.$router.push({path: '/chat'})
+    },
     getDetailFun () {
       this.loading = true
       getDetail(this.id).then(res => {
         if (res.code === 200) {
           this.posts = res.data
+          console.log(this.posts)
+          this.markdownToHtml(this.posts.content)
           this.bigImgPath = res.data.coverPath
           console.log(res.data)
           console.log(this.bigImgPath)
@@ -117,6 +158,102 @@ export default {
       }, error => {
         this.loading = false
       })
+    },
+    edit () {
+      this.$refs.updateDialog.showDialog()
+      if (this.posts.imgPath) {
+        const arr = this.posts.imgPath.split(',')
+        console.log('file:' + JSON.stringify(arr))
+        this.fileList = []
+        for (const file in arr) {
+          console.log(arr[file].substring(arr.lastIndexOf('/') + 1)) // 输出: pic1.jpg
+          this.fileList.push({
+            name: arr[file].substring(arr.lastIndexOf('/') + 1),
+            // raw: arr[file],
+            url: arr[file]
+          })
+          console.log(this.fileList)
+        }
+      }
+      this.form = {
+        id: this.posts.id,
+        userId: this.posts.userInfo.id,
+        title: this.posts.title,
+        content: this.posts.content,
+        school: this.posts.school,
+        price: this.posts.price,
+        imageList: this.fileList
+      }
+      console.log(this.form)
+    },
+    delMypost (item) {
+      this.$confirm('确定要删除该帖子吗?', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          delMypost(item.id, item.userInfo.id).then(res => {
+            if (res.code === 200) {
+              this.$message.success(res.msg)
+              this.$router.push({path: '/index'})
+              this.getPageFun()
+              this.load()
+              this.init()
+            }
+          })
+        })
+    },
+    markdownToHtml (posts) {
+      const MarkdownIt = require('markdown-it')
+      const hljs = require('highlight.js')
+      const md = new MarkdownIt({
+        html: true,
+        linkify: true,
+        typographer: true,
+        highlight: function (str, lang) {
+          // 当前时间加随机数生成唯一的id标识
+          var d = new Date().getTime()
+          if (
+            window.performance &&
+            typeof window.performance.now === 'function'
+          ) {
+            d += performance.now()
+          }
+          const codeIndex = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(
+            /[xy]/g,
+            function (c) {
+              var r = (d + Math.random() * 16) % 16 | 0
+              d = Math.floor(d / 16)
+              return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16)
+            }
+          )
+          // 复制功能主要使用的是 clipboard.js
+          let html = `<button class="copy-btn iconfont iconfuzhi" type="button" data-clipboard-action="copy" data-clipboard-target="#copy${codeIndex}"></button>`
+          const linesLength = str.split(/\n/).length - 1
+          // 生成行号
+          let linesNum = '<span aria-hidden="true" class="line-numbers-rows">'
+          for (let index = 0; index < linesLength; index++) {
+            linesNum = linesNum + '<span></span>'
+          }
+          linesNum += '</span>'
+          if (lang && hljs.getLanguage(lang)) {
+            // highlight.js 高亮代码
+            const preCode = hljs.highlight(lang, str, true).value
+            html = html + preCode
+            if (linesLength) {
+              html += '<b class="name">' + lang + '</b>'
+            }
+            // 将代码包裹在 textarea 中，由于防止textarea渲染出现问题，这里将 "<" 用 "<" 代替，不影响复制功能
+            return `<pre class="hljs"><code>${html}</code>${linesNum}</pre><textarea style="position: absolute;top: -9999px;left: -9999px;z-index: -9999;" id="copy${codeIndex}">${str.replace(
+              /<\/textarea>/g,
+              '</textarea>'
+            )}</textarea>`
+          }
+        }
+      })
+      // 将markdown替换为html标签
+      this.posts.content = md.render(posts)
     },
     browseFun () {
       console.log(this.userInfo.id + ',' + this.id)

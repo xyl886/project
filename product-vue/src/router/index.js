@@ -44,6 +44,21 @@ export const constantRoutes = [
     component: () => import(/* webpackChunkName: "views" */ '@/views/posts/detail')
   },
   {
+    path: '/Article',
+    name: '帖子详情',
+    component: () => import(/* webpackChunkName: "views" */ '@/views/posts/Article')
+  },
+  {
+    path: '/personalpage',
+    name: '个人主页',
+    component: () => import('../views/home/PersonalPage')
+  },
+  {
+    path: '/chat',
+    name: '私聊',
+    component: () => import(/* webpackChunkName: "views" */ '@/views/chat/Chat.vue')
+  },
+  {
     path: '/about-us',
     component: Index,
     children: [{

@@ -1,32 +1,37 @@
 <template>
   <div class="history" v-loading="loading">
-    <div>
-    </div>
-    <div class="clea">
-      <el-button
-        size="mini"
-        @click="removeAll"
-        v-show="postType !== '0'&& page.total!==0"
-        round
-      >清空历史</el-button>
-    </div>
     <div class="block">
       <div v-if="page.total == 0" style="text-align: center">
         <span style="color: #999aaa; font-size: 15px">近期没有浏览记录</span>
       </div>
-      <div class="search-box" :class="{ active: InputFocused }">
-        <div class="el-icon-search" @click="handleSearch"></div>
-        <input
-          type="text"
-          v-model="searchText"
-          placeholder="请输入搜索内容"
-          @input="handleInput"
-          @focus="InputFocused = true"
-          @blur="InputFocused = false"
-          class="search-box-input"
-        />
-        <div v-show="searchText" class="el-icon-close" @click="handleClear"></div>
-      </div>
+      <el-row style="padding-bottom: 20px">
+        <el-col :span="18">
+          <div class="search-box" :class="{ active: InputFocused }">
+            <div class="el-icon-search" @click="handleSearch"></div>
+            <input
+              type="text"
+              v-model="searchText"
+              placeholder="请输入搜索内容"
+              @input="handleInput"
+              @focus="InputFocused = true"
+              @blur="InputFocused = false"
+              class="search-box-input"
+            />
+            <div v-show="searchText" class="el-icon-close" @click="handleClear"></div>
+          </div>
+        </el-col>
+        <el-col :span="6">
+          <div class="clea">
+            <el-button
+              size="mini"
+              style="padding-top: 10px"
+              @click="removeAll"
+              v-show="postType !== '0'&& page.total!==0"
+              round
+            >清空历史</el-button>
+          </div>
+        </el-col>
+      </el-row>
       <div v-if="postType === '1'">
         <el-timeline >
           <el-timeline-item  :timestamp="item.updateTime"  v-for="(item, index) in historyGoodsList" :key="index" placement="top">
@@ -46,7 +51,7 @@
                   </div>
                 </el-col>
                 <el-col :span="3">
-                  <i class="el-icon-delete" style="cursor: pointer;"></i>
+                  <i class="el-icon-delete" style="line-height:75px;cursor: pointer;"></i>
                 </el-col>
               </el-row>
             </el-card>
@@ -365,10 +370,11 @@ h3{
 .search-box {
   display: flex;
   width: 180px;
+  float: right;
   align-items: center;
   border: 1px solid #ccc;
   padding: 4px;
-  border-radius: 20px;
+  border-radius: 25px;
   transition: border-color 0.3s;
 }
 .search-box.active {
@@ -377,16 +383,18 @@ h3{
 .search-box-input {
   border: none;
   outline: none;
-  width: 120px;
-  height: 30px;
+  width: 145px;
+  height: 24px;
   display: inline-block;
+  background-color: #f5f7f9;
 }
 .el-icon-search,
 .el-icon-close {
-  /* 根据需要设置图标样式 */
   cursor: pointer;
-  width: 24px;
-  height: 24px;
+}
+.el-icon-search:hover,
+.el-icon-close:hover{
+  border-color: #007bff;
 }
 .time {
   position: absolute;

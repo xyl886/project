@@ -8,5 +8,5 @@ import com.love.product.entity.Posts;
  * @date 2022-10-19 10:26
  */
 public interface PostsMapper extends BaseMapper<Posts> {
-
+String getImgPathById( Long id);
 }

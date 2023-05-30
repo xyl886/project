@@ -1,31 +1,40 @@
 <template>
-  <div style="font-size: 14px;display: flex;padding: 20px 20px;background: #f5f7f9;width: 100%;height: 100%;">
+  <div style="font-size: 14px;display: flex;padding: 20px 20px;background: #f5f7f9;">
     <div style="flex: 1;background-color: #ffffff;border-radius: 5px;">
-      <div style="margin: 20px 25%;">
-        <el-form ref="form" :rules="rules" :model="form" label-width="80px" v-loading="loading">
-          <el-form-item label="类型" prop="postsType">
+      <div style="padding: 24px;">
+        <el-form ref="form" :rules="rules" :label-position="labelPosition" :model="form" label-width="200px" v-loading="loading">
+<!--          <el-form-item label="内容" prop="content">-->
+<!--            <el-input type="textarea" resize="none" v-model="form.content" clearable></el-input>-->
+<!--          </el-form-item>-->
+          <el-form-item label="分类:" prop="school">
+            <el-radio-group v-model="form.school">
+              <el-radio-button label="1">学习</el-radio-button>
+              <el-radio-button label="2">生活</el-radio-button>
+              <el-radio-button label="3">娱乐</el-radio-button>
+              <el-radio-button label="4">求助</el-radio-button>
+              <el-radio-button label="5">就业</el-radio-button>
+              <el-radio-button label="6">新闻/公告</el-radio-button>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="类型:" prop="postsType">
             <el-radio-group v-model="form.postsType">
               <el-radio label="1">闲置帖</el-radio>
               <el-radio label="2">校园帖</el-radio>
             </el-radio-group>
           </el-form-item>
-          <el-form-item label="标题" prop="title">
-            <el-input v-model="form.title" clearable></el-input>
+          <el-form-item label="标题:" prop="title">
+            <el-input v-model="form.title" placeholder="请输入帖子标题，最多 60 字" clearable></el-input>
           </el-form-item>
-          <el-form-item label="内容" prop="content">
-            <el-input type="textarea" resize="none" v-model="form.content" clearable></el-input>
+          <el-form-item label="描述:" prop="description">
+            <el-input v-model="form.description" placeholder="请简单介绍帖子的内容" clearable></el-input>
           </el-form-item>
-          <el-form-item label="校区" prop="school">
-            <el-radio-group v-model="form.school">
-              <el-radio label="1">官塘校区</el-radio>
-              <el-radio label="2">社湾校区</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item label="价格" prop="price" v-show="form.postsType !== '2'">
+          <el-form-item label="价格:" prop="price" v-show="form.postsType !== '2'">
             <el-input-number v-model="form.price" :controls='false' :min="0" :max="19999" clearable></el-input-number>&nbsp;元
           </el-form-item>
-
-          <el-form-item label="图片" :required="form.postsType !== '2'">
+          <el-form-item label="内容:" prop="title">
+            <mavon-editor v-model="form.content" />
+          </el-form-item>
+          <el-form-item label="图片:" :required="form.postsType !== '2'">
             <el-upload
               action=""
               v-model="form.files"
@@ -49,27 +58,30 @@
 
           <el-form-item>
             <el-button type="primary" @click="submitForm('form')" class="el-icon-position">立即发布</el-button>
+            <el-button @click="saveForm('form')">保存草稿</el-button>
             <el-button @click="resetForm('form')">重置</el-button>
           </el-form-item>
         </el-form>
       </div>
     </div>
-    <div style="width: 500px;background-color: #ffffff;margin: 0 50px 0 30px;">
-      <div style="height: 50px;line-height: 50px;border-bottom: 1px solid #EEEEEE;text-align: center;font-weight: 700;font-size: 17px;color: rgb(64, 158, 255);">发布规则</div>
-      <div class="rule" style="margin: 20px 20px;">
-        <p>可发三种帖子闲置贴、求购贴、校园贴</p>
-        <p>闲置贴：发布自己闲置的物品标题、内容、图片均要填写</p>
-        <p>校园贴：分享在校园遇到的趣事,记录校园生活,标题、内容均要填写图片选填</p>
-        <p>小提示：</p>
-        <p>不允许发布不健康的东西,一经发现永久封号！！！！！</p>
-      </div>
-      <div style="text-align: center;margin-top: 50px;">
-        <img src="../../../public/img/logo.png" style="width: 200px;">
-      </div>
-      <div>
-        <div style="font-size: 40px;font-weight: 700;text-align: center;">TAOLVTC</div>
-      </div>
-    </div>
+<!--    <div style="width: 500px;background-color: #ffffff;margin: 0 50px 0 30px;">-->
+<!--      <div style="height: 50px;line-height: 50px;border-bottom: 1px solid #EEEEEE;text-align: center;font-weight: 700;font-size: 17px;color: rgb(64, 158, 255);">内容</div>-->
+<!--      <el-input v-model="form.title" clearable></el-input>-->
+<!--      <quill-editor v-model="form.content" :options="editorOptions"></quill-editor>-->
+<!--      <div class="rule" style="margin: 20px 20px;">-->
+<!--        <p>可发三种帖子闲置贴、求购贴、校园贴</p>-->
+<!--        <p>闲置贴：发布自己闲置的物品标题、内容、图片均要填写</p>-->
+<!--        <p>校园贴：分享在校园遇到的趣事,记录校园生活,标题、内容均要填写图片选填</p>-->
+<!--        <p>小提示：</p>-->
+<!--        <p>不允许发布不健康的东西,一经发现永久封号！！！！！</p>-->
+<!--      </div>-->
+<!--      <div style="text-align: center;margin-top: 50px;">-->
+<!--        <img src="../../../public/img/logo.png" style="width: 200px;">-->
+<!--      </div>-->
+<!--      <div>-->
+<!--        <div style="font-size: 40px;font-weight: 700;text-align: center;">TAOLVTC</div>-->
+<!--      </div>-->
+<!--    </div>-->
   </div>
 </template>
 
@@ -80,6 +92,7 @@ export default {
   data () {
     return {
       loading: false,
+      labelPosition: 'left',
       form: {
         postsType: '1',
         title: '',
@@ -123,7 +136,7 @@ export default {
       }
     },
     'form.files' () {
-      console.info(this.form.files.length)
+      // console.info(this.form.files.length)
       if (this.form.files.length >= 9) {
         this.disabled = true
         this.$message.warning('最多只能上传9张图片')
@@ -195,6 +208,9 @@ export default {
           return false
         }
       })
+    },
+    saveForm (formName) {
+
     },
     resetForm (formName) {
       this.$refs[formName].resetFields()

@@ -20,6 +20,11 @@ import org.springframework.web.multipart.MultipartFile;
 public class PostsReq extends Posts {
 
     @ApiModelProperty(value = "上传文件")
-    private MultipartFile[] files;
+    private String files;
 
+    @ApiModelProperty(value = "新上传文件")
+    private MultipartFile[] newFiles;
+
+    @ApiModelProperty(value = "移除的文件")
+    private String removeFiles;
 }

@@ -18,7 +18,7 @@
                         </span>
                   </div>
                   <el-dropdown-menu slot="dropdown">
-                    <el-button type="primary" @click="updateModal(item, index)">修改</el-button>
+<!--                    <el-button type="primary" @click="updateModal(item, index)">修改</el-button>-->
                     <el-dropdown-item style="color:red;" @click.native="delMypost(item)">删除</el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown></div>
@@ -47,18 +47,12 @@
           </div>
           <div v-show="item.comment" style="border-top: 1px solid rgb(229, 233, 239);border-bottom: 1px solid rgb(229, 233, 239);padding: 20px 0;margin-top: 20px;">
             <div style="display: flex;">
-              <el-input type="textarea" :rows="1" resize="none" ref="textarea" v-model="item.commentContent" placeholder="请输入内容"></el-input>
-                <el-popover placement="bottom" trigger="click">
-                  <picker
-                    class="emoji-mart"
-                    :include="['people','Smileys']"
-                    hidden :showSearch="false"
-                    :showPreview="false"
-                    :showCategories="false"
-                    @select="addEmoji(item ,$event)"
-                    ref="picker"/>
-                  <el-button slot="reference" style="line-height:1px;height: 33px;">
-                    😃</el-button>
+              <el-input type="textarea" :rows="1" resize="none" ref="textarea" v-model="commentContent" placeholder="请输入内容"></el-input>
+                <el-popover placement="top-start" trigger="click" class="popover">
+                  <custom-emoji v-if="showEmojiCom" class="emoji-component" @addemoji="addEmoji"/>
+                  <el-button slot="reference" @click.stop="showEmojiCom = !showEmojiCom" style="line-height:1px;height: 33px;">
+                    😃
+                  </el-button>
                 </el-popover>
               <el-button type="primary" style="width: 100px;line-height:1px;height:33px;margin-left: 10px;" @click="addCommentFun(item)">发布</el-button>
             </div>
@@ -116,21 +110,24 @@ import {delMypost, getPage} from '../../api/posts'
 import {addLike} from '@/api/posts_like'
 import {addComment, del, listByPostsId} from '@/api/posts_comment'
 import {mapGetters} from 'vuex'
-import {Picker} from 'emoji-mart-vue'
+import customEmoji from '../../components/emoji/index.vue'
 import {setStore} from '../../utils/store'
-import UpdateDialog from './UpdateDialog'
+import UpdateDialog from '../posts/UpdateDialog'
 
 export default {
   components: { // 注册组件，不能全局挂载
-    Picker,
-    UpdateDialog
+    // Picker,
+    UpdateDialog,
+    customEmoji
   },
   data () {
     return {
       // dialogVisible: false,
       loading: false,
+      showEmojiCom: false,
       posts: [],
       box: false,
+      commentContent: '',
       page: {
         pageTotal: 0,
         total: 0,
@@ -165,6 +162,9 @@ export default {
   mounted () {
   },
   methods: {
+    handlerShowEmoji () {
+      this.showEmojiCom = false
+    },
     init (school) {
       this.page = {
         pageTotal: 0,
@@ -194,24 +194,20 @@ export default {
     //   this.page.currentPage = currentPage
     //   this.getPageFun()
     // },
-    addEmoji (item, event) {
-      const emojiNative = event.native
-      if (item.commentContent === undefined) {
-        item.commentContent = ''
-        item.commentContent += emojiNative
-      }
-      item.commentContent += emojiNative
-      console.log(item.commentContent)
+    addEmoji (emoji = '') {
+      console.log(emoji)
+      console.log(this.commentContent)
+      this.commentContent += emoji
     },
     getPageFun () {
       this.loading = true
       this.page.currentPage++
+      console.log(this.page)
       getPage(this.page).then(res => {
         if (res.code === 200) {
           if (this.page.currentPage === 1) {
             this.posts = []
-            console.log('getPage:')
-            console.log(this.posts)
+            console.log('getPage:' + this.posts)
           }
           res.data.forEach(ele => {
             ele['comment'] = false
@@ -229,75 +225,26 @@ export default {
         this.loading = false
       })
     },
-    updateModal (item, index) {
-      // this.form = {item, index}
-      this.$refs.updateDialog.showDialog()
-      // this.form = item
-      this.form = this.posts[index]
-      this.form.school = this.form.school + ''
-      console.log('updateModal:')
-      console.log(JSON.stringify(this.fileList))
-      if (this.posts[index].imgPath) {
-        const arr = this.posts[index].imgPath.split(',')
-        console.log('file:' + JSON.stringify(arr))
-        this.form.files = []
-        this.fileList = []
-        for (const file in arr) {
-          this.form.files.push({
-            name: file.name,
-            raw: file,
-            url: file
-          })
-          this.fileList.push({
-            name: file.name,
-            url: file
-          })
-        }
-        // for (const imageUrl of arr) {
-        //   const fileName = imageUrl.substring(imageUrl.lastIndexOf('/') + 1)
-        //   console.log(fileName) // 输出: pic1.jpg
-        //   fetch(imageUrl)
-        //     .then(response => response.blob())
-        //     .then(blob => {
-        //     // 创建 File 对象
-        //       const file = new File([blob], fileName)
-        //       // 将文件对象添加到数组中
-        //       this.form.files.push({
-        //         name: file.name,
-        //         raw: file,
-        //         url: URL.createObjectURL(file)
-        //       })
-        //       this.fileList.push({
-        //         name: file.name,
-        //         url: URL.createObjectURL(file)
-        //       })
-        //       console.log('this.form.files:' + JSON.stringify(this.form.files))
-        //     })
-        //     .catch(error => {
-        //       console.error('获取文件失败', error)
-        //       // 出现错误时终止 Promise 链
-        //       return Promise.reject(error)
-        //     })
-        // }
-      } else {
-        this.form.files = []
-      }
-      this.box = true
-    },
     delMypost (item) {
-      // console.log(item.id, item.userInfo.id)
-      delMypost(item.id, item.userInfo.id).then(res => {
-        if (res.code === 200) {
-          this.$message.success(res.msg)
-          this.getPageFun()
-          this.load()
-          this.init()
-        }
+      this.$confirm('确定要删除该帖子吗?', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       })
+        .then(() => {
+          delMypost(item.id, item.userInfo.id).then(res => {
+            if (res.code === 200) {
+              this.$message.success(res.msg)
+              this.getPageFun()
+              this.load()
+              this.init()
+            }
+          })
+        })
     },
     detailFun (posts) {
       setStore({name: 'posts', content: posts})
-      this.$router.push({path: '/detail'})
+      this.$router.push({path: '/Article'})
     },
     likeFun (item) {
       let deleted = 0
@@ -327,21 +274,21 @@ export default {
     },
     addCommentFun (item) {
       // 处理评论内容，去除空白字符
-      item.commentContent = item.commentContent.replace(/\s+/g, '')
-      console.log('item.commentContent:' + item.commentContent)
-      if (!item.commentContent) {
+      this.commentContent = this.commentContent.replace(/\s+/g, '')
+      console.log('item.commentContent:' + this.commentContent)
+      if (!this.commentContent) {
         this.$message.warning('内容为空！')
         return false
       } else {
-        addComment(item.id, item.commentContent).then(res => {
+        addComment(item.id, this.commentContent).then(res => {
           if (res.code === 200) {
             item.commentNum = parseInt(item.commentNum) + 1
             this.$message.success(res.msg)
             this.getComment(item)
           }
         })
-        item.commentContent = ''
-        console.log('item.commentContent:' + item.commentContent)
+        this.commentContent = ''
+        console.log('item.commentContent:' + this.commentContent)
       }
     },
     getComment (item) {
@@ -371,6 +318,15 @@ export default {
           })
         })
     }
+  },
+  created () {
+    // console.log('chatArea created')
+    document.addEventListener('click', this.handlerShowEmoji)
+  },
+
+  beforeDestroy () {
+    // console.log('chatArea BeforeDestroy')
+    document.removeEventListener('click', this.handlerShowEmoji)
   }
 }
 </script>
@@ -400,34 +356,18 @@ export default {
   .avatar-uploader .el-upload:hover {
     border-color: #409EFF;
   }
-  .avatar-uploader-icon {
-    font-size: 28px;
-    color: #8c939d;
-    width: 178px;
-    height: 178px;
-    line-height: 178px;
-    text-align: center;
-  }
-  .avatar {
-    width: 178px;
-    height: 178px;
-    display: block;
-  }
-  .emoji-mart {
-    width: 100px;
-    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
-    display: -ms-flexbox;
-    display: flex;
-    -ms-flex-direction: column;
-    flex-direction: column;
-    height: 420px;
-    color: #ffffff !important;
-    border: 1px solid #d9d9d9;
-    border-radius: 5px;
-    background: #fff;
-  }
+
   .express-btn .icon {
     width: 24px;
     height: 24px;
+  }
+  .emoji-component {
+    //position: absolute;
+    //bottom: 100%;
+    //transform-origin: center top;
+    //transform: translateX(-50%);
+    //bottom: calc(100% + 10px);
+    //left: 50%;
+    //top: calc(100% + 10px);
   }
 </style>

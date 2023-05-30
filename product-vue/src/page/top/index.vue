@@ -27,7 +27,7 @@
             </span>
           </div>
           <el-dropdown-menu slot="dropdown">
-<!--            <el-dropdown-item @click.native="personalPage">个人中心</el-dropdown-item>-->
+            <el-dropdown-item @click.native="personalPage">我的主页</el-dropdown-item>
             <el-dropdown-item @click.native="publish">发布帖子</el-dropdown-item>
             <el-dropdown-item @click.native="myMessage">我的消息</el-dropdown-item>
             <el-dropdown-item @click.native="updatePwd">修改密码</el-dropdown-item>
@@ -78,6 +78,9 @@ export default {
   methods: {
     pathFun (path) {
       this.$router.push({path: path})
+    },
+    personalPage () {
+      this.$router.push({path: '/personalpage'})
     },
     homePage () {
       this.$router.push({path: '/index'})

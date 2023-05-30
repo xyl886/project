@@ -28,8 +28,9 @@ public interface PostsService extends IService<Posts> {
 
     Map<Long, PostsVO> listByIds(List<Long> postsIds);
 
-    Result<?> update(Long id, PostsReq postsReq, String title, String content, String school);
+    Result<?> update(PostsReq postsReq);
 
     Result<?> del(Long userId, Long id);
 
+    String getImgPathById(Long id);
 }

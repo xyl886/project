@@ -53,7 +53,7 @@ export const browse = (userId, id) => {
  * 帖子修改
  */
 export const updateMypost = (data) => {
-  // console.log('帖子修改' + data)
+  console.log('帖子修改' + JSON.stringify(data))
   return request({
     url: '/api/posts/update',
     method: 'post',

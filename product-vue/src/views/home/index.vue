@@ -42,7 +42,7 @@
               ¥{{item2.price}}
             </div>
             <div class="posts-item-des">
-              {{item2.nickname}}
+              {{item2.schoolName}}
               <i class="el-icon-view" style="margin-left: 2px;"/>{{item2.browseNum}}
             </div>
           </div>

@@ -23,7 +23,7 @@ public class UserInfo extends BaseEntity {
     @ApiModelProperty(value = "用户昵称")
     public String nickname;
 
-    @ApiModelProperty(value = "手机号")
+    @ApiModelProperty(value = "邮箱")
     public String email;
 
     @ApiModelProperty(value = "登录密码 加密")

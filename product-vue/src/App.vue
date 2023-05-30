@@ -12,12 +12,18 @@
         </div>
     </div>
     <router-view v-if="!loadingIndex"/>
+    <Player/>
   </div>
 </template>
 
 <script>
+import Player from './components/zw-player/player.vue'
+
 export default {
   name: 'App',
+  components: {
+    Player
+  },
   data () {
     return {
       loadingIndex: true
@@ -25,11 +31,10 @@ export default {
   },
   watch: {},
   created () {
-    let times = '500'// 加载延时loading
-    let that = this
+    let that = this // 加载延时loading
     setTimeout(function () {
       that.loadingIndex = false
-    }, times)
+    }, 500)
   },
   methods: {},
   computed: {}

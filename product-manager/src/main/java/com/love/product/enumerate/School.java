@@ -11,10 +11,14 @@ public enum School {
     /**
      *
      */
-    GUAN_TANG(1, "官塘校区"),
-    SHE_WAN(2, "社湾校区"),
-    ;
-
+    STUDY(1,"学习"),
+    LIFE(2,"生活"),
+    ENTERTAINMENT(3,"娱乐"),
+    HELP(4,"求助"),
+    EMPLOYMENT(5,"就业"),
+    NEWS_ANNOUNCEMENT(6,"新闻/公告"),
+    MY_SHARE(7,"我的分享"),
+    MY_FOLLOW(8,"我的关注");
     /**
      * 枚举值
      */

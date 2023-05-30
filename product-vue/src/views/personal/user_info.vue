@@ -34,18 +34,16 @@
           </el-col>
         </el-row>
         <el-row style="margin: 30px 0;">
-          <el-col :span="3">
+          <el-col :span="2">
             <div style="font-size: 16px;">关注</div>
           </el-col>
-          <el-col :span="21">
+          <el-col :span="1">
             <div style="font-size: 16px;color: #666;">{{user.followNum}}</div>
           </el-col>
-        </el-row>
-        <el-row style="margin: 30px 0;">
-          <el-col :span="3">
-            <div style="font-size: 16px;">粉丝</div>
-          </el-col>
-          <el-col :span="21">
+          <el-col :span="2">
+          <div style="font-size: 16px;">粉丝</div>
+        </el-col>
+          <el-col :span="1">
             <div style="font-size: 16px;color: #666;">{{user.fansNum}}</div>
           </el-col>
         </el-row>

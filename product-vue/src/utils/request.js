@@ -50,6 +50,7 @@ service.interceptors.response.use(
         message: '请登录~',
         type: 'warning'
       })
+      // this.$message.fail(res.msg)
       removeToken()
       // location.reload();
       router.push({ path: '/login' })
@@ -59,6 +60,7 @@ service.interceptors.response.use(
         type: 'error',
         duration: 2 * 1000
       })
+      router.push({ path: '/' })
       return Promise.reject(new Error(res.msg || 'Error'))
     }
     return res

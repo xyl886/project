@@ -6,6 +6,7 @@ import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.req.PostsPageReq;
 import com.love.product.entity.req.PostsReq;
 import com.love.product.entity.vo.PostsVO;
+import com.love.product.enumerate.School;
 import com.love.product.service.PostsService;
 import com.love.product.util.JwtUtil;
 import io.swagger.annotations.Api;
@@ -19,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Objects;
 
 /**
  * @author Administrator
@@ -42,7 +44,7 @@ public class PostsController {
             @ApiImplicitParam(name = "title", value = "标题", required = true, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "content", value = "内容", required = true, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "school", value = "校区", required = true, dataType = "Integer", paramType = "query"),
-            @ApiImplicitParam(name = "price", value = "校区", required = false, dataType = "BigDecimal", paramType = "query"),
+            @ApiImplicitParam(name = "price", value = "价格", required = false, dataType = "BigDecimal", paramType = "query"),
             @ApiImplicitParam(name = "files", value = "上传图片列表", required = false, dataType = "MultipartFile[]", paramType = "query")
     })
     public Result<Posts> add(
@@ -59,7 +61,7 @@ public class PostsController {
         postsReq.setContent(content);
         postsReq.setSchool(school);
         postsReq.setPrice(price);
-        postsReq.setFiles(files);
+        postsReq.setNewFiles(files);
 
 //        System.out.println(JwtUtil.getUserId()+"  "+postsReq);
         return postsService.add(JwtUtil.getUserId(),postsReq);
@@ -92,29 +94,38 @@ public class PostsController {
     @ApiOperation(value = "更新帖子信息", notes = "更新帖子信息")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "主键", required = true, dataType = "Long", paramType = "query"),
+            @ApiImplicitParam(name = "userId", value = "用户主键", required = true, dataType = "Long", paramType = "query"),
             @ApiImplicitParam(name = "title", value = "标题", required = true, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "school", value = "校区", required = true, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "content", value = "内容", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "files", value = "上传图片列表", required = false, dataType = "MultipartFile[]", paramType = "query")
+            @ApiImplicitParam(name = "newFiles", value = "新上传图片列表", required = false, dataType = "MultipartFile[]", paramType = "query"),
+            @ApiImplicitParam(name = "removeFiles", value = "移除的图片列表", required = false, dataType = "MultipartFile[]", paramType = "query"),
+            @ApiImplicitParam(name = "files", value = "图片列表", required = false, dataType = "MultipartFile[]", paramType = "query")
     })
     public Result<?> update(
             @RequestParam("id") Long id,
+            @RequestParam("userId") Long userId,
             @RequestParam("title") String title,
             @RequestParam("school") String school,
             @RequestParam("content") String content,
-            @RequestParam(value = "files",required = false) MultipartFile[] files
+            @RequestParam(value = "newFiles",required = false) MultipartFile[] newFiles,
+            @RequestParam(value = "removeFiles",required = false) String removeFiles,
+            @RequestParam(value = "files",required = false) String files
     ) {
-
-            PostsReq postsReq = new PostsReq();
-            postsReq.setId(id);
-            postsReq.setTitle(title);
-            postsReq.setContent(content);
-            postsReq.setSchool(Integer.valueOf(school));
-            postsReq.setFiles(files);
-
-            log.info("当前用户id为:"+JwtUtil.getUserId()+";帖子修改为:"+postsReq+","+files.length+","+id+","+title+","+content+","+school);
-            return postsService.update(id,postsReq,title,content,school);
-
+          if(Objects.equals(JwtUtil.getUserId(), userId)){
+              PostsReq postsReq = new PostsReq();
+              postsReq.setId(id);
+              postsReq.setTitle(title);
+              postsReq.setContent(content);
+              postsReq.setSchool(Integer.valueOf(school));
+              postsReq.setNewFiles(newFiles);
+              postsReq.setRemoveFiles(removeFiles);
+              postsReq.setFiles(files);
+              log.info("当前用户id为:"+JwtUtil.getUserId()+";帖子修改为:"+postsReq+","+newFiles.length+","+id+","+title+","+content+","+school);
+              return postsService.update(postsReq);
+          }else {
+              return Result.fail("您无权操作!");
+          }
     }
 
     @ApiOperation("删除")

@@ -5,9 +5,13 @@
         <div class="collect-item" v-for="(item2,index2) in item" :key="item2.id">
           <el-card style="padding: 0;">
             <div slot="header" style="cursor: pointer;" @click="detailFun(item2.posts)">
-              <div style="text-align: center;">
-                <el-image :src="item2.posts.coverPath" class="collect-box-img"></el-image>
-              </div>
+<!--              <div style="text-align: center;">-->
+                <el-image style="width: 320px;height: 200px" :src="item2.posts.coverPath" class="collect-box-img">
+                  <div slot="error" class="image-slot" style="text-align: center;padding: 25%;font-size: 25px;"
+                       v-if="item2.posts.coverPath"><i class="el-icon-picture-outline"></i>
+                  </div>
+                </el-image>
+<!--              </div>-->
               <div class="collect-box-title">
                 {{item2.posts.title}}
               </div>
@@ -16,7 +20,7 @@
               <span style="color: #999;">收藏于:{{item2.createTime}}</span>
               <el-dropdown style="float: right;">
                 <el-button style="padding: 3px 0" type="text"><i class="el-icon-more"></i></el-button>
-                <el-dropdown-menu slot="dropdown">
+                <el-dropdown-menu >
                   <el-dropdown-item @click.native="addCollectFun(item2.posts)">取消收藏</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
