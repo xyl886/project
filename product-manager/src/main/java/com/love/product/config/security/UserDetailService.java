@@ -1,6 +1,5 @@
 package com.love.product.config.security;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.love.product.entity.UserInfo;
 import com.love.product.enumerate.YesOrNo;
 import com.love.product.service.UserInfoService;

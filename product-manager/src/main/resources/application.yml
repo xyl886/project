@@ -38,6 +38,37 @@ spring:
     multipart:
       max-file-size: -1
       max-request-size: -1
+#  http://127.0.0.1:5672
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
+    listener:
+      simple:
+        retry:
+          enabled: true
+          max-attempts: 3
+          initial-interval: 3000
+  mail:
+    host: smtp.qq.com
+    username: 1803466516@qq.com
+    password: hjnvjyvlptlleihc
+    default-encoding: UTF-8
+    protocol: smtp
+    port: 465
+    properties:
+      mail:
+        smtp:
+          auth: true
+          socketFactory:
+            class: javax.net.ssl.SSLSocketFactory
+            port: 465
+          ssl:
+            enable: true
+          starttls:
+            enable: true
+            required: true
 token:
   config:
     accessTokenValidity: 1800

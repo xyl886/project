@@ -2,9 +2,9 @@ package com.love.product.config.security;
 
 import com.love.product.entity.vo.UserInfoVO;
 import com.love.product.mapper.UserInfoMapper;
+import com.love.product.service.RedisService;
 import com.love.product.service.UserInfoService;
 import com.love.product.util.JsonUtil;
-import com.love.product.util.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -50,7 +50,8 @@ public class OauthInterceptor extends OAuth2AuthenticationEntryPoint {
      */
     @Resource
     RestTemplate restTemplate;
-
+    @Resource
+    private RedisService redisService;
     @Resource
     private UserInfoMapper userInfoMapper;
 
@@ -108,7 +109,7 @@ public class OauthInterceptor extends OAuth2AuthenticationEntryPoint {
                 Long userId = (Long)userMap.get("userId");
 
                 //根据用户名称，从数据库获取用户的刷新令牌 todo redis
-                String refresh_token = RedisUtil.getRefreshToken(userId);
+                String refresh_token = (String) redisService.get("refresh_token:" + userId);
                 if(refresh_token != null){
                     //获取当前用户信息
                     UserInfoVO userInfoVO  = userInfoService.getByEmail(email);
@@ -132,7 +133,7 @@ public class OauthInterceptor extends OAuth2AuthenticationEntryPoint {
                         if(mapResult != null){
                             // 如果刷新成功 跳转到原来需要访问的页面
                             //写入用户信息到redis，写入信息到SecurityContext中
-                            RedisUtil.setUser(userInfoVO);
+                            redisService.set("user:userinfo:" + userInfoVO.getId(),userInfoVO);
                             List<GrantedAuthority> grantedAuthorityList = new ArrayList<>();
                             UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
                                     userInfoVO.getEmail(), userInfoVO.getOriginalPassword(), grantedAuthorityList);

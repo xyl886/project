@@ -1,11 +1,13 @@
 package com.love.product.controller;
 
+import com.love.product.annotation.AccessLimit;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.vo.UserInfoVO;
+import com.love.product.service.RedisService;
 import com.love.product.service.UserInfoService;
 import com.love.product.util.JwtUtil;
-import com.love.product.util.RedisUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
@@ -33,14 +35,36 @@ import javax.servlet.http.HttpServletResponse;
 public class LoginController {
     @Resource
     private UserInfoService userInfoService;
+    @Resource
+    private RedisService redisService;
+
+    @AccessLimit(seconds = 60,maxCount = 1)
+    @ApiOperation(value = "发送邮箱验证码")
+    @ApiImplicitParam(name = "email", value = "邮箱", required = true, dataType = "String")
+    @GetMapping("/code")
+    public Result<?> sendCode(String email) {
+        userInfoService.sendCode(email);
+        return Result.OKMsg("验证码已发送，请查收！");
+    }
 
     @ApiOperation(value = "账密登录", notes = "账密登录")
     @GetMapping("/userLogin")
     public Result<UserInfoVO> login(
-            @ApiParam("电话") @RequestParam("email") String email,
+            @ApiParam("邮箱") @RequestParam("email") String email,
             @ApiParam("密码") @RequestParam("password") String password,
+            @ApiParam("验证码") @RequestParam("emailCode") String emailCode,
             HttpServletRequest request, HttpServletResponse response
     ) {
+        // 从 Redis 中获取验证码
+        String redisKey = "code:" + email;
+        String redisCode = (String) redisService.get(redisKey);
+        if (redisCode == null) {
+            return Result.failMsg("验证码已过期，请重新获取");
+        }
+        // 比较验证码是否正确
+        if(!redisCode.equals(emailCode)) {
+            return Result.failMsg("验证码错误，请重新输入");
+        }
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null) {//清除认证
             new SecurityContextLogoutHandler().logout(request, response, authentication);
@@ -51,7 +75,7 @@ public class LoginController {
     @ApiOperation(value = "用户注册", notes = "用户注册")
     @GetMapping("/userRegister")
     public Result<UserInfoVO> userRegister(
-            @ApiParam("电话") @RequestParam("email") String email,
+            @ApiParam("邮箱") @RequestParam("email") String email,
             @ApiParam("密码") @RequestParam("password") String password,
             @ApiParam("确认密码") @RequestParam("confirmPassword") String confirmPassword
     ) {
@@ -65,7 +89,8 @@ public class LoginController {
         if (authentication != null) {//清除认证
             new SecurityContextLogoutHandler().logout(request, response, authentication);
         }
-        RedisUtil.logout(JwtUtil.getUserId());
+        redisService.del("refresh_token:" + JwtUtil.getUserId());
+        redisService.del("user:userinfo:" + JwtUtil.getUserId());
         return Result.OK();
     }
 }

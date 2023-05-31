@@ -1,12 +1,16 @@
 package com.love.product.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.love.product.config.Exception.BizException;
 import com.love.product.config.fileupload.FileUploadConfig;
 import com.love.product.config.security.TokenConfig;
+import com.love.product.constant.CommonConstant;
+import com.love.product.entity.DTO.EmailDTO;
 import com.love.product.entity.UserInfo;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.vo.UserInfoVO;
@@ -15,9 +19,13 @@ import com.love.product.enumerate.YesOrNo;
 import com.love.product.mapper.UserInfoMapper;
 import com.love.product.service.FileUploadService;
 import com.love.product.service.FollowService;
+import com.love.product.service.RedisService;
 import com.love.product.service.UserInfoService;
-import com.love.product.util.RedisUtil;
+import com.love.product.util.EmailUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageProperties;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,6 +38,11 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+
+import static com.love.product.constant.RabbitMQConstant.EMAIL_EXCHANGE;
+import static com.love.product.util.CommonUtil.checkEmail;
+import static com.love.product.util.CommonUtil.getRandomCode;
 
 /**
  * @author Administrator
@@ -42,7 +55,8 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
     @Value("${server.port}")
     private String port;
-
+    @Resource
+    private EmailUtil emailUtil;
     @Resource
     private RestTemplate restTemplate;
     @Resource
@@ -53,7 +67,34 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     private FileUploadService fileUploadService;
     @Resource
     private FollowService followService;
+    @Resource
+    private RabbitTemplate rabbitTemplate;
+    @Resource
+    private RedisService redisService;
 
+    /**
+     * 发送邮箱验证码
+     * @param email
+     */
+    @Override
+    public void sendCode(String email) {
+        if (!checkEmail(email)) {
+            throw new BizException("请输入正确邮箱");
+        }
+        String code = getRandomCode();
+        Map<String, Object> map = new HashMap<>();
+        map.put("content", "您的验证码为 " + code + " 有效期5分钟，请不要告诉他人哦！");
+        EmailDTO emailDTO = EmailDTO.builder()
+                .email(email)
+                .subject(CommonConstant.CAPTCHA)
+                .template("common.html")
+                .commentMap(map)
+                .build();
+//        log.info(String.valueOf(emailDTO));
+        rabbitTemplate.convertAndSend(EMAIL_EXCHANGE, "*", new Message(JSON.toJSONBytes(emailDTO), new MessageProperties()));
+        emailUtil.sendHtmlMail(emailDTO);
+        redisService.set("code:" + email, code, 5 * 60);
+    }
 
     /**
      * 用户登录
@@ -62,31 +103,31 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
      */
     @Override
     public Result<UserInfoVO> login(String email, String password){
-        UserInfoVO userInfoVo = getByEmail(email);
-        if(userInfoVo != null){
-            if(userInfoVo.getDeleted().equals(YesOrNo.YES.getValue())){
+        UserInfoVO userInfoVO = getByEmail(email);
+        if(userInfoVO != null){
+            if(userInfoVO.getDeleted().equals(YesOrNo.YES.getValue())){
                 return Result.failMsg("登录失败，账号已注销");
             }
-            if(userInfoVo.getStatus().equals(YesOrNo.YES.getValue())){
+            if(userInfoVO.getStatus().equals(YesOrNo.YES.getValue())){
                 return Result.failMsg("登录失败，账号已禁用，请联系客服人员");
             }
             PasswordEncoder encoder = new BCryptPasswordEncoder();
-            boolean matches = encoder.matches(password, userInfoVo.getPassword());
+            boolean matches = encoder.matches(password, userInfoVO.getPassword());
             if (!matches) {
                 return Result.failMsg("账号或密码错误");
             }
             //一定要在获取token前缓存redis，否则可能报错
-            RedisUtil.setUser(userInfoVo);
-            String accessToken = getOAuthToken(userInfoVo);
+            redisService.set("user:userinfo:" + userInfoVO.getId(),userInfoVO);
+            String accessToken = getOAuthToken(userInfoVO);
             if(accessToken == null){
                 return Result.failMsg("登录失败，请重试");
             }
-            userInfoVo.setAccessToken(accessToken);
-            userInfoVo.setEmail(email);
-            userInfoVo.setPassword(password);
-            log.info(String.valueOf(userInfoVo));
+            userInfoVO.setAccessToken(accessToken);
+            userInfoVO.setEmail(email);
+            userInfoVO.setPassword(password);
+            log.info(String.valueOf(userInfoVO));
 
-            return Result.OK(userInfoVo);
+            return Result.OK(userInfoVO);
         }else{
             return Result.failMsg("账号或密码错误");
         }
@@ -169,7 +210,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     @Override
     public void setRefreshToken(Long userId, String refreshToken){
         if(refreshToken != null){
-            RedisUtil.setRefreshToken(userId,refreshToken);
+            redisService.set("refresh_token:" + userId,refreshToken);
         }
     }
 
@@ -185,7 +226,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         }
         UserInfoVO userInfoVO = getByEmail(email);
         if(userInfoVO != null){
-            return Result.failMsg("手机号已存在，请修改");
+            return Result.failMsg("邮箱已注册，请修改");
         }
         LocalDateTime now = LocalDateTime.now();
         userInfoVO = new UserInfoVO();

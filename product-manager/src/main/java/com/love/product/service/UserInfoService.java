@@ -56,6 +56,11 @@ public interface UserInfoService extends IService<UserInfo> {
      */
     Result<UserInfoVO> update(Long userId, String nickname, MultipartFile file,Integer  gender,String hobby,String remark);
 
+    /**
+     *
+     * @param id
+     * @return
+     */
     UserInfoVO getUserInfoAndFansById(Long id);
 
     /**
@@ -68,4 +73,10 @@ public interface UserInfoService extends IService<UserInfo> {
      */
 
    Result<?> updatePwd(Long id, String currentPassword, String newPassword, String confirmPassword);
+
+    /**
+     * 邮箱
+     * @param email
+     */
+    void sendCode(String email);
 }

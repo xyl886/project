@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.love.product.constant.RedisConstantKey;
 import com.love.product.entity.Follow;
 import com.love.product.entity.UserInfo;
 import com.love.product.entity.base.Result;
@@ -14,14 +15,15 @@ import com.love.product.entity.vo.UserInfoVO;
 import com.love.product.enumerate.YesOrNo;
 import com.love.product.mapper.FollowMapper;
 import com.love.product.service.FollowService;
+import com.love.product.service.RedisService;
 import com.love.product.service.UserInfoService;
-import com.love.product.util.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -36,6 +38,8 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
     private UserInfoService userInfoService;
     @Resource
     private FollowMapper followMapper;
+    @Resource
+    private RedisService redisService;
 
     @Override
     public Result<?> add(Long userId, Long beFollowedUserId,Integer deleted) {
@@ -54,8 +58,9 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
             follow.setUpdateTime(now);
             followMapper.add(follow);
             //清除redis缓存
-            RedisUtil.deleteFollowNum(userId);
-            RedisUtil.deleteFansNum(beFollowedUserId);
+//            RedisUtil.deleteFollowNum(userId);
+            redisService.del(RedisConstantKey.FOLLOW_NUM + userId);
+            redisService.del(RedisConstantKey.FANS_NUM + beFollowedUserId);
             if(yesOrNo.equals(YesOrNo.YES)){
                 return Result.OKMsg("已取消关注");
             }else{
@@ -77,26 +82,28 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
 
     @Override
     public int getFansNumByUserId(Long userId){
-        Integer num = RedisUtil.getFansNum(userId);
+        Integer num = (Integer) redisService.get(RedisConstantKey.FANS_NUM + userId);
         if(num == null){
             LambdaQueryWrapper<Follow> queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.eq(Follow::getBeFollowedUserId,userId);
             long fansNum = count(queryWrapper);
             num = Integer.parseInt(String.valueOf(fansNum));
-            RedisUtil.setFansNum(userId,num);
+            redisService.set(RedisConstantKey.FANS_NUM + userId, num, 7, TimeUnit.DAYS);
         }
         return num;
     }
 
     @Override
     public int getFollowNumByUserId(Long userId){
-        Integer num = RedisUtil.getFollowNum(userId);
+        Integer num = (Integer) redisService.get(RedisConstantKey.FOLLOW_NUM + userId);
+//        Integer num = RedisUtil.getFollowNum(userId);
         if(num == null){
             LambdaQueryWrapper<Follow> queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.eq(Follow::getUserId,userId);
             long followNum = count(queryWrapper);
             num = Integer.parseInt(String.valueOf(followNum));
-            RedisUtil.setFollowNum(userId,num);
+//            RedisUtil.setFollowNum(userId,num);
+            redisService.set(RedisConstantKey.FOLLOW_NUM + userId, num, 7, TimeUnit.DAYS);
         }
         return num;
     }

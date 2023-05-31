@@ -3,8 +3,8 @@ package com.love.product.config.security;
 import com.alibaba.fastjson2.JSON;
 import com.love.product.config.Exception.BizException;
 import com.love.product.entity.vo.UserInfoVO;
+import com.love.product.service.RedisService;
 import com.love.product.service.UserInfoService;
-import com.love.product.util.RedisUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -60,7 +60,8 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
      */
     @Resource
     private UserDetailsService userDetailService;
-
+    @Resource
+    private RedisService redisService;
     @Resource
     private UserInfoService userInfoService;
 
@@ -148,7 +149,7 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
                 if(userInfoVO == null){
                     throw new BizException(403,"请重新登录");
                 }
-                userInfoVO = RedisUtil.getUser(userInfoVO.getId());
+                userInfoVO = (UserInfoVO) redisService.get("user:userinfo:" + userInfoVO.getId());
                 Collection<SimpleGrantedAuthority> authority = new ArrayList<>();
                 // 得到用户名，去处理数据库可以拿到当前用户的信息和角色信息（需要传递到服务中用到的信息）
                 final Map<String, Object> additionalInformation = new HashMap<>();

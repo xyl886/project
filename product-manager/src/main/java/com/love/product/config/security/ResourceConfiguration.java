@@ -35,6 +35,7 @@ public class ResourceConfiguration extends ResourceServerConfigurerAdapter {
                 .antMatchers(
                         "/getToken",
                         "/parseToken",
+                        "/login/code",
                         "/login/userLogin",
                         "/login/userRegister",
                         "/posts/getPage",
