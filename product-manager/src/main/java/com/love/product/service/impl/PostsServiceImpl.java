@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.love.product.config.fileupload.AliyunOSS;
+import com.love.product.config.fileupload.AliyunOSSConfig;
 import com.love.product.entity.History;
 import com.love.product.entity.Posts;
 import com.love.product.entity.PostsLike;
@@ -13,13 +13,16 @@ import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.req.PostsPageReq;
 import com.love.product.entity.req.PostsReq;
-import com.love.product.entity.vo.PostsVO;
-import com.love.product.entity.vo.UserInfoVO;
+import com.love.product.model.DTO.PostsSearchDTO;
+import com.love.product.model.VO.ConditionVO;
+import com.love.product.model.VO.PostsVO;
+import com.love.product.model.VO.UserInfoVO;
 import com.love.product.enumerate.PostsType;
 import com.love.product.enumerate.School;
 import com.love.product.enumerate.YesOrNo;
 import com.love.product.mapper.PostsMapper;
 import com.love.product.service.*;
+import com.love.product.strategy.context.SearchStrategyContext;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -66,6 +69,9 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
 
     @Resource
     private PostsService postsService;
+
+    @Resource
+    private SearchStrategyContext searchStrategyContext;
     /**
      * 发布帖子
      */
@@ -334,6 +340,12 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
         }
         return Result.failMsg("修改失败，请重试");
     }
+
+
+    @Override
+    public List<PostsSearchDTO> listPostsBySearch(ConditionVO condition) {
+        return searchStrategyContext.executeSearchStrategy(condition.getKeywords());
+    }
     /**
      * 帖子删除
      */
@@ -347,7 +359,7 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
                 log.info("图片："+imageUrlList);
                 for (String file : imageUrlList) {
                     try {
-                        ossService.delFile(file.replace("https://" + AliyunOSS.BUCKET_NAME + "." + AliyunOSS.END_POINT + "/",""));
+                        ossService.delFile(file.replace("https://" + AliyunOSSConfig.BUCKET_NAME + "." + AliyunOSSConfig.END_POINT + "/",""));
                         log.info("成功删除图片：" + file);
                     } catch (Exception e) {
                         log.error("删除图片失败：" + file, e);

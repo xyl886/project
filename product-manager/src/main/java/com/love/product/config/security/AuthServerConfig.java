@@ -2,7 +2,7 @@ package com.love.product.config.security;
 
 import com.alibaba.fastjson2.JSON;
 import com.love.product.config.Exception.BizException;
-import com.love.product.entity.vo.UserInfoVO;
+import com.love.product.model.VO.UserInfoVO;
 import com.love.product.service.RedisService;
 import com.love.product.service.UserInfoService;
 import org.springframework.context.annotation.Bean;
@@ -161,8 +161,7 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
                 userinfo.put("authOrity", authority);
                 additionalInformation.put("userinfo", JSON.toJSONString(userinfo));
                 ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(additionalInformation);
-                OAuth2AccessToken enhancedToken = super.enhance(accessToken, authentication);
-                return enhancedToken;
+                return super.enhance(accessToken, authentication);
             }
         };
         // 生成签名的key,资源服务使用相同的字符达到一个对称加密的效果,生产时候使用RSA非对称加密方式

@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings("all")
 public interface RedisService {
 
-    void set(String s, Integer num, int i, TimeUnit timeUnit);
+    void set(String s, long num, Long i, TimeUnit timeUnit);
     void set(String key, Object value, long time);
 
     void set(String key, Object value);

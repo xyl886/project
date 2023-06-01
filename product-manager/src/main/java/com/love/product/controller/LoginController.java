@@ -2,7 +2,7 @@ package com.love.product.controller;
 
 import com.love.product.annotation.AccessLimit;
 import com.love.product.entity.base.Result;
-import com.love.product.entity.vo.UserInfoVO;
+import com.love.product.model.VO.UserInfoVO;
 import com.love.product.service.RedisService;
 import com.love.product.service.UserInfoService;
 import com.love.product.util.JwtUtil;
@@ -43,43 +43,33 @@ public class LoginController {
     @ApiImplicitParam(name = "email", value = "邮箱", required = true, dataType = "String")
     @GetMapping("/code")
     public Result<?> sendCode(String email) {
-        userInfoService.sendCode(email);
-        return Result.OKMsg("验证码已发送，请查收！");
+        return userInfoService.sendCode(email);
     }
 
     @ApiOperation(value = "账密登录", notes = "账密登录")
     @GetMapping("/userLogin")
     public Result<UserInfoVO> login(
             @ApiParam("邮箱") @RequestParam("email") String email,
-            @ApiParam("密码") @RequestParam("password") String password,
-            @ApiParam("验证码") @RequestParam("emailCode") String emailCode,
+            @ApiParam("密码") @RequestParam(value = "password",defaultValue = "") String password,
+            @ApiParam("验证码") @RequestParam(value = "emailCode",defaultValue = "") String emailCode,
             HttpServletRequest request, HttpServletResponse response
     ) {
-        // 从 Redis 中获取验证码
-        String redisKey = "code:" + email;
-        String redisCode = (String) redisService.get(redisKey);
-        if (redisCode == null) {
-            return Result.failMsg("验证码已过期，请重新获取");
-        }
-        // 比较验证码是否正确
-        if(!redisCode.equals(emailCode)) {
-            return Result.failMsg("验证码错误，请重新输入");
-        }
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null) {//清除认证
             new SecurityContextLogoutHandler().logout(request, response, authentication);
         }
-        return userInfoService.login(email,password);
+        return userInfoService.login(email,password,emailCode);
     }
 
     @ApiOperation(value = "用户注册", notes = "用户注册")
     @GetMapping("/userRegister")
     public Result<UserInfoVO> userRegister(
             @ApiParam("邮箱") @RequestParam("email") String email,
+            @ApiParam("验证码") @RequestParam(value = "emailCode",defaultValue = "") String emailCode,
             @ApiParam("密码") @RequestParam("password") String password,
             @ApiParam("确认密码") @RequestParam("confirmPassword") String confirmPassword
     ) {
-        return userInfoService.userRegister(email,password,confirmPassword);
+        return userInfoService.userRegister(email,emailCode,password,confirmPassword);
     }
 
     @ApiOperation(value = "用户退出登录", notes = "用户退出登录")

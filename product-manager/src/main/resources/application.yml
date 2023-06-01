@@ -25,7 +25,7 @@ spring:
     password: root
     url: jdbc:mysql://localhost:3306/school?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowMultiQueries=true&useAffectedRows=true&allowPublicKeyRetrieval=true
   redis:
-    database: 0
+    database: 1
     host: 127.0.0.1
     max-active: 20
     max-idle: 0
@@ -69,6 +69,10 @@ spring:
           starttls:
             enable: true
             required: true
+  elasticsearch:
+    rest:
+      uris: 127.0.0.1:9200
+
 token:
   config:
     accessTokenValidity: 1800
@@ -80,6 +84,9 @@ token:
   isRefreshToken: false
   resourceId: SOJ_DEMO
   signingKey: SOJ_SYMMETRY
+
+search:
+  mode: elasticsearch
 
 # 本地存储图片上传地址
 file-upload-config:

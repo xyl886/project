@@ -5,8 +5,9 @@ import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.req.PostsPageReq;
 import com.love.product.entity.req.PostsReq;
-import com.love.product.entity.vo.PostsVO;
-import com.love.product.enumerate.School;
+import com.love.product.model.DTO.PostsSearchDTO;
+import com.love.product.model.VO.ConditionVO;
+import com.love.product.model.VO.PostsVO;
 import com.love.product.service.PostsService;
 import com.love.product.util.JwtUtil;
 import io.swagger.annotations.Api;
@@ -20,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -127,7 +129,11 @@ public class PostsController {
               return Result.fail("您无权操作!");
           }
     }
-
+    @ApiOperation(value = "搜索文章")
+    @GetMapping("/articles/search")
+    public Result<List<PostsSearchDTO>> listPostsBySearch(ConditionVO condition) {
+        return Result.OK(postsService.listPostsBySearch(condition));
+    }
     @ApiOperation("删除")
     @DeleteMapping ("/del")
     public Result<?> del(Long userId,Long id) {

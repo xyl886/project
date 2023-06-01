@@ -1,6 +1,6 @@
 package com.love.product.config.security;
 
-import com.love.product.entity.vo.UserInfoVO;
+import com.love.product.model.VO.UserInfoVO;
 import com.love.product.mapper.UserInfoMapper;
 import com.love.product.service.RedisService;
 import com.love.product.service.UserInfoService;

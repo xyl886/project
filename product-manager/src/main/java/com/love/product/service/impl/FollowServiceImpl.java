@@ -10,8 +10,8 @@ import com.love.product.entity.UserInfo;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.req.FollowPageReq;
-import com.love.product.entity.vo.FollowVO;
-import com.love.product.entity.vo.UserInfoVO;
+import com.love.product.model.VO.FollowVO;
+import com.love.product.model.VO.UserInfoVO;
 import com.love.product.enumerate.YesOrNo;
 import com.love.product.mapper.FollowMapper;
 import com.love.product.service.FollowService;
@@ -88,7 +88,7 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
             queryWrapper.eq(Follow::getBeFollowedUserId,userId);
             long fansNum = count(queryWrapper);
             num = Integer.parseInt(String.valueOf(fansNum));
-            redisService.set(RedisConstantKey.FANS_NUM + userId, num, 7, TimeUnit.DAYS);
+            redisService.set(RedisConstantKey.FANS_NUM + userId, num, 7L, TimeUnit.DAYS);
         }
         return num;
     }
@@ -103,7 +103,7 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
             long followNum = count(queryWrapper);
             num = Integer.parseInt(String.valueOf(followNum));
 //            RedisUtil.setFollowNum(userId,num);
-            redisService.set(RedisConstantKey.FOLLOW_NUM + userId, num, 7, TimeUnit.DAYS);
+            redisService.set(RedisConstantKey.FOLLOW_NUM + userId, num, 7L, TimeUnit.DAYS);
         }
         return num;
     }

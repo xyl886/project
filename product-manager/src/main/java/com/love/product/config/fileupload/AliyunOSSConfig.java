@@ -2,7 +2,7 @@ package com.love.product.config.fileupload;
 
 /**
  * @PackageName: com.love.product.config.fileupload
- * @Description: AliyunOSS
+ * @Description: AliyunOSSConfig
  * @Author: Administrator
  * @Date: 2023/4/28 9:26
  */
@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
 @Data
 @Configuration
 @ConfigurationProperties("aliyun.oss") //指定配置文件
-public class AliyunOSS implements InitializingBean {
+public class AliyunOSSConfig implements InitializingBean {
     //读取配置文件的内容
 
     private String endpoint;

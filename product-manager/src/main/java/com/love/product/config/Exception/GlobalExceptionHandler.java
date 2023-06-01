@@ -2,6 +2,9 @@ package com.love.product.config.Exception;
 
 import com.love.product.entity.base.Result;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -47,4 +50,9 @@ public class GlobalExceptionHandler {
         return Result.fail();
     }
 
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<?> handleMissingServletRequestParameterException(MissingServletRequestParameterException ex) {
+        String errorMsg = "缺少必需的参数：" + ex.getParameterName();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMsg);
+    }
 }

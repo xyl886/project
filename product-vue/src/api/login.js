@@ -1,5 +1,15 @@
 import request from '@/utils/request'
 
+export const sendEmailCode = (email) => {
+  return request({
+    url: '/api/login/code',
+    method: 'get',
+    params: {
+      email: email
+    }
+  })
+}
+
 /**
  * 登录
  */
@@ -29,8 +39,6 @@ export const userRegister = (params) => {
 export const userLogout = () => {
   return request({
     url: '/api/login/userLogout',
-    method: 'get',
-    params: {
-    }
+    method: 'get'
   })
 }

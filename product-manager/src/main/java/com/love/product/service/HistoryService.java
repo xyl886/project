@@ -5,10 +5,7 @@ import com.love.product.entity.History;
 import com.love.product.entity.base.PageQuery;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
-import com.love.product.entity.req.PostsPageReq;
-import com.love.product.entity.vo.HistoryVO;
-
-import java.util.List;
+import com.love.product.model.VO.HistoryVO;
 
 /**
  * @PackageName: com.love.product.service

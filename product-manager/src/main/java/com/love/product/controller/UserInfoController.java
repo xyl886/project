@@ -1,7 +1,7 @@
 package com.love.product.controller;
 
 import com.love.product.entity.base.Result;
-import com.love.product.entity.vo.UserInfoVO;
+import com.love.product.model.VO.UserInfoVO;
 import com.love.product.service.UserInfoService;
 import com.love.product.util.JwtUtil;
 import io.swagger.annotations.Api;
@@ -58,7 +58,7 @@ public class UserInfoController {
         }
     }
     @PostMapping ("/updateUserPwd")
-    @ApiOperation(value = "更新用户信息", notes = "更新用户信息")
+    @ApiOperation(value = "更改用户密码", notes = "更改用户密码")
     public Result<?> updateUserPwd(
             @RequestParam("currentPassword") String currentPassword,
             @RequestParam("newPassword") String newPassword,

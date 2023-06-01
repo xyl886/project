@@ -1,4 +1,4 @@
-package com.love.product.entity.vo;
+package com.love.product.model.VO;
 
 import com.love.product.entity.UserInfo;
 import io.swagger.annotations.ApiModelProperty;

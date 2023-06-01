@@ -9,11 +9,13 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.love.product.config.Exception.BizException;
 import com.love.product.config.fileupload.FileUploadConfig;
 import com.love.product.config.security.TokenConfig;
+import com.love.product.constant.CacheConstant;
+import com.love.product.constant.CodeConstant;
 import com.love.product.constant.CommonConstant;
-import com.love.product.entity.DTO.EmailDTO;
+import com.love.product.model.DTO.EmailDTO;
 import com.love.product.entity.UserInfo;
 import com.love.product.entity.base.Result;
-import com.love.product.entity.vo.UserInfoVO;
+import com.love.product.model.VO.UserInfoVO;
 import com.love.product.enumerate.Gender;
 import com.love.product.enumerate.YesOrNo;
 import com.love.product.mapper.UserInfoMapper;
@@ -21,6 +23,7 @@ import com.love.product.service.FileUploadService;
 import com.love.product.service.FollowService;
 import com.love.product.service.RedisService;
 import com.love.product.service.UserInfoService;
+import com.love.product.util.CommonUtil;
 import com.love.product.util.EmailUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
@@ -38,11 +41,14 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
+import static com.love.product.constant.CommonConstant.CAPTCHA;
+import static com.love.product.constant.CommonConstant.EXPIRE_TIME;
 import static com.love.product.constant.RabbitMQConstant.EMAIL_EXCHANGE;
 import static com.love.product.util.CommonUtil.checkEmail;
 import static com.love.product.util.CommonUtil.getRandomCode;
+
 
 /**
  * @author Administrator
@@ -74,26 +80,41 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
     /**
      * 发送邮箱验证码
+     *
      * @param email
+     * @return
      */
+
     @Override
-    public void sendCode(String email) {
+    public Result<?> sendCode(String email) {
+        // 从缓存中查询邮箱最近一次发送验证码的时间戳
+//        Long lastSendTimestamp = CodeConstant.CACHE.get(email);
+        Object lastSendTimestampObj = redisService.get(email);
+        Long lastSendTimestamp = null;
+        if (lastSendTimestampObj != null) {
+            lastSendTimestamp = Long.parseLong(lastSendTimestampObj.toString());
+        }
+        long currentTime = System.currentTimeMillis() / 1000; // 当前时间戳，单位为秒
+        if (lastSendTimestamp != null && currentTime - lastSendTimestamp < EXPIRE_TIME) {
+            return Result.failMsg("发送验证码过于频繁，请稍后再试!");
+        }
+        CodeConstant.CACHE.put(email, currentTime);
+        redisService.set(email, currentTime, EXPIRE_TIME, TimeUnit.SECONDS);
         if (!checkEmail(email)) {
-            throw new BizException("请输入正确邮箱");
+            return Result.failMsg("请输入正确邮箱");
         }
         String code = getRandomCode();
         Map<String, Object> map = new HashMap<>();
         map.put("content", "您的验证码为 " + code + " 有效期5分钟，请不要告诉他人哦！");
         EmailDTO emailDTO = EmailDTO.builder()
                 .email(email)
-                .subject(CommonConstant.CAPTCHA)
+                .subject(CAPTCHA)
                 .template("common.html")
                 .commentMap(map)
                 .build();
-//        log.info(String.valueOf(emailDTO));
         rabbitTemplate.convertAndSend(EMAIL_EXCHANGE, "*", new Message(JSON.toJSONBytes(emailDTO), new MessageProperties()));
-        emailUtil.sendHtmlMail(emailDTO);
         redisService.set("code:" + email, code, 5 * 60);
+        return Result.OKMsg("验证码已发送，请查收！");
     }
 
     /**
@@ -102,7 +123,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
      * @return Result<UserInfo>
      */
     @Override
-    public Result<UserInfoVO> login(String email, String password){
+    public Result<UserInfoVO> login(String email, String password,String emailCode){
         UserInfoVO userInfoVO = getByEmail(email);
         if(userInfoVO != null){
             if(userInfoVO.getDeleted().equals(YesOrNo.YES.getValue())){
@@ -111,13 +132,27 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             if(userInfoVO.getStatus().equals(YesOrNo.YES.getValue())){
                 return Result.failMsg("登录失败，账号已禁用，请联系客服人员");
             }
-            PasswordEncoder encoder = new BCryptPasswordEncoder();
-            boolean matches = encoder.matches(password, userInfoVO.getPassword());
-            if (!matches) {
-                return Result.failMsg("账号或密码错误");
+            if(!emailCode.isEmpty()&&password.isEmpty()){
+                // 从 Redis 中获取验证码
+                String redisCode = (String) redisService.get("code:" + email);
+                log.info(redisCode);
+                if (redisCode == null) {
+                    return Result.failMsg("验证码已过期，请重新获取");
+                }
+                // 比较验证码是否正确
+                if(!redisCode.equals(emailCode)) {
+                    return Result.failMsg("验证码错误，请重新输入");
+                }
+            }else {
+                PasswordEncoder encoder = new BCryptPasswordEncoder();
+                boolean matches = encoder.matches(password, userInfoVO.getPassword());
+                if (!matches) {
+                    return Result.failMsg("账号或密码错误");
+                }
             }
-            //一定要在获取token前缓存redis，否则可能报错
+            //一定要在获取token前缓存redis，否则可能报错,并且要删除验证码
             redisService.set("user:userinfo:" + userInfoVO.getId(),userInfoVO);
+            redisService.del("code:"+email);
             String accessToken = getOAuthToken(userInfoVO);
             if(accessToken == null){
                 return Result.failMsg("登录失败，请重试");
@@ -129,7 +164,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
             return Result.OK(userInfoVO);
         }else{
-            return Result.failMsg("账号或密码错误");
+            return Result.failMsg("账号不存在!");
         }
     }
 
@@ -220,13 +255,27 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
      * @return Result<UserInfo>
      */
     @Override
-    public Result<UserInfoVO> userRegister(String email, String password, String confirmPassword){
-        if(!password.equals(confirmPassword)){
-            return Result.failMsg("两次输入密码不一致，请重新输入");
-        }
+    public Result<UserInfoVO> userRegister(String email,String emailCode, String password, String confirmPassword){
         UserInfoVO userInfoVO = getByEmail(email);
         if(userInfoVO != null){
             return Result.failMsg("邮箱已注册，请修改");
+        }
+        if (!checkEmail(email)) {
+            return Result.failMsg("请输入正确的邮箱");
+        }
+        if(!emailCode.isEmpty()){
+            // 从 Redis 中获取验证
+            String redisCode = (String) redisService.get("code:" + email);
+            if (redisCode == null) {
+                return Result.failMsg("验证码已过期，请重新获取");
+            }
+            // 比较验证码是否正确
+            if(!redisCode.equals(emailCode)) {
+                return Result.failMsg("验证码错误，请重新输入");
+            }
+        }
+        if(!password.equals(confirmPassword)){
+            return Result.failMsg("两次输入密码不一致，请重新输入");
         }
         LocalDateTime now = LocalDateTime.now();
         userInfoVO = new UserInfoVO();
@@ -254,11 +303,14 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             if (!currentPassword.equals(userInfo.getOriginalPassword())) {
                 return Result.failMsg("当前密码不正确！");
             }
-            if (currentPassword.equals(newPassword)){
-                return Result.failMsg("您的密码并未改动！");
-            }
             if (!newPassword.equals(confirmPassword)) {
                 return Result.failMsg("新密码与确认密码不匹配！");
+            }
+            if (currentPassword.equals(newPassword)){
+                return Result.OKMsg("您的密码并未改动！");
+            }
+            if (!CommonUtil.isValidPassword(newPassword)) {
+                return Result.failMsg("新密码不符合要求！");
             }
             userInfo.setOriginalPassword(newPassword);
             userInfo.setPassword(new BCryptPasswordEncoder().encode(newPassword));

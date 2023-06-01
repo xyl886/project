@@ -6,9 +6,10 @@ import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.req.PostsPageReq;
 import com.love.product.entity.req.PostsReq;
-import com.love.product.entity.vo.PostsVO;
+import com.love.product.model.DTO.PostsSearchDTO;
+import com.love.product.model.VO.ConditionVO;
+import com.love.product.model.VO.PostsVO;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -33,4 +34,6 @@ public interface PostsService extends IService<Posts> {
     Result<?> del(Long userId, Long id);
 
     String getImgPathById(Long id);
+
+    List<PostsSearchDTO> listPostsBySearch(ConditionVO condition);
 }

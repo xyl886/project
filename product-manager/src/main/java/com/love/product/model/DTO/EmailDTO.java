@@ -1,4 +1,4 @@
-package com.love.product.entity.DTO;
+package com.love.product.model.DTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

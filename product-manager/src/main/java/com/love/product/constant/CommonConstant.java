@@ -23,7 +23,9 @@ public interface CommonConstant {
     String CURRENT = "current";
 
     String SIZE = "size";
-
+    Long EXPIRE_TIME = 60L;
+    String PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+=-])(?=\\S+$).{6,20}$";
+    String EMAIL_REGEX="^\\w+((-\\w+)|(\\.\\w+))*\\@[A-Za-z0-9]+((\\.|-)[A-Za-z0-9]+)*\\.[A-Za-z0-9]+$";
     String DEFAULT_SIZE = "10";
 
     String DEFAULT_NICKNAME = "用户";

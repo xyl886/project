@@ -1,6 +1,6 @@
-package com.love.product.entity.vo;
+package com.love.product.model.VO;
 
-import com.love.product.entity.PostsComment;
+import com.love.product.entity.Follow;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,14 +10,17 @@ import lombok.NoArgsConstructor;
 /**
  * @author hjf
  * @date 2022-12-28 10:44
- * @describe 帖子评论
+ * @describe 关注
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostsCommentVO extends PostsComment {
+public class FollowVO extends Follow {
 
-    @ApiModelProperty(value = "所属用户")
+    @ApiModelProperty(value = "用户")
     private UserInfoVO userInfo;
+
+    @ApiModelProperty(value = "1 我关注了Ta 2Ta关注了我 3互关")
+    private Integer followStatus;
 }

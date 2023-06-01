@@ -5,7 +5,7 @@ import com.love.product.entity.Follow;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.req.FollowPageReq;
-import com.love.product.entity.vo.FollowVO;
+import com.love.product.model.VO.FollowVO;
 
 import java.util.List;
 

@@ -14,8 +14,11 @@ import java.util.Map;
 public class TokenConfig {
 
     private Map<String, String> config = new HashMap<>();
+
     private String resourceId;
+
     private String signingKey;
+
     private boolean isRefreshToken;
 
 }

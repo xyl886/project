@@ -3,7 +3,7 @@ package com.love.product.controller;
 import com.love.product.entity.base.PageQuery;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
-import com.love.product.entity.vo.HistoryVO;
+import com.love.product.model.VO.HistoryVO;
 import com.love.product.service.HistoryService;
 import com.love.product.util.JwtUtil;
 import io.swagger.annotations.Api;

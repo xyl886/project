@@ -30,7 +30,7 @@ public class RedisServiceImpl implements RedisService {
     private RedisTemplate<String, Object> redisTemplate;
 
     @Override
-    public void set(String key, Integer num, int i, TimeUnit timeUnit) {
+    public void set(String key, long num, Long i, TimeUnit timeUnit) {
         redisTemplate.opsForValue().set(key, num, 7, TimeUnit.DAYS);
     }
 

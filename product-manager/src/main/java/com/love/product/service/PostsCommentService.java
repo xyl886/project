@@ -3,8 +3,7 @@ package com.love.product.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.love.product.entity.PostsComment;
 import com.love.product.entity.base.Result;
-import com.love.product.entity.vo.PostsCommentVO;
-import com.love.product.util.JwtUtil;
+import com.love.product.model.VO.PostsCommentVO;
 
 import java.util.List;
 

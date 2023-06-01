@@ -1,7 +1,6 @@
 package com.love.product.util;
 
-import com.love.product.entity.DTO.EmailDTO;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.love.product.model.DTO.EmailDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
