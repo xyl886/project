@@ -5,22 +5,21 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.love.product.config.fileupload.AliyunOSSConfig;
 import com.love.product.entity.History;
 import com.love.product.entity.Posts;
 import com.love.product.entity.PostsLike;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.req.PostsPageReq;
-import com.love.product.entity.req.PostsReq;
-import com.love.product.model.DTO.PostsSearchDTO;
-import com.love.product.model.VO.ConditionVO;
-import com.love.product.model.VO.PostsVO;
-import com.love.product.model.VO.UserInfoVO;
 import com.love.product.enumerate.PostsType;
 import com.love.product.enumerate.School;
 import com.love.product.enumerate.YesOrNo;
 import com.love.product.mapper.PostsMapper;
+import com.love.product.model.DTO.PostsSearchDTO;
+import com.love.product.model.VO.ConditionVO;
+import com.love.product.model.VO.PostsDetailVO;
+import com.love.product.model.VO.PostsVO;
+import com.love.product.model.VO.UserInfoVO;
 import com.love.product.service.*;
 import com.love.product.strategy.context.SearchStrategyContext;
 import lombok.SneakyThrows;
@@ -33,6 +32,8 @@ import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.love.product.constant.CommonConstant.ALIYUNOSS_PREFIX;
 
 /**
  * @author Administrator
@@ -77,35 +78,35 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
      */
     @SneakyThrows
     @Override
-    public Result<Posts> add(Long userId, PostsReq postsReq) {
-        PostsType postsType = PostsType.valueOf(postsReq.getPostsType());
+    public Result<Posts> add(Long userId, PostsVO postsVO) {
+        PostsType postsType = PostsType.valueOf(postsVO.getPostsType());
         if(postsType == null){
             return Result.failMsg("请选择帖子类型");
         }
-        if(StringUtils.isBlank(postsReq.getTitle())){
+        if(StringUtils.isBlank(postsVO.getTitle())){
             return Result.failMsg("标题不能为空");
         }
-        if(StringUtils.isBlank(postsReq.getContent())){
+        if(StringUtils.isBlank(postsVO.getContent())){
             return Result.failMsg("内容不能为空");
         }
-        if(School.valueOf(postsReq.getSchool()) == null){
+        if(School.valueOf(postsVO.getSchool()) == null){
             return Result.failMsg("请选择标签");
         }
         List<String> imgPathList = new ArrayList<>();
         if(postsType.equals(PostsType.LEAVE)){//闲置帖
-            if(postsReq.getPrice() == null || postsReq.getPrice().doubleValue() <= 0){
+            if(postsVO.getPrice() == null || postsVO.getPrice().doubleValue() <= 0){
                 return Result.failMsg("请输入价格");
             }
-            if(postsReq.getFiles() == null || postsReq.getNewFiles().length == 0){
+            if(postsVO.getFiles() == null || postsVO.getFiles().length == 0){
                 return Result.failMsg("请至少上传一张图片");
             }
         }
-        if(postsReq.getFiles() != null){
-            if(postsReq.getNewFiles().length > 9){
+        if(postsVO.getFiles() != null){
+            if(postsVO.getFiles().length > 9){
                 return Result.failMsg("最多可上传9张图片");
             }
             //上传图片
-            for(MultipartFile multipartFile : postsReq.getNewFiles()){
+            for(MultipartFile multipartFile : postsVO.getFiles()){
 //            String imgPath = fileUploadService.uploadImage(multipartFile);      //本地存储
                 String imgPath =  ossService.uploadFile(multipartFile);        //oss对象存储
                 imgPathList.add(imgPath);
@@ -114,7 +115,7 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
 
         LocalDateTime now = LocalDateTime.now();
         Posts posts = new Posts();
-        BeanUtil.copyProperties(postsReq,posts);
+        BeanUtil.copyProperties(postsVO,posts);
         posts.setId(IdWorker.getId());
         posts.setUserId(userId);
         posts.setCreateTime(now);
@@ -132,16 +133,19 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
 
     /**
      * 分页
+     * @param userId
+     * @param postsPageReq
+     * @return
      */
     @Override
-    public ResultPage<PostsVO> getPage(Long userId,PostsPageReq postsPageReq) {
+    public ResultPage<PostsDetailVO> getPage(Long userId, PostsPageReq postsPageReq) {
         if(userId == null && (Objects.equals(postsPageReq.getSchool(),7) ||Objects.equals(postsPageReq.getSchool(),8))){  //未登录
             return ResultPage.FAIL(403,"请登录");
         }
         List<Long> followedUserIds = followService.getFollowedUserIdsByUserId(userId);
         log.info("已关注的用户id:"+followedUserIds);
         if (Objects.equals(postsPageReq.getSchool(),8) && followedUserIds.isEmpty()) {
-            return ResultPage.OK(0, 1, 10, (Collection<PostsVO>) null);
+            return ResultPage.OK(0, 1, 10, (Collection<PostsDetailVO>) null);
         }
 //        如果查询参数postsPageReq的帖子类型不为空，则加入一个等于帖子类型的条件。
 //        如果查询参数postsPageReq的学校不为空且不等于3，则加入一个等于学校的条件。
@@ -156,18 +160,18 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
         .eq(Posts::getStatus, YesOrNo.NO.getValue())
         .orderByDesc(Posts::getCreateTime);
         Page<Posts> page = page(postsPageReq.build(), queryWrapper);
-        List<PostsVO> list = new ArrayList<>();
+        List<PostsDetailVO> list = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
         List<Long> postsIds = new ArrayList<>();
         if (page.getTotal() > 0) {
             list = page.getRecords().stream().map(posts -> {
-                PostsVO postsVO = BeanUtil.copyProperties(posts, PostsVO.class);
-                School school = School.valueOf(postsVO.getSchool());
-                postsVO.setSchoolName(school!=null?school.getText():"");
-                initImgPath(postsVO);
-                userIds.add(postsVO.getUserId());
-                postsIds.add(postsVO.getId());
-                return postsVO;
+                PostsDetailVO postsDetailVO = BeanUtil.copyProperties(posts, PostsDetailVO.class);
+                School school = School.valueOf(postsDetailVO.getSchool());
+                postsDetailVO.setSchoolName(school!=null?school.getText():"");
+                initImgPath(postsDetailVO);
+                userIds.add(postsDetailVO.getUserId());
+                postsIds.add(postsDetailVO.getId());
+                return postsDetailVO;
             }).collect(Collectors.toList());
         }
         Map<Long, UserInfoVO> userInfoVOMap;
@@ -192,29 +196,31 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
     }
 
     /**
-     * 详情
-     *
+     * 获取帖子详情
+     * @param userId 用户id
+     * @param id  帖子id
+     * @return Result<PostsDetailVO>
      */
     @Override
-    public Result<PostsVO> getDetail(Long userId,Long id) {
+    public Result<PostsDetailVO> getDetail(Long userId, Long id) {
         Posts posts = getById(id);
         if(posts == null || posts.getStatus().equals(YesOrNo.YES.getValue())){
             return Result.failMsg("帖子不存在或已下架");
         }
-        PostsVO postsVO = BeanUtil.copyProperties(posts, PostsVO.class);
+        PostsDetailVO postsDetailVO = BeanUtil.copyProperties(posts, PostsDetailVO.class);
         UserInfoVO userInfoVO = userInfoService.getUserInfoById(posts.getUserId());
-        postsVO.setUserInfo(userInfoVO);
-        initImgPath(postsVO);
-        postsVO.setCollect(false);
-        postsVO.setFollow(false);
+        postsDetailVO.setUserInfo(userInfoVO);
+        initImgPath(postsDetailVO);
+        postsDetailVO.setCollect(false);
+        postsDetailVO.setFollow(false);
         if(userId != null && collectService.getDetail(userId,posts.getId()) != null){
-            postsVO.setCollect(true);
+            postsDetailVO.setCollect(true);
         }
         if(userId != null && followService.getDetail(userId,posts.getUserId()) != null){
-            postsVO.setFollow(true);
+            postsDetailVO.setFollow(true);
         }
-        log.info(String.valueOf(postsVO));
-        return Result.OK(postsVO);
+        log.info(String.valueOf(postsDetailVO));
+        return Result.OK(postsDetailVO);
     }
 
     /**
@@ -250,16 +256,16 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
     /**
      * 拼接图片获取绝对路径
      */
-    private void initImgPath(PostsVO postsVO){
-        postsVO.setCoverPath(ossService.getOssImgPath(postsVO.getCoverPath()));//todo OSS存储
-        if(StringUtils.isNotEmpty(postsVO.getImgPath())){
-            String[] arr = postsVO.getImgPath().split(",");
+    private void initImgPath(PostsDetailVO postsDetailVO){
+        postsDetailVO.setCoverPath(ossService.getOssImgPath(postsDetailVO.getCoverPath()));//todo OSS存储
+        if(StringUtils.isNotEmpty(postsDetailVO.getImgPath())){
+            String[] arr = postsDetailVO.getImgPath().split(",");
             List<String> list = Arrays.asList(arr);
             List<String> imgPathList = new ArrayList<>();
             list.forEach(item-> {
                 imgPathList.add(ossService.getOssImgPath(item));//todo OSS存储
             });
-            postsVO.setImgPath(imgPathList.stream().map(String::valueOf).collect(Collectors.joining(",")));
+            postsDetailVO.setImgPath(imgPathList.stream().map(String::valueOf).collect(Collectors.joining(",")));
         }
     }
 
@@ -267,15 +273,15 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
      * 批量获取
      */
     @Override
-    public Map<Long, PostsVO> listByIds(List<Long> postsIds){
-        Map<Long, PostsVO> postsHashMap = new HashMap<>();
+    public Map<Long, PostsDetailVO> listByIds(List<Long> postsIds){
+        Map<Long, PostsDetailVO> postsHashMap = new HashMap<>();
         LambdaQueryWrapper<Posts> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.in(Posts::getId,postsIds);
         List<Posts> postsList = list(queryWrapper);
         postsList.forEach(item -> {
-            PostsVO postsVO = BeanUtil.copyProperties(item, PostsVO.class);
-            initImgPath(postsVO);
-            postsHashMap.put(postsVO.getId(), postsVO);
+            PostsDetailVO postsDetailVO = BeanUtil.copyProperties(item, PostsDetailVO.class);
+            initImgPath(postsDetailVO);
+            postsHashMap.put(postsDetailVO.getId(), postsDetailVO);
         });
         return postsHashMap;
     }
@@ -284,47 +290,50 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
      */
     @SneakyThrows
     @Override
-    public Result<?> update(PostsReq postsReq){
-        log.info("帖子id:"+postsReq.getId());
-        log.info("修改前Posts:"+getById(postsReq.getId()));
-        if(postsReq.getId() != null){
-            if(com.baomidou.mybatisplus.core.toolkit.StringUtils.isEmpty(postsReq.getTitle())){
+    public Result<?> update(PostsVO postsVO){
+        log.info("postsVO"+ postsVO);
+        log.info("帖子id:"+ postsVO.getId());
+        log.info("修改前Posts:"+getById(postsVO.getId()));
+        if(postsVO.getId() != null){
+            if(com.baomidou.mybatisplus.core.toolkit.StringUtils.isEmpty(postsVO.getTitle())){
                 return Result.failMsg("请输入标题");
             }
-            if(com.baomidou.mybatisplus.core.toolkit.StringUtils.isEmpty(postsReq.getContent())){
+            if(com.baomidou.mybatisplus.core.toolkit.StringUtils.isEmpty(postsVO.getContent())){
                 return Result.failMsg("请输入内容");
             }
             Posts posts = new Posts();
-            BeanUtil.copyProperties(postsReq,posts);
-            posts.setTitle(postsReq.getTitle());
-            posts.setSchool(postsReq.getSchool());
-            posts.setContent(postsReq.getContent());
+            BeanUtil.copyProperties(postsVO,posts);
+            posts.setTitle(postsVO.getTitle());
+            posts.setSchool(postsVO.getSchool());
+            posts.setContent(postsVO.getContent());
 
-//            if(postsReq.getFiles() == null||postsReq.getFiles().length == 0){
+//            if(postsVO.getFiles() == null||postsVO.getFiles().length == 0){
 //                return Result.failMsg("请至少上传一张图片");
 //            }
-            if(postsReq.getFiles() != null){
-                if((postsReq.getNewFiles().length) > 9){
+            if(postsVO.getFiles() != null){
+                if((postsVO.getFiles().length) > 9){
                     return Result.failMsg("最多可上传9张图片");
                 }
                 List<String> imgPathList = new ArrayList<>();
-                imgPathList.add(postsService.getImgPathById(postsReq.getId()));
-                log.info("修改前imgpath:"+imgPathList);
-                log.info(String.valueOf(postsReq));
+                Collections.addAll(imgPathList,postsService.getImgPathById(postsVO.getId()).split(","));
+                log.info("修改前imgPathList:"+imgPathList);
 
-                String ImgPath=postsReq.getFiles();
-                imgPathList.add(ImgPath.substring(ImgPath.lastIndexOf("/") + 1));
+                String removeImgPath= postsVO.getRemoveFiles();
+                if(!removeImgPath.isEmpty()){
+                    List<String> removeUrls = new ArrayList<>(Arrays.asList(removeImgPath.split(",")));
+                    imgPathList.removeAll(removeUrls);
+                    removeUrls.replaceAll(url -> url.replace(ALIYUNOSS_PREFIX, ""));//把前缀删掉
+                    log.info(removeUrls.toString());
+                    for (String url : removeUrls) {
+                        ossService.delFile(url);
+                    }
+                    log.info("移除了"+ removeUrls);
+                    log.info("移除完的imgPathList:"+imgPathList);
 
-                String removeImgPath=postsReq.getRemoveFiles();
-                if(removeImgPath!=null){
-                String fileName = removeImgPath.substring(removeImgPath.lastIndexOf("/") + 1);
-                    log.info(fileName);
-                    ossService.delFile(fileName);
-                    imgPathList.remove(fileName);
                 }
 
-                for (MultipartFile file : postsReq.getNewFiles()) {
-                        String imgPath = ossService.uploadFile(file);//上传图片 todo oss存储
+                for (MultipartFile file : postsVO.getFiles()) {//上传新加的图片
+                        String imgPath = ossService.uploadFile(file);// todo oss存储
                         imgPathList.add(imgPath);
                     }
 
@@ -335,19 +344,27 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
                 }
             }
             saveOrUpdate(posts);
-            BeanUtil.copyProperties(postsReq,getById(postsReq.getId()));
-            return Result.OK("修改成功",getById(postsReq.getId()));
+            BeanUtil.copyProperties(postsVO,getById(postsVO.getId()));
+            return Result.OK("修改成功",getById(postsVO.getId()));
         }
         return Result.failMsg("修改失败，请重试");
     }
 
-
+    /**
+     * 帖子搜索
+     * @param condition 条件
+     * @return List<PostsSearchDTO>
+     */
     @Override
     public List<PostsSearchDTO> listPostsBySearch(ConditionVO condition) {
         return searchStrategyContext.executeSearchStrategy(condition.getKeywords());
     }
+
     /**
      * 帖子删除
+     * @param userId 帖子所属用户id
+     * @param id 帖子id
+     * @return
      */
     @Override
     public Result<?> del(Long userId,Long id) {
@@ -359,7 +376,7 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
                 log.info("图片："+imageUrlList);
                 for (String file : imageUrlList) {
                     try {
-                        ossService.delFile(file.replace("https://" + AliyunOSSConfig.BUCKET_NAME + "." + AliyunOSSConfig.END_POINT + "/",""));
+                        ossService.delFile(file.replace(ALIYUNOSS_PREFIX,""));
                         log.info("成功删除图片：" + file);
                     } catch (Exception e) {
                         log.error("删除图片失败：" + file, e);
@@ -378,6 +395,11 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
         }
     }
 
+    /**
+     * 根据帖子id获取img_path
+     * @param id 帖子id
+     * @return String
+     */
     @Override
     public String getImgPathById(Long id) {
 

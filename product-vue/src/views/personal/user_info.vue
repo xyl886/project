@@ -34,22 +34,24 @@
           </el-col>
         </el-row>
         <el-row style="margin: 30px 0;">
-          <el-col :span="2">
+          <el-col :span="3">
             <div style="font-size: 16px;">关注</div>
           </el-col>
-          <el-col :span="1">
+          <el-col :span="21">
             <div style="font-size: 16px;color: #666;">{{user.followNum}}</div>
           </el-col>
-          <el-col :span="2">
+        </el-row>
+        <el-row>
+          <el-col :span="3">
           <div style="font-size: 16px;">粉丝</div>
         </el-col>
-          <el-col :span="1">
+          <el-col :span="21">
             <div style="font-size: 16px;color: #666;">{{user.fansNum}}</div>
           </el-col>
         </el-row>
         <el-row style="margin: 30px 0;">
           <el-col :span="3">
-            <div style="font-size: 16px;">电话</div>
+            <div style="font-size: 16px;">邮箱</div>
           </el-col>
           <el-col :span="21">
             <div style="font-size: 16px;color: #666;">{{user.email}}</div>
@@ -123,7 +125,6 @@
           </el-form>
         </div>
       </el-dialog>
-
     </div>
 </template>
 
@@ -191,6 +192,7 @@ export default {
           this.user = res.data
         }
       }, error => {
+        this.$message.error(error)
       })
     },
     updateModal () {
@@ -243,7 +245,6 @@ export default {
       this.$refs.form.resetFields()
       this.$refs.form.clearValidate()
       this.$refs.upload.clearFiles()
-      this.fileList.splice(null, 1)
       this.box = false
     }
   }

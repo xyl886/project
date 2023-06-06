@@ -7,13 +7,16 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.love.product.entity.Collect;
 import com.love.product.entity.Posts;
+import com.love.product.entity.UserInfo;
 import com.love.product.entity.base.PageQuery;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.model.VO.CollectVO;
-import com.love.product.model.VO.PostsVO;
+import com.love.product.model.VO.PostsDetailVO;
 import com.love.product.enumerate.YesOrNo;
 import com.love.product.mapper.CollectMapper;
+import com.love.product.model.VO.UserBasicInfoVO;
+import com.love.product.model.VO.UserInfoVO;
 import com.love.product.service.CollectService;
 import com.love.product.service.PostsService;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -36,6 +40,8 @@ public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> impl
 
     @Resource
     private PostsService postsService;
+    @Resource
+    private UserInfoServiceImpl userInfoService;
     @Resource
     private CollectMapper collectMapper;
 
@@ -94,15 +100,24 @@ public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> impl
                 return collectVO;
             }).collect(Collectors.toList());
         }
-        Map<Long, PostsVO> postsHashMap;
+        Map<Long, PostsDetailVO> postsHashMap;
         if(list.size() > 0){
             postsHashMap = postsService.listByIds(postsIds);
-            Map<Long, PostsVO> finalPostsHashMap = postsHashMap;
+            Map<Long, PostsDetailVO> finalPostsHashMap = postsHashMap;
             list.forEach(item -> {
-                PostsVO postsVO = finalPostsHashMap.get(item.getPostsId());
-                item.setPosts(postsVO);
+                PostsDetailVO postsDetailVO = finalPostsHashMap.get(item.getPostsId());
+                item.setPosts(postsDetailVO);
             });
         }
+        // 关联查询用户信息
+        List<Long> userIds = list.stream().map(CollectVO::getUserId).collect(Collectors.toList());
+        Map<Long, UserInfoVO> users = userInfoService.listByIds(userIds);
+        list.forEach(item -> {
+            UserInfoVO user = users.get(item.getUserId());
+            if (user != null) {
+                item.setUserBasicInfo(new UserBasicInfoVO(user.getId(), user.getNickname(), user.getAvatar()));
+            }
+        });
         return ResultPage.OK(page.getTotal(), page.getCurrent(), page.getSize(), list);
     }
 }

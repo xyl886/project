@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 public class HistoryVO extends History {
 
     @ApiModelProperty(value = "帖子")
-    private PostsVO posts;
+    private PostsDetailVO posts;
 
     @ApiModelProperty(value = "帖子标题")
     private String postTitle;
@@ -38,4 +38,9 @@ public class HistoryVO extends History {
      */
     @ApiModelProperty(value = "帖子类型 1闲置帖 2校园帖")
     public Integer postType;
+    /**
+     * {@link com.love.product.enumerate.School}
+     */
+    @ApiModelProperty(value = "校区")
+    public String schoolName;
 }

@@ -181,13 +181,14 @@ export default {
         if (valid) {
           this.loading = true
           const formData = new FormData()
-          // formData.append('files', null)
-          // console.log('this.fileList:' + JSON.stringify(this.fileList))
+          formData.append('files', null)
+          console.log('this.fileList:' + JSON.stringify(this.fileList))
+          let originalImgUrls = ''
           for (const file of this.fileList) { // 多个文件全部都放到files
             if (file.raw === undefined) {
-              formData.append('files', file.url)
+              originalImgUrls += file.url + ','
             } else {
-              formData.append('newFiles', file.raw) // 新上传的照片
+              formData.append('Files', file.raw) // 新上传的照片
             }
           }
           this.removeFileList.forEach((item) => {
@@ -197,6 +198,7 @@ export default {
           formData.append('userId', this.form.userId)
           formData.append('title', this.form.title)
           formData.append('content', this.form.content)
+          formData.append('oldFiles', originalImgUrls.slice(0, -1))
           formData.append('school', this.form.school)
           formData.append('price', this.form.price)
           console.log(formData)

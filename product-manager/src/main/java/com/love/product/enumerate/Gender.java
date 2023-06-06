@@ -1,11 +1,15 @@
 package com.love.product.enumerate;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 /**
  * @author Administrator
  * @date 2022-10-19 10:35
  * @describe 性别
  */
-
+@Getter
+@AllArgsConstructor
 public enum Gender {
 
     /**
@@ -19,17 +23,12 @@ public enum Gender {
     /**
      * 枚举值
      */
-    private int value;
+    private final int value;
 
     /**
      * 枚举文本说明
      */
-    private String text;
-
-    Gender(int value, String text) {
-        this.value = value;
-        this.text = text;
-    }
+    private final String text;
 
     public static Gender valueOf(Integer value) {
         if (value != null) {
@@ -41,22 +40,5 @@ public enum Gender {
         }
         return null;
     }
-
-    public int getValue() {
-        return value;
-    }
-
-    public void setValue(int value) {
-        this.value = value;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
 }
 

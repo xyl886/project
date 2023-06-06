@@ -1,24 +1,22 @@
 <template>
     <div style="font-size: 14px;">
-      <div style="top:10px;position: relative" class="shell" @mouseenter="handleMouseEnter" @mousemove="handleMouseMove" @mouseleave="handleMouseLeave">
+      <div style="top:5px;position: relative" class="shell" @mouseenter="handleMouseEnter" @mousemove="handleMouseMove" @mouseleave="handleMouseLeave">
         <div class="image-container" :style="`transform: translate(${imageMove}px, -8px);`">
           <img src="../../../public/img/userheader.png" alt="Image">
         </div>
       </div>
-      <div style="margin: auto 15%;background-color:#ffffff;display: flex;">
-        <div style="width: 200px;border-right: 1px solid #e6e6e6;">
-          <div style="font-size: 24px;text-align: center;line-height: 50px;color: #303133;">
-            个人中心
-          </div>
-          <div>
-            <el-menu :default-active="activeIndex" mode="vertical" class="el-menu-demo">
+      <div style="margin: auto 15%;background-color:#ffffff;">
+        <div style="border: 1px solid #e6e6e6;">
+            <el-menu :default-active="activeIndex" mode="horizontal" class="el-menu-demo">
               <el-menu-item v-for="(item,index) in menus" :index="item.path" :key="item.path" @click="pathFun(item.path)">
-                <div slot="title" style="margin-left: 30px;"><i :class="item.icon"></i>{{item.name}}</div>
+                <div slot="title" style="margin-left: 15px;margin-right: 15px">
+                  <span slot="label"><i :class="item.icon"></i></span>
+<!--                  <i :class="emijoIconClassNameMap[key]"></i> -->
+                  {{item.name}}</div>
               </el-menu-item>
             </el-menu>
-          </div>
+            <router-view style="flex: 1;"></router-view>
         </div>
-        <router-view style="flex: 1;"></router-view>
       </div>
     </div>
 </template>
@@ -33,11 +31,12 @@ export default {
       imageMove: 36,
       activeIndex: '/index',
       menus: [
-        {name: '个人资料', path: '/personal/user_info', icon: 'el-icon-user-solid'},
-        {name: '我的收藏', path: '/personal/collect', icon: 'el-icon-star-on'},
-        {name: '我的关注', path: '/personal/follow', icon: 'el-icon-star-on'},
-        {name: '我的粉丝', path: '/personal/fans', icon: 'el-icon-star-on'},
-        {name: '浏览记录', path: '/personal/history', icon: 'el-icon-star-on'}
+        {name: '我的帖子', path: '/personal/my_post', icon: 'iconfont icon-wofadetiezi'},
+        {name: '个人资料', path: '/personal/user_info', icon: 'iconfont icon-bianjigerenziliao'},
+        {name: '我的收藏', path: '/personal/collect', icon: 'iconfont icon-shoucang'},
+        {name: '我的关注', path: '/personal/follow', icon: 'iconfont icon-chakantieziguanzhu'},
+        {name: '我的粉丝', path: '/personal/fans', icon: 'iconfont icon-wodefensi'},
+        {name: '浏览记录', path: '/personal/history', icon: 'iconfont icon-lishijilu_huaban'}
       ]
     }
   },
@@ -98,6 +97,7 @@ export default {
 </script>
 
 <style scoped>
+@import '../../../static/iconfont/iconfont.css';
 * {
   padding: 0;
   margin: 0;

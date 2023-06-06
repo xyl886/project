@@ -5,10 +5,10 @@ import com.love.product.entity.Posts;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.req.PostsPageReq;
-import com.love.product.entity.req.PostsReq;
+import com.love.product.model.VO.PostsVO;
 import com.love.product.model.DTO.PostsSearchDTO;
 import com.love.product.model.VO.ConditionVO;
-import com.love.product.model.VO.PostsVO;
+import com.love.product.model.VO.PostsDetailVO;
 
 import java.util.List;
 import java.util.Map;
@@ -19,17 +19,17 @@ import java.util.Map;
  */
 public interface PostsService extends IService<Posts> {
 
-    Result<Posts> add(Long userId, PostsReq postsReq);
+    Result<Posts> add(Long userId, PostsVO postsVO);
 
-    ResultPage<PostsVO> getPage(Long userId,PostsPageReq postsPageReq);
+    ResultPage<PostsDetailVO> getPage(Long userId, PostsPageReq postsPageReq);
 
-    Result<PostsVO> getDetail(Long userId,Long id);
+    Result<PostsDetailVO> getDetail(Long userId, Long id);
 
     Result<?> browse(Long userId,Long id);
 
-    Map<Long, PostsVO> listByIds(List<Long> postsIds);
+    Map<Long, PostsDetailVO> listByIds(List<Long> postsIds);
 
-    Result<?> update(PostsReq postsReq);
+    Result<?> update(PostsVO postsVO);
 
     Result<?> del(Long userId, Long id);
 

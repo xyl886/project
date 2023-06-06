@@ -11,31 +11,23 @@
           </el-tabs>
         </el-col>
         <el-col :span="6">
+          <div> <el-input v-model="searchText" name="search" slot="label" placeholder="搜索"></el-input></div>
           <div class="recommendation">
-            <el-input v-model="searchText" name="search" slot="label" placeholder="搜索"></el-input>
             <div style="margin:0 0 5px 15px;"><b>向你推荐</b></div>
             <div class="title"  v-for="(item, index) in recommendationItems" :key="index">
 <!--              <img src="../assets/hot.png" width="14" height="14" style="margin:12px 5px 0 0 ;"/>-->
-              <router-link class="titlea"
+              <router-link class="title"
                            target="_blank"
                            :to="{
                   path: '/CampusSharing/CampusSharingContent',
-                  query: { postid: item.id },
+                  query: { postId: item.id },
                 }"
               >{{ item.title }}</router-link
               >
             </div>
-<!--            <div class="recommendation-title">{{ title }}</div>-->
-<!--            <div class="recommendation-list">-->
-<!--              <div v-for="(item, index) in recommendationItems" :key="item.id" class="recommendation-item">-->
-<!--                <el-row>-->
-<!--                  <el-col :span="4">  <div class="item-index">{{ index + 1 }}</div></el-col>-->
-<!--                  <el-col :span="20">  <div class="item-content">{{ item.content }}</div></el-col>-->
-<!--                  </el-row>-->
-<!--              </div>-->
-<!--            </div>-->
           </div>
-      </el-col></el-row>
+      </el-col>
+        </el-row>
       </div>
     </div>
   </div>
@@ -133,15 +125,24 @@ export default {
   line-height: 60px;
   margin-top: auto;
 }
-.BulletinBoard {
+.recommendation {
   width: 353px;
   height: 440px;
   background-color: white;
   border-radius: 5px;
-  position: -webkit-sticky;
-  position: sticky;
-  top: -10px;
-  margin-top: 70px;
-  padding: 10px 0 0  ;
+  position: fixed;
+  top: 30px;
+  margin-left: 10px;
+  margin-top: 90px;
+  padding: 10px 0 0;
+  /*width: 353px;*/
+  /*height: 440px;*/
+  /*background-color: white;*/
+  /*border-radius: 5px;*/
+  //position: -webkit-sticky;
+  //position: sticky;
+  /*top: -10px;*/
+  //margin-top: 70px;
+  //padding: 10px 0 0;
 }
 </style>

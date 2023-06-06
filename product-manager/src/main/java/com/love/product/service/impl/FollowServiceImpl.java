@@ -4,7 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.love.product.constant.RedisConstantKey;
+import com.love.product.constant.RedisConstant;
 import com.love.product.entity.Follow;
 import com.love.product.entity.UserInfo;
 import com.love.product.entity.base.Result;
@@ -59,8 +59,8 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
             followMapper.add(follow);
             //清除redis缓存
 //            RedisUtil.deleteFollowNum(userId);
-            redisService.del(RedisConstantKey.FOLLOW_NUM + userId);
-            redisService.del(RedisConstantKey.FANS_NUM + beFollowedUserId);
+            redisService.del(RedisConstant.FOLLOW_NUM + userId);
+            redisService.del(RedisConstant.FANS_NUM + beFollowedUserId);
             if(yesOrNo.equals(YesOrNo.YES)){
                 return Result.OKMsg("已取消关注");
             }else{
@@ -82,20 +82,20 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
 
     @Override
     public int getFansNumByUserId(Long userId){
-        Integer num = (Integer) redisService.get(RedisConstantKey.FANS_NUM + userId);
+        Integer num = (Integer) redisService.get(RedisConstant.FANS_NUM + userId);
         if(num == null){
             LambdaQueryWrapper<Follow> queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.eq(Follow::getBeFollowedUserId,userId);
             long fansNum = count(queryWrapper);
             num = Integer.parseInt(String.valueOf(fansNum));
-            redisService.set(RedisConstantKey.FANS_NUM + userId, num, 7L, TimeUnit.DAYS);
+            redisService.set(RedisConstant.FANS_NUM + userId, num, 7L, TimeUnit.DAYS);
         }
         return num;
     }
 
     @Override
     public int getFollowNumByUserId(Long userId){
-        Integer num = (Integer) redisService.get(RedisConstantKey.FOLLOW_NUM + userId);
+        Integer num = (Integer) redisService.get(RedisConstant.FOLLOW_NUM + userId);
 //        Integer num = RedisUtil.getFollowNum(userId);
         if(num == null){
             LambdaQueryWrapper<Follow> queryWrapper = new LambdaQueryWrapper<>();
@@ -103,7 +103,7 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
             long followNum = count(queryWrapper);
             num = Integer.parseInt(String.valueOf(followNum));
 //            RedisUtil.setFollowNum(userId,num);
-            redisService.set(RedisConstantKey.FOLLOW_NUM + userId, num, 7L, TimeUnit.DAYS);
+            redisService.set(RedisConstant.FOLLOW_NUM + userId, num, 7L, TimeUnit.DAYS);
         }
         return num;
     }

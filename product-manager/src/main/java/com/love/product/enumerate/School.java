@@ -1,11 +1,15 @@
 package com.love.product.enumerate;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 /**
  * @author Administrator
  * @date 2022-10-19 10:35
  * @describe 校区 1官塘校区 2社湾校区
  */
-
+@Getter
+@AllArgsConstructor
 public enum School {
 
     /**
@@ -22,17 +26,12 @@ public enum School {
     /**
      * 枚举值
      */
-    private int value;
+    private final int value;
 
     /**
      * 枚举文本说明
      */
-    private String text;
-
-    School(int value, String text) {
-        this.value = value;
-        this.text = text;
-    }
+    private final String text;
 
     public static School valueOf(Integer value) {
         if (value != null) {
@@ -44,22 +43,5 @@ public enum School {
         }
         return null;
     }
-
-    public int getValue() {
-        return value;
-    }
-
-    public void setValue(int value) {
-        this.value = value;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
 }
 

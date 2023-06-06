@@ -13,15 +13,18 @@
     </div>
     <router-view v-if="!loadingIndex"/>
     <Player/>
+    <BackToTop></BackToTop>
   </div>
 </template>
 
 <script>
 import Player from './components/zw-player/player.vue'
+import BackToTop from './page/top/BackToTop.vue'
 
 export default {
   name: 'App',
   components: {
+    BackToTop,
     Player
   },
   data () {

@@ -42,7 +42,8 @@ public class SwaggerConfig implements ApplicationListener<WebServerInitializedEv
 
     private ApiInfo apiInfo() {
 
-        return new ApiInfoBuilder().version("1.0.0")
+        return new ApiInfoBuilder()
+                .version("1.0.0")
                 .title("Spring Cloud Swagger2 文档")
                 .description("Spring Cloud Swagger2 文档")
                 .termsOfServiceUrl("https://blog.csdn.net/lucky_fang?type=blog")

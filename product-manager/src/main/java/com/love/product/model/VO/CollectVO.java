@@ -1,6 +1,7 @@
 package com.love.product.model.VO;
 
 import com.love.product.entity.Collect;
+import com.love.product.entity.UserInfo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,5 +20,8 @@ import lombok.NoArgsConstructor;
 public class CollectVO extends Collect {
 
     @ApiModelProperty(value = "帖子")
-    private PostsVO posts;
+    private PostsDetailVO posts;
+
+    @ApiModelProperty(value = "用户基本信息")
+    private UserBasicInfoVO userBasicInfo;
 }

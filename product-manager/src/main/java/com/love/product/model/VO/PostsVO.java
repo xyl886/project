@@ -6,11 +6,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
- * @author hjf
- * @date 2022-12-28 10:44
- * @describe 帖子
+ * @author Administrator
+ * @date 2022-12-28 9:23
+ * @describe 帖子请求体
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -18,18 +19,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PostsVO extends Posts {
 
-    @ApiModelProperty(value = "校区名称")
-    private String schoolName;
+    @ApiModelProperty(value = "新上传文件")
+    private MultipartFile[] Files;
 
-    @ApiModelProperty(value = "所属用户")
-    private UserInfoVO userInfo;
+    @ApiModelProperty(value = "上传文件")
+    private String oldFiles;
 
-    @ApiModelProperty(value = "是否收藏")
-    private Boolean collect;
-
-    @ApiModelProperty(value = "是否关注")
-    private Boolean follow;
-
-    @ApiModelProperty(value = "是否点赞")
-    private Boolean like;
+    @ApiModelProperty(value = "移除的文件")
+    private String removeFiles;
 }

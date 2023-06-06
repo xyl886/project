@@ -5,10 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.love.product.entity.base.BaseEntity;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 
@@ -19,6 +16,7 @@ import java.math.BigDecimal;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName(value ="posts")
@@ -43,7 +41,7 @@ public class Posts extends BaseEntity {
     /**
      * {@link com.love.product.enumerate.School}
      */
-    @ApiModelProperty(value = "校区 1官塘校区 2社湾校区")
+    @ApiModelProperty(value = "校区")
     public Integer school;
 
     @ApiModelProperty(value = "单价")

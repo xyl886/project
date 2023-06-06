@@ -6,19 +6,16 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.love.product.config.Exception.BizException;
 import com.love.product.config.fileupload.FileUploadConfig;
 import com.love.product.config.security.TokenConfig;
 import com.love.product.constant.CacheConstant;
-import com.love.product.constant.CodeConstant;
-import com.love.product.constant.CommonConstant;
-import com.love.product.model.DTO.EmailDTO;
 import com.love.product.entity.UserInfo;
 import com.love.product.entity.base.Result;
-import com.love.product.model.VO.UserInfoVO;
 import com.love.product.enumerate.Gender;
 import com.love.product.enumerate.YesOrNo;
 import com.love.product.mapper.UserInfoMapper;
+import com.love.product.model.DTO.EmailDTO;
+import com.love.product.model.VO.UserInfoVO;
 import com.love.product.service.FileUploadService;
 import com.love.product.service.FollowService;
 import com.love.product.service.RedisService;
@@ -43,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import static com.love.product.constant.CacheConstant.CACHE;
 import static com.love.product.constant.CommonConstant.CAPTCHA;
 import static com.love.product.constant.CommonConstant.EXPIRE_TIME;
 import static com.love.product.constant.RabbitMQConstant.EMAIL_EXCHANGE;
@@ -98,7 +96,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         if (lastSendTimestamp != null && currentTime - lastSendTimestamp < EXPIRE_TIME) {
             return Result.failMsg("发送验证码过于频繁，请稍后再试!");
         }
-        CodeConstant.CACHE.put(email, currentTime);
+        CACHE.put(email, currentTime);
         redisService.set(email, currentTime, EXPIRE_TIME, TimeUnit.SECONDS);
         if (!checkEmail(email)) {
             return Result.failMsg("请输入正确邮箱");
@@ -167,7 +165,80 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             return Result.failMsg("账号不存在!");
         }
     }
-
+    /**
+     * 用户注册
+     *
+     * @return Result<UserInfo>
+     */
+    @Override
+    public Result<UserInfoVO> userRegister(String email,String emailCode, String password, String confirmPassword){
+        UserInfoVO userInfoVO = getByEmail(email);
+        if(userInfoVO != null){
+            return Result.failMsg("邮箱已注册，请修改！");
+        }
+        if (!checkEmail(email)) {
+            return Result.failMsg("请输入正确的邮箱！");
+        }
+        if(emailCode.isEmpty()){
+            return Result.failMsg("请输入验证码！");
+        }
+        if(password.isEmpty()){
+            return Result.failMsg("请设置密码！");
+        }
+        // 从 Redis 中获取验证
+        String redisCode = (String) redisService.get("code:" + email);
+        if (redisCode == null) {
+            return Result.failMsg("验证码已过期，请重新获取！");
+        }
+        // 比较验证码是否正确
+        if(!redisCode.equals(emailCode)) {
+            return Result.failMsg("验证码错误，请重新输入！");
+        }
+        if(!password.equals(confirmPassword)){
+            return Result.failMsg("两次输入密码不一致，请重新输入！");
+        }
+        LocalDateTime now = LocalDateTime.now();
+        userInfoVO = new UserInfoVO();
+        userInfoVO.setId(IdWorker.getId());
+        userInfoVO.setEmail(email);
+        userInfoVO.setNickname(fileUploadConfig.getDefaultNickname());
+        userInfoVO.setOriginalPassword(password);
+        userInfoVO.setPassword(new BCryptPasswordEncoder().encode(password));
+        userInfoVO.setAvatar(fileUploadConfig.getDefaultAvatar());
+        userInfoVO.setGender(Gender.DUNNO.getValue());
+        userInfoVO.setStatus(YesOrNo.NO.getValue());
+        userInfoVO.setDeleted(YesOrNo.NO.getValue());
+        userInfoVO.setCreateTime(now);
+        userInfoVO.setUpdateTime(now);
+        save(userInfoVO);
+        return Result.OK(userInfoVO);
+    }
+    /**
+     * 修改密码
+     */
+    @Override
+    public Result<?> updatePwd(Long id, String currentPassword, String newPassword, String confirmPassword) {
+        UserInfo userInfo = getById(id);
+        if (userInfo != null) {
+            if (!currentPassword.equals(userInfo.getOriginalPassword())) {
+                return Result.failMsg("当前密码不正确！");
+            }
+            if (!newPassword.equals(confirmPassword)) {
+                return Result.failMsg("新密码与确认密码不匹配！");
+            }
+            if (currentPassword.equals(newPassword)){
+                return Result.OKMsg("您的密码并未改动！");
+            }
+            if (!CommonUtil.isValidPassword(newPassword)) {
+                return Result.failMsg("新密码不符合要求！");
+            }
+            userInfo.setOriginalPassword(newPassword);
+            userInfo.setPassword(new BCryptPasswordEncoder().encode(newPassword));
+            saveOrUpdate(userInfo);
+            return Result.OKMsg("修改成功！");
+        }
+        return Result.failMsg("用户不存在！");
+    }
     @Override
     public UserInfoVO getByEmail(String email){
         UserInfoVO userInfoVO = null;
@@ -250,76 +321,6 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     }
 
     /**
-     * 用户注册
-     *
-     * @return Result<UserInfo>
-     */
-    @Override
-    public Result<UserInfoVO> userRegister(String email,String emailCode, String password, String confirmPassword){
-        UserInfoVO userInfoVO = getByEmail(email);
-        if(userInfoVO != null){
-            return Result.failMsg("邮箱已注册，请修改");
-        }
-        if (!checkEmail(email)) {
-            return Result.failMsg("请输入正确的邮箱");
-        }
-        if(!emailCode.isEmpty()){
-            // 从 Redis 中获取验证
-            String redisCode = (String) redisService.get("code:" + email);
-            if (redisCode == null) {
-                return Result.failMsg("验证码已过期，请重新获取");
-            }
-            // 比较验证码是否正确
-            if(!redisCode.equals(emailCode)) {
-                return Result.failMsg("验证码错误，请重新输入");
-            }
-        }
-        if(!password.equals(confirmPassword)){
-            return Result.failMsg("两次输入密码不一致，请重新输入");
-        }
-        LocalDateTime now = LocalDateTime.now();
-        userInfoVO = new UserInfoVO();
-        userInfoVO.setId(IdWorker.getId());
-        userInfoVO.setEmail(email);
-        userInfoVO.setNickname(fileUploadConfig.getDefaultNickname());
-        userInfoVO.setOriginalPassword(password);
-        userInfoVO.setPassword(new BCryptPasswordEncoder().encode(password));
-        userInfoVO.setAvatar(fileUploadConfig.getDefaultAvatar());
-        userInfoVO.setGender(Gender.DUNNO.getValue());
-        userInfoVO.setStatus(YesOrNo.NO.getValue());
-        userInfoVO.setDeleted(YesOrNo.NO.getValue());
-        userInfoVO.setCreateTime(now);
-        userInfoVO.setUpdateTime(now);
-        save(userInfoVO);
-        return Result.OK(userInfoVO);
-    }
-    /**
-     * 修改密码
-     */
-    @Override
-    public Result<?> updatePwd(Long id, String currentPassword, String newPassword, String confirmPassword) {
-        UserInfo userInfo = getById(id);
-        if (userInfo != null) {
-            if (!currentPassword.equals(userInfo.getOriginalPassword())) {
-                return Result.failMsg("当前密码不正确！");
-            }
-            if (!newPassword.equals(confirmPassword)) {
-                return Result.failMsg("新密码与确认密码不匹配！");
-            }
-            if (currentPassword.equals(newPassword)){
-                return Result.OKMsg("您的密码并未改动！");
-            }
-            if (!CommonUtil.isValidPassword(newPassword)) {
-                return Result.failMsg("新密码不符合要求！");
-            }
-            userInfo.setOriginalPassword(newPassword);
-            userInfo.setPassword(new BCryptPasswordEncoder().encode(newPassword));
-            saveOrUpdate(userInfo);
-            return Result.OKMsg("修改成功！");
-        }
-        return Result.failMsg("用户不存在！");
-    }
-    /**
      * 用户列表
      */
     @Override
@@ -360,7 +361,6 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
                 userInfo.setAvatar(avatar);
             }
             saveOrUpdate(userInfo);
-
             UserInfoVO userInfoVO = new UserInfoVO();
             BeanUtil.copyProperties(userInfo,userInfoVO);
             userInfoVO.setAvatar(fileUploadService.getImgPath(userInfoVO.getAvatar()));

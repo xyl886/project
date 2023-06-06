@@ -8,9 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Date;

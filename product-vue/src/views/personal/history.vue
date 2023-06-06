@@ -1,6 +1,6 @@
 <template>
-  <div style="font-size: 14px;padding: 10px 0 0 20px;background-color: #f5f7f9;" v-loading="loading">
-    <div style="border-bottom: 1px solid #ccc;font-weight: bolder;font-size: 24px;line-height: 50px;">浏览记录</div>
+  <div style="font-size: 14px;padding:20px;background-color: #f5f7f9;" v-loading="loading">
+<!--    <div style="border-bottom: 1px solid #ccc;font-weight: bolder;font-size: 24px;line-height: 50px;">浏览记录</div>-->
     <el-tabs v-model="activeName"  @tab-click="handleClick">
       <el-tab-pane v-for="tab in tabs" :label="tab.label" :name="tab.name" :key="tab.name"></el-tab-pane>
     </el-tabs>

@@ -4,10 +4,10 @@ import com.love.product.entity.Posts;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.req.PostsPageReq;
-import com.love.product.entity.req.PostsReq;
+import com.love.product.model.VO.PostsDetailVO;
+import com.love.product.model.VO.PostsVO;
 import com.love.product.model.DTO.PostsSearchDTO;
 import com.love.product.model.VO.ConditionVO;
-import com.love.product.model.VO.PostsVO;
 import com.love.product.service.PostsService;
 import com.love.product.util.JwtUtil;
 import io.swagger.annotations.Api;
@@ -57,28 +57,28 @@ public class PostsController {
             @RequestParam(value = "price",required = false) BigDecimal price,
             @RequestParam(value = "files",required = false) MultipartFile[] files
             ) throws IOException {
-        PostsReq postsReq = new PostsReq();
-        postsReq.setPostsType(postsType);
-        postsReq.setTitle(title);
-        postsReq.setContent(content);
-        postsReq.setSchool(school);
-        postsReq.setPrice(price);
-        postsReq.setNewFiles(files);
+        PostsVO postsVO = new PostsVO();
+        postsVO.setPostsType(postsType);
+        postsVO.setTitle(title);
+        postsVO.setContent(content);
+        postsVO.setSchool(school);
+        postsVO.setPrice(price);
+        postsVO.setFiles(files);
 
-//        System.out.println(JwtUtil.getUserId()+"  "+postsReq);
-        return postsService.add(JwtUtil.getUserId(),postsReq);
+//        System.out.println(JwtUtil.getUserId()+"  "+postsVO);
+        return postsService.add(JwtUtil.getUserId(), postsVO);
     }
 
     @ApiOperation("分页")
     @PostMapping("/getPage")
-    public ResultPage<PostsVO> getPage(@RequestBody PostsPageReq postsPageReq) {
+    public ResultPage<PostsDetailVO> getPage(@RequestBody PostsPageReq postsPageReq) {
         return postsService.getPage(JwtUtil.getUserId(),postsPageReq);
     }
 
     @ApiOperation("详情")
     @GetMapping("/getDetail")
     @ApiImplicitParam(name = "id", value = "帖子主键", required = true, dataType = "String", paramType = "query")
-    public Result<PostsVO> getDetail(@RequestParam("id") Long id) {
+    public Result<PostsDetailVO> getDetail(@RequestParam("id") Long id) {
         return postsService.getDetail(JwtUtil.getUserId(),id);
     }
 
@@ -100,31 +100,14 @@ public class PostsController {
             @ApiImplicitParam(name = "title", value = "标题", required = true, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "school", value = "校区", required = true, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "content", value = "内容", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "newFiles", value = "新上传图片列表", required = false, dataType = "MultipartFile[]", paramType = "query"),
-            @ApiImplicitParam(name = "removeFiles", value = "移除的图片列表", required = false, dataType = "MultipartFile[]", paramType = "query"),
-            @ApiImplicitParam(name = "files", value = "图片列表", required = false, dataType = "MultipartFile[]", paramType = "query")
+            @ApiImplicitParam(name = "Files", value = "新上传图片列表", required = false, dataType = "MultipartFile[]", paramType = "query"),
+            @ApiImplicitParam(name = "removeFiles", value = "移除的图片列表", required = false, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "oldFiles", value = "图片列表", required = false, dataType = "String", paramType = "query")
     })
-    public Result<?> update(
-            @RequestParam("id") Long id,
-            @RequestParam("userId") Long userId,
-            @RequestParam("title") String title,
-            @RequestParam("school") String school,
-            @RequestParam("content") String content,
-            @RequestParam(value = "newFiles",required = false) MultipartFile[] newFiles,
-            @RequestParam(value = "removeFiles",required = false) String removeFiles,
-            @RequestParam(value = "files",required = false) String files
-    ) {
-          if(Objects.equals(JwtUtil.getUserId(), userId)){
-              PostsReq postsReq = new PostsReq();
-              postsReq.setId(id);
-              postsReq.setTitle(title);
-              postsReq.setContent(content);
-              postsReq.setSchool(Integer.valueOf(school));
-              postsReq.setNewFiles(newFiles);
-              postsReq.setRemoveFiles(removeFiles);
-              postsReq.setFiles(files);
-              log.info("当前用户id为:"+JwtUtil.getUserId()+";帖子修改为:"+postsReq+","+newFiles.length+","+id+","+title+","+content+","+school);
-              return postsService.update(postsReq);
+    public Result<?> update(PostsVO postsVO) {
+          if(Objects.equals(JwtUtil.getUserId(), postsVO.getUserId())){
+              log.info(String.valueOf(postsVO));
+              return postsService.update(postsVO);
           }else {
               return Result.fail("您无权操作!");
           }

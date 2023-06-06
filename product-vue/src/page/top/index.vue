@@ -27,7 +27,6 @@
             </span>
           </div>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item @click.native="personalPage">我的主页</el-dropdown-item>
             <el-dropdown-item @click.native="publish">发布帖子</el-dropdown-item>
             <el-dropdown-item @click.native="myMessage">我的消息</el-dropdown-item>
             <el-dropdown-item @click.native="updatePwd">修改密码</el-dropdown-item>
@@ -44,7 +43,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import UpdatePwd from '../login/UpdatePwd'
-import login from '../login/login'
+import login from '../login/login.vue'
 
 export default {
   data () {
@@ -56,6 +55,7 @@ export default {
         {name: '首页', path: '/index'},
         {name: '校园分享', path: '/share'},
         {name: '个人中心', path: '/personal'},
+        {name: '留言板', path: '/boards'},
         {name: '关于我们', path: '/about-us'}
       ]
     }
@@ -78,9 +78,6 @@ export default {
   methods: {
     pathFun (path) {
       this.$router.push({path: path})
-    },
-    personalPage () {
-      this.$router.push({path: '/personalpage'})
     },
     homePage () {
       this.$router.push({path: '/index'})

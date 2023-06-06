@@ -10,7 +10,7 @@
           <div style="height: 80px;">
             <div style="font-size: 16px;line-height: 40px;">
               {{item.userInfo.nickname}}
-              <div style="float: right;margin-top: 5px;"  v-if="item.userId == userInfo.id">
+              <div style="float: right;margin-top: 5px;">
                 <el-dropdown>
                   <div style="display: flex;">
                         <span style="line-height: 20px;font-size: 22px;">
@@ -18,8 +18,8 @@
                         </span>
                   </div>
                   <el-dropdown-menu slot="dropdown">
-<!--                    <el-button type="primary" @click="updateModal(item, index)">修改</el-button>-->
-                    <el-dropdown-item style="color:red;" @click.native="delMypost(item)">删除</el-dropdown-item>
+                    <el-dropdown-item style="color:red;" v-if="item.userId === userInfo.id" @click.native="delMypost(item)">删除</el-dropdown-item>
+                    <el-dropdown-item v-else-if="item.userId!==userInfo.id" style="color:red;" @click.native="reportPost(item)">举报</el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown></div>
             </div>
@@ -70,7 +70,7 @@
                   <div style="line-height: 20px;color: rgb(235, 115, 80);display: flex;">
                     {{item3.userInfo.nickname}}
                   </div>
-                  <div style="flex: 1;text-align: right;" v-if="item3.userId == userInfo.id" >
+                  <div style="flex: 1;text-align: right;"  >
                     <el-dropdown>
                       <div style="display: flex;">
                         <span style="line-height: 20px;font-size: 22px;">
@@ -78,7 +78,16 @@
                         </span>
                       </div>
                       <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item @click.native="delFun(item,item3)" style="color:red;" >删除</el-dropdown-item>
+                        <el-dropdown-item
+                          v-if="item3.userId == userInfo.id"
+                          @click.native="delFun(item,item3)"
+                          style="color:red;">删除
+                        </el-dropdown-item>
+                        <el-dropdown-item
+                          v-else-if="item3.userId!==userInfo.id"
+                          @click.native="reportPost(item3)"
+                          style="color:red;">举报
+                        </el-dropdown-item>
                       </el-dropdown-menu>
                     </el-dropdown>
                   </div>
@@ -101,7 +110,7 @@
         <p v-if="loading">加载中...</p>
         <p v-if="!loading&&noMore">没有更多了</p>
       </div>
-      <UpdateDialog ref="updateDialog" :form="form"/>
+      <Report ref="reportDialog"></Report>
     </div>
 </template>
 
@@ -112,12 +121,11 @@ import {addComment, del, listByPostsId} from '@/api/posts_comment'
 import {mapGetters} from 'vuex'
 import customEmoji from '../../components/emoji/index.vue'
 import {setStore} from '../../utils/store'
-import UpdateDialog from '../posts/UpdateDialog'
+import Report from '../../components/Report.vue'
 
 export default {
-  components: { // 注册组件，不能全局挂载
-    // Picker,
-    UpdateDialog,
+  components: {
+    Report, // 注册组件，不能全局挂载
     customEmoji
   },
   data () {
@@ -242,6 +250,9 @@ export default {
           })
         })
     },
+    reportPost (item) {
+      this.$refs.reportDialog.showDialog()
+    },
     detailFun (posts) {
       setStore({name: 'posts', content: posts})
       this.$router.push({path: '/Article'})
@@ -273,8 +284,7 @@ export default {
       console.info(item)
     },
     addCommentFun (item) {
-      // 处理评论内容，去除空白字符
-      this.commentContent = this.commentContent.replace(/\s+/g, '')
+      this.commentContent = this.commentContent.replace(/\s+/g, '') // 处理评论内容，去除空白字符
       console.log('item.commentContent:' + this.commentContent)
       if (!this.commentContent) {
         this.$message.warning('内容为空！')
@@ -307,10 +317,6 @@ export default {
         .then(() => {
           del(item2.id).then(res => {
             if (res.code === 200) {
-              // this.$notify({
-              //   title: '删除成功',
-              //   type: 'success'
-              // })
               item1.commentNum = parseInt(item1.commentNum) - 1
               this.$message.success(res.msg)
               this.getComment(item1)

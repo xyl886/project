@@ -1,5 +1,7 @@
 package com.love.product.constant;
 
+import com.love.product.config.fileupload.AliYunOSSConfig;
+
 public interface CommonConstant {
 
     int ONE = 1;
@@ -26,6 +28,7 @@ public interface CommonConstant {
     Long EXPIRE_TIME = 60L;
     String PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+=-])(?=\\S+$).{6,20}$";
     String EMAIL_REGEX="^\\w+((-\\w+)|(\\.\\w+))*\\@[A-Za-z0-9]+((\\.|-)[A-Za-z0-9]+)*\\.[A-Za-z0-9]+$";
+    String ALIYUNOSS_PREFIX="https://" + AliYunOSSConfig.BUCKET_NAME + "." + AliYunOSSConfig.END_POINT + "/";
     String DEFAULT_SIZE = "10";
 
     String DEFAULT_NICKNAME = "用户";

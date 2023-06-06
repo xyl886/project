@@ -14,9 +14,6 @@ logging:
       # 默认情况下：会在项目的根目录下生成/output/logs/spring.log，默认的日志名是：spring.log
     path: logs
       # 如果不想把日志存放在logging.file.path目录下，可以采用name来重新定义存储的位置和日志文件的名称
-  pattern:
-    console: "%d{yyyy/MM/dd-HH:mm:ss} [%thread] %-5level %logger{50}- %msg%n"
-    file: "%d{yyyy/MM/dd-HH:mm:ss} ---- [%thread] %-5level %logger{50}- %msg%n"
 
 spring:
   datasource:

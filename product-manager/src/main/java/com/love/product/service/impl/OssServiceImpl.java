@@ -12,7 +12,7 @@ import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.model.ObjectMetadata;
 import com.love.product.config.Exception.BizException;
-import com.love.product.config.fileupload.AliyunOSSConfig;
+import com.love.product.config.fileupload.AliYunOSSConfig;
 import com.love.product.entity.base.Result;
 import com.love.product.service.OssService;
 import org.apache.commons.lang3.StringUtils;
@@ -31,10 +31,10 @@ public class OssServiceImpl implements OssService {
     @Override
     public String uploadFile(MultipartFile file) {
 
-        String endpoint = AliyunOSSConfig.END_POINT;
-        String accessKeyId = AliyunOSSConfig.ACCESS_KEY_ID;
-        String accessKeySecret = AliyunOSSConfig.ACCESS_KEY_SECRET;
-        String bucketName = AliyunOSSConfig.BUCKET_NAME;
+        String endpoint = AliYunOSSConfig.END_POINT;
+        String accessKeyId = AliYunOSSConfig.ACCESS_KEY_ID;
+        String accessKeySecret = AliYunOSSConfig.ACCESS_KEY_SECRET;
+        String bucketName = AliYunOSSConfig.BUCKET_NAME;
         String url;
         if (file == null) {
             throw new BizException("图片不能为空");
@@ -72,16 +72,17 @@ public class OssServiceImpl implements OssService {
         ossClient.shutdown();
         return url;
     }
-/**
- * 删除oss图片
- *
- * @return
- */
+
+    /**
+     * 删除oss存储图片
+     * @param filePath 图片名，无前缀
+     * @return Result<?>
+     */
     public Result<?> delFile(String filePath) {
-        String endpoint = AliyunOSSConfig.END_POINT;
-        String accessKeyId = AliyunOSSConfig.ACCESS_KEY_ID;
-        String accessKeySecret = AliyunOSSConfig.ACCESS_KEY_SECRET;
-        String bucketName = AliyunOSSConfig.BUCKET_NAME;
+        String endpoint = AliYunOSSConfig.END_POINT;
+        String accessKeyId = AliYunOSSConfig.ACCESS_KEY_ID;
+        String accessKeySecret = AliYunOSSConfig.ACCESS_KEY_SECRET;
+        String bucketName = AliYunOSSConfig.BUCKET_NAME;
         OSS ossClient = new OSSClient(endpoint, accessKeyId, accessKeySecret);
         boolean exist = ossClient.doesObjectExist(bucketName, filePath);
         if (!exist) {

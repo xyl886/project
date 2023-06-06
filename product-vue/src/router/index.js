@@ -16,7 +16,7 @@ export const constantRoutes = [
     children: [{
       path: '',
       name: '主页',
-      component: () => import(/* webpackChunkName: "views" */ '@/views/home/index')
+      component: () => import('@/views/home/index')
     }]
   },
   {
@@ -25,7 +25,7 @@ export const constantRoutes = [
     children: [{
       path: '',
       name: '校园分享',
-      component: () => import(/* webpackChunkName: "views" */ '@/views/share/index')
+      component: () => import('@/views/share/index')
     }]
   },
   {
@@ -35,18 +35,18 @@ export const constantRoutes = [
     children: [{
       path: '',
       name: '发布帖子',
-      component: () => import(/* webpackChunkName: "views" */ '@/views/publish/index')
+      component: () => import('@/views/publish/index')
     }]
   },
   {
     path: '/detail',
     name: '帖子详情',
-    component: () => import(/* webpackChunkName: "views" */ '@/views/posts/detail')
+    component: () => import('@/views/posts/detail')
   },
   {
     path: '/Article',
     name: '帖子详情',
-    component: () => import(/* webpackChunkName: "views" */ '@/views/posts/Article')
+    component: () => import('@/views/posts/Article')
   },
   {
     path: '/personalpage',
@@ -56,7 +56,7 @@ export const constantRoutes = [
   {
     path: '/chat',
     name: '私聊',
-    component: () => import(/* webpackChunkName: "views" */ '@/views/chat/Chat.vue')
+    component: () => import('@/views/chat/Chat.vue')
   },
   {
     path: '/about-us',
@@ -64,7 +64,7 @@ export const constantRoutes = [
     children: [{
       path: '',
       name: '关于我们',
-      component: () => import(/* webpackChunkName: "views" */ '@/views/about_us/index')
+      component: () => import('@/views/about_us/index')
     }]
   },
   {
@@ -74,9 +74,14 @@ export const constantRoutes = [
     children: [{
       path: 'user_info',
       name: '个人中心',
-      component: () => import(/* webpackChunkName: "views" */ '@/views/personal/index'),
+      component: () => import('@/views/personal/index'),
       redirect: '/personal/user_info',
       children: [
+        {
+          path: '/personal/my_post',
+          name: '个人资料',
+          component: () => import('@/views/personal/MyPost.vue')
+        },
         {
           path: '/personal/user_info',
           name: '个人资料',

@@ -1,37 +1,71 @@
 <template>
   <div class="history" v-loading="loading">
     <div class="block">
-      <div v-if="page.total == 0" style="text-align: center">
-        <span style="color: #999aaa; font-size: 15px">近期没有浏览记录</span>
-      </div>
       <el-row style="padding-bottom: 20px">
-        <el-col :span="18">
-          <div class="search-box" :class="{ active: InputFocused }">
-            <div class="el-icon-search" @click="handleSearch"></div>
-            <input
-              type="text"
+        <el-col :span="2">
+          <el-dropdown @command="handleCommand">
+            <span class="el-dropdown-link">
+              下拉菜单<i class="el-icon-arrow-down el-icon--right"></i>
+            </span>
+            <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item command="a">黄金糕</el-dropdown-item>
+            <el-dropdown-item command="b">狮子头</el-dropdown-item>
+            <el-dropdown-item command="c">螺蛳粉</el-dropdown-item>
+            <el-dropdown-item command="d" disabled>双皮奶</el-dropdown-item>
+            <el-dropdown-item command="e" divided>蚵仔煎</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </el-col>
+        <el-col :span="3">
+<!--          <div class="search-box" :class="{ active: InputFocused }"> </div>-->
+<!--            <div class="el-icon-search" @click="handleSearch"></div>-->
+<!--            <input-->
+<!--              v-model="searchText"-->
+<!--              placeholder="请输入搜索内容"-->
+<!--              @input="handleInput"-->
+<!--              @focus="InputFocused = true"-->
+<!--              @blur="InputFocused = false"-->
+<!--              class="search-box-input"-->
+<!--              type="text"/>-->
+            <el-select
               v-model="searchText"
               placeholder="请输入搜索内容"
               @input="handleInput"
               @focus="InputFocused = true"
               @blur="InputFocused = false"
               class="search-box-input"
-            />
-            <div v-show="searchText" class="el-icon-close" @click="handleClear"></div>
+              filterable>
+              <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+            </el-select>
+        </el-col>
+        <el-col :span="2">
+          <div @click="handleClear"><el-button>重置</el-button></div>
+        </el-col>
+        <el-col :span="12">
+          <div><el-button type="primary">查询</el-button>
           </div>
         </el-col>
-        <el-col :span="6">
-          <div class="clea">
+        <el-col :span="2">
+          <div><el-button type="primary">批量操作</el-button>
+          </div>
+        </el-col>
+        <el-col :span="2">
+          <div>
             <el-button
-              size="mini"
-              style="padding-top: 10px"
               @click="removeAll"
               v-show="postType !== '0'&& page.total!==0"
-              round
             >清空历史</el-button>
           </div>
         </el-col>
       </el-row>
+      <div v-if="page.total == 0" style="text-align: center">
+        <span style="color: #999aaa; font-size: 15px">近期没有浏览记录</span>
+      </div>
       <div v-if="postType === '1'">
         <el-timeline >
           <el-timeline-item  :timestamp="item.updateTime"  v-for="(item, index) in historyGoodsList" :key="index" placement="top">
@@ -43,11 +77,11 @@
                     fit="cover"
                     :src="item.postCoverPath"
                   ></el-image></el-col>
-                <el-col :span="16" style="cursor: pointer;margin: 3px 0 0 10px ;">
+                <el-col :span="16" style="cursor: pointer;">
                   <h3 :key="item.id" @click="detailFun(item.posts)">{{ item.postTitle}}</h3>
                   <div class="user">
                     <el-image :src="item.avatar" style="cursor: pointer;width: 25px;height: 25px;border-radius: 50%;"></el-image>
-                    <span class="userName">{{ item.nickname }}</span>
+                    <span class="userName">{{ item.nickname }}|{{item.schoolName}}</span>
                   </div>
                 </el-col>
                 <el-col :span="3">
@@ -78,6 +112,23 @@ export default {
   },
   data () {
     return {
+      options: [{
+        value: '选项1',
+        label: '黄金糕'
+      }, {
+        value: '选项2',
+        label: '双皮奶'
+      }, {
+        value: '选项3',
+        label: '蚵仔煎'
+      }, {
+        value: '选项4',
+        label: '龙须面'
+      }, {
+        value: '选项5',
+        label: '北京烤鸭'
+      }],
+      value: '',
       InputFocused: false,
       searchText: '',
       loading: false,
@@ -370,7 +421,7 @@ h3{
 .search-box {
   display: flex;
   width: 180px;
-  float: right;
+  float: left;
   align-items: center;
   border: 1px solid #ccc;
   padding: 4px;
@@ -406,7 +457,7 @@ h3{
 .block >>> .el-card__body {
   padding: 10px;
 }
-.clea {
+.clear {
   flex:1;
   text-align: right;
   height: 40px;

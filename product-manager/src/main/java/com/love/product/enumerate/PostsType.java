@@ -1,11 +1,15 @@
 package com.love.product.enumerate;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 /**
  * @author Administrator
  * @date 2022-10-19 10:35
  * @describe 帖子类型 1闲置帖 2校园帖
  */
-
+@Getter
+@AllArgsConstructor
 public enum PostsType {
 
     /**
@@ -18,17 +22,13 @@ public enum PostsType {
     /**
      * 枚举值
      */
-    private int value;
+    private final int value;
 
     /**
      * 枚举文本说明
      */
-    private String text;
+    private final String text;
 
-    PostsType(int value, String text) {
-        this.value = value;
-        this.text = text;
-    }
 
     public static PostsType valueOf(Integer value) {
         if (value != null) {
@@ -40,22 +40,5 @@ public enum PostsType {
         }
         return null;
     }
-
-    public int getValue() {
-        return value;
-    }
-
-    public void setValue(int value) {
-        this.value = value;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
 }
 

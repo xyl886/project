@@ -1,21 +1,26 @@
 <template>
-    <div style="font-size: 14px;padding: 10px 0 0 20px;background-color: #f5f7f9;" v-loading="loading">
-      <div style="border-bottom: 1px solid #ccc;font-weight: bolder;font-size: 24px;line-height: 50px;">我的收藏</div>
+    <div style="font-size: 14px;padding: 10px;background-color: #f5f7f9;" v-loading="loading">
+<!--      <div style="border-bottom: 1px solid #ccc;font-weight: bolder;font-size: 24px;line-height: 50px;">我的收藏</div>-->
       <div class="collect-box" v-for="(item,index) in collects" :key="index">
         <div class="collect-item" v-for="(item2,index2) in item" :key="item2.id">
-          <el-card style="padding: 0;">
-            <div slot="header" style="cursor: pointer;" @click="detailFun(item2.posts)">
-<!--              <div style="text-align: center;">-->
-                <el-image style="width: 320px;height: 200px" :src="item2.posts.coverPath" class="collect-box-img">
-                  <div slot="error" class="image-slot" style="text-align: center;padding: 25%;font-size: 25px;"
-                       v-if="item2.posts.coverPath"><i class="el-icon-picture-outline"></i>
-                  </div>
-                </el-image>
-<!--              </div>-->
-              <div class="collect-box-title">
-                {{item2.posts.title}}
+          <el-card :body-style="{ padding: '0px' }">
+            <div class="image-box" style="cursor: pointer;" @click="detailFun(item2.posts)">
+                <div style="text-align: center;font-size: 25px;">
+                  <el-image v-if="item2.posts.coverPath" :src="item2.posts.coverPath" class="collect-box-img">
+                    <div slot="error" class="image-slot" style="padding:25%;">
+                      <i class="el-icon-picture-outline"></i>
+                    </div>
+                  </el-image>
+                </div>
+              <div class="video-info" style="font-size: 12px;">
+                <p style="position: relative;left: 15px;">浏览:{{item2.posts.browseNum}}</p>
+                <p style="position: relative;left: 15px;">收藏:{{item2.posts.collectNum}}</p>
+                <p style="position: relative;left: 15px;">{{item2.userBasicInfo.nickname}}</p>
+                <p style="position: relative;left: 15px;">发布于:{{item2.posts.createTime}}</p>
               </div>
-            </div>
+            </div><div class="collect-box-title" @click="detailFun(item2.posts)">
+            {{item2.posts.title}}
+          </div>
             <div>
               <span style="color: #999;">收藏于:{{item2.createTime}}</span>
               <el-dropdown style="float: right;">
@@ -100,10 +105,10 @@ export default {
             res.data[i].createTime = this.formatDate(res.data[i].createTime)
             console.log(res.data[i].createTime)
             count++
-            if (count <= 3) {
+            if (count <= 5) {
               arr.push(res.data[i])
             }
-            if (count === 3 || i === (res.data.length - 1)) {
+            if (count === 5 || i === (res.data.length - 1)) {
               this.collects.push(arr)
               console.log(this.collects)
               arr = []
@@ -137,21 +142,36 @@ export default {
     display: flex;
   }
   .collect-item{
-    width: calc(33.3% - 10px);
-    margin: 10px 10px 5px 0;
+    width: calc(20% - 10px);
+    margin: 5px;
   }
   .collect-item:hover{
     box-shadow: 1px 1px 10px rgba(0,0,0, 0.2);
     transform: translate(0px, 0px) scale(1.01) rotate(0deg);
   }
-  .collect-item:hover .collect-box-title{
-    color: #ff3300;
+  .collect-box-title:hover{
+    color: #00a6ff;
   }
   .collect-box-img{
     width: 100%;
   }
   .collect-box-title{
-    height: 20px;
+    height: 40px;
+    font-size: 12px;
     overflow: hidden;
+  }
+  .video-info {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 65%;
+    background-color: rgba(0, 0, 0, 0.15);
+    color: white;
+    display: none;
+    /* 其他样式设置，如文本居中、字体大小等 */
+  }
+  .image-box:hover .video-info {
+    display: block;
   }
 </style>

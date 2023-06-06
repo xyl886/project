@@ -8,8 +8,9 @@ import com.love.product.entity.History;
 import com.love.product.entity.base.PageQuery;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
+import com.love.product.enumerate.School;
 import com.love.product.model.VO.HistoryVO;
-import com.love.product.model.VO.PostsVO;
+import com.love.product.model.VO.PostsDetailVO;
 import com.love.product.model.VO.UserInfoVO;
 import com.love.product.mapper.HistoryMapper;
 import com.love.product.service.HistoryService;
@@ -77,17 +78,18 @@ public class HistoryServiceImpl extends ServiceImpl<HistoryMapper, History> impl
             }).collect(Collectors.toList());
         }
         // 获取帖子信息
-        Map<Long, PostsVO> postsHashMap;
+        Map<Long, PostsDetailVO> postsHashMap;
         if (!postsIds.isEmpty()) {
             postsHashMap = postsService.listByIds(postsIds);
             for (HistoryVO historyVO : list) {
-                PostsVO postsVO = postsHashMap.get(historyVO.getPostsId());
+                PostsDetailVO postsDetailVO = postsHashMap.get(historyVO.getPostsId());
                 // 设置帖子标题和封面路径
-                if (postsVO != null) {
-                    historyVO.setPostTitle(postsVO.getTitle());
-                    historyVO.setPostCoverPath(postsVO.getCoverPath());
-                    historyVO.setPostType(postsVO.getPostsType());
-                    historyVO.setPosts(postsVO);
+                if (postsDetailVO != null) {
+                    historyVO.setPostTitle(postsDetailVO.getTitle());
+                    historyVO.setPostCoverPath(postsDetailVO.getCoverPath());
+                    historyVO.setPostType(postsDetailVO.getPostsType());
+                    historyVO.setPosts(postsDetailVO);
+                    historyVO.setSchoolName(School.valueOf(postsDetailVO.getSchool()).getText());
                 }
             }
         }
