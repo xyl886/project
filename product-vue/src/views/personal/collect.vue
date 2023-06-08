@@ -1,6 +1,70 @@
 <template>
     <div style="font-size: 14px;padding: 10px;background-color: #f5f7f9;" v-loading="loading">
 <!--      <div style="border-bottom: 1px solid #ccc;font-weight: bolder;font-size: 24px;line-height: 50px;">我的收藏</div>-->
+      <div>
+        <el-row style="padding:20px 0">
+          <el-col :span="2">
+            <el-dropdown @command="handleCommand" style="top: 10px;position: relative;" >
+            <span class="el-dropdown-link">
+              {{ command }}<i class="el-icon-arrow-down el-icon--right"></i>
+            </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item command="最近收藏">最近收藏</el-dropdown-item>
+                <el-dropdown-item command="最多浏览">最多浏览</el-dropdown-item>
+                <el-dropdown-item command="最新发布">最新发布</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </el-col>
+          <el-col :span="4">
+            <!--          <div class="search-box" :class="{ active: InputFocused }"> </div>-->
+            <!--            <div class="el-icon-search" @click="handleSearch"></div>-->
+            <!--            <input-->
+            <!--              v-model="searchText"-->
+            <!--              placeholder="请输入搜索内容"-->
+            <!--              @input="handleInput"-->
+            <!--              @focus="InputFocused = true"-->
+            <!--              @blur="InputFocused = false"-->
+            <!--              class="search-box-input"-->
+            <!--              type="text"/>-->
+            <el-select
+              v-model="searchText"
+              placeholder="请输入搜索内容"
+              @input="handleInput"
+              @focus="InputFocused = true"
+              @blur="InputFocused = false"
+              class="search-box-input"
+              filterable>
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </el-col>
+          <el-col :span="2" style="margin-left: 15px">
+            <div @click="handleClear"><el-button>重置</el-button></div>
+          </el-col>
+          <el-col :span="8">
+            <div><el-button type="primary">查询</el-button>
+            </div>
+          </el-col>
+          <el-col :span="4">
+            <el-button type="primary" v-show="isCheck" @click="CheckboxShow">取消</el-button>
+            <el-button type="primary" style="float: right" @click="CheckboxShow" v-show="!isCheck">批量操作</el-button>
+            <el-button
+              v-show="isCheck"
+              @click="Cancel"
+              :disabled="this.collects.length === 0"
+              class="canseF"
+            >取消收藏
+            </el-button>
+          </el-col>
+          <el-col :span="2" style="float: right">
+            <el-button type="primary"><i class=""></i>全选</el-button>
+          </el-col>
+        </el-row>
+      </div>
       <div class="collect-box" v-for="(item,index) in collects" :key="index">
         <div class="collect-item" v-for="(item2,index2) in item" :key="item2.id">
           <el-card :body-style="{ padding: '0px' }">
@@ -23,6 +87,13 @@
           </div>
             <div>
               <span style="color: #999;">收藏于:{{item2.createTime}}</span>
+              <div class="checkbox" v-if="isCheck" @click="Checkbox(index)">
+                <span :class="
+                arrActive.includes(index)
+                  ? 'istrues el-icon-yigouxuan'
+                  : 'noistrues el-icon-yigouxuan'
+              "></span>
+              </div>
               <el-dropdown style="float: right;">
                 <el-button style="padding: 3px 0" type="text"><i class="el-icon-more"></i></el-button>
                 <el-dropdown-menu >
@@ -38,7 +109,7 @@
         <el-pagination
           background
           :current-page.sync="page.currentPage"
-          :page-sizes="[9, 18, 27, 45, 81]"
+          :page-sizes="[10, 20, 40, 60, 80]"
           :page-size="page.pageSize"
           layout="total, sizes, prev, pager, next, jumper"
           :total="page.total"
@@ -59,11 +130,32 @@ import dayjs from 'dayjs'
 export default {
   data () {
     return {
+      command: '最近收藏',
+      options: [{
+        value: '选项1',
+        label: '黄金糕'
+      }, {
+        value: '选项2',
+        label: '双皮奶'
+      }, {
+        value: '选项3',
+        label: '蚵仔煎'
+      }, {
+        value: '选项4',
+        label: '龙须面'
+      }, {
+        value: '选项5',
+        label: '北京烤鸭'
+      }],
+      value: '',
+      isCheck: false,
+      InputFocused: false,
+      searchText: '',
       loading: false,
       collects: [],
       page: {
         total: 0,
-        pageSize: 9,
+        pageSize: 10,
         currentPage: 1
       }
     }
@@ -72,6 +164,23 @@ export default {
     this.getPageFun()
   },
   methods: {
+    handleCommand (command) {
+      this.command = command
+    },
+    handleInput () {
+      // 输入框内容变化时触发
+    },
+    handleSearch () {
+      // 点击搜索按钮触发
+      if (this.searchText) {
+        // 执行搜索操作
+        console.log('搜索：', this.searchText)
+      }
+    },
+    handleClear () {
+      // 点击清除按钮触发
+      this.searchText = ''
+    },
     sizeChange (pageSize) { // 页数
       this.page.pageSize = pageSize
       this.getPageFun()

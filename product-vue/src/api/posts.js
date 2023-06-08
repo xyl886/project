@@ -52,7 +52,7 @@ export const browse = (userId, id) => {
 /**
  * 帖子修改
  */
-export const updateMypost = (data) => {
+export const updateMyPost = (data) => {
   console.log('帖子修改' + JSON.stringify(data))
   return request({
     url: '/api/posts/update',
@@ -63,7 +63,7 @@ export const updateMypost = (data) => {
 /**
  * 帖子删除
  */
-export const delMypost = (id, userId) => {
+export const delMyPost = (id, userId) => {
   // console.log(id, userId)
   return request({
     url: '/api/posts/del',

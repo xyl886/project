@@ -24,5 +24,5 @@ public interface HistoryService extends IService<History> {
 
     ResultPage<HistoryVO> getPage(Long userId, PageQuery pageQuery);
 
-    Result<?> del(Long userId, Long id);
+    Result<?> del(Long userId, Long... ids);
 }

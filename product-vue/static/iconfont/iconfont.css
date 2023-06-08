@@ -6,10 +6,14 @@
   url('iconfont.woff?t=1585234791970') format('woff'),
   url('iconfont.ttf?t=1585234791970') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+ */
   url('iconfont.svg?t=1585234791970#iconfont') format('svg'); /* iOS 4.1- */
-  src: url('//at.alicdn.com/t/c/font_3349745_na699escjaq.woff2?t=1686015500840') format('woff2'),/*todo 这个是远链*/
-  url('//at.alicdn.com/t/c/font_3349745_na699escjaq.woff?t=1686015500840') format('woff'),
-  url('//at.alicdn.com/t/c/font_3349745_na699escjaq.ttf?t=1686015500840') format('truetype');
-}
+  /*src: url('//at.alicdn.com/t/c/font_3349745_na699escjaq.woff2?t=1686015500840') format('woff2'),*/
+  /*url('//at.alicdn.com/t/c/font_3349745_na699escjaq.woff?t=1686015500840') format('woff'),*/
+  /*url('//at.alicdn.com/t/c/font_3349745_na699escjaq.ttf?t=1686015500840') format('truetype');*/
+  src: url('//at.alicdn.com/t/c/font_3349745_bmjawsoklbm.woff2?t=1686224345676') format('woff2'),
+  url('//at.alicdn.com/t/c/font_3349745_bmjawsoklbm.woff?t=1686224345676') format('woff'),
+  url('//at.alicdn.com/t/c/font_3349745_bmjawsoklbm.ttf?t=1686224345676') format('truetype');
+}/*远链*/
+/* 在线链接服务仅供平台体验和调试使用，平台不承诺服务的稳定性，企业客户需下载字体包自行发布使用并做好备份。 */
 
 .iconfont {
   font-family: "iconfont", sans-serif !important;
@@ -17,6 +21,18 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+.icon-huidaodingbu:before{
+  content: '\e88d';
+}
+.icon-icon:before{
+  content: "\e651";
+}
+.icon-comment:before{
+  content: "\e631";
+}
+.icon-tag-faces:before{
+  content: "\ebe0";
 }
 .icon-wofadetiezi:before {
   content: "\e61e";

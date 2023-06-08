@@ -56,7 +56,7 @@ public class PostsController {
             @RequestParam("school")  Integer school,
             @RequestParam(value = "price",required = false) BigDecimal price,
             @RequestParam(value = "files",required = false) MultipartFile[] files
-            ) throws IOException {
+            ){
         PostsVO postsVO = new PostsVO();
         postsVO.setPostsType(postsType);
         postsVO.setTitle(title);

@@ -5,7 +5,7 @@ import App from './App'
 import router from './router'
 import Element from 'element-ui'
 import store from './store'
-import { Picker } from 'emoji-mart-vue' // 引入组件
+
 
 import VueQuillEditor from 'vue-quill-editor'
 // require styles 引入样式
@@ -20,10 +20,9 @@ import '@/permission' // permission control
 
 Vue.use(Element)
 Vue.use(MavonEditor)
-Vue.use(Picker)
+Vue.use(VueQuillEditor)
 Vue.config.productionTip = false
 
-/* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,

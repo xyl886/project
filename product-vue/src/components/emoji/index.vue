@@ -1,8 +1,8 @@
 <template>
   <div class="custom-emoji-com" @click.stop="()=>{}">
-    <el-tabs :tab-position="tabposition" type="border-card" class="wrapper">
+    <el-tabs :tab-position="tabPosition" style="bottom:0;" type="border-card" class="wrapper">
       <el-tab-pane v-for="(value, key, index) in emojisList" :label="key" :key="index" addable>
-        <span slot="label"><i :class="emijoIconClassNameMap[key]"></i> </span>
+        <span slot="label"><i :class="emojiIconClassNameMap[key]"></i> </span>
         <span
           class="emoji-item"
           v-for="(item, index) in value"
@@ -20,7 +20,7 @@ import emojis from './emoji.json'
 
 export default {
   props: {
-    tabposition: {
+    tabPosition: {
       type: String,
       default () {
         return 'bottom'
@@ -31,8 +31,8 @@ export default {
     return {
       emojisList: emojis.data,
       selectedEmoji: '',
-      emijoIconClassNameMap: {
-        face: 'iconfont icon-buoumaotubiao49',
+      emojiIconClassNameMap: {
+        face: 'iconfont icon-tag-faces',
         heart: 'iconfont icon-Heart',
         food: 'iconfont icon-food',
         drink: 'iconfont icon-Colddrinkteacoffeeb',

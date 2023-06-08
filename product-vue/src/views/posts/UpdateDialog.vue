@@ -79,7 +79,7 @@
 </template>
 
 <script>
-import {updateMypost} from '../../api/posts'
+import {updateMyPost} from '../../api/posts'
 export default {
   props: {
     Form: {
@@ -202,7 +202,7 @@ export default {
           formData.append('school', this.form.school)
           formData.append('price', this.form.price)
           console.log(formData)
-          updateMypost(formData).then((res) => {
+          updateMyPost(formData).then((res) => {
             const timer = setTimeout(() => {
               if (res.status === 200) {
                 this.$message({

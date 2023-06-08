@@ -1,6 +1,60 @@
 <template>
   <div style="font-size: 14px;padding: 10px 0 0 20px;background-color: #ffffff;" v-loading="loading">
     <!--    <div style="border-bottom: 1px solid #ccc;font-weight: bolder;font-size: 24px;line-height: 50px;">我的关注</div>-->
+    <div>
+      <el-row style="padding-bottom: 20px">
+        <el-col :span="2">
+          <el-dropdown @command="handleCommand" style="top: 10px;position: relative;" >
+            <span class="el-dropdown-link">
+              {{ command }}
+              <i class="el-icon-arrow-down el-icon--right"></i>
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="最多浏览">最多浏览</el-dropdown-item>
+              <el-dropdown-item command="最新发布">最新发布</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </el-col>
+        <el-col :span="4">
+          <!--          <div class="search-box" :class="{ active: InputFocused }"> </div>-->
+          <!--            <div class="el-icon-search" @click="handleSearch"></div>-->
+          <!--            <input-->
+          <!--              v-model="searchText"-->
+          <!--              placeholder="请输入搜索内容"-->
+          <!--              @input="handleInput"-->
+          <!--              @focus="InputFocused = true"-->
+          <!--              @blur="InputFocused = false"-->
+          <!--              class="search-box-input"-->
+          <!--              type="text"/>-->
+          <el-select
+            v-model="searchText"
+            placeholder="请输入搜索内容"
+            @input="handleInput"
+            @focus="InputFocused = true"
+            @blur="InputFocused = false"
+            class="search-box-input"
+            filterable>
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-col>
+        <el-col :span="2" style="margin-left: 15px">
+          <div @click="handleClear"><el-button>重置</el-button></div>
+        </el-col>
+        <el-col :span="12">
+          <div><el-button type="primary">查询</el-button>
+          </div>
+        </el-col>
+        <el-col :span="2">
+          <div><el-button type="primary">批量操作</el-button>
+          </div>
+        </el-col>
+      </el-row>
+    </div>
     <div class="follow-box">
       <div class="follow-item" v-for="(item,index) in posts" :key="index">
         <div>
@@ -21,8 +75,12 @@
         </div>
       </div>
     </div>
-
-    <div v-if="posts.length > 0" style="text-align: center;margin: 50px 0 30px 0;">
+    <div v-if="posts.length === 0">
+      <el-empty description="您还没有发布过帖子哦！" image-size="100" image="">
+        <el-button type="primary" @click.native="publish">发布帖子</el-button>
+      </el-empty>
+    </div>
+    <div style="text-align: center;margin: 50px 0 30px 0;">
       <el-pagination
         background
         :current-page.sync="page.currentPage"
@@ -33,12 +91,6 @@
         @size-change="sizeChange"
         @current-change="currentChange"
       />
-    </div>
-
-    <div v-if="posts.length === 0">
-      <el-empty description="您还没有发布过帖子哦！" image-size="100" image="">
-        <el-button type="primary" @click.native="publish">发布帖子</el-button>
-      </el-empty>
     </div>
   </div>
 </template>
@@ -56,6 +108,26 @@ export default {
   data () {
     // 这里存放数据
     return {
+      command: '最近收藏',
+      options: [{
+        value: '选项1',
+        label: '黄金糕'
+      }, {
+        value: '选项2',
+        label: '双皮奶'
+      }, {
+        value: '选项3',
+        label: '蚵仔煎'
+      }, {
+        value: '选项4',
+        label: '龙须面'
+      }, {
+        value: '选项5',
+        label: '北京烤鸭'
+      }],
+      value: '',
+      InputFocused: false,
+      searchText: '',
       posts: '',
       loading: false,
       page: {
@@ -75,6 +147,23 @@ export default {
     this.getPageFun()
   },
   methods: {
+    handleCommand (command) {
+      this.command = command
+    },
+    handleInput () {
+      // 输入框内容变化时触发
+    },
+    handleSearch () {
+      // 点击搜索按钮触发
+      if (this.searchText) {
+        // 执行搜索操作
+        console.log('搜索：', this.searchText)
+      }
+    },
+    handleClear () {
+      // 点击清除按钮触发
+      this.searchText = ''
+    },
     publish () {
       this.$router.push({path: '/publish'})
     },

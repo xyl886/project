@@ -70,6 +70,7 @@
       <!-- 修改弹窗 -->
       <el-dialog
         title="修改信息"
+        top="5vh"
         @close="close(form.files)"
         :visible.sync="box"
         v-loading="loading"

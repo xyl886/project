@@ -1,71 +1,117 @@
 <template>
-  <div class="backtotop">顶部</div>
+  <div class="right-side" :style="isShow">
+    <div class="setting-container">
+      <img
+        title="反馈"
+        style="width: 22px;height: 22px;margin-top: 3px"
+        src="http://img.shiyit.com/fankui_1.png"
+       alt=""/>
+    </div>
+    <i @click="backTop" class="iconfont right-side-icon icon-huidaodingbu" />
+  </div>
 </template>
+
 <script>
-// 这里可以导入其他文件（比如：组件，工具js，第三方插件js，json文件，图片文件等等）
-// 例如：import 《组件名称》 from ‘《组件路径》‘;
 export default {
-  name: 'BackToTop',
-  // import引入的组件需要注入到对象中才能使用
-  components: {},
-  data () {
-    // 这里存放数据
-    return {}
-  },
-  // 监听属性 类似于data概念
-  computed: {},
-  // 监控data中的数据变化
-  watch: {},
-  // 方法集合
-  methods: {},
-  // 生命周期 - 创建完成（可以访问当前this实例）
-  created () {
-
-  },
-  // 生命周期 - 挂载完成（可以访问DOM元素）
   mounted () {
-
+    // window.addEventListener('scroll', this.scrollToTop)
   },
-  beforeCreate () {
-  }, // 生命周期 - 创建之前
-  beforeMount () {
-  }, // 生命周期 - 挂载之前
-  beforeUpdate () {
-  }, // 生命周期 - 更新之前
-  updated () {
-  }, // 生命周期 - 更新之后
-  beforeDestroy () {
-  }, // 生命周期 - 销毁之前
   destroyed () {
-  }, // 生命周期 - 销毁完成
-  activated () {
-  } // 如果页面有keep-alive缓存功能，这个函数会触发
+    // window.removeEventListener('scroll', this.scrollToTop)
+  },
+  data: function () {
+    return {
+      isShow: '',
+      isOut: 'right-side-out'
+    }
+  },
+  methods: {
+    // 回到顶部方法
+    backTop () {
+      var zd = document.querySelector('.right-side')
+      zd.addEventListener('click', function () {
+        var time = setInterval(function () {
+          let top = pageYOffset
+          let step = Math.ceil(top / 50)
+          window.scroll(0, top - step)
+          if (top == 0) {
+            clearInterval(time)
+          }
+        })
+      }, 30)
+      window.addEventListener('scroll', function () {
+        if (document.documentElement.scrollTop > 0) {
+          zd.style.right = 5 + 'px'
+        } else {
+          zd.style.right = -55 + 'px'
+        }
+      })
+    }
+  }
 }
 </script>
-<style>
-.backtotop {
-  user-select: none;
-  width: 150px;
-  height: 174px;
+
+<style scoped>
+.right-side {
+  z-index: 4;
+  position: fixed;
+  right: 10px;
+  bottom: 85px;
+  transition: all 0.5s;
 }
-.backtotop:hover {
-  animation: fly 0.4s steps(1) infinite;
+.right-side-config-hide {
+  transform: translate(35px, 0);
 }
-@keyframes fly {
+.right-side-out {
+  animation: rightsideOut 0.3s;
+}
+.right-side-in {
+  transform: translate(0, 0) !important;
+  animation: rightsideIn 0.3s;
+}
+.right-side-icon,
+.setting-container {
+  display: block;
+  margin-bottom: 2px;
+  width: 30px;
+  height: 30px;
+  background-color: #49b1f5;
+  color: #fff;
+  text-align: center;
+  font-size: 16px;
+  line-height: 30px;
+  cursor: pointer;
+}
+.right-side-icon:hover,
+.setting-container:hover {
+  background-color: #ff7242;
+}
+.setting-container i {
+  display: block;
+  animation: turn-around 2s linear infinite;
+}
+@keyframes turn-around {
   0% {
-    background-position-x: 0;
+    transform: rotate(0);
   }
-  25% {
-    background-position-x: -150px;
+  100% {
+    transform: rotate(360deg);
   }
-  50% {
-    background-position-x: -300px;
+}
+@keyframes right-sideOut {
+  0% {
+    transform: translate(0, 0);
   }
-  75% {
-    background-position-x: -450px;
+  100% {
+    transform: translate(30px, 0);
   }
-  to {
-    background-position-x: -600px;
+}
+@keyframes right-sideIn {
+  0% {
+    transform: translate(30px, 0);
+  }
+  100% {
+    transform: translate(0, 0);
   }
 }
 </style>

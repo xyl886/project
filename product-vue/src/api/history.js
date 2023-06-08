@@ -14,12 +14,17 @@ export const getPage = (data) => {
 
 /**
  * 删除记录
+ * @param ids
+ * @param userId
+ * @returns {*}
  */
-export const del = (id, userId) => {
+export const del = (ids, userId) => {
   return request({
     url: '/api/history/del',
     method: 'delete',
-    id: id,
-    userId: userId
+    params: {
+      ids: ids,
+      userId: userId
+    }
   })
 }

@@ -2,21 +2,19 @@
   <div class="history" v-loading="loading">
     <div class="block">
       <el-row style="padding-bottom: 20px">
-        <el-col :span="2">
-          <el-dropdown @command="handleCommand">
-            <span class="el-dropdown-link">
-              下拉菜单<i class="el-icon-arrow-down el-icon--right"></i>
-            </span>
-            <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item command="a">黄金糕</el-dropdown-item>
-            <el-dropdown-item command="b">狮子头</el-dropdown-item>
-            <el-dropdown-item command="c">螺蛳粉</el-dropdown-item>
-            <el-dropdown-item command="d" disabled>双皮奶</el-dropdown-item>
-            <el-dropdown-item command="e" divided>蚵仔煎</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-        </el-col>
-        <el-col :span="3">
+<!--        <el-col :span="2">-->
+<!--          <el-dropdown @command="handleCommand" style="top: 10px;position: relative;" >-->
+<!--            <span class="el-dropdown-link">-->
+<!--              {{ command }}<i class="el-icon-arrow-down el-icon&#45;&#45;right"></i>-->
+<!--            </span>-->
+<!--            <el-dropdown-menu slot="dropdown">-->
+<!--            <el-dropdown-item command="最近浏览">最近浏览</el-dropdown-item>-->
+<!--            <el-dropdown-item command="最多播放">最多播放</el-dropdown-item>-->
+<!--            <el-dropdown-item command="最新发布">最新发布</el-dropdown-item>-->
+<!--            </el-dropdown-menu>-->
+<!--          </el-dropdown>-->
+<!--        </el-col>-->
+        <el-col :span="4">
 <!--          <div class="search-box" :class="{ active: InputFocused }"> </div>-->
 <!--            <div class="el-icon-search" @click="handleSearch"></div>-->
 <!--            <input-->
@@ -46,17 +44,15 @@
         <el-col :span="2">
           <div @click="handleClear"><el-button>重置</el-button></div>
         </el-col>
-        <el-col :span="12">
+        <el-col :span="15">
           <div><el-button type="primary">查询</el-button>
-          </div>
-        </el-col>
-        <el-col :span="2">
-          <div><el-button type="primary">批量操作</el-button>
           </div>
         </el-col>
         <el-col :span="2">
           <div>
             <el-button
+              type="danger"
+              plain
               @click="removeAll"
               v-show="postType !== '0'&& page.total!==0"
             >清空历史</el-button>
@@ -69,23 +65,28 @@
       <div v-if="postType === '1'">
         <el-timeline >
           <el-timeline-item  :timestamp="item.updateTime"  v-for="(item, index) in historyGoodsList" :key="index" placement="top">
-            <el-card shadow="hover">
+            <el-card>
               <el-row type="flex" justify="space-between">
                 <el-col :span="3" style="cursor: pointer;" v-show="item.postCoverPath != null">
                   <el-image
                     style="width: 118px; height: 74px; border-radius: 4px"
                     fit="cover"
                     :src="item.postCoverPath"
-                  ></el-image></el-col>
-                <el-col :span="16" style="cursor: pointer;">
-                  <h3 :key="item.id" @click="detailFun(item.posts)">{{ item.postTitle}}</h3>
+                  ></el-image>
+                </el-col>
+                <el-col :span="16">
+                  <h3 class="title" :key="item.id" style="cursor: pointer;" @click="detailFun(item.posts)">{{ item.postTitle}}</h3>
                   <div class="user">
-                    <el-image :src="item.avatar" style="cursor: pointer;width: 25px;height: 25px;border-radius: 50%;"></el-image>
-                    <span class="userName">{{ item.nickname }}|{{item.schoolName}}</span>
+                    <el-image :src="item.avatar" style="cursor: pointer;width: 25px;height: 25px;border-radius: 50%;">
+                    </el-image>
+                    <span class="userName">{{ item.nickname }}|
+                    </span><span style="margin-left: 4px">{{item.schoolName}}</span>
                   </div>
                 </el-col>
-                <el-col :span="3">
-                  <i class="el-icon-delete" style="line-height:75px;cursor: pointer;"></i>
+                <el-col :span="1">
+                  <i class="el-icon-delete"
+                     style="line-height:75px;cursor: pointer;"
+                     @click="remove(item.id,item.userId)"></i>
                 </el-col>
               </el-row>
             </el-card>
@@ -112,6 +113,7 @@ export default {
   },
   data () {
     return {
+      command: '最近收藏',
       options: [{
         value: '选项1',
         label: '黄金糕'
@@ -133,6 +135,7 @@ export default {
       searchText: '',
       loading: false,
       history: [],
+      selectedIds: [],
       page: {
         total: 0,
         pageSize: 9,
@@ -161,17 +164,16 @@ export default {
     }
   },
   methods: {
-    // init (historyName) {
-    //   this.historyGoodsList = []
-    //   this.historyPostList = []
-    //   this.historyLikeList = []
-    //   this.page.pageSize = 9
-    //   this.page.total = 0
-    //   this.page.currentPage = 1
-    //   this.page.postType = historyName
-    //   console.log(this.page)
-    //   this.getList()
-    // },
+    init () {
+      this.historyGoodsList = []
+      this.historyPostList = []
+      this.historyLikeList = []
+      console.log(this.page)
+      this.getList()
+    },
+    handleCommand (command) {
+      this.command = command
+    },
     handleInput () {
       // 输入框内容变化时触发
     },
@@ -218,6 +220,7 @@ export default {
               this.historyLikeList.push(res.data[i])
             }
           }
+          this.history = res.data
           this.page.total = res.dataTotal
         }
         this.loading = false
@@ -227,7 +230,24 @@ export default {
       setStore({ name: 'posts', content: item })
       this.$router.push({path: '/detail'})
     },
+    remove (ids, userId) {
+      console.log(ids + ',' + userId)
+      del(ids, userId)
+        .then((res) => {
+          if (res.code === 200) {
+            this.$message.success(res.msg)
+          } else {
+            this.$message.warning(res.msg)
+          }
+          this.init()
+        }).catch((error) => {
+          this.$message.error(error)
+        })
+    },
     removeAll () {
+      // console.log(this.history)
+      this.selectedIds = this.history.map(history => history.id)
+      console.log(this.selectedIds)
       MessageBox.confirm(
         '确定清空' + this.activeLabel + '的浏览记录吗',
         '确认提示',
@@ -241,23 +261,10 @@ export default {
         }
       )
         .then(() => {
-          del({
-            userId: this.$store.state.userId,
-            postType: this.postType
-          }).then(() => {
-            this.init()
-          })
+          this.remove(this.selectedIds, this.history.userId)
         })
-        .catch(() => {})
-    },
-    dateTime (date) {
-      if (
-        this.$moment(new Date()).format('yyyy-MM-DD') ===
-        this.$moment(date).format('yyyy-MM-DD')
-      ) {
-        return this.$moment(date).format('HH:mm')
-      }
-      return this.$moment(date).format('yyyy-MM-DD HH:mm')
+        .catch(() => {
+        })
     }
   },
   created () {
@@ -461,5 +468,13 @@ h3{
   flex:1;
   text-align: right;
   height: 40px;
+}
+.userName{
+  font-size: 12px;
+  color: #6d757a;
+  cursor: pointer;
+}
+.title:hover,.userName:hover{
+  color:#007bff;
 }
 </style>

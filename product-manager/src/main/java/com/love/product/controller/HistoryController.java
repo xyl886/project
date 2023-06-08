@@ -8,9 +8,11 @@ import com.love.product.service.HistoryService;
 import com.love.product.util.JwtUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
 
 /**
  * @PackageName: com.love.product.controller
@@ -18,6 +20,7 @@ import javax.annotation.Resource;
  * @Author: Administrator
  * @Date: 2023/4/24 9:26
  */
+@Slf4j
 @Api(tags ="浏览记录")
 @RestController
 @RequestMapping("/history")
@@ -33,7 +36,8 @@ public class HistoryController {
     }
     @ApiOperation("清空")
     @DeleteMapping("/del")
-    public Result<?> del(Long userId,Long id) {
-        return historyService.del(userId, id);
+    public Result<?> del(@RequestParam("userId") Long userId,@RequestParam("ids")Long[] ids) {
+        log.info(Arrays.toString(ids));
+        return historyService.del(userId, ids);
     }
 }

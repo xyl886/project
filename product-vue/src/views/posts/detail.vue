@@ -17,7 +17,7 @@
               icon="el-icon-edit-outline"
               v-if="posts.userId === posts.userInfo.id"
               @click.native="edit(posts)">编辑</el-button>
-            <el-dropdown-item style="color:red;" @click.native="delMypost(posts)">删除</el-dropdown-item>
+            <el-dropdown-item style="color:red;" @click.native="delMyPost(posts)">删除</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </div>
@@ -84,7 +84,7 @@ import {addCollect} from '@/api/collect'
 import {addFollow} from '@/api/follow'
 import {mapGetters} from 'vuex'
 import {getStore} from '../../utils/store'
-import {delMypost} from '../../api/posts'
+import {delMyPost} from '../../api/posts'
 import UpdateDialog from './UpdateDialog'
 
 export default {
@@ -118,7 +118,9 @@ export default {
     ])
   },
   mounted () {
-    let obj = getStore({name: 'posts'})
+    let obj = getStore({
+      name: 'posts'
+    })
     console.log(obj)
     if (obj) {
       this.id = obj.id
@@ -186,14 +188,14 @@ export default {
       }
       console.log(this.form)
     },
-    delMypost (item) {
+    delMyPost (item) {
       this.$confirm('确定要删除该帖子吗?', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
         .then(() => {
-          delMypost(item.id, item.userInfo.id).then(res => {
+          delMyPost(item.id, item.userInfo.id).then(res => {
             if (res.code === 200) {
               this.$message.success(res.msg)
               this.$router.push({path: '/index'})

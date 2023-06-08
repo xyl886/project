@@ -2,6 +2,7 @@ package com.love.product.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.love.product.entity.History;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -40,7 +42,7 @@ public class HistoryServiceImpl extends ServiceImpl<HistoryMapper, History> impl
     private UserInfoService userInfoService;
     @Override
     public History findHistory(Long userId, Long id) {
-        LambdaQueryWrapper<History> queryWrapper=new LambdaQueryWrapper();
+        LambdaQueryWrapper<History> queryWrapper=new LambdaQueryWrapper<>();
         queryWrapper.eq(History::getUserId,userId).eq(History::getPostsId,id);
         History  history= getOne(queryWrapper);
           if (getOne(queryWrapper)!=null){
@@ -65,8 +67,8 @@ public class HistoryServiceImpl extends ServiceImpl<HistoryMapper, History> impl
     @Override
     public ResultPage<HistoryVO> getPage(Long userId, PageQuery pageQuery) {
         LambdaQueryWrapper<History> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(History::getUserId, userId);
-        queryWrapper.orderByDesc(History::getUpdateTime);
+        queryWrapper.eq(History::getUserId, userId)
+                .orderByDesc(History::getUpdateTime);
         Page<History> page = page(pageQuery.build(), queryWrapper);
         List<HistoryVO> list = new ArrayList<>();
         List<Long> postsIds = new ArrayList<>();
@@ -103,8 +105,30 @@ public class HistoryServiceImpl extends ServiceImpl<HistoryMapper, History> impl
         return ResultPage.OK(page.getTotal(), page.getCurrent(), page.getSize(), list);
     }
 
+    /**
+     * 删除历史记录
+     * @param userId 用户id
+     * @param ids 帖子ids
+     * @return Result<?>
+     */
     @Override
-    public Result<?> del(Long userId, Long id) {
-        return null;
+    public Result<?> del(Long userId, Long... ids) {
+        List<History> histories = listByIds(Arrays.asList(ids));
+        if (histories.isEmpty()) {
+            return Result.failMsg("未找到历史记录!");
+        }
+        for (History history : histories) {
+            if (!history.getUserId().equals(userId)) {
+                return Result.failMsg("您无权删除此历史记录!");
+            }
+        }
+        boolean success = remove(new QueryWrapper<History>()
+                .eq("user_id", userId)
+                .in("id", ids));
+        if (success) {
+            return Result.OK("删除成功!");
+        } else {
+            return Result.failMsg("删除失败!");
+        }
     }
 }

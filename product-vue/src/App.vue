@@ -11,9 +11,9 @@
             </div>
         </div>
     </div>
-    <router-view v-if="!loadingIndex"/>
-    <Player/>
-    <BackToTop></BackToTop>
+    <router-view v-if="!loadingIndex"></router-view>
+<!--    <Player/>-->
+<BackToTop/>
   </div>
 </template>
 

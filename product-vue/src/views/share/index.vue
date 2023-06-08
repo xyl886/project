@@ -30,14 +30,17 @@
         </el-row>
       </div>
     </div>
+    <BackToTop></BackToTop>
   </div>
 </template>
 
 <script>
 import All from './all.vue'
+import BackToTop from '../../page/top/BackToTop.vue'
 export default {
   components: {
-    All
+    All,
+    BackToTop
   },
   data () {
     return {
