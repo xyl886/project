@@ -7,14 +7,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.love.product.entity.Collect;
 import com.love.product.entity.Posts;
-import com.love.product.entity.UserInfo;
 import com.love.product.entity.base.PageQuery;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
-import com.love.product.model.VO.CollectVO;
-import com.love.product.model.VO.PostsDetailVO;
 import com.love.product.enumerate.YesOrNo;
 import com.love.product.mapper.CollectMapper;
+import com.love.product.model.VO.CollectVO;
+import com.love.product.model.VO.PostsDetailVO;
 import com.love.product.model.VO.UserBasicInfoVO;
 import com.love.product.model.VO.UserInfoVO;
 import com.love.product.service.CollectService;
@@ -27,7 +26,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**

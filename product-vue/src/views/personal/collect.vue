@@ -45,23 +45,27 @@
           <el-col :span="2" style="margin-left: 15px">
             <div @click="handleClear"><el-button>重置</el-button></div>
           </el-col>
-          <el-col :span="8">
-            <div><el-button type="primary">查询</el-button>
+          <el-col :span="6">
+            <div>
+              <el-button type="primary">查询</el-button>
             </div>
           </el-col>
-          <el-col :span="4">
-            <el-button type="primary" v-show="isCheck" @click="CheckboxShow">取消</el-button>
-            <el-button type="primary" style="float: right" @click="CheckboxShow" v-show="!isCheck">批量操作</el-button>
+          <el-col :span="6">
+            <el-button type="primary" v-show="isSelect" @click="CheckboxShow">取消</el-button>
+            <el-button type="primary" style="float: right" @click="CheckboxShow" v-show="!isSelect">批量操作</el-button>
             <el-button
-              v-show="isCheck"
+              v-show="isSelect"
               @click="Cancel"
-              :disabled="this.collects.length === 0"
-              class="canseF"
+              :disabled="this.selected.length === 0"
+              class="cancel"
             >取消收藏
             </el-button>
           </el-col>
           <el-col :span="2" style="float: right">
-            <el-button type="primary"><i class=""></i>全选</el-button>
+            <span v-if="isSelect" @click="selectAll()">
+  <i :class="selected.length === 0 ? 'iconfont icon-xuanzhong' : (selected.length === page.total ? 'iconfont icon-xuanzhong' : 'iconfont icon-weiquanxuan')"
+     style="font-size: 25px"></i>
+            </span>
           </el-col>
         </el-row>
       </div>
@@ -82,26 +86,24 @@
                 <p style="position: relative;left: 15px;">{{item2.userBasicInfo.nickname}}</p>
                 <p style="position: relative;left: 15px;">发布于:{{item2.posts.createTime}}</p>
               </div>
-            </div><div class="collect-box-title" @click="detailFun(item2.posts)">
-            {{item2.posts.title}}
-          </div>
+            </div>
+            <div class="collect-box-title" @click="detailFun(item2.posts)">{{item2.posts.title}}</div>
             <div>
               <span style="color: #999;">收藏于:{{item2.createTime}}</span>
-              <div class="checkbox" v-if="isCheck" @click="Checkbox(index)">
-                <span :class="
-                arrActive.includes(index)
-                  ? 'istrues el-icon-yigouxuan'
-                  : 'noistrues el-icon-yigouxuan'
-              "></span>
-              </div>
               <el-dropdown style="float: right;">
-                <el-button style="padding: 3px 0" type="text"><i class="el-icon-more"></i></el-button>
+                 <span><i class="el-icon-more" style="padding: 5px;"></i></span>
                 <el-dropdown-menu >
-                  <el-dropdown-item @click.native="addCollectFun(item2.posts)">取消收藏</el-dropdown-item>
+                  <el-dropdown-item @click.native="cancelCollect(item2.posts)">取消收藏</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
             </div>
           </el-card>
+          <div class="checkbox" v-if="isSelect" @click="Checkbox(item2.id)">
+                <span style="display: inline-block;position: absolute;right: 5%;top: 5%;font-size: 25px;">
+                   <i class="iconfont icon-xuanzhong" style="font-size: 25px"
+                      :style="selected.includes(item2.id)?'color: #00a6ff':''"></i>
+                </span>
+          </div>
         </div>
       </div>
 
@@ -127,6 +129,7 @@
 import {getPage, addCollect} from '@/api/collect'
 import {setStore} from '@/utils/store'
 import dayjs from 'dayjs'
+import {MessageBox} from 'element-ui'
 export default {
   data () {
     return {
@@ -148,7 +151,11 @@ export default {
         label: '北京烤鸭'
       }],
       value: '',
-      isCheck: false,
+      myLike: '',
+      isSelect: false,
+      isAllSelected: false,
+      selected: [],
+      cancelList: '',
       InputFocused: false,
       searchText: '',
       loading: false,
@@ -227,11 +234,12 @@ export default {
           this.page.total = res.dataTotal
         }
       }, error => {
+        console.log(error)
         this.loading = false
       })
     },
-    addCollectFun (item) {
-      addCollect(item.id, '1').then(res => {
+    cancelCollect (item) {
+      addCollect(item.id, '1').then(res => { // 每个单独地取消收藏
         if (res.code === 200) {
           this.getPageFun()
           this.$message.success(res.msg)
@@ -241,18 +249,87 @@ export default {
     detailFun (posts) {
       setStore({name: 'posts', content: posts})
       this.$router.push({path: '/detail'})
+    },
+    CheckboxShow () {
+      // 显示批量删除
+      this.selected = []
+      if (this.isSelect) {
+        this.isSelect = false
+        return false
+      }
+      this.isSelect = true
+    },
+    selectAll () {
+      if (this.isAllSelected) {
+        this.selected = [] // 全选按钮已选中，将selected数组清空
+        this.isAllSelected = false
+        return false
+      } else {
+        this.selected = this.collects.flatMap(item => item.map(item2 => item2.id)) // 全选按钮未选中，将selected数组设置为所有选项的id
+        this.isAllSelected = true
+      }
+    },
+    Checkbox (index) {
+      // 多个商品的选择
+      let hash = this.selected.findIndex((item) => {
+        return item === index
+      })
+      if (hash > -1) {
+        this.selected.splice(hash, 1)
+      } else {
+        this.selected.push(index)
+      }
+    },
+    One (index) {
+      // 单个商品的取消
+      this.selected.push(index)
+      this.selected.forEach((item) => {
+        this.cancelList.push(this.myLike[item].id)
+      })
+      this.cancelCollect()
+    },
+    Cancel () {
+      // 弹窗是否确认
+      MessageBox.confirm(
+        '你将要取消收藏' + this.selected.length + '个商品',
+        '确认提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          cancelButtonClass: 'cancel',
+          confirmButtonClass: 'config',
+          closeOnClickModal: false,
+          closeOnPressEscape: false
+        }
+      ).then(() => {
+        this.selected.forEach((item) => {
+          this.cancelList.push(this.myLike[item].id)
+        })
+        this.cancelCollect()
+        setTimeout(() => {
+          this.$message(
+            {
+              type: 'success',
+              message: '删除成功!'
+            },
+            1000
+          )
+        })
+      }).catch(() => {})
     }
   }
 }
 </script>
 
 <style scoped>
+@import '../../../static/iconfont/iconfont.css';
   .collect-box{
     display: flex;
   }
   .collect-item{
     width: calc(20% - 10px);
     margin: 5px;
+    position: relative;
   }
   .collect-item:hover{
     box-shadow: 1px 1px 10px rgba(0,0,0, 0.2);
@@ -267,6 +344,7 @@ export default {
   .collect-box-title{
     height: 40px;
     font-size: 12px;
+    padding: 5px;
     overflow: hidden;
   }
   .video-info {
@@ -282,5 +360,16 @@ export default {
   }
   .image-box:hover .video-info {
     display: block;
+  }
+  .el-icon-more:hover{
+    color: #00a6ff;
+  }
+  .checkbox {
+    position: absolute;
+    top: 0;
+    //border: #00a6ff 1px solid;
+    width: 100%;
+    height: 100%;
+    z-index: 1; /* 设置较高的层叠顺序 */
   }
 </style>

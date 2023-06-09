@@ -150,6 +150,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             }
             //一定要在获取token前缓存redis，否则可能报错,并且要删除验证码
             redisService.set("user:userinfo:" + userInfoVO.getId(),userInfoVO);
+            redisService.expire("user:userinfo:" + userInfoVO.getId(), 1, TimeUnit.DAYS);
             redisService.del("code:"+email);
             String accessToken = getOAuthToken(userInfoVO);
             if(accessToken == null){

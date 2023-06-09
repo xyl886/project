@@ -191,7 +191,6 @@ export default {
     formatDate (date) {
       const currentDate = dayjs()
       const targetDate = dayjs(date)
-
       if (currentDate.diff(targetDate, 'minute') < 1) {
         return targetDate.format('刚刚')
       } else if (currentDate.day() === targetDate.day()) {
@@ -210,17 +209,17 @@ export default {
         this.loading = false
         if (res.code === 200) {
           console.log(res.data)
+          this.history = res.data
           for (let i = 0; i < res.data.length; i++) {
-            res.data[i].updateTime = this.formatDate(res.data[i].updateTime)
-            if (res.data[i].postType == '1') {
-              this.historyGoodsList.push(res.data[i])
-            } else if (res.data[i].postType == '2') {
-              this.historyPostList.push(res.data[i])
+            this.history[i].updateTime = this.formatDate(res.data[i].updateTime)
+            if (this.history[i].postType == '1') {
+              this.historyGoodsList.push(this.history[i])
+            } else if (this.history[i].postType == '2') {
+              this.historyPostList.push(this.history[i])
             } else {
-              this.historyLikeList.push(res.data[i])
+              this.historyLikeList.push(this.history[i])
             }
           }
-          this.history = res.data
           this.page.total = res.dataTotal
         }
         this.loading = false
@@ -246,7 +245,7 @@ export default {
     },
     removeAll () {
       // console.log(this.history)
-      this.selectedIds = this.history.map(history => history.id)
+      this.selectedIds = this.history.map(history => history.id).join(',')
       console.log(this.selectedIds)
       MessageBox.confirm(
         '确定清空' + this.activeLabel + '的浏览记录吗',
@@ -259,10 +258,10 @@ export default {
           closeOnClickModal: false,
           closeOnPressEscape: false
         }
-      )
-        .then(() => {
-          this.remove(this.selectedIds, this.history.userId)
-        })
+      ).then(() => {
+        const userId = this.history[0].userId
+        this.remove(this.selectedIds, userId)
+      })
         .catch(() => {
         })
     }

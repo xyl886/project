@@ -32,6 +32,7 @@
             <el-input-number v-model="form.price" :controls='false' :min="0" :max="19999" clearable></el-input-number>&nbsp;元
           </el-form-item>
           <el-form-item label="内容:" prop="title">
+<!--            <quill-editor></quill-editor>-->
             <mavon-editor v-model="form.content" />
           </el-form-item>
           <el-form-item label="图片:" :required="form.postsType !== '2'">

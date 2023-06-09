@@ -6,7 +6,6 @@ import router from './router'
 import Element from 'element-ui'
 import store from './store'
 
-
 import VueQuillEditor from 'vue-quill-editor'
 // require styles 引入样式
 import 'quill/dist/quill.core.css'
