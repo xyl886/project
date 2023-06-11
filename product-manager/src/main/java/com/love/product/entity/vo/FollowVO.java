@@ -1,4 +1,4 @@
-package com.love.product.model.VO;
+package com.love.product.entity.vo;
 
 import com.love.product.entity.Follow;
 import io.swagger.annotations.ApiModelProperty;
@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 public class FollowVO extends Follow {
 
     @ApiModelProperty(value = "用户")
-    private UserInfoVO userInfo;
+    private UserBasicInfoVO userInfo;
 
     @ApiModelProperty(value = "1 我关注了Ta 2Ta关注了我 3互关")
     private Integer followStatus;

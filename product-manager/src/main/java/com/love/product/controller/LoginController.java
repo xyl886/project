@@ -2,7 +2,7 @@ package com.love.product.controller;
 
 import com.love.product.annotation.AccessLimit;
 import com.love.product.entity.base.Result;
-import com.love.product.model.VO.UserInfoVO;
+import com.love.product.entity.vo.UserInfoVO;
 import com.love.product.service.RedisService;
 import com.love.product.service.UserInfoService;
 import com.love.product.util.JwtUtil;

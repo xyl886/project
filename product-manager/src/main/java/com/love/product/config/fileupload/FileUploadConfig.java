@@ -4,6 +4,9 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * 本地图片存储
+ */
 @Data
 @Configuration
 @ConfigurationProperties("file-upload-config")

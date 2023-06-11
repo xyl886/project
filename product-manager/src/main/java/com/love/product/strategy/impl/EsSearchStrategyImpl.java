@@ -3,7 +3,7 @@ package com.love.product.strategy.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import com.love.product.model.DTO.PostsSearchDTO;
+import com.love.product.entity.dto.PostsSearchDTO;
 import com.love.product.strategy.SearchStrategy;
 import lombok.extern.log4j.Log4j2;
 import org.elasticsearch.index.query.BoolQueryBuilder;

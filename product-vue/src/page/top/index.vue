@@ -35,8 +35,9 @@
         </el-dropdown>
       </div>
     </div>
-    <UpdatePwd ref="updatePasswordDialog"></UpdatePwd>
+    <UpdatePwd ref="updatePwdDialog"></UpdatePwd>
     <login ref="loginDialog"></login>
+    <ResetPwd ref="resetPwdDialog"></ResetPwd>
   </div>
 </template>
 
@@ -44,6 +45,7 @@
 import { mapGetters } from 'vuex'
 import UpdatePwd from '../login/UpdatePwd'
 import login from '../login/login.vue'
+import ResetPwd from '../login/ResetPwd.vue'
 
 export default {
   data () {
@@ -62,6 +64,7 @@ export default {
   },
   components: {
     UpdatePwd,
+    ResetPwd,
     login
   },
   computed: {
@@ -95,7 +98,7 @@ export default {
 
     },
     updatePwd () {
-      this.$refs.updatePasswordDialog.showDialog()
+      this.$refs.updatePwdDialog.showDialog()
     },
     getDataList () {
 

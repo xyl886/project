@@ -12,6 +12,9 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * 阿里云oss存储
+ */
 @Data
 @Configuration
 @ConfigurationProperties("aliyun.oss") //指定配置文件

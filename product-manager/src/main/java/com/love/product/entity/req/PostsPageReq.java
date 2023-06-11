@@ -1,6 +1,7 @@
 package com.love.product.entity.req;
 
 import com.love.product.entity.base.PageQuery;
+import com.love.product.entity.vo.UserBasicInfoVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,7 +28,10 @@ public class PostsPageReq extends PageQuery {
     /**
      * {@link com.love.product.enumerate.School}
      */
-    @ApiModelProperty(value = "校区 1官塘校区 2社湾校区 3我的分享")
+    @ApiModelProperty(value = "分类")
     private Integer school;
+
+    @ApiModelProperty(value = "用户基本信息")
+    private UserBasicInfoVO userBasicInfo;
 
 }

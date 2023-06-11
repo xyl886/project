@@ -6,8 +6,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.love.product.entity.Posts;
 import com.love.product.entity.PostsComment;
 import com.love.product.entity.base.Result;
-import com.love.product.model.VO.PostsCommentVO;
-import com.love.product.model.VO.UserInfoVO;
+import com.love.product.entity.vo.PostsCommentVO;
+import com.love.product.entity.vo.UserBasicInfoVO;
+import com.love.product.entity.vo.UserInfoVO;
 import com.love.product.enumerate.YesOrNo;
 import com.love.product.mapper.PostsCommentMapper;
 import com.love.product.service.PostsCommentService;
@@ -77,10 +78,10 @@ public class PostsCommentServiceImpl extends ServiceImpl<PostsCommentMapper, Pos
         }
         Map<Long, UserInfoVO> finalUserInfoVOMap = userInfoVOMap;
         comments.forEach(item -> {
-            PostsCommentVO vo = BeanUtil.copyProperties(item, PostsCommentVO.class);
+            PostsCommentVO VO = BeanUtil.copyProperties(item, PostsCommentVO.class);
             UserInfoVO userInfoVO = finalUserInfoVOMap.get(item.getUserId());
-            vo.setUserInfo(userInfoVO);
-            commentVOS.add(vo);
+            VO.setUserBasicInfoVO(new UserBasicInfoVO(userInfoVO.getId(),userInfoVO.getNickname(),userInfoVO.getAvatar()));
+            commentVOS.add(VO);
         });
         return Result.OK(commentVOS);
     }

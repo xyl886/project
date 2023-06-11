@@ -2,7 +2,7 @@ package com.love.product.strategy;
 
 
 
-import com.love.product.model.DTO.PostsSearchDTO;
+import com.love.product.entity.dto.PostsSearchDTO;
 
 import java.util.List;
 

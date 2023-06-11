@@ -65,6 +65,11 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
+    public Boolean expire(String key, long time, TimeUnit timeUnit) {
+        return redisTemplate.expire(key, time, TimeUnit.DAYS);
+    }
+
+    @Override
     public Long getExpire(String key) {
         return redisTemplate.getExpire(key, TimeUnit.SECONDS);
     }

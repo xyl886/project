@@ -10,8 +10,9 @@ import com.love.product.entity.UserInfo;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.req.FollowPageReq;
-import com.love.product.model.VO.FollowVO;
-import com.love.product.model.VO.UserInfoVO;
+import com.love.product.entity.vo.FollowVO;
+import com.love.product.entity.vo.UserBasicInfoVO;
+import com.love.product.entity.vo.UserInfoVO;
 import com.love.product.enumerate.YesOrNo;
 import com.love.product.mapper.FollowMapper;
 import com.love.product.service.FollowService;
@@ -172,7 +173,7 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
             Map<Long, Follow> finalFollowMap = followMap;
             list.forEach(item -> {
                 UserInfoVO userInfoVO;
-                int followStatus = 0;
+                int followStatus;
                 Follow follow;
                 if(Objects.equals(followPageReq.getFollowType(),1)){
                     follow = finalFollowMap.get(item.getBeFollowedUserId());
@@ -187,7 +188,7 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
                     followStatus = 3;//互关
                 }
                 item.setFollowStatus(followStatus);
-                item.setUserInfo(userInfoVO);
+                item.setUserInfo(new UserBasicInfoVO(userInfoVO.getId(),userInfoVO.getNickname(),userInfoVO.getAvatar()));
             });
         }
         return ResultPage.OK(page.getTotal(), page.getCurrent(), page.getSize(), list);

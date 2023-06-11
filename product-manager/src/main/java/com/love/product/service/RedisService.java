@@ -26,7 +26,7 @@ public interface RedisService {
     Long del(List<String> keys);
 
     Boolean expire(String key, long time);
-    void expire(String key, long time, TimeUnit timeUnit);
+    Boolean expire(String key, long time, TimeUnit timeUnit);
     Long getExpire(String key);
 
     Boolean hasKey(String key);

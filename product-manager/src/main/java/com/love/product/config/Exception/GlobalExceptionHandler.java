@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(value = BizException.class)
     @ResponseBody
-    public Result bizExceptionHandler(HttpServletRequest req, BizException e) {
+    public Result bizExceptionHandler(BizException e) {
         log.error("发生业务异常！原因是：{}", e.getErrorMsg());
         return Result.failMsg(e.getErrorCode(), e.getErrorMsg());
     }
@@ -35,7 +35,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(value = NullPointerException.class)
     @ResponseBody
-    public Result exceptionHandler(HttpServletRequest req, NullPointerException e) {
+    public Result exceptionHandler(NullPointerException e) {
         log.error("发生空指针异常！原因是:", e);
         return Result.fail();
     }
@@ -50,7 +50,7 @@ public class GlobalExceptionHandler {
         return Result.fail();
     }
 
-    @ExceptionHandler(MissingServletRequestParameterException.class)
+    @ExceptionHandler(value = MissingServletRequestParameterException.class)
     public ResponseEntity<?> handleMissingServletRequestParameterException(MissingServletRequestParameterException ex) {
         String errorMsg = "缺少必需的参数：" + ex.getParameterName();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMsg);

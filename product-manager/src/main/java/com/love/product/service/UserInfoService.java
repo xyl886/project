@@ -3,7 +3,7 @@ package com.love.product.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.love.product.entity.UserInfo;
 import com.love.product.entity.base.Result;
-import com.love.product.model.VO.UserInfoVO;
+import com.love.product.entity.vo.UserInfoVO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;

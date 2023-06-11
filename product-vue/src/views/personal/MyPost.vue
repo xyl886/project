@@ -76,7 +76,7 @@
       </div>
     </div>
     <div v-if="posts.length === 0">
-      <el-empty description="您还没有发布过帖子哦！" image-size="100" image="">
+      <el-empty description="您还没有发布过帖子哦！" image-size="100">
         <el-button type="primary" @click.native="publish">发布帖子</el-button>
       </el-empty>
     </div>
@@ -128,13 +128,15 @@ export default {
       value: '',
       InputFocused: false,
       searchText: '',
-      posts: '',
+      posts: [],
       loading: false,
       page: {
+        pageTotal: 0,
         total: 0,
         pageSize: 10,
-        currentPage: 1,
-        followType: 1
+        currentPage: 0,
+        postsType: null,
+        school: 7
       }
     }
   },
@@ -177,15 +179,28 @@ export default {
     },
     getPageFun () {
       this.loading = true
-      this.follows = []
+      this.page.currentPage++
+      console.log(this.page)
       getPage(this.page).then(res => {
-        this.loading = false
         if (res.code === 200) {
-          this.follows = res.data
+          if (this.page.currentPage === 1) {
+            this.posts = []
+            console.log('getPage:' + this.posts)
+          }
+          res.data.forEach(ele => {
+            ele['comment'] = false
+            ele['comments'] = []
+            this.posts.push(ele)
+          })
           this.page.total = res.dataTotal
+          this.page.pageTotal = res.pageTotal
+          this.loading = false
+        } else {
+          this.page.currentPage--
         }
       }, error => {
-        this.$message.error(error)
+        console.log(error)
+        this.page.currentPage--
         this.loading = false
       })
     },

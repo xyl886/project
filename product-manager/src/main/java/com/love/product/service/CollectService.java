@@ -5,7 +5,7 @@ import com.love.product.entity.Collect;
 import com.love.product.entity.base.PageQuery;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
-import com.love.product.model.VO.CollectVO;
+import com.love.product.entity.vo.CollectVO;
 
 /**
  * @author Administrator

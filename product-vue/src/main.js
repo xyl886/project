@@ -21,7 +21,10 @@ Vue.use(Element)
 Vue.use(MavonEditor)
 Vue.use(VueQuillEditor)
 Vue.config.productionTip = false
-
+Vue.config.errorHandler = (err) => {
+  console.log(err)
+}
+/* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,

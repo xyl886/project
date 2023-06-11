@@ -1,7 +1,7 @@
 package com.love.product.mapper;
 
 
-import com.love.product.model.DTO.PostsSearchDTO;
+import com.love.product.entity.dto.PostsSearchDTO;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Repository;
 

@@ -5,10 +5,10 @@ import com.love.product.entity.Posts;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.req.PostsPageReq;
-import com.love.product.model.VO.PostsVO;
-import com.love.product.model.DTO.PostsSearchDTO;
-import com.love.product.model.VO.ConditionVO;
-import com.love.product.model.VO.PostsDetailVO;
+import com.love.product.entity.vo.PostsVO;
+import com.love.product.entity.dto.PostsSearchDTO;
+import com.love.product.entity.vo.ConditionVO;
+import com.love.product.entity.vo.PostsDetailVO;
 
 import java.util.List;
 import java.util.Map;

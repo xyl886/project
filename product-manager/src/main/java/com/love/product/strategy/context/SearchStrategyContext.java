@@ -1,7 +1,7 @@
 package com.love.product.strategy.context;
 
 
-import com.love.product.model.DTO.PostsSearchDTO;
+import com.love.product.entity.dto.PostsSearchDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 

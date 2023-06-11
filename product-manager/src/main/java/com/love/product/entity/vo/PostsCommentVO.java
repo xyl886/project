@@ -1,4 +1,4 @@
-package com.love.product.model.VO;
+package com.love.product.entity.vo;
 
 import com.love.product.entity.PostsComment;
 import io.swagger.annotations.ApiModelProperty;
@@ -19,5 +19,5 @@ import lombok.NoArgsConstructor;
 public class PostsCommentVO extends PostsComment {
 
     @ApiModelProperty(value = "所属用户")
-    private UserInfoVO userInfo;
+    private UserBasicInfoVO userBasicInfoVO;
 }

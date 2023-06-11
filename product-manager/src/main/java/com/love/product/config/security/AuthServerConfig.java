@@ -2,7 +2,7 @@ package com.love.product.config.security;
 
 import com.alibaba.fastjson2.JSON;
 import com.love.product.config.Exception.BizException;
-import com.love.product.model.VO.UserInfoVO;
+import com.love.product.entity.vo.UserInfoVO;
 import com.love.product.service.RedisService;
 import com.love.product.service.UserInfoService;
 import org.springframework.context.annotation.Bean;

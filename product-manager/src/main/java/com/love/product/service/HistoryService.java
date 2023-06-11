@@ -5,7 +5,7 @@ import com.love.product.entity.History;
 import com.love.product.entity.base.PageQuery;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
-import com.love.product.model.VO.HistoryVO;
+import com.love.product.entity.vo.HistoryVO;
 
 /**
  * @PackageName: com.love.product.service

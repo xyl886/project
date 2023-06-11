@@ -10,9 +10,9 @@ import com.love.product.entity.base.PageQuery;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.enumerate.School;
-import com.love.product.model.VO.HistoryVO;
-import com.love.product.model.VO.PostsDetailVO;
-import com.love.product.model.VO.UserInfoVO;
+import com.love.product.entity.vo.HistoryVO;
+import com.love.product.entity.vo.PostsDetailVO;
+import com.love.product.entity.vo.UserInfoVO;
 import com.love.product.mapper.HistoryMapper;
 import com.love.product.service.HistoryService;
 import com.love.product.service.PostsService;
@@ -43,7 +43,10 @@ public class HistoryServiceImpl extends ServiceImpl<HistoryMapper, History> impl
     @Override
     public History findHistory(Long userId, Long id) {
         LambdaQueryWrapper<History> queryWrapper=new LambdaQueryWrapper<>();
-        queryWrapper.eq(History::getUserId,userId).eq(History::getPostsId,id);
+        queryWrapper.eq(History::getUserId, userId)
+                .eq(History::getPostsId, id)
+                .orderByDesc(History::getUpdateTime)
+                .last("LIMIT 1");
         History  history= getOne(queryWrapper);
           if (getOne(queryWrapper)!=null){
               log.info("之前浏览过"+history);

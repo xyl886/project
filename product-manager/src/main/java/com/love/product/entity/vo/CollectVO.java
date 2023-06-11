@@ -1,7 +1,6 @@
-package com.love.product.model.VO;
+package com.love.product.entity.vo;
 
 import com.love.product.entity.Collect;
-import com.love.product.entity.UserInfo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 /**
- * @author hjf
+ * @author xyl
  * @date 2022-12-28 10:44
  * @describe 收藏
  */

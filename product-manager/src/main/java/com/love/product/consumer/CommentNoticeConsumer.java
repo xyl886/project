@@ -3,7 +3,7 @@ package com.love.product.consumer;
 
 import com.alibaba.fastjson2.JSON;
 
-import com.love.product.model.DTO.EmailDTO;
+import com.love.product.entity.dto.EmailDTO;
 import com.love.product.util.EmailUtil;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
