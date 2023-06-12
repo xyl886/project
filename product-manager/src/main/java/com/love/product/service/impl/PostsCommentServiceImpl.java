@@ -80,7 +80,7 @@ public class PostsCommentServiceImpl extends ServiceImpl<PostsCommentMapper, Pos
         comments.forEach(item -> {
             PostsCommentVO VO = BeanUtil.copyProperties(item, PostsCommentVO.class);
             UserInfoVO userInfoVO = finalUserInfoVOMap.get(item.getUserId());
-            VO.setUserBasicInfoVO(new UserBasicInfoVO(userInfoVO.getId(),userInfoVO.getNickname(),userInfoVO.getAvatar()));
+            VO.setUserInfo(new UserBasicInfoVO(userInfoVO.getId(),userInfoVO.getNickname(),userInfoVO.getAvatar()));
             commentVOS.add(VO);
         });
         return Result.OK(commentVOS);

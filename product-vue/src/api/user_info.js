@@ -30,3 +30,13 @@ export const updateUserPwd = (params) => {
     params: params
   })
 }
+/**
+ * 重置密码
+ */
+export const userReset = (params) => {
+  return request({
+    url: '/api/user/reset',
+    method: 'post',
+    params: params
+  })
+}

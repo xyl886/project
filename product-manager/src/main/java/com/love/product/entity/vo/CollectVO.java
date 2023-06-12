@@ -22,5 +22,5 @@ public class CollectVO extends Collect {
     private PostsDetailVO posts;
 
     @ApiModelProperty(value = "用户基本信息")
-    private UserBasicInfoVO userBasicInfo;
+    private UserBasicInfoVO userInfo;
 }

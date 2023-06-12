@@ -37,6 +37,7 @@
 <script>
 import All from './all.vue'
 import BackToTop from '../../page/top/BackToTop.vue'
+
 export default {
   components: {
     All,
@@ -66,6 +67,15 @@ export default {
       ],
       school: null
     }
+  },
+  computed: {
+    // Tabs () {      , requiresLogin: true
+    //   if (getToken()) {
+    //     return this.tabs
+    //   } else {
+    //     return this.tabs.filter(tab => !tab.requiresLogin)
+    //   }
+    // }
   },
   mounted () {
     this.$nextTick(() => {

@@ -83,7 +83,7 @@
               <div class="video-info" style="font-size: 12px;">
                 <p style="position: relative;left: 15px;">浏览:{{item2.posts.browseNum}}</p>
                 <p style="position: relative;left: 15px;">收藏:{{item2.posts.collectNum}}</p>
-                <p style="position: relative;left: 15px;">{{item2.userBasicInfo.nickname}}</p>
+                <p style="position: relative;left: 15px;">{{item2.userInfo.nickname}}</p>
                 <p style="position: relative;left: 15px;">发布于:{{item2.posts.createTime}}</p>
               </div>
             </div>

@@ -10,7 +10,9 @@ import com.love.product.config.fileupload.FileUploadConfig;
 import com.love.product.config.security.TokenConfig;
 import com.love.product.entity.UserInfo;
 import com.love.product.entity.base.Result;
+import com.love.product.enumerate.CodeType;
 import com.love.product.enumerate.Gender;
+import com.love.product.enumerate.School;
 import com.love.product.enumerate.YesOrNo;
 import com.love.product.mapper.UserInfoMapper;
 import com.love.product.entity.dto.EmailDTO;
@@ -83,7 +85,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
      */
 
     @Override
-    public Result<?> sendCode(String email) {
+    public Result<?> sendCode(String email, String type) {
         // 从缓存中查询邮箱最近一次发送验证码的时间戳
 //        Long lastSendTimestamp = CodeConstant.CACHE.get(email);
         Object lastSendTimestampObj = redisService.get(email);
@@ -102,10 +104,10 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         }
         String code = getRandomCode();
         Map<String, Object> map = new HashMap<>();
-        map.put("content", "您的验证码为 " + code + " 有效期5分钟，请不要告诉他人哦！");
+        map.put("content", "尊敬的用户"+email+"，您好:   您正在校园墙进行"+ CodeType.getType(type)+"操作，本次请求的邮件验证码是：" + code + "(为了保证您账号的安全性，请您在5分钟内完成设置)。本验证码5分钟内有效，请及时输入。 请不要告诉他人哦！");
         EmailDTO emailDTO = EmailDTO.builder()
                 .email(email)
-                .subject(CAPTCHA)
+                .subject("校园墙"+CodeType.getType(type)+CAPTCHA)
                 .template("common.html")
                 .commentMap(map)
                 .build();
@@ -238,6 +240,34 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             return Result.OKMsg("修改成功！");
         }
         return Result.failMsg("用户不存在！");
+    }
+
+    /**
+     * 重置密码
+     * @param userId
+     * @param email
+     * @param emailCode
+     * @param password
+     * @param confirmPassword
+     * @return
+     */
+
+    @Override
+    public Result<?> reset(Long userId, String email, String emailCode, String password, String confirmPassword) {
+        UserInfo userInfo = getById(userId);
+        if (userInfo != null) {
+            if (!password.equals(confirmPassword)) {
+                return Result.failMsg("新密码与确认密码不匹配！");
+            }
+            if (!CommonUtil.isValidPassword(password)) {
+                return Result.failMsg("新密码不符合要求！");
+            }
+            userInfo.setOriginalPassword(password);
+            userInfo.setPassword(new BCryptPasswordEncoder().encode(password));
+            saveOrUpdate(userInfo);
+            return Result.OKMsg("重置成功！");
+        }
+        return Result.failMsg("用户异常，请联系管理员！");
     }
     @Override
     public UserInfoVO getByEmail(String email){

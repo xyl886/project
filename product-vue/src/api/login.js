@@ -1,11 +1,12 @@
 import request from '@/utils/request'
 
-export const sendEmailCode = (email) => {
+export const sendEmailCode = (email, type) => {
   return request({
     url: '/api/login/code',
     method: 'get',
     params: {
-      email: email
+      email: email,
+      type: type
     }
   })
 }

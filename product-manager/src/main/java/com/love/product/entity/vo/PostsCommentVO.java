@@ -19,5 +19,5 @@ import lombok.NoArgsConstructor;
 public class PostsCommentVO extends PostsComment {
 
     @ApiModelProperty(value = "所属用户")
-    private UserBasicInfoVO userBasicInfoVO;
+    private UserBasicInfoVO userInfo;
 }

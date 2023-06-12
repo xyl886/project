@@ -10,7 +10,6 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Res
 
 /**
  * 资源服务器-配置类
- *
  * 1.设置接口访问权限
  * 2.token验证
  *
@@ -24,7 +23,6 @@ public class ResourceConfiguration extends ResourceServerConfigurerAdapter {
 
     /**
      * 定义资源服务器接口访问权限
-     *
      * 1.定义无权限接口
      * 2.定义接口访问权限为admin
      * 3.定义接口访问权限为sys_admin
@@ -38,6 +36,7 @@ public class ResourceConfiguration extends ResourceServerConfigurerAdapter {
                         "/login/code",
                         "/login/userLogin",
                         "/login/userRegister",
+                        "/user/reset",
                         "/posts/getPage",
                         "/posts/getDetail",
                         "/posts/browse",

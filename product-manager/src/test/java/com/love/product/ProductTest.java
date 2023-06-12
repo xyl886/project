@@ -1,5 +1,6 @@
 package com.love.product;
 
+import com.love.product.enumerate.CodeType;
 import com.love.product.service.HistoryService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -20,7 +21,8 @@ class ProductTest {
     private HistoryService historyService;
   @Test
   void Test1(){
-      Long[] ids={1659951556545490946L,1666964117371523073L,1666735062084874241L};
-      System.out.println(historyService.del(1611899504066359297L, ids));
+//      Long[] ids={1659951556545490946L,1666964117371523073L,1666735062084874241L};
+//      System.out.println(historyService.del(1611899504066359297L, ids));
+      System.out.println(CodeType.getType("login"));
   }
 }

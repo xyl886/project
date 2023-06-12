@@ -37,7 +37,6 @@
     </div>
     <UpdatePwd ref="updatePwdDialog"></UpdatePwd>
     <login ref="loginDialog"></login>
-    <ResetPwd ref="resetPwdDialog"></ResetPwd>
   </div>
 </template>
 
@@ -45,7 +44,6 @@
 import { mapGetters } from 'vuex'
 import UpdatePwd from '../login/UpdatePwd'
 import login from '../login/login.vue'
-import ResetPwd from '../login/ResetPwd.vue'
 
 export default {
   data () {
@@ -64,7 +62,6 @@ export default {
   },
   components: {
     UpdatePwd,
-    ResetPwd,
     login
   },
   computed: {
@@ -88,9 +85,6 @@ export default {
     toLogin () {
       this.$refs.loginDialog.showDialog()
     },
-    // personalPage () {
-    //   this.$router.push({path: '/personal'})
-    // },
     publish () {
       this.$router.push({path: '/publish'})
     },

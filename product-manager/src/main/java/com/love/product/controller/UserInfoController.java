@@ -66,4 +66,14 @@ public class UserInfoController {
     ) {
         return userInfoService.updatePwd(JwtUtil.getUserId(), currentPassword, newPassword, confirmPassword);
     }
+    @PostMapping ("/reset")
+    @ApiOperation(value = "重置密码", notes = "重置密码")
+    public Result<?> updateUserPwd(
+            @RequestParam("email") String email,
+            @RequestParam("emailCode") String emailCode,
+            @RequestParam("password") String password,
+            @RequestParam("confirmPassword") String confirmPassword
+    ) {
+        return userInfoService.reset(JwtUtil.getUserId(), email, emailCode,password, confirmPassword);
+    }
 }

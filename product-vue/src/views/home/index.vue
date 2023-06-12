@@ -1,7 +1,7 @@
 <template>
   <div style="font-size: 14px;margin: 20px 150px;" v-loading="loading">
     <div>
-      <el-carousel height="500px" direction="vertical" :autoplay="true" :interval="3000">
+      <el-carousel height="500px" :autoplay="true" :interval="3000">
         <el-carousel-item v-for="(item,index) in banners" :key="index">
          <el-image :src="item.imgPath" style="width: 100%;height: 500px;"></el-image>
         </el-carousel-item>

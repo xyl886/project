@@ -36,6 +36,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/login/code",
                         "/login/userLogin",
                         "/login/userRegister",
+                        "/user/reset",
                         "/oauth/**",
                         "/actuator/**",
                         "/doc.html/**",

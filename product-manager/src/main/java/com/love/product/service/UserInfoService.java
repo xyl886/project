@@ -75,10 +75,12 @@ public interface UserInfoService extends IService<UserInfo> {
    Result<?> updatePwd(Long id, String currentPassword, String newPassword, String confirmPassword);
 
     /**
-     * 邮箱
-     *
-     * @param email
+     * 发送邮箱验证码
+     * @param email 邮箱
+     * @param type 类型
      * @return
      */
-    Result<?> sendCode(String email);
+    Result<?> sendCode(String email, String type);
+
+    Result<?> reset(Long userId, String email, String emailCode, String password, String confirmPassword);
 }

@@ -55,28 +55,44 @@
         </el-col>
       </el-row>
     </div>
-    <div class="follow-box">
-      <div class="follow-item" v-for="(item,index) in posts" :key="index">
-        <div>
-          <el-image :src="item.userInfo.avatar" class="follow-item-img"></el-image>
-        </div>
-        <div>
-          <div class="follow-item-nickname">
-            {{item.userInfo.nickname}}
+    <div class="collect-box" v-for="(item,index) in posts" :key="index">
+        <el-card :body-style="{ padding: '0px' }">
+          <div class="image-box" style="cursor: pointer;" @click="detailFun(item)">
+            <div style="text-align: center;font-size: 25px;">
+              <el-image v-if="item.coverPath" :src="item.coverPath" class="collect-box-img">
+                <div slot="error" class="image-slot" style="padding:25%;">
+                  <i class="el-icon-picture-outline"></i>
+                </div>
+              </el-image>
+            </div>
+            <div class="video-info" style="font-size: 12px;">
+              <p style="position: relative;left: 15px;">浏览:{{item.browseNum}}</p>
+              <p style="position: relative;left: 15px;">收藏:{{item.collectNum}}</p>
+              <p style="position: relative;left: 15px;">{{item.userInfo.nickname}}</p>
+              <p style="position: relative;left: 15px;">发布于:{{item.createTime}}</p>
+            </div>
           </div>
-          <div class="follow-item-time">
-            {{item.createTime}} {{item.followStatus === 2?' Ta关注了你':(item.followStatus === 1?'你关注了Ta':'你们已互关')}}
+          <div class="collect-box-title" @click="detailFun(item)">{{item.title}}</div>
+          <div>
+            <span style="color: #999;">收藏于:{{item.createTime}}</span>
+            <el-dropdown style="float: right;">
+              <span><i class="el-icon-more" style="padding: 5px;"></i></span>
+              <el-dropdown-menu >
+                <el-dropdown-item @click.native="cancelCollect(item)">取消收藏</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
           </div>
+        </el-card>
+        <div class="checkbox" v-if="isSelect" @click="Checkbox(item.id)">
+                <span style="display: inline-block;position: absolute;right: 5%;top: 5%;font-size: 25px;">
+                   <i class="iconfont icon-xuanzhong" style="font-size: 25px"
+                      :style="selected.includes(item.id)?'color: #00a6ff':''"></i>
+                </span>
         </div>
-        <div class="follow-item-but-box">
-          <el-button round :type="item.followStatus !== 2?'':'primary'" @click="addFollowFun(item.userInfo,item.followStatus !== 2?'1':'0')">
-            {{item.followStatus !== 2?'取消关注':'关注'}}
-          </el-button>
-        </div>
-      </div>
     </div>
+
     <div v-if="posts.length === 0">
-      <el-empty description="您还没有发布过帖子哦！" image-size="100">
+      <el-empty description="您还没有发布过帖子哦！">
         <el-button type="primary" @click.native="publish">发布帖子</el-button>
       </el-empty>
     </div>
@@ -100,6 +116,9 @@
 // 例如：import 《组件名称》 from ‘《组件路径》‘;
 import {addFollow} from '../../api/follow'
 import {getPage} from '../../api/posts'
+import {MessageBox} from 'element-ui'
+import {setStore} from '../../utils/store'
+import {addCollect} from '../../api/collect'
 
 export default {
   name: '',
@@ -125,6 +144,11 @@ export default {
         value: '选项5',
         label: '北京烤鸭'
       }],
+      myLike: '',
+      isSelect: false,
+      isAllSelected: false,
+      selected: [],
+      cancelList: '',
       value: '',
       InputFocused: false,
       searchText: '',
@@ -175,11 +199,13 @@ export default {
     },
     currentChange (currentPage) { // 当前页
       this.page.currentPage = currentPage
+      console.log(this.page.currentPage)
       this.getPageFun()
     },
     getPageFun () {
       this.loading = true
-      this.page.currentPage++
+      console.log(this.page.currentPage)
+      // this.page.currentPage++
       console.log(this.page)
       getPage(this.page).then(res => {
         if (res.code === 200) {
@@ -211,6 +237,85 @@ export default {
           this.$message.success(res.msg)
         }
       })
+    },
+    cancelCollect (item) {
+      addCollect(item.id, '1').then(res => { // 每个单独地取消收藏
+        if (res.code === 200) {
+          this.getPageFun()
+          this.$message.success(res.msg)
+        }
+      })
+    },
+    detailFun (posts) {
+      setStore({name: 'posts', content: posts})
+      this.$router.push({path: '/detail'})
+    },
+    CheckboxShow () {
+      // 显示批量删除
+      this.selected = []
+      if (this.isSelect) {
+        this.isSelect = false
+        return false
+      }
+      this.isSelect = true
+    },
+    selectAll () {
+      if (this.isAllSelected) {
+        this.selected = [] // 全选按钮已选中，将selected数组清空
+        this.isAllSelected = false
+        return false
+      } else {
+        this.selected = this.collects.flatMap(item => item.map(item2 => item2.id)) // 全选按钮未选中，将selected数组设置为所有选项的id
+        this.isAllSelected = true
+      }
+    },
+    Checkbox (index) {
+      // 多个商品的选择
+      let hash = this.selected.findIndex((item) => {
+        return item === index
+      })
+      if (hash > -1) {
+        this.selected.splice(hash, 1)
+      } else {
+        this.selected.push(index)
+      }
+    },
+    One (index) {
+      // 单个商品的取消
+      this.selected.push(index)
+      this.selected.forEach((item) => {
+        this.cancelList.push(this.myLike[item].id)
+      })
+      this.cancelCollect()
+    },
+    Cancel () {
+      // 弹窗是否确认
+      MessageBox.confirm(
+        '你将要取消收藏' + this.selected.length + '个商品',
+        '确认提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          cancelButtonClass: 'cancel',
+          confirmButtonClass: 'config',
+          closeOnClickModal: false,
+          closeOnPressEscape: false
+        }
+      ).then(() => {
+        this.selected.forEach((item) => {
+          this.cancelList.push(this.myLike[item].id)
+        })
+        this.cancelCollect()
+        setTimeout(() => {
+          this.$message(
+            {
+              type: 'success',
+              message: '删除成功!'
+            },
+            1000
+          )
+        })
+      }).catch(() => {})
     }
   },
   // 生命周期 - 创建完成（可以访问当前this实例）
@@ -235,6 +340,52 @@ export default {
 }
 </script>
 <style scoped>
-
-<
-style >
+@import '../../../static/iconfont/iconfont.css';
+.collect-box{
+  display: flex;
+  width: calc(20% - 10px);
+  margin: 5px;
+  position: relative;
+}
+.collect-box:hover{
+  box-shadow: 1px 1px 10px rgba(0,0,0, 0.2);
+  transform: translate(0px, 0px) scale(1.01) rotate(0deg);
+}
+.collect-box-title:hover{
+  color: #00a6ff;
+}
+.collect-box-img{
+  width: 100%;
+}
+.collect-box-title{
+  height: 40px;
+  font-size: 12px;
+  padding: 5px;
+  overflow: hidden;
+}
+.video-info {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 65%;
+  background-color: rgba(0, 0, 0, 0.15);
+  color: white;
+  display: none;
+  /* 其他样式设置，如文本居中、字体大小等 */
+}
+.image-box:hover .video-info {
+  display: block;
+}
+.el-icon-more:hover{
+  color: #00a6ff;
+}
+.checkbox {
+  position: absolute;
+  top: 0;
+//border: #00a6ff 1px solid;
+  width: 100%;
+  height: 100%;
+  z-index: 1; /* 设置较高的层叠顺序 */
+}
+</style>

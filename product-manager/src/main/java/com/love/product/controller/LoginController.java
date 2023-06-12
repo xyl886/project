@@ -42,8 +42,9 @@ public class LoginController {
     @ApiOperation(value = "发送邮箱验证码")
     @ApiImplicitParam(name = "email", value = "邮箱", required = true, dataType = "String")
     @GetMapping("/code")
-    public Result<?> sendCode(String email) {
-        return userInfoService.sendCode(email);
+    public Result<?> sendCode(@RequestParam("email") String email,
+                              @RequestParam("type") String type) {
+        return userInfoService.sendCode(email,type);
     }
 
     @ApiOperation(value = "账密登录", notes = "账密登录")

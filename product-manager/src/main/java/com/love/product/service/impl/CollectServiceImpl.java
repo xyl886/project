@@ -113,7 +113,7 @@ public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> impl
         list.forEach(item -> {
             UserInfoVO user = users.get(item.getUserId());
             if (user != null) {
-                item.setUserBasicInfo(new UserBasicInfoVO(user.getId(), user.getNickname(), user.getAvatar()));
+                item.setUserInfo(new UserBasicInfoVO(user.getId(), user.getNickname(), user.getAvatar()));
             }
         });
         return ResultPage.OK(page.getTotal(), page.getCurrent(), page.getSize(), list);
