@@ -35,6 +35,9 @@ public class Posts extends BaseEntity {
     @ApiModelProperty(value = "标题")
     public String title;
 
+    @ApiModelProperty(value = "帖子描述")
+    public String description;
+
     @ApiModelProperty(value = "内容")
     public String content;
 

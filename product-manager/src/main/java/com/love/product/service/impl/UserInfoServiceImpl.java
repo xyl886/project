@@ -10,6 +10,8 @@ import com.love.product.config.fileupload.FileUploadConfig;
 import com.love.product.config.security.TokenConfig;
 import com.love.product.entity.UserInfo;
 import com.love.product.entity.base.Result;
+import com.love.product.entity.vo.LoginVO;
+import com.love.product.entity.vo.RegisterVO;
 import com.love.product.enumerate.CodeType;
 import com.love.product.enumerate.Gender;
 import com.love.product.enumerate.School;
@@ -122,8 +124,8 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
      * @return Result<UserInfo>
      */
     @Override
-    public Result<UserInfoVO> login(String email, String password,String emailCode){
-        UserInfoVO userInfoVO = getByEmail(email);
+    public Result<UserInfoVO> login(LoginVO loginVO){
+        UserInfoVO userInfoVO = getByEmail(loginVO.email);
         if(userInfoVO != null){
             if(userInfoVO.getDeleted().equals(YesOrNo.YES.getValue())){
                 return Result.failMsg("登录失败，账号已注销");
@@ -131,20 +133,20 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             if(userInfoVO.getStatus().equals(YesOrNo.YES.getValue())){
                 return Result.failMsg("登录失败，账号已禁用，请联系客服人员");
             }
-            if(!emailCode.isEmpty()&&password.isEmpty()){
+            if(!loginVO.emailCode.isEmpty()&&loginVO.password.isEmpty()){
                 // 从 Redis 中获取验证码
-                String redisCode = (String) redisService.get("code:" + email);
+                String redisCode = (String) redisService.get("code:" + loginVO.email);
                 log.info(redisCode);
                 if (redisCode == null) {
                     return Result.failMsg("验证码已过期，请重新获取");
                 }
                 // 比较验证码是否正确
-                if(!redisCode.equals(emailCode)) {
+                if(!redisCode.equals(loginVO.emailCode)) {
                     return Result.failMsg("验证码错误，请重新输入");
                 }
             }else {
                 PasswordEncoder encoder = new BCryptPasswordEncoder();
-                boolean matches = encoder.matches(password, userInfoVO.getPassword());
+                boolean matches = encoder.matches(loginVO.password, userInfoVO.getPassword());
                 if (!matches) {
                     return Result.failMsg("账号或密码错误");
                 }
@@ -152,14 +154,14 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             //一定要在获取token前缓存redis，否则可能报错,并且要删除验证码
             redisService.set("user:userinfo:" + userInfoVO.getId(),userInfoVO);
             redisService.expire("user:userinfo:" + userInfoVO.getId(), 1, TimeUnit.DAYS);
-            redisService.del("code:"+email);
+            redisService.del("code:"+loginVO.email);
             String accessToken = getOAuthToken(userInfoVO);
             if(accessToken == null){
                 return Result.failMsg("登录失败，请重试");
             }
             userInfoVO.setAccessToken(accessToken);
-            userInfoVO.setEmail(email);
-            userInfoVO.setPassword(password);
+            userInfoVO.setEmail(loginVO.email);
+            userInfoVO.setPassword(loginVO.password);
             log.info(String.valueOf(userInfoVO));
 
             return Result.OK(userInfoVO);
@@ -173,39 +175,39 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
      * @return Result<UserInfo>
      */
     @Override
-    public Result<UserInfoVO> userRegister(String email,String emailCode, String password, String confirmPassword){
-        UserInfoVO userInfoVO = getByEmail(email);
+    public Result<UserInfoVO> userRegister(RegisterVO registerVO){
+        UserInfoVO userInfoVO = getByEmail(registerVO.email);
         if(userInfoVO != null){
             return Result.failMsg("邮箱已注册，请修改！");
         }
-        if (!checkEmail(email)) {
+        if (!checkEmail(registerVO.email)) {
             return Result.failMsg("请输入正确的邮箱！");
         }
-        if(emailCode.isEmpty()){
+        if(registerVO.emailCode.isEmpty()){
             return Result.failMsg("请输入验证码！");
         }
-        if(password.isEmpty()){
+        if(registerVO.password.isEmpty()){
             return Result.failMsg("请设置密码！");
         }
         // 从 Redis 中获取验证
-        String redisCode = (String) redisService.get("code:" + email);
+        String redisCode = (String) redisService.get("code:" + registerVO.email);
         if (redisCode == null) {
             return Result.failMsg("验证码已过期，请重新获取！");
         }
         // 比较验证码是否正确
-        if(!redisCode.equals(emailCode)) {
+        if(!redisCode.equals(registerVO.emailCode)) {
             return Result.failMsg("验证码错误，请重新输入！");
         }
-        if(!password.equals(confirmPassword)){
+        if(!registerVO.password.equals(registerVO.confirmPassword)){
             return Result.failMsg("两次输入密码不一致，请重新输入！");
         }
         LocalDateTime now = LocalDateTime.now();
         userInfoVO = new UserInfoVO();
         userInfoVO.setId(IdWorker.getId());
-        userInfoVO.setEmail(email);
+        userInfoVO.setEmail(registerVO.email);
         userInfoVO.setNickname(fileUploadConfig.getDefaultNickname());
-        userInfoVO.setOriginalPassword(password);
-        userInfoVO.setPassword(new BCryptPasswordEncoder().encode(password));
+        userInfoVO.setOriginalPassword(registerVO.password);
+        userInfoVO.setPassword(new BCryptPasswordEncoder().encode(registerVO.password));
         userInfoVO.setAvatar(fileUploadConfig.getDefaultAvatar());
         userInfoVO.setGender(Gender.DUNNO.getValue());
         userInfoVO.setStatus(YesOrNo.NO.getValue());
@@ -245,25 +247,22 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     /**
      * 重置密码
      * @param userId
-     * @param email
-     * @param emailCode
-     * @param password
-     * @param confirmPassword
+     * @param resetVO
      * @return
      */
 
     @Override
-    public Result<?> reset(Long userId, String email, String emailCode, String password, String confirmPassword) {
+    public Result<?> reset(Long userId,RegisterVO resetVO) {
         UserInfo userInfo = getById(userId);
         if (userInfo != null) {
-            if (!password.equals(confirmPassword)) {
+            if (!resetVO.password.equals(resetVO.confirmPassword)) {
                 return Result.failMsg("新密码与确认密码不匹配！");
             }
-            if (!CommonUtil.isValidPassword(password)) {
+            if (!CommonUtil.isValidPassword(resetVO.password)) {
                 return Result.failMsg("新密码不符合要求！");
             }
-            userInfo.setOriginalPassword(password);
-            userInfo.setPassword(new BCryptPasswordEncoder().encode(password));
+            userInfo.setOriginalPassword(resetVO.password);
+            userInfo.setPassword(new BCryptPasswordEncoder().encode(resetVO.password));
             saveOrUpdate(userInfo);
             return Result.OKMsg("重置成功！");
         }
@@ -313,9 +312,9 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         //获取OAuth2框架的配置信息，用于访问刷新令牌接口
         Map<String, String> tokenMap = tokenConfig.getConfig();
         Map<String,String> mapParam = new HashMap<>();
-        mapParam.put("email", userInfoVO.getEmail());
-        mapParam.put("nickname", userInfoVO.getNickname());
-        mapParam.put("password", userInfoVO.getOriginalPassword());
+        mapParam.put("email", userInfoVO.email);
+        mapParam.put("nickname", userInfoVO.nickname);
+        mapParam.put("password", userInfoVO.originalPassword);
         mapParam.put("client_id", tokenMap.get("clientId"));
         mapParam.put("client_secret", tokenMap.get("secret"));
         mapParam.put("grant_type", tokenMap.get("grantTypes"));

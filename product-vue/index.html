@@ -10,8 +10,6 @@
     	  html,body{
     		  margin: 0;
     		  padding: 0;
-    		  width: 100%;
-    		  height: 100%;
     	  }
     	  #app{
     		  width: 100%;
@@ -25,7 +23,7 @@
           background-color: #1fb494;
     	  }
     	  .logo img{
-    	  	width: 32px;
+        width: 32px;
     		height: 32px;
     		margin: 14px 10px 0 15px;
     	  }
@@ -41,7 +39,7 @@
     		background-color: #1fb494;
     	  }
     	  .top-box-i{
-    	  	width: 32px;
+    	  width: 32px;
     		height: 32px;
     		font-size: 24px;
     		margin: 16px 10px 0 15px;
@@ -51,7 +49,9 @@
     	  .my-home {
     	    /*background-color: #303133;*/
     	    background-color: #409EFF;
-    	    height: 100%;
+    	    height: 100vh;
+          width: 100vw;
+          top: 0;
     	    display: flex;
     	    flex-direction: column;
     	  }
@@ -97,13 +97,13 @@
     	  }
 
     	  ::-webkit-scrollbar{
-    	    width: 7px;
-    	    height: 7px;
+    	    width: 10px;
+    	    height: 10px;
     	    background-color: transparent;
     	  }
     	  ::-webkit-scrollbar-thumb {
     	    border-radius: 5px;
-    	    background-color: rgba(144,147,153,.3);
+    	    background-color: #909399;
     	  }
     	  ::-webkit-scrollbar-track-piece {
     	    background-color: transparent;
@@ -115,16 +115,7 @@
     </style>
   </head>
   <body>
-    <div id="app">
-      <div class="my-home">
-      		<div class="my-home__main">
-      		   <img class="my-home__loading" src="././public/img/loading-spin.svg" alt="loading">
-      		  <div class="my-home__title">
-              努力加载中...
-      		  </div>
-      		</div>
-      </div>
-    </div>
+    <div id="app"></div>
     <script src="././public/cdn/vue/2.6.10/vue.min.js" charset="utf-8"></script>
     <script src="././public/cdn/vuex/3.1.1/vuex.min.js" charset="utf-8"></script>
     <script src="././public/cdn/vue-router/3.0.1/vue-router.min.js" charset="utf-8"></script>

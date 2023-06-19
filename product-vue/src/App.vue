@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <div class="my-home" v-if="loadingIndex" style="z-index: 99;">
+    <div  class="my-home" v-if="loadingIndex" style="z-index: 99;position: absolute;">
         <div class="my-home__main">
             <img class="my-home__loading" src="../public/img/loading-spin.svg" alt="loading">
             <div class="my-home__title">
@@ -13,7 +13,9 @@
     </div>
     <router-view v-if="!loadingIndex"></router-view>
 <!--    <Player/>-->
-<BackToTop/>
+    <el-tooltip placement="top" content="回到顶部">
+      <BackToTop :custom-style="myBackToTopStyle" :visibility-height="300" :back-position="0" transition-name="fade" />
+    </el-tooltip>
   </div>
 </template>
 
@@ -29,6 +31,15 @@ export default {
   },
   data () {
     return {
+      myBackToTopStyle: {
+        right: '50px',
+        bottom: '50px',
+        width: '40px',
+        height: '40px',
+        'border-radius': '4px',
+        'line-height': '45px', // 请保持与高度一致以垂直居中 Please keep consistent with height to center vertically
+        background: '#e7eaf1'// 按钮的背景颜色 The background color of the button
+      },
       loadingIndex: true
     }
   },
@@ -44,30 +55,18 @@ export default {
 }
 </script>
 <style>
-#app {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+html,body{
+  margin: 0;
+  padding: 0;
 }
-/* #app {
+ #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
-} */
+}
 
 /* 使用css禁止选中文本 */
-* {
-  moz-user-select: -moz-none;
-  -moz-user-select: none;
-  -o-user-select: none;
-  -khtml-user-select: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
 
 .product-index .el-main{
   padding: 20px 0 20px 0!important;

@@ -3,6 +3,8 @@ package com.love.product.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.love.product.entity.UserInfo;
 import com.love.product.entity.base.Result;
+import com.love.product.entity.vo.LoginVO;
+import com.love.product.entity.vo.RegisterVO;
 import com.love.product.entity.vo.UserInfoVO;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,7 +21,7 @@ public interface UserInfoService extends IService<UserInfo> {
     /**
      * 用户登录
      */
-    Result<UserInfoVO> login(String email, String password, String emailCode);
+    Result<UserInfoVO> login(LoginVO loginVO);
 
     UserInfoVO getByEmail(String email);
 
@@ -31,13 +33,11 @@ public interface UserInfoService extends IService<UserInfo> {
     void setRefreshToken(Long userId, String refreshToken);
 
     /**
-     * 用户注册
-     * @param userName
-     * @param password
-     * @param confirmPassword
+     *  用户注册
+     * @param registerVO
      * @return
      */
-    Result<UserInfoVO> userRegister(String userName,String emailCode, String password, String confirmPassword);
+    Result<UserInfoVO> userRegister(RegisterVO registerVO);
 
     /**
      * 用户列表
@@ -82,5 +82,5 @@ public interface UserInfoService extends IService<UserInfo> {
      */
     Result<?> sendCode(String email, String type);
 
-    Result<?> reset(Long userId, String email, String emailCode, String password, String confirmPassword);
+    Result<?> reset(Long userId,RegisterVO resetVO);
 }

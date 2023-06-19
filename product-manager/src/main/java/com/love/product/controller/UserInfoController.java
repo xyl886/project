@@ -1,6 +1,8 @@
 package com.love.product.controller;
 
+import com.love.product.entity.UserInfo;
 import com.love.product.entity.base.Result;
+import com.love.product.entity.vo.RegisterVO;
 import com.love.product.entity.vo.UserInfoVO;
 import com.love.product.service.UserInfoService;
 import com.love.product.util.JwtUtil;
@@ -68,12 +70,7 @@ public class UserInfoController {
     }
     @PostMapping ("/reset")
     @ApiOperation(value = "重置密码", notes = "重置密码")
-    public Result<?> updateUserPwd(
-            @RequestParam("email") String email,
-            @RequestParam("emailCode") String emailCode,
-            @RequestParam("password") String password,
-            @RequestParam("confirmPassword") String confirmPassword
-    ) {
-        return userInfoService.reset(JwtUtil.getUserId(), email, emailCode,password, confirmPassword);
+    public Result<?> updateUserPwd(RegisterVO resetVO) {
+        return userInfoService.reset(JwtUtil.getUserId(), resetVO);
     }
 }

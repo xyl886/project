@@ -1,54 +1,79 @@
 <template>
     <div style="font-size: 14px;overflow:auto">
       <div v-for="(item,index) in posts" :key="item.id" class="share-item">
-        <div style="width: 100px;">
-          <div>
-            <el-image :src="item.userInfo?item.userInfo.avatar:''" style="width: 80px;height: 80px;border-radius: 50%;"></el-image>
-          </div>
-        </div>
         <div style="flex: 1;">
           <div style="height: 80px;">
-            <div style="font-size: 16px;line-height: 40px;">
-              {{item.userInfo.nickname}}
-              <div style="float: right;margin-top: 5px;">
-                <el-dropdown>
-                  <div style="display: flex;">
+            <el-row style="padding: 10px 0">
+              <el-col :span="3">
+                <div>
+                  <el-image :src="item.userInfo?item.userInfo.avatar:''" style="width: 60px;height: 60px;border-radius:50%;margin-left: 20px;"></el-image>
+                </div>
+            </el-col>
+              <el-col :span="21">
+                <div style="font-size: 16px;line-height: 40px;">
+                  <span>{{item.userInfo.nickname}}</span>
+                  <el-tag style="margin: 0 5px;">我自己/关注</el-tag>
+                  <el-tag type="success">{{item.userInfo.role}}</el-tag>
+                  <div style="float: right;margin-top: 5px;">
+                    <el-dropdown>
+                      <div style="display: flex;">
                         <span style="line-height: 20px;font-size: 22px;">
                           <i class="el-icon-more"></i>
                         </span>
-                  </div>
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item style="color:red;" v-if="item.userId === userInfo.id" @click.native="delMyPost(item)">删除</el-dropdown-item>
-                    <el-dropdown-item v-else-if="item.userId!==userInfo.id" style="color:red;" @click.native="reportPost(item)">举报</el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown></div>
-            </div>
-            <div style="color: rgb(168, 176, 183);font-size: 12px;line-height: 30px;">
-              {{item.createTime}}来自:{{item.schoolName}}
-            </div>
+                      </div>
+                      <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item style="color:red;" v-if="item.userId === userInfo.id" @click.native="delMyPost(item)">删除</el-dropdown-item>
+                        <el-dropdown-item v-else style="color:red;" @click.native="reportPost(item)">举报</el-dropdown-item>
+                      </el-dropdown-menu>
+                    </el-dropdown></div>
+                </div>
+              </el-col>
+            </el-row>
           </div>
-          <div class="share-item-content" :key="item.id" @click="detailFun(item)">
-            <el-input type="textarea" resize="none" :autosize="true" :readonly="true" v-model="item.title"></el-input>
+
+<!--          <div>-->
+            <el-row>
+              <el-col :span="16" style="padding: 0 10px">
+                <div class="share-item-content" style="margin-bottom: 16px"  @click="detailFun(item)">
+                  <el-input type="textarea" resize="none" :autosize="true" :readonly="true" v-model="item.title"></el-input>
+                </div>
+                <div class="share-item-content" style="margin-bottom: 16px"  @click="detailFun(item)">
+                 <span style="color: rgba(0,0,0,.45);">{{item.description}}</span>
+                </div>
+              </el-col>
+              <el-col :span="8">
+                <el-image v-for="(item2,index2) in item.imgPath?item.imgPath.split(','):[]" :key="item2" :preview-src-list="item.imgPath?item.imgPath.split(','):[]" fit="contain" :src="item2" style="border-radius: 5px;margin: 10px;"></el-image>
+              </el-col>
+            </el-row>
+          <div style="color: rgb(168, 176, 183);font-size: 12px;padding: 0 20px;">
+            <el-tag size="small">{{item.schoolName}}</el-tag>
           </div>
-          <div>
-            <el-image v-for="(item2,index2) in item.imgPath?item.imgPath.split(','):[]" :key="item2" :preview-src-list="item.imgPath?item.imgPath.split(','):[]" fit="contain" :src="item2" style="width: 175px;height: 110px;border-radius: 5px;margin: 0 10px 10px 0;"></el-image>
-          </div>
+<!--          </div>-->
           <div style="display: flex;margin-top: 20px;">
             <div style="display: flex;cursor: pointer;" @click="likeFun(item)">
             <span v-if="!item.like"><i class="iconfont icon-icon" style="font-size:20px;"></i></span>
             <span v-if="item.like"><i class="iconfont icon-icon" style="font-size:20px;color: #409EFF;"></i></span>
-              <span style="color: rgb(153, 162, 170);">{{item.likeNum>0?item.likeNum:'点赞'}}</span>
+              <span style="color: rgb(153, 162, 170);width: 40px">{{item.likeNum>0?item.likeNum:'点赞'}}</span>
             </div>
-            <div style="display: flex;margin-left: 50px;cursor: pointer;" @click="showComment(item)">
+            <div style="display: flex;margin-left: 10px;cursor: pointer;" @click="showComment(item)">
               <span v-if="!item.comment"><i class="iconfont icon-comment" style="font-size:20px;"></i></span>
               <span v-if="item.comment"><i class="iconfont icon-comment" style="font-size:20px;color: #409EFF;"></i></span>
               <span style="color: rgb(153, 162, 170);">
                 {{item.comment ? "收起" : (item.commentNum > 0 ? item.commentNum : "评论")}}
               </span>
             </div>
+            <div style="color: rgb(168, 176, 183);font-size: 12px;margin-left: 50px;line-height: 20px">
+              {{item.createTime}}
+            </div>
           </div>
-          <div v-show="item.comment" style="border-top: 1px solid rgb(229, 233, 239);border-bottom: 1px solid rgb(229, 233, 239);padding: 20px 0;margin-top: 20px;">
-           <el-row >
+          <div v-show="item.comment" style="border-top: 1px solid rgb(229, 233, 239);padding: 20px 0;margin-top: 20px;">
+            <div style="line-height: 20px;padding: 0 0 20px 0;">
+             <span style="margin-right:5px">评论数</span>
+              <span style="margin-right:5px;color: #ccc;">{{item.commentNum}}</span>
+              <el-button class="new" style="border: none" size="small" :class="{ active: sortType === 'new' }" @click="sortByLatest" >最新</el-button>|
+              <el-button class="hot" style="border: none" size="small" :class="{ active: sortType === 'hot' }" @click="sortByHot">最热</el-button>
+            </div>
+            <el-row >
              <el-col :span="18">
                <el-input type="textarea" :rows="1" resize="none" ref="textarea" v-model="commentContent" placeholder="请输入内容"></el-input>
              </el-col>
@@ -65,7 +90,6 @@
              </el-col>
             </el-row>
           </div>
-
           <div v-show="item.comment" v-for="(item3,index3) in item.comments" :key="item3.id" style="border-bottom: 1px solid rgb(229, 233, 239);display: flex;padding-top: 20px;">
             <div style="width: 50px;">
               <div>
@@ -74,38 +98,48 @@
             </div>
             <div style="flex: 1;">
               <div style="height: 40px;">
-                <div style="display: flex;">
-                  <div style="line-height: 20px;color: rgb(235, 115, 80);display: flex;">
-                    {{item3.userInfo.nickname}}
-                  </div>
-                  <div style="flex: 1;text-align: right;"  >
-                    <el-dropdown>
-                      <div style="display: flex;">
-                        <span style="line-height: 20px;font-size: 22px;">
-                          <i class="el-icon-more"></i>
-                        </span>
+                <div>
+                  <el-row>
+                    <el-col :span="12">
+                    <div style="font-size: 16px;color: rgb(235, 115, 80);display: flex;padding:0 10px">
+                    <span style="padding-right: 5px">{{item3.userInfo.nickname}}</span>
+                      <el-tag style="margin-right: 5px;" size="small">标签一</el-tag>
+                      <el-tag type="success" size="small">{{item.userInfo.role}}</el-tag>
+                    </div>
+                    </el-col>
+                    <el-col :span="12">
+                      <div style="flex: 1;text-align: right;">
+                        <el-dropdown>
+                          <div style="display: flex;">
+                            <span style="line-height: 20px;font-size: 22px;">
+                              <i class="el-icon-more"></i>
+                            </span>
+                          </div>
+                          <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item
+                              v-if="item3.userId == userInfo.id"
+                              @click.native="delFun(item,item3)"
+                              style="color:red;">删除
+                            </el-dropdown-item>
+                            <el-dropdown-item
+                              v-else-if="item3.userId!==userInfo.id"
+                              @click.native="reportPost(item3)"
+                              style="color:red;">举报
+                            </el-dropdown-item>
+                          </el-dropdown-menu>
+                        </el-dropdown>
                       </div>
-                      <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item
-                          v-if="item3.userId == userInfo.id"
-                          @click.native="delFun(item,item3)"
-                          style="color:red;">删除
-                        </el-dropdown-item>
-                        <el-dropdown-item
-                          v-else-if="item3.userId!==userInfo.id"
-                          @click.native="reportPost(item3)"
-                          style="color:red;">举报
-                        </el-dropdown-item>
-                      </el-dropdown-menu>
-                    </el-dropdown>
-                  </div>
-                </div>
-                <div style="color: rgb(168, 176, 183);font-size: 12px;line-height: 20px;">
-                  {{item3.createTime}}
+                    </el-col>
+                  </el-row>
                 </div>
               </div>
               <div class="share-item-content">
                 <el-input type="textarea" resize="none" :autosize="true" :readonly="true" v-model="item3.content"></el-input>
+              </div>
+              <div style="color: rgb(168, 176, 183);font-size: 12px;line-height: 20px;">
+                {{item3.createTime}}
+                <span style="padding-left: 10px" @click="likeCommentFun(item)"><i class="iconfont icon-icon" style="font-size:14px;"></i></span>
+                <span style="color: rgb(153, 162, 170);">{{item.likeNum>0?item.likeNum:'点赞'}}</span>
               </div>
             </div>
           </div>
@@ -143,7 +177,9 @@ export default {
       showEmojiCom: false,
       posts: [],
       box: false,
+      comments: [],
       commentContent: '',
+      sortType: 'new',
       page: {
         pageTotal: 0,
         total: 0,
@@ -167,11 +203,14 @@ export default {
     ]),
     noMore () {
       return this.page.currentPage >= this.page.pageTotal
+    },
+    sortComments () {
+      if (this.sortType === 'new') {
+        return this.comments.sort((a, b) => b.timestamp - a.timestamp)
+      } else {
+        return this.comments.sort((a, b) => b.likes - a.likes)
+      }
     }
-    // eslint-disable-next-line vue/no-dupe-keys
-    // disabled () {
-    //   return this.loading || this.noMore
-    // }
   },
   watch: {
   },
@@ -264,7 +303,7 @@ export default {
     },
     detailFun (posts) {
       setStore({name: 'posts', content: posts})
-      this.$router.push({path: '/Article'})
+      this.$router.push({path: '/detail'})
     },
     likeFun (item) {
       let deleted = 0
@@ -290,7 +329,14 @@ export default {
       } else {
         item.comment = false
       }
-      console.info(item)
+      console.log(item.comments)
+      this.comments = item.comments
+    },
+    sortByLatest () {
+      this.sortType = 'new'
+    },
+    sortByHot () {
+      this.sortType = 'hot'
     },
     addCommentFun (item) {
       this.commentContent = this.commentContent.replace(/\s+/g, '') // 处理评论内容，去除空白字符
@@ -316,6 +362,8 @@ export default {
           item['comments'] = res.data
         }
       })
+    },
+    likeCommentFun (item) {
     },
     delFun (item1, item2) {
       this.$confirm('确定要删除该评论吗?', {
@@ -353,7 +401,7 @@ export default {
     background-color: #ffffff;
     border-radius: 10px;
     padding: 20px 20px;
-    margin: 20px 0;
+    margin: 10px 0;
   }
   .share-item-content .el-textarea__inner{
     border: none!important;
@@ -372,7 +420,16 @@ export default {
   .avatar-uploader .el-upload:hover {
     border-color: #409EFF;
   }
-
+  .new,.hot{
+    background-color: transparent;
+    border:none;
+    margin-right:5px;
+    cursor: pointer;
+    color: #ccc;
+  }
+.new.active,.hot.active {
+  color: #000000;
+  }
   .express-btn .icon {
     width: 24px;
     height: 24px;

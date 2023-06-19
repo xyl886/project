@@ -30,9 +30,9 @@ public class JwtToken {
     /**
      * 加载jwt.jks文件
      */
-    private static InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("certificate/jwt.jks");
-    private static PrivateKey privateKey = null;
-    private static PublicKey publicKey = null;
+    private static final InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("certificate/jwt.jks");
+    private static final PrivateKey privateKey = null;
+    private static final PublicKey publicKey = null;
 
 //    static {
 //        try {

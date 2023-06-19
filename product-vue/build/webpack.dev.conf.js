@@ -56,7 +56,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       filename: 'index.html',
       template: 'index.html',
       inject: true,
-      favicon: '../public/img/logo.ico' //此处是配置项
+      // favicon: '../public/img/logo.ico'
     }),
     // copy custom static assets
     new CopyWebpackPlugin([
@@ -79,11 +79,12 @@ module.exports = new Promise((resolve, reject) => {
       process.env.PORT = port
       // add port to devServer config
       devWebpackConfig.devServer.port = port
-
       // Add FriendlyErrorsPlugin
       devWebpackConfig.plugins.push(new FriendlyErrorsPlugin({
         compilationSuccessInfo: {
-          messages: [`Your application is running here: http://${devWebpackConfig.devServer.host}:${port}`],
+          messages: [`Your application is running here: http://${devWebpackConfig.devServer.host}:${port}`,
+          `Network: http://172.54.234.176:${port}`,
+        ],
         },
         onErrors: config.dev.notifyOnErrors
         ? utils.createNotifierCallback()

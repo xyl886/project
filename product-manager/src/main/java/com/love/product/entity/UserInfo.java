@@ -48,7 +48,9 @@ public class UserInfo extends BaseEntity {
     @ApiModelProperty(value = "爱好")
     public String hobby;
 
-    @ApiModelProperty(value = "备注")
+    @ApiModelProperty(value = "简介")
     public String remark;
 
+    @ApiModelProperty(value = "身份")
+    public Integer role;
 }

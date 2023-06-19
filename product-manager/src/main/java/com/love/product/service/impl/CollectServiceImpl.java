@@ -2,6 +2,7 @@ package com.love.product.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -10,12 +11,14 @@ import com.love.product.entity.Posts;
 import com.love.product.entity.base.PageQuery;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
+import com.love.product.enumerate.Role;
 import com.love.product.enumerate.YesOrNo;
 import com.love.product.mapper.CollectMapper;
 import com.love.product.entity.vo.CollectVO;
 import com.love.product.entity.vo.PostsDetailVO;
 import com.love.product.entity.vo.UserBasicInfoVO;
 import com.love.product.entity.vo.UserInfoVO;
+import com.love.product.mapper.PostsMapper;
 import com.love.product.service.CollectService;
 import com.love.product.service.PostsService;
 import lombok.extern.slf4j.Slf4j;
@@ -35,22 +38,24 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> implements CollectService {
-
+    @Resource
+    private  CollectService collectService;
     @Resource
     private PostsService postsService;
     @Resource
     private UserInfoServiceImpl userInfoService;
     @Resource
     private CollectMapper collectMapper;
-
+    @Resource
+    private PostsMapper postsMapper;
     @Override
     public Result<?> add(Long userId, Long postsId,Integer deleted) {
-        Posts posts = postsService.getById(postsId);
+        Posts posts = postsMapper.getPostsById(postsId);
         YesOrNo yesOrNo = YesOrNo.valueOf(deleted);
         if(yesOrNo == null){
             yesOrNo = YesOrNo.NO;
         }
-        if(posts != null && !posts.getStatus().equals(YesOrNo.YES.getValue())){
+        if(posts != null){ // && !posts.getStatus().equals(YesOrNo.YES.getValue())
             LocalDateTime now = LocalDateTime.now();
             Collect collect = new Collect();
             collect.setId(IdWorker.getId());
@@ -67,6 +72,11 @@ public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> impl
                 return Result.OKMsg("收藏成功");
             }
         }else{
+            LambdaQueryWrapper<Collect> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(Collect::getUserId,userId)
+                    .eq(Collect::getPostsId,postsId)
+                    .last("LIMIT 1");
+            collectService.remove(queryWrapper);
             return Result.failMsg("帖子不存在或已下架");
         }
     }
@@ -113,7 +123,7 @@ public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> impl
         list.forEach(item -> {
             UserInfoVO user = users.get(item.getUserId());
             if (user != null) {
-                item.setUserInfo(new UserBasicInfoVO(user.getId(), user.getNickname(), user.getAvatar()));
+                item.setUserInfo(new UserBasicInfoVO(user.id, user.nickname, user.avatar, Role.valueOf(user.role).getText()));
             }
         });
         return ResultPage.OK(page.getTotal(), page.getCurrent(), page.getSize(), list);

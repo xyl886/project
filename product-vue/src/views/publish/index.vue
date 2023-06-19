@@ -56,7 +56,26 @@
               <img width="100%" :src="dialogImageUrl" alt="">
             </el-dialog>
           </el-form-item>
-
+          <el-form-item label="标签:">
+              <el-tag
+                :key="tag"
+                v-for="tag in dynamicTags"
+                closable
+                :disable-transitions="false"
+                @close="handleClose(tag)">
+                {{tag}}
+              </el-tag>
+              <el-input
+                class="input-new-tag"
+                v-if="inputVisible"
+                v-model="inputValue"
+                ref="saveTagInput"
+                size="small"
+                @keyup.enter.native="handleInputConfirm"
+                @blur="handleInputConfirm">
+              </el-input>
+              <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
+          </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="submitForm('form')" class="el-icon-position">立即发布</el-button>
             <el-button @click="saveForm('form')">保存草稿</el-button>
@@ -94,6 +113,9 @@ export default {
     return {
       loading: false,
       labelPosition: 'left',
+      dynamicTags: ['标签一', '标签二', '标签三'],
+      inputVisible: false,
+      inputValue: '',
       form: {
         postsType: '1',
         title: '',
@@ -126,6 +148,8 @@ export default {
       dialogVisible: false,
       disabled: false
     }
+  },
+  components: {
   },
   watch: {
     'form.postsType' () {
@@ -191,6 +215,7 @@ export default {
           }
           formData.append('postsType', this.form.postsType)
           formData.append('title', this.form.title)
+          formData.append('description', this.form.description)
           formData.append('content', this.form.content)
           formData.append('school', this.form.school)
           formData.append('price', this.form.price)
@@ -202,6 +227,7 @@ export default {
               // this.resetForm('form');
             }
           }, error => {
+            console.log(error)
             this.loading = false
           })
         } else {
@@ -210,8 +236,26 @@ export default {
         }
       })
     },
-    saveForm (formName) {
+    handleClose (tag) {
+      this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1)
+    },
 
+    showInput () {
+      this.inputVisible = true
+      this.$nextTick(_ => {
+        this.$refs.saveTagInput.$refs.input.focus()
+      })
+    },
+
+    handleInputConfirm () {
+      let inputValue = this.inputValue
+      if (inputValue) {
+        this.dynamicTags.push(inputValue)
+      }
+      this.inputVisible = false
+      this.inputValue = ''
+    },
+    saveForm (formName) {
     },
     resetForm (formName) {
       this.$refs[formName].resetFields()
@@ -219,7 +263,23 @@ export default {
   }
 }
 </script>
-
+<style scoped>
+.el-tag + .el-tag {
+  margin-left: 10px;
+}
+.button-new-tag {
+  margin-left: 10px;
+  height: 32px;
+  line-height: 30px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.input-new-tag {
+  width: 90px;
+  margin-left: 10px;
+  vertical-align: bottom;
+}
+</style>
 <style scoped>
   .rule{
     opacity: 1;

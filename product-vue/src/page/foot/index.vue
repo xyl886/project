@@ -1,11 +1,12 @@
 <template>
-  <div v-if="this.path !== '/share'" style="font-size: 14px;border-top: 1px solid #e7e7e7;">
-    <div style="height: 60px;text-align: center;line-height: 60px;">
+  <div style="font-size: 14px;">
+    <div style="height: 40px;text-align: center;line-height: 40px;">
       Powered by
       <span style="color: #409EFF;cursor: pointer;" @click="homePage()">@我的网站</span>
     </div>
+<!--    <div v-else style="background-color:#CDE6FA;height: 70px;text-align: center;line-height: 70px;">-->
+<!--    </div>-->
   </div>
-
 </template>
 
 <script>

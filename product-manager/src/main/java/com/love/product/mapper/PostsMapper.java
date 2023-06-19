@@ -9,4 +9,6 @@ import com.love.product.entity.Posts;
  */
 public interface PostsMapper extends BaseMapper<Posts> {
 String getImgPathById( Long id);
+
+    Posts getPostsById(Long postsId);
 }

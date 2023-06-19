@@ -8,5 +8,11 @@
             FROM posts
             WHERE id = #{id}
         </select>
+    <select id="getPostsById" resultType="com.love.product.entity.Posts">
+        SELECT id,user_id,posts_type,title,description,content,school,price,cover_path,img_path,
+               browse_num,collect_num,like_num,comment_num,version,status,deleted,create_time,update_time
+        FROM posts
+        WHERE id = #{id}
+    </select>
 
     </mapper>

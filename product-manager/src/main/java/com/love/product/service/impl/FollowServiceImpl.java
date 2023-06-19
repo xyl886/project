@@ -13,6 +13,7 @@ import com.love.product.entity.req.FollowPageReq;
 import com.love.product.entity.vo.FollowVO;
 import com.love.product.entity.vo.UserBasicInfoVO;
 import com.love.product.entity.vo.UserInfoVO;
+import com.love.product.enumerate.Role;
 import com.love.product.enumerate.YesOrNo;
 import com.love.product.mapper.FollowMapper;
 import com.love.product.service.FollowService;
@@ -59,7 +60,6 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
             follow.setUpdateTime(now);
             followMapper.add(follow);
             //清除redis缓存
-//            RedisUtil.deleteFollowNum(userId);
             redisService.del(RedisConstant.FOLLOW_NUM + userId);
             redisService.del(RedisConstant.FANS_NUM + beFollowedUserId);
             if(yesOrNo.equals(YesOrNo.YES)){
@@ -97,13 +97,11 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
     @Override
     public int getFollowNumByUserId(Long userId){
         Integer num = (Integer) redisService.get(RedisConstant.FOLLOW_NUM + userId);
-//        Integer num = RedisUtil.getFollowNum(userId);
         if(num == null){
             LambdaQueryWrapper<Follow> queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.eq(Follow::getUserId,userId);
             long followNum = count(queryWrapper);
             num = Integer.parseInt(String.valueOf(followNum));
-//            RedisUtil.setFollowNum(userId,num);
             redisService.set(RedisConstant.FOLLOW_NUM + userId, num, 7L, TimeUnit.DAYS);
         }
         return num;
@@ -188,7 +186,8 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
                     followStatus = 3;//互关
                 }
                 item.setFollowStatus(followStatus);
-                item.setUserInfo(new UserBasicInfoVO(userInfoVO.getId(),userInfoVO.getNickname(),userInfoVO.getAvatar()));
+                item.setUserInfo(new UserBasicInfoVO(
+                        userInfoVO.id,userInfoVO.nickname,userInfoVO.avatar, Role.valueOf(userInfoVO.role).getText()));
             });
         }
         return ResultPage.OK(page.getTotal(), page.getCurrent(), page.getSize(), list);

@@ -302,7 +302,7 @@ export default {
     background-size: 100% 100%;
     background-image:  url("../../../public/img/background-detail.jpg");
     background-repeat: no-repeat;
-    position:relative;
+    position:absolute;
   }
   .box{
     font-size: 14px;

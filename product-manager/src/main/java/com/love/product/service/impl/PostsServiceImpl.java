@@ -2,7 +2,6 @@ package com.love.product.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -11,13 +10,14 @@ import com.love.product.entity.Posts;
 import com.love.product.entity.PostsLike;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
+import com.love.product.entity.dto.PostsSearchDTO;
 import com.love.product.entity.req.PostsPageReq;
 import com.love.product.entity.vo.*;
 import com.love.product.enumerate.PostsType;
+import com.love.product.enumerate.Role;
 import com.love.product.enumerate.School;
 import com.love.product.enumerate.YesOrNo;
 import com.love.product.mapper.PostsMapper;
-import com.love.product.entity.dto.PostsSearchDTO;
 import com.love.product.service.*;
 import com.love.product.strategy.context.SearchStrategyContext;
 import lombok.SneakyThrows;
@@ -181,7 +181,8 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
             Map<Long, PostsLike> finalPostsLikeHashMap = postsLikeHashMap;
             list.forEach(item -> {
                 UserInfoVO userInfoVO = finalUserInfoVOMap.get(item.getUserId());
-                item.setUserInfo(new UserBasicInfoVO(userInfoVO.getId(),userInfoVO.getNickname(),userInfoVO.getAvatar()));
+                item.setUserInfo(new UserBasicInfoVO(
+                        userInfoVO.getId(),userInfoVO.getNickname(),userInfoVO.getAvatar(), Role.valueOf(userInfoVO.role).getText()));
                 item.setLike(false);
                 PostsLike postsLike = finalPostsLikeHashMap.get(item.getId());
                 if(postsLike != null){
@@ -207,7 +208,7 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
         }
         PostsDetailVO postsDetailVO = BeanUtil.copyProperties(posts, PostsDetailVO.class);
         UserInfoVO userInfoVO = userInfoService.getUserInfoById(posts.getUserId());
-        postsDetailVO.setUserInfo(new UserBasicInfoVO(userInfoVO.getId(),userInfoVO.getNickname(),userInfoVO.getAvatar()));
+        postsDetailVO.setUserInfo(new UserBasicInfoVO(userInfoVO.id,userInfoVO.nickname,userInfoVO.avatar, Role.valueOf(userInfoVO.role).getText()));
         initImgPath(postsDetailVO);
         postsDetailVO.setCollect(false);
         postsDetailVO.setFollow(false);

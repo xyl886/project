@@ -26,7 +26,7 @@ public interface CommonConstant {
 
     String SIZE = "size";
     Long EXPIRE_TIME = 60L;
-    String PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+=-])(?=\\S+$).{6,20}$";
+    String PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-zA-Z])[0-9a-zA-Z]{6,20}$";
     String EMAIL_REGEX="^\\w+((-\\w+)|(\\.\\w+))*\\@[A-Za-z0-9]+((\\.|-)[A-Za-z0-9]+)*\\.[A-Za-z0-9]+$";
     String ALIYUNOSS_PREFIX="https://" + AliYunOSSConfig.BUCKET_NAME + "." + AliYunOSSConfig.END_POINT + "/";
     String DEFAULT_SIZE = "10";

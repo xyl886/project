@@ -1,5 +1,5 @@
 <template>
-  <div style="font-size: 14px;padding: 10px 0 0 20px;background-color: #ffffff;" v-loading="loading">
+  <div style="font-size: 14px;padding: 10px 10px;background-color: #ffffff;" v-loading="loading">
 <!--    <div style="border-bottom: 1px solid #ccc;font-weight: bolder;font-size: 24px;line-height: 50px;">我的关注</div>-->
     <div class="follow-box">
       <div class="follow-item" v-for="(item,index) in follows" :key="index">
@@ -22,7 +22,7 @@
       </div>
     </div>
 
-    <div v-if="follows.length > 0" style="text-align: center;margin: 50px 0 30px 0;">
+    <div v-if="follows.length > 0" class="pagination" >
       <el-pagination
         background
         :current-page.sync="page.currentPage"
@@ -36,7 +36,8 @@
     </div>
 
     <div v-if="follows.length === 0">
-      <el-empty description="暂无数据"></el-empty>
+      <el-empty description="暂无数据">
+      </el-empty>
     </div>
   </div>
 </template>
@@ -124,4 +125,10 @@ export default {
     text-align: right;
     line-height: 40px;
   }
+  .pagination{
+    text-align: center;
+    margin: 30px 20% 30px 20%;
+    //bottom: 0;
+    //position: absolute;
+}
 </style>

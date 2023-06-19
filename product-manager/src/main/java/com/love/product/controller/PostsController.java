@@ -3,11 +3,11 @@ package com.love.product.controller;
 import com.love.product.entity.Posts;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
+import com.love.product.entity.dto.PostsSearchDTO;
 import com.love.product.entity.req.PostsPageReq;
+import com.love.product.entity.vo.ConditionVO;
 import com.love.product.entity.vo.PostsDetailVO;
 import com.love.product.entity.vo.PostsVO;
-import com.love.product.entity.dto.PostsSearchDTO;
-import com.love.product.entity.vo.ConditionVO;
 import com.love.product.service.PostsService;
 import com.love.product.util.JwtUtil;
 import io.swagger.annotations.Api;
@@ -16,10 +16,8 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,7 +28,6 @@ import java.util.Objects;
  */
 @Api(tags = "帖子")
 @Slf4j
-@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/posts")
 public class PostsController {
@@ -48,23 +45,7 @@ public class PostsController {
             @ApiImplicitParam(name = "price", value = "价格", required = false, dataType = "BigDecimal", paramType = "query"),
             @ApiImplicitParam(name = "files", value = "上传图片列表", required = false, dataType = "MultipartFile[]", paramType = "query")
     })
-    public Result<Posts> add(
-            @RequestParam("postsType")  Integer postsType,
-            @RequestParam("title")  String title,
-            @RequestParam("content")  String content,
-            @RequestParam("school")  Integer school,
-            @RequestParam(value = "price",required = false) BigDecimal price,
-            @RequestParam(value = "files",required = false) MultipartFile[] files
-            ){
-        PostsVO postsVO = new PostsVO();
-        postsVO.setPostsType(postsType);
-        postsVO.setTitle(title);
-        postsVO.setContent(content);
-        postsVO.setSchool(school);
-        postsVO.setPrice(price);
-        postsVO.setFiles(files);
-
-//        System.out.println(JwtUtil.getUserId()+"  "+postsVO);
+    public Result<Posts> add(PostsVO postsVO){
         return postsService.add(JwtUtil.getUserId(), postsVO);
     }
 

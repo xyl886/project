@@ -31,4 +31,7 @@ public class UserBasicInfoVO {
 
     @ApiModelProperty(value = "头像")
     public String avatar;
+
+    @ApiModelProperty(value = "身份")
+    public String role;
 }

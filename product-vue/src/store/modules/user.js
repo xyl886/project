@@ -39,7 +39,7 @@ const actions = {
   login ({ commit }, userInfo) {
     return new Promise((resolve, reject) => {
       userLogin(userInfo).then(res => {
-        if (res.code == '200') {
+        if (res.code === 200) {
           commit('SET_TOKEN', res.data.accessToken)
           setToken(res.data.accessToken)
           commit('SET_USER_INFO', res.data)

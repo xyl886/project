@@ -71,9 +71,9 @@
       </div>
       <div class="collect-box" v-for="(item,index) in collects" :key="index">
         <div class="collect-item" v-for="(item2,index2) in item" :key="item2.id">
-          <el-card :body-style="{ padding: '0px' }">
+          <el-card v-if="item2.posts" :body-style="{ padding: '0px' }">
             <div class="image-box" style="cursor: pointer;" @click="detailFun(item2.posts)">
-                <div style="text-align: center;font-size: 25px;">
+                <div style="text-align: center;font-size: 25px;width: 220px;height: 150px;overflow: hidden">
                   <el-image v-if="item2.posts.coverPath" :src="item2.posts.coverPath" class="collect-box-img">
                     <div slot="error" class="image-slot" style="padding:25%;">
                       <i class="el-icon-picture-outline"></i>
@@ -89,15 +89,16 @@
             </div>
             <div class="collect-box-title" @click="detailFun(item2.posts)">{{item2.posts.title}}</div>
             <div>
-              <span style="color: #999;">收藏于:{{item2.createTime}}</span>
-              <el-dropdown style="float: right;">
-                 <span><i class="el-icon-more" style="padding: 5px;"></i></span>
-                <el-dropdown-menu >
-                  <el-dropdown-item @click.native="cancelCollect(item2.posts)">取消收藏</el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
             </div>
           </el-card>
+          <el-card v-else>帖子不见了！</el-card>
+          <span style="color: #999;">收藏于:{{item2.updateTime}}</span>
+          <el-dropdown size="small" style="float: right;">
+            <span><i class="el-icon-more" style="padding: 5px;"></i></span>
+            <el-dropdown-menu >
+              <el-dropdown-item @click.native="cancelCollect(item2.postsId)">取消收藏</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
           <div class="checkbox" v-if="isSelect" @click="Checkbox(item2.id)">
                 <span style="display: inline-block;position: absolute;right: 5%;top: 5%;font-size: 25px;">
                    <i class="iconfont icon-xuanzhong" style="font-size: 25px"
@@ -201,6 +202,8 @@ export default {
       const targetDate = dayjs(date)
       if (currentDate.day() === targetDate.day()) {
         return targetDate.format('今天 HH:mm')
+      } else if (currentDate.diff(targetDate, 'day') <= 1) {
+        return targetDate.format('昨天 HH:mm')
       } else if (currentDate.year() === targetDate.year()) { // 如果日期的年份与当前年份相同，则只显示月日
         return targetDate.format('M-D')
       } else {
@@ -217,9 +220,9 @@ export default {
           let count = 0
           let arr = []
           for (let i = 0; i < res.data.length; i++) {
-            console.log(res.data[i].createTime)
-            res.data[i].createTime = this.formatDate(res.data[i].createTime)
-            console.log(res.data[i].createTime)
+            console.log(res.data[i].updateTime)
+            res.data[i].updateTime = this.formatDate(res.data[i].updateTime)
+            console.log(res.data[i].updateTime)
             count++
             if (count <= 5) {
               arr.push(res.data[i])
@@ -239,7 +242,7 @@ export default {
       })
     },
     cancelCollect (item) {
-      addCollect(item.id, '1').then(res => { // 每个单独地取消收藏
+      addCollect(item, '1').then(res => { // 每个单独地取消收藏
         if (res.code === 200) {
           this.getPageFun()
           this.$message.success(res.msg)
@@ -315,7 +318,8 @@ export default {
             1000
           )
         })
-      }).catch(() => {})
+      }).catch(() => {
+      })
     }
   }
 }

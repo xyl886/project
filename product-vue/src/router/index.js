@@ -56,7 +56,7 @@ export const constantRoutes = [
   {
     path: '/chat',
     name: '私聊',
-    component: () => import('@/views/chat/Chat.vue')
+    component: () => import('@/views/chat/Chat')
   },
   {
     path: '/about-us',

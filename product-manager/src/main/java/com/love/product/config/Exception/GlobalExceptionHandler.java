@@ -2,6 +2,7 @@ package com.love.product.config.Exception;
 
 import com.love.product.entity.base.Result;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -23,7 +24,7 @@ public class GlobalExceptionHandler {
     /**
      * 处理自定义的业务异常，程序员主动抛出BizException异常会被这个方法捕获
      */
-    @ExceptionHandler(value = BizException.class)
+    @ExceptionHandler(BizException.class)
     @ResponseBody
     public Result bizExceptionHandler(BizException e) {
         log.error("发生业务异常！原因是：{}", e.getErrorMsg());
@@ -33,7 +34,7 @@ public class GlobalExceptionHandler {
     /**
      * 处理空指针的异常（空指针异常会被这个方法捕获）
      */
-    @ExceptionHandler(value = NullPointerException.class)
+    @ExceptionHandler(NullPointerException.class)
     @ResponseBody
     public Result exceptionHandler(NullPointerException e) {
         log.error("发生空指针异常！原因是:", e);
@@ -41,16 +42,20 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * java异常异常
      * 处理其他异常
      */
-    @ExceptionHandler(value = Exception.class)
+    @ExceptionHandler(Exception.class)
     @ResponseBody
-    public Result exceptionHandler(HttpServletRequest req, Exception e) {
-        log.error("未知异常！原因是:", e);
-        return Result.fail();
+    public Result ExceptionHandler(Exception e) {
+        log.error( " msg : " + e.getMessage(), e);
+        if(StringUtils.isBlank(e.getLocalizedMessage())){
+            return Result.failMsg(-1, "操作异常");
+        }
+        return Result.failMsg(e.getMessage());
     }
 
-    @ExceptionHandler(value = MissingServletRequestParameterException.class)
+    @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<?> handleMissingServletRequestParameterException(MissingServletRequestParameterException ex) {
         String errorMsg = "缺少必需的参数：" + ex.getParameterName();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMsg);

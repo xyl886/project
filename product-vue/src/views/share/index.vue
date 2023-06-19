@@ -1,42 +1,36 @@
 <template>
-  <div class="body" v-infinite-scroll="loadFun">
-    <div style="font-size: 14px;margin: 0 160px;">
-      <div class="share-tab" style=" display: inline-block;width: 1200px;">
+  <div class="body">
+    <div style="font-size: 14px;margin: 0 100px;padding: 30px 0 30px 0;" v-infinite-scroll="loadFun">
         <el-row>
-          <el-col :span="18">
+          <el-col :span="16">
+            <div class="share-tab" style="width: 880px; display: inline-block;padding: 0 25px">
           <el-tabs style="" v-model="activeName" @tab-click="handleClick">
-         <el-tab-pane v-for="tab in tabs" @tab-click="handleClick" :label="tab.label" :name="tab.name" :key="tab.name">
+         <el-tab-pane v-for="tab in Tabs" @tab-click="handleClick" :label="tab.label" :name="tab.name" :key="tab.name">
            <All :ref="tab.name"></All>
          </el-tab-pane>
           </el-tabs>
+            </div>
         </el-col>
-        <el-col :span="6">
-          <div> <el-input v-model="searchText" name="search" slot="label" placeholder="搜索"></el-input></div>
-          <div class="recommendation">
-            <div style="margin:0 0 5px 15px;"><b>向你推荐</b></div>
+        <el-col :span="8" style="left: 50px;position: relative;">
+          <div class="search">
+            <el-input style="line-height: 50px;padding: 5px 20px;width: 80%" v-model="searchText" name="search" placeholder="搜索"></el-input>
+          </div>
+          <div class="recommendation" :class="{ 'fixed': isFixed }">
+            <div class="title-header"><b>向你推荐</b></div>
             <div class="title"  v-for="(item, index) in recommendationItems" :key="index">
-<!--              <img src="../assets/hot.png" width="14" height="14" style="margin:12px 5px 0 0 ;"/>-->
-              <router-link class="title"
-                           target="_blank"
-                           :to="{
-                  path: '/CampusSharing/CampusSharingContent',
-                  query: { postId: item.id },
-                }"
-              >{{ item.title }}</router-link
-              >
+           <span><i class="iconfont icon-comment"></i></span>{{ item.title }}
             </div>
           </div>
-      </el-col>
+        </el-col>
         </el-row>
       </div>
-    </div>
-    <BackToTop></BackToTop>
   </div>
 </template>
 
 <script>
 import All from './all.vue'
 import BackToTop from '../../page/top/BackToTop.vue'
+import {getToken} from '../../utils/auth'
 
 export default {
   components: {
@@ -45,6 +39,7 @@ export default {
   },
   data () {
     return {
+      isFixed: false,
       searchText: '',
       activeName: 'first',
       tabs: [
@@ -55,12 +50,19 @@ export default {
         { label: '求助', name: 'fifth' },
         { label: '就业', name: 'sixth' },
         { label: '新闻/公告', name: 'seventh' },
-        { label: '我的分享', name: 'eighth' },
-        { label: '我的关注', name: 'ninth' }
+        { label: '我的分享', name: 'eighth', requiresLogin: true },
+        { label: '我的关注', name: 'ninth', requiresLogin: true }
       ],
       title: '向你推荐',
       recommendationItems: [
         { id: 1, title: '推荐内容1' },
+        { id: 2, title: '推荐内容2' },
+        { id: 1, title: '推荐内容1' },
+        { id: 2, title: '推荐内容2' },
+        { id: 1, title: '推荐内容1' },
+        { id: 2, title: '推荐内容2' },
+        { id: 1, title: '推荐内容1' },
+        { id: 2, title: '推荐内容2' },
         { id: 2, title: '推荐内容2' },
         { id: 3, title: '推荐内容3' }
         // ... 还可以添加更多推荐内容
@@ -69,20 +71,28 @@ export default {
     }
   },
   computed: {
-    // Tabs () {      , requiresLogin: true
-    //   if (getToken()) {
-    //     return this.tabs
-    //   } else {
-    //     return this.tabs.filter(tab => !tab.requiresLogin)
-    //   }
-    // }
+    Tabs () {
+      if (getToken()) {
+        return this.tabs
+      } else {
+        return this.tabs.filter(tab => !tab.requiresLogin)
+      }
+    }
   },
   mounted () {
     this.$nextTick(() => {
       this.$refs[this.activeName][0].init(this.school)
     })
+    window.addEventListener('scroll', this.handleScroll)
+  },
+  beforeDestroy () {
+    window.removeEventListener('scroll', this.handleScroll)
   },
   methods: {
+    handleScroll () {
+      this.isFixed = window.pageYOffset > 160
+      console.log(window.pageYOffset)
+    },
     handleClick (tab, event) {
       if (tab.index !== '0') {
         this.school = tab.index
@@ -102,13 +112,12 @@ export default {
 <style>
   .body{
     margin: 0;
-    padding: 20px 0 0 0;
+    //padding: 20px 0;
     width: 100%;
-    height: calc(100% - 80px);
-    background-image: url("../../../public/img/background-detail.jpg");
+    height: calc(100%- 120px);
+    background-image: url("../../../public/img/back-ground.png");
     background-size: cover;
     background-attachment: fixed;
-    overflow: scroll;
   }
   .share-tab .el-tabs__header{
     background-color: #ffffff!important;
@@ -123,12 +132,9 @@ export default {
 .search{
   display: inline-block;
   background-color: #ffffff!important;
-  float: right;
   position: relative;
-  width: 300px;
+  width: 380px;
   height: 60px;
-  top: 0;
-  margin-right: 300px;
 }
 .input-with-select{
   width: 200px;
@@ -138,24 +144,30 @@ export default {
   line-height: 60px;
   margin-top: auto;
 }
+@media screen and(max-width: 1500px) {
+  .search,.recommendation {
+    display: none;
+  }
+}
 .recommendation {
-  width: 353px;
+  width: 360px;
   height: 440px;
   background-color: white;
   border-radius: 5px;
+  position: relative;
+  padding: 10px;
+  margin-top: 25px;
+}
+.fixed{
   position: fixed;
-  top: 30px;
-  margin-left: 10px;
-  margin-top: 90px;
-  padding: 10px 0 0;
-  /*width: 353px;*/
-  /*height: 440px;*/
-  /*background-color: white;*/
-  /*border-radius: 5px;*/
-  //position: -webkit-sticky;
-  //position: sticky;
-  /*top: -10px;*/
-  //margin-top: 70px;
-  //padding: 10px 0 0;
+  top: 10px;
+}
+.title-header{
+  font-size: 20px;
+}
+.title,.title-header{
+  padding: 0 10px;
+  height: 40px;
+  line-height: 40px;
 }
 </style>

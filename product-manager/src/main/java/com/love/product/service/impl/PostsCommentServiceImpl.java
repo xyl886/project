@@ -9,6 +9,7 @@ import com.love.product.entity.base.Result;
 import com.love.product.entity.vo.PostsCommentVO;
 import com.love.product.entity.vo.UserBasicInfoVO;
 import com.love.product.entity.vo.UserInfoVO;
+import com.love.product.enumerate.Role;
 import com.love.product.enumerate.YesOrNo;
 import com.love.product.mapper.PostsCommentMapper;
 import com.love.product.service.PostsCommentService;
@@ -80,7 +81,7 @@ public class PostsCommentServiceImpl extends ServiceImpl<PostsCommentMapper, Pos
         comments.forEach(item -> {
             PostsCommentVO VO = BeanUtil.copyProperties(item, PostsCommentVO.class);
             UserInfoVO userInfoVO = finalUserInfoVOMap.get(item.getUserId());
-            VO.setUserInfo(new UserBasicInfoVO(userInfoVO.getId(),userInfoVO.getNickname(),userInfoVO.getAvatar()));
+            VO.setUserInfo(new UserBasicInfoVO(userInfoVO.id,userInfoVO.nickname,userInfoVO.avatar, Role.valueOf(userInfoVO.role).getText()));
             commentVOS.add(VO);
         });
         return Result.OK(commentVOS);

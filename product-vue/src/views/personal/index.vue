@@ -1,6 +1,6 @@
 <template>
     <div style="font-size: 14px;">
-      <div style="top:5px;position: relative" class="shell" @mouseenter="handleMouseEnter" @mousemove="handleMouseMove" @mouseleave="handleMouseLeave">
+      <div style="top:5px;position: relative;overflow-x: hidden;" class="shell" @mouseenter="handleMouseEnter" @mousemove="handleMouseMove" @mouseleave="handleMouseLeave">
         <div class="image-container" :style="`transform: translate(${imageMove}px, -8px);`">
           <img src="../../../public/img/userheader.png" alt="Image">
         </div>
