@@ -1,5 +1,5 @@
 <template>
-  <div style="font-size: 14px;padding: 10px 0 0 20px;background-color: #ffffff;" v-loading="loading">
+  <div style="min-height:500px;font-size: 14px;padding: 10px 0 0 20px;background-color: #ffffff;" v-loading="loading">
 <!--    <div style="border-bottom: 1px solid #ccc;font-weight: bolder;font-size: 24px;line-height: 50px;">我的粉丝</div>-->
     <div class="follow-box">
       <div class="follow-item" v-for="(item,index) in follows" :key="index">

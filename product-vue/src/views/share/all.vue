@@ -139,7 +139,7 @@
               <div style="color: rgb(168, 176, 183);font-size: 12px;line-height: 20px;">
                 {{item3.createTime}}
                 <span style="padding-left: 10px" @click="likeCommentFun(item)"><i class="iconfont icon-icon" style="font-size:14px;"></i></span>
-                <span style="color: rgb(153, 162, 170);">{{item.likeNum>0?item.likeNum:'点赞'}}</span>
+                <span style="color: rgb(153, 162, 170);">{{'点赞'}}</span>
               </div>
             </div>
           </div>
@@ -186,7 +186,7 @@ export default {
         pageSize: 10,
         currentPage: 1,
         postsType: 2,
-        school: null
+        school: 0
       },
       form: {
         id: '',
@@ -227,7 +227,7 @@ export default {
         pageSize: 10,
         currentPage: 0,
         postsType: 2,
-        school: null
+        school: 0
       }
       this.page.school = school
       this.getPageFun()

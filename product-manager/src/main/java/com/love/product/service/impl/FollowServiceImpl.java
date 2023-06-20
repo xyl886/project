@@ -193,7 +193,9 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
         return ResultPage.OK(page.getTotal(), page.getCurrent(), page.getSize(), list);
     }
 
-    /*我的关注*/
+    /*
+    我的关注
+    */
     @Override
     public List<Long> getFollowedUserIdsByUserId(Long userId) {
         List<Long> followedUserIds = new ArrayList<>();

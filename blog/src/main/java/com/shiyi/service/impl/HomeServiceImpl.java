@@ -85,9 +85,13 @@ public class HomeServiceImpl {
         //弹出框
         SystemConfig systemConfig = systemConfigService.getCustomizeOne();
 
-        HomeDataVO dto = HomeDataVO.builder().dashboard(systemConfig.getDashboardNotification())
-                .categoryList(categoryCount).contribute(contribute).blogArticles(blogArticles).userAccess(userAccess).tagsList(tagsList).build();
-        return dto;
+        return HomeDataVO.builder()
+                .dashboard(systemConfig.getDashboardNotification())
+                .categoryList(categoryCount)
+                .contribute(contribute)
+                .blogArticles(blogArticles)
+                .userAccess(userAccess)
+                .tagsList(tagsList).build();
     }
 
     /**

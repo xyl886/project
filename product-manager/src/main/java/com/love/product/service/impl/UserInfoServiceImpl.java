@@ -14,7 +14,6 @@ import com.love.product.entity.vo.LoginVO;
 import com.love.product.entity.vo.RegisterVO;
 import com.love.product.enumerate.CodeType;
 import com.love.product.enumerate.Gender;
-import com.love.product.enumerate.School;
 import com.love.product.enumerate.YesOrNo;
 import com.love.product.mapper.UserInfoMapper;
 import com.love.product.entity.dto.EmailDTO;
@@ -403,11 +402,10 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
      * 获取用户详情
      */
     @Override
-    public UserInfoVO getUserInfoAndFansById(Long id) {
-        UserInfoVO userInfoVO = null;
+    public Result<UserInfoVO> getUserInfoAndFansById(Long id) {
         UserInfo userInfo = getById(id);
         if(userInfo != null){
-            userInfoVO = new UserInfoVO();
+            UserInfoVO  userInfoVO = new UserInfoVO();
             BeanUtil.copyProperties(userInfo,userInfoVO);
             Gender gender = Gender.valueOf(userInfoVO.getGender());
             userInfoVO.setGenderText(gender.getText());
@@ -416,7 +414,9 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             userInfoVO.setFollowNum(followNum);
             int fansNum = followService.getFansNumByUserId(userInfoVO.getId());
             userInfoVO.setFansNum(fansNum);
+            return Result.OK(userInfoVO);
+        } else{
+            return Result.failMsg("用户不存在!");
         }
-        return userInfoVO;
     }
 }

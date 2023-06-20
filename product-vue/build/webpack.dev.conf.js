@@ -22,6 +22,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
 
   // these devServer options should be customized in /config/index.js
   devServer: {
+    useLocalIp:true,
     clientLogLevel: 'warning',
     historyApiFallback: {
       rewrites: [
@@ -56,7 +57,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       filename: 'index.html',
       template: 'index.html',
       inject: true,
-      // favicon: '../public/img/logo.ico'
+      favicon: 'public/img/logo.ico'
     }),
     // copy custom static assets
     new CopyWebpackPlugin([
@@ -82,8 +83,10 @@ module.exports = new Promise((resolve, reject) => {
       // Add FriendlyErrorsPlugin
       devWebpackConfig.plugins.push(new FriendlyErrorsPlugin({
         compilationSuccessInfo: {
-          messages: [`Your application is running here: http://${devWebpackConfig.devServer.host}:${port}`,
-          `Network: http://172.54.234.176:${port}`,
+          messages: [
+            `Your application is running here:`,
+            `Local: http://localhost:${port}`,
+            `Network: http://${devWebpackConfig.devServer.host}:${port}`
         ],
         },
         onErrors: config.dev.notifyOnErrors

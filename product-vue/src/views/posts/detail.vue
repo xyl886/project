@@ -7,7 +7,7 @@
       <div style="float: right;margin-top: -25px;">
         <el-dropdown>
           <div style="display: flex;">
-                        <span style="line-height: 20px;font-size: 22px;">
+                        <span style="margin-right: 20px;line-height: 20px;font-size: 22px;">
                           <i class="el-icon-more"></i>
                         </span>
           </div>
@@ -17,7 +17,7 @@
               icon="el-icon-edit-outline"
               v-if="posts.userId === posts.userInfo.id"
               @click.native="edit(posts)">编辑</el-button>
-            <el-dropdown-item style="color:red;" @click.native="delMyPost(posts)">删除</el-dropdown-item>
+            <el-dropdown-item icon="el-icon-delete" style="color:red;" @click.native="delMyPost(posts)">删除</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </div>
@@ -26,29 +26,28 @@
           <el-image :src="posts.userInfo.avatar" style="width: 60px;height: 60px;border-radius: 50%;"></el-image>
         </div>
         <div style="margin-left: 10px;">
-          <div style="height: 20px;">
+          <div style="height: 20px;margin-bottom: 5px">
             {{posts.userInfo.nickname}}
+            <el-tag size="small" v-if="userInfo.id === posts.userId" style="margin: 0 5px;">我自己</el-tag>
+            <el-tag type="success" size="small">{{posts.userInfo.role}}</el-tag>
           </div>
           <div style="line-height: 40px;">
-            <el-button v-if="!posts.collect" type="primary" size="mini" @click="addCollectFun('0')"><i class="el-icon-star-off"></i> 收藏</el-button>
-            <el-button v-if="posts.collect" type="warning" size="mini" @click="addCollectFun('1')"><i class="el-icon-star-on"></i> 已收藏</el-button>
-            <el-button v-if="!posts.follow && userInfo.id != posts.userId" type="primary" size="mini" @click="addFollowFun('0')"><i class="el-icon-star-off"></i> 关注</el-button>
-            <el-button v-if="posts.follow && userInfo.id != posts.userId" type="warning" size="mini" @click="addFollowFun('1')"><i class="el-icon-star-on"></i> 已关注</el-button>
+            <el-button v-if="!posts.collect" type="primary" size="mini" @click="addCollectFun('0')"><i class="el-icon-star-off"></i> 收藏&nbsp;{{posts.collectNum}}</el-button>
+            <el-button v-if="posts.collect" type="info" plain size="mini" @click="addCollectFun('1')"><i class="el-icon-star-on"></i> 已收藏&nbsp;{{posts.collectNum}}</el-button>
+            <el-button v-if="!posts.follow && userInfo.id !== posts.userId" type="primary" size="mini" @click="addFollowFun('0')"><i class="el-icon-star-off"></i> 关注&nbsp;{{posts.followNum}}</el-button>
+            <el-button v-if="posts.follow && userInfo.id !== posts.userId" type="info" plain size="mini" @click="addFollowFun('1')"><i class="el-icon-star-on"></i> 已关注&nbsp;{{posts.followNum}}</el-button>
           </div>
         </div>
         <div style="flex: 1;color: #606266;font-size: 12px;opacity: 0.6;">
           <div style="text-align: right;margin-right: 20px;">{{posts.browseNum}}次浏览</div>
           <div style="text-align: right;margin-right: 20px;">
-            来自：{{posts.schoolName}}
-            |
-            {{posts.createTime}}
-            发布
+            <el-tag size="small">{{posts.schoolName}}</el-tag>| {{posts.createTime}} 发布
           </div>
         </div>
       </div>
 
-      <div style="display: flex;margin: 20px 20px 20px 60px;">
-        <div style="width: 50%;">
+      <div style="display: flex;margin: 20px;">
+        <div style="width: 50%;padding: 10px;">
           <div style="width: 350px;height: 225px;text-align: center;border-radius: 10px;display:table-cell;vertical-align: middle;">
             <el-image :src="bigImgPath" :preview-src-list="posts.imgPath?posts.imgPath.split(','):[]" fit="contain" class="big-img"></el-image>
           </div>
@@ -56,19 +55,18 @@
             <el-image v-for="(item) in posts.imgPath?posts.imgPath.split(','):[]" :key="item" fit="contain" :src="item" @click="selImg(item)" style="width: 80px;height: 80px;border-radius: 5px;margin: 0 10px 10px 0;border: 1px solid #e5e5e5;box-sizing: border-box;" :class="bigImgPath===item?'sel-img':''"></el-image>
           </div>
         </div>
-        <div style="width: 50%;text-align: center;">
+        <div style="width: 45%;padding:10px;">
           <div style="font-size: 20px;font-weight: 700;">{{posts.title}}</div>
-          <div class="my-content">
+          <div class="my-content" style="height: 225px">
               <article
                 id="write"
                 class="article-content markdown-body"
                 v-html="posts.content"
-                ref="article"
-              />
+                ref="article"/>
 <!--              <el-input type="textarea" resize="none" :readonly="true" :autosize="{ minRows: 2, maxRows: 22}" v-model="posts.content"></el-input>-->
-            <div class="posts-item-price" style="color:#e9384d; display: block;margin-top: 20px;">
-              ¥{{posts.price}}
-            </div>
+          </div>
+          <div class="posts-item-price" v-if="posts.postsType===1" style="color:#e9384d; display: block;margin: 10px;float: right;">
+          <span style="margin-right: 20px"> ¥{{posts.price}}</span>
             <el-button type="primary" @click="chat(userInfo.id)">想要</el-button>
           </div>
         </div>
@@ -149,11 +147,12 @@ export default {
       getDetail(this.id).then(res => {
         if (res.code === 200) {
           this.posts = res.data
-          console.log(this.posts)
+          console.log(this.posts.content)
           this.markdownToHtml(this.posts.content)
+          console.log(this.posts.content)
           this.bigImgPath = res.data.coverPath
-          console.log(res.data)
-          console.log(this.bigImgPath)
+          // console.log(res.data)
+          // console.log(this.bigImgPath)
         }
         this.loading = false
         // eslint-disable-next-line handle-callback-err
@@ -215,7 +214,7 @@ export default {
         typographer: true,
         highlight: function (str, lang) {
           // 当前时间加随机数生成唯一的id标识
-          var d = new Date().getTime()
+          let d = new Date().getTime()
           if (
             window.performance &&
             typeof window.performance.now === 'function'
@@ -293,7 +292,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
   .body{
     margin: 0;
     padding: 0;
@@ -330,7 +329,7 @@ export default {
   height: 250px;
   }
 .posts-item-price{
-  height: 100px;
+  height: 50px;
   }
   .big-img{
     max-height: 250px;

@@ -3,6 +3,7 @@ package com.love.product.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -67,8 +68,12 @@ public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> impl
             collect.setUpdateTime(now);
             collectMapper.add(collect);
             if(yesOrNo.equals(YesOrNo.YES)){
+             posts.setCollectNum(Math.max(posts.collectNum - 1, 0));
+                postsService.updatePostsCollectNum(posts);
                 return Result.OKMsg("已取消收藏");
             }else{
+                posts.setCollectNum(posts.collectNum+1);
+                postsService.updatePostsCollectNum(posts);
                 return Result.OKMsg("收藏成功");
             }
         }else{

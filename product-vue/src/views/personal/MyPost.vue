@@ -2,7 +2,7 @@
   <div style="font-size: 14px;padding: 10px 0 0 20px;background-color: #ffffff;" v-loading="loading">
     <!--    <div style="border-bottom: 1px solid #ccc;font-weight: bolder;font-size: 24px;line-height: 50px;">我的关注</div>-->
     <div>
-      <el-row style="padding-bottom: 20px">
+      <el-row style="padding: 20px 0">
         <el-col :span="2">
           <el-dropdown @command="handleCommand" style="top: 10px;position: relative;" >
             <span class="el-dropdown-link">

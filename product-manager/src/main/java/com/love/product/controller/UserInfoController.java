@@ -11,6 +11,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Options;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -48,16 +49,10 @@ public class UserInfoController {
     ) {
         return userInfoService.update(JwtUtil.getUserId(),nickname,file,gender,hobby,remark);
     }
-
     @ApiOperation(value = "用户详情", notes = "用户详情")
     @GetMapping("/detail")
     public Result<UserInfoVO> detail() {
-        UserInfoVO userInfoVO = userInfoService.getUserInfoAndFansById(JwtUtil.getUserId());
-        if(userInfoVO != null){
-            return Result.OK(userInfoVO);
-        }else{
-            return Result.fail();
-        }
+     return userInfoService.getUserInfoAndFansById(JwtUtil.getUserId());
     }
     @PostMapping ("/updateUserPwd")
     @ApiOperation(value = "更改用户密码", notes = "更改用户密码")

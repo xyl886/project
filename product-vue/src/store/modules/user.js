@@ -7,9 +7,8 @@ const getDefaultState = () => {
     my_token: getToken(),
     name: '',
     avatar: '',
+    role: '',
     userInfo: localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : {}
-    // phone: localStorage.getItem('phone'),
-    // password: localStorage.getItem('password')
   }
 }
 
@@ -28,6 +27,9 @@ const mutations = {
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
   },
+  SET_ROLE: (state, role) => {
+    state.role = role
+  },
   SET_USER_INFO: (state, action) => {
     state.userInfo = action
     localStorage.setItem('userInfo', JSON.stringify(state.userInfo))
@@ -42,7 +44,9 @@ const actions = {
         if (res.code === 200) {
           commit('SET_TOKEN', res.data.accessToken)
           setToken(res.data.accessToken)
+          commit('SET_ROLE', res.data.role)
           commit('SET_USER_INFO', res.data)
+          // commit('SET_USER_INFO', {id: res.data.id, avatar: res.data.avatar, nickname: res.data.nickname})
         }
         resolve(res)
       }).catch(error => {

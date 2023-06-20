@@ -210,6 +210,7 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
         UserInfoVO userInfoVO = userInfoService.getUserInfoById(posts.getUserId());
         postsDetailVO.setUserInfo(new UserBasicInfoVO(userInfoVO.id,userInfoVO.nickname,userInfoVO.avatar, Role.valueOf(userInfoVO.role).getText()));
         initImgPath(postsDetailVO);
+        postsDetailVO.setSchoolName(School.valueOf(posts.school).getText());
         postsDetailVO.setCollect(false);
         postsDetailVO.setFollow(false);
         if(userId != null && collectService.getDetail(userId,posts.getId()) != null){
@@ -295,10 +296,10 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
         log.info("修改前Posts:"+getById(postsVO.getId()));
         if(postsVO.getId() != null){
             if(com.baomidou.mybatisplus.core.toolkit.StringUtils.isEmpty(postsVO.getTitle())){
-                return Result.failMsg("请输入标题");
+                return Result.fail("请输入标题");
             }
             if(com.baomidou.mybatisplus.core.toolkit.StringUtils.isEmpty(postsVO.getContent())){
-                return Result.failMsg("请输入内容");
+                return Result.fail("请输入内容");
             }
             Posts posts = new Posts();
             BeanUtil.copyProperties(postsVO,posts);
@@ -311,7 +312,7 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
 //            }
             if(postsVO.getFiles() != null){
                 if((postsVO.getFiles().length) > 9){
-                    return Result.failMsg("最多可上传9张图片");
+                    return Result.fail("最多可上传9张图片");
                 }
                 List<String> imgPathList = new ArrayList<>();
                 Collections.addAll(imgPathList,postsService.getImgPathById(postsVO.getId()).split(","));
@@ -346,7 +347,7 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
             BeanUtil.copyProperties(postsVO,getById(postsVO.getId()));
             return Result.OK("修改成功",getById(postsVO.getId()));
         }
-        return Result.failMsg("修改失败，请重试");
+        return Result.fail("修改失败，请重试");
     }
 
     /**
@@ -387,10 +388,10 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
                 postsService.saveOrUpdate(posts);
                 return Result.OK("删除成功",post);
             }else{
-                return Result.failMsg("抱歉，您无权操作");
+                return Result.fail("抱歉，您无权操作");
             }
         }else{
-            return Result.failMsg("帖子不存在或已删除");
+            return Result.fail("帖子不存在或已删除");
         }
     }
 
@@ -401,7 +402,14 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
      */
     @Override
     public String getImgPathById(Long id) {
-
         return postsMapper.getImgPathById(id);
+    }
+
+    /**
+     * 更新点赞和收藏数
+     * @param posts
+     */
+    public void updatePostsCollectNum(Posts posts){
+        saveOrUpdate(posts);
     }
 }

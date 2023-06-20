@@ -91,7 +91,13 @@
             <div>
             </div>
           </el-card>
-          <el-card v-else>帖子不见了！</el-card>
+          <el-card v-else>
+            <el-image class="collect-box-img">
+            <div slot="error" class="image-slot" style="padding:25%;">
+<!--            <i  class="el-icon-picture-outline"></i>-->
+          </div>
+            </el-image>
+          </el-card>
           <span style="color: #999;">收藏于:{{item2.updateTime}}</span>
           <el-dropdown size="small" style="float: right;">
             <span><i class="el-icon-more" style="padding: 5px;"></i></span>
@@ -129,8 +135,8 @@
 <script>
 import {getPage, addCollect} from '@/api/collect'
 import {setStore} from '@/utils/store'
-import dayjs from 'dayjs'
 import {MessageBox} from 'element-ui'
+import {formatDate} from '../../utils/date'
 export default {
   data () {
     return {
@@ -197,19 +203,6 @@ export default {
       this.page.currentPage = currentPage
       this.getPageFun()
     },
-    formatDate (date) {
-      const currentDate = dayjs()
-      const targetDate = dayjs(date)
-      if (currentDate.day() === targetDate.day()) {
-        return targetDate.format('今天 HH:mm')
-      } else if (currentDate.diff(targetDate, 'day') <= 1) {
-        return targetDate.format('昨天 HH:mm')
-      } else if (currentDate.year() === targetDate.year()) { // 如果日期的年份与当前年份相同，则只显示月日
-        return targetDate.format('M-D')
-      } else {
-        return targetDate.format('YYYY-M-D')
-      }
-    },
     getPageFun () {
       this.loading = true
       this.collects = []
@@ -221,7 +214,7 @@ export default {
           let arr = []
           for (let i = 0; i < res.data.length; i++) {
             console.log(res.data[i].updateTime)
-            res.data[i].updateTime = this.formatDate(res.data[i].updateTime)
+            res.data[i].updateTime = formatDate(res.data[i].updateTime)
             console.log(res.data[i].updateTime)
             count++
             if (count <= 5) {
@@ -310,14 +303,11 @@ export default {
         })
         this.cancelCollect()
         setTimeout(() => {
-          this.$message(
-            {
-              type: 'success',
-              message: '删除成功!'
-            },
-            1000
-          )
-        })
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+        }, 1000)
       }).catch(() => {
       })
     }

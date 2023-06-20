@@ -65,7 +65,6 @@ export default {
         { id: 2, title: '推荐内容2' },
         { id: 2, title: '推荐内容2' },
         { id: 3, title: '推荐内容3' }
-        // ... 还可以添加更多推荐内容
       ],
       school: null
     }
@@ -90,8 +89,7 @@ export default {
   },
   methods: {
     handleScroll () {
-      this.isFixed = window.pageYOffset > 160
-      console.log(window.pageYOffset)
+      this.isFixed = window.scrollY > 140
     },
     handleClick (tab, event) {
       if (tab.index !== '0') {
@@ -110,15 +108,6 @@ export default {
 </script>
 
 <style>
-  .body{
-    margin: 0;
-    //padding: 20px 0;
-    width: 100%;
-    height: calc(100%- 120px);
-    background-image: url("../../../public/img/back-ground.png");
-    background-size: cover;
-    background-attachment: fixed;
-  }
   .share-tab .el-tabs__header{
     background-color: #ffffff!important;
     padding: 0 20px!important;
@@ -129,6 +118,15 @@ export default {
   }
 </style>
 <style scoped>
+.body{
+  margin: 0;
+//padding: 20px 0;
+  width: 100%;
+  height: calc(100%- 120px);
+  background-image: url("../../../public/img/back-ground.png");
+  background-size: cover;
+  background-attachment: fixed;
+}
 .search{
   display: inline-block;
   background-color: #ffffff!important;

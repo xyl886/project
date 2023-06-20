@@ -36,4 +36,6 @@ public interface PostsService extends IService<Posts> {
     String getImgPathById(Long id);
 
     List<PostsSearchDTO> listPostsBySearch(ConditionVO condition);
+
+    void updatePostsCollectNum(Posts posts);
 }

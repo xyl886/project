@@ -2,18 +2,6 @@
   <div class="history" v-loading="loading">
     <div class="block">
       <el-row style="padding-bottom: 20px">
-<!--        <el-col :span="2">-->
-<!--          <el-dropdown @command="handleCommand" style="top: 10px;position: relative;" >-->
-<!--            <span class="el-dropdown-link">-->
-<!--              {{ command }}<i class="el-icon-arrow-down el-icon&#45;&#45;right"></i>-->
-<!--            </span>-->
-<!--            <el-dropdown-menu slot="dropdown">-->
-<!--            <el-dropdown-item command="最近浏览">最近浏览</el-dropdown-item>-->
-<!--            <el-dropdown-item command="最多播放">最多播放</el-dropdown-item>-->
-<!--            <el-dropdown-item command="最新发布">最新发布</el-dropdown-item>-->
-<!--            </el-dropdown-menu>-->
-<!--          </el-dropdown>-->
-<!--        </el-col>-->
         <el-col :span="4">
 <!--          <div class="search-box" :class="{ active: InputFocused }"> </div>-->
 <!--            <div class="el-icon-search" @click="handleSearch"></div>-->
@@ -63,7 +51,7 @@
         <span style="color: #999aaa; font-size: 15px">近期没有浏览记录</span>
       </div>
       <div v-if="postType === '1'">
-        <el-timeline >
+        <el-timeline>
           <el-timeline-item  :timestamp="item.updateTime"  v-for="(item, index) in historyGoodsList" :key="index" placement="top">
             <el-card>
               <el-row type="flex" justify="space-between">
@@ -93,6 +81,67 @@
           </el-timeline-item>
         </el-timeline>
       </div>
+      <div v-if="postType === '2'">
+        <el-timeline>
+          <el-timeline-item  :timestamp="item.updateTime"  v-for="(item, index) in historyPostList" :key="index" placement="top">
+            <el-card>
+              <el-row type="flex" justify="space-between">
+                <el-col :span="3" style="cursor: pointer;" v-show="item.postCoverPath != null">
+                  <el-image
+                    style="width: 118px; height: 74px; border-radius: 4px"
+                    fit="cover"
+                    :src="item.postCoverPath"
+                  ></el-image>
+                </el-col>
+                <el-col :span="16">
+                  <h3 class="title" :key="item.id" style="cursor: pointer;" @click="detailFun(item.posts)">{{ item.postTitle}}</h3>
+                  <div class="user">
+                    <el-image :src="item.avatar" style="cursor: pointer;width: 25px;height: 25px;border-radius: 50%;">
+                    </el-image>
+                    <span class="userName">{{ item.nickname }}|
+                    </span><span style="margin-left: 4px">{{item.schoolName}}</span>
+                  </div>
+                </el-col>
+                <el-col :span="1">
+                  <i class="el-icon-delete"
+                     style="line-height:75px;cursor: pointer;"
+                     @click="remove(item.id,item.userId)"></i>
+                </el-col>
+              </el-row>
+            </el-card>
+          </el-timeline-item>
+        </el-timeline>
+      </div>
+      <div v-if="postType === '0'">
+        <el-timeline>
+          <el-timeline-item  :timestamp="item.updateTime"  v-for="(item, index) in historyLikeList" :key="index" placement="top">
+            <el-card>
+              <el-row type="flex" justify="space-between">
+                <el-col :span="3" style="cursor: pointer;" v-show="item.postCoverPath != null">
+                  <el-image
+                    style="width: 118px; height: 74px; border-radius: 4px"
+                    fit="cover"
+                    :src="item.postCoverPath"
+                  ></el-image>
+                </el-col>
+                <el-col :span="16">
+                  <h3 class="title" :key="item.id" style="cursor: pointer;" @click="detailFun(item.posts)">{{ item.postTitle}}</h3>
+                  <div class="user">
+                    <el-image :src="item.avatar" style="cursor: pointer;width: 25px;height: 25px;border-radius: 50%;">
+                    </el-image>
+                    <span class="userName">{{ item.nickname }}|
+                    </span><span style="margin-left: 4px">{{item.schoolName}}</span>
+                  </div>
+                </el-col>
+              </el-row>
+            </el-card>
+          </el-timeline-item>
+        </el-timeline>
+      </div>
+      <div style="text-align: center;color: rgb(168, 176, 183);">
+        <p v-if="loading">加载中...</p>
+        <p v-if="!loading">没有更多了</p>
+      </div>
     </div>
   </div>
 </template>
@@ -103,6 +152,7 @@ import { MessageBox } from 'element-ui'
 import {del, getPage} from '../../api/history'
 import {setStore} from '../../utils/store'
 import dayjs from 'dayjs'
+import {formatDate} from '../../utils/date'
 
 export default {
   name: 'HistoryList',
@@ -155,13 +205,6 @@ export default {
     }
   },
   computed: {
-    noMore () {
-      return this.page.currentPage >= this.page.pageTotal
-    },
-    // eslint-disable-next-line vue/no-dupe-keys
-    disabled () {
-      return this.loading || this.noMore
-    }
   },
   methods: {
     init () {
@@ -211,7 +254,7 @@ export default {
           console.log(res.data)
           this.history = res.data
           for (let i = 0; i < res.data.length; i++) {
-            this.history[i].updateTime = this.formatDate(res.data[i].updateTime)
+            this.history[i].updateTime = formatDate(res.data[i].updateTime)
             if (this.history[i].postType == '1') {
               this.historyGoodsList.push(this.history[i])
             } else if (this.history[i].postType == '2') {

@@ -26,13 +26,14 @@
       ></el-input>
     </el-form-item>
     <el-form-item label="内容" prop="content">
-      <el-input
-        type="textarea"
-        v-model="form.content"
-        :autosize="{ minRows: 6, maxRows: 6 }"
-        maxlength="600"
-        style="max-width: 700px; min-width: 50px"
-      ></el-input>
+      <mavon-editor v-model="form.content" />
+<!--      <el-input-->
+<!--        type="textarea"-->
+<!--        v-model="form.content"-->
+<!--        :autosize="{ minRows: 6, maxRows: 6 }"-->
+<!--        maxlength="600"-->
+<!--        style="max-width: 700px; min-width: 50px"-->
+<!--      ></el-input>-->
     </el-form-item>
     <el-form-item label="校区" prop="school">
       <el-radio-group v-model="form.school">
@@ -40,11 +41,15 @@
       </el-radio-group>
     </el-form-item>
     <el-form-item label="价格" prop="price">
-      <el-input
+      <el-input-number
         v-model="form.price"
         maxlength="13"
+        :controls='false'
+        :min="0"
+        :max="19999"
+        clearable
         style="max-width: 700px; min-width: 50px"
-      ></el-input>
+      >元</el-input-number>
     </el-form-item>
     <el-form-item label="图片" required>
       <el-upload

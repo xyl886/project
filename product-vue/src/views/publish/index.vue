@@ -74,11 +74,11 @@
                 @keyup.enter.native="handleInputConfirm"
                 @blur="handleInputConfirm">
               </el-input>
-              <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
+              <el-button v-else class="button-new-tag" size="small" @click="showInput">+ 添加标签</el-button>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="submitForm('form')" class="el-icon-position">立即发布</el-button>
-            <el-button @click="saveForm('form')">保存草稿</el-button>
+<!--            <el-button @click="saveForm('form')">保存草稿</el-button>-->
             <el-button @click="resetForm('form')">重置</el-button>
           </el-form-item>
         </el-form>
@@ -113,7 +113,7 @@ export default {
     return {
       loading: false,
       labelPosition: 'left',
-      dynamicTags: ['标签一', '标签二', '标签三'],
+      dynamicTags: [],
       inputVisible: false,
       inputValue: '',
       form: {
@@ -135,14 +135,11 @@ export default {
           { required: true, message: '请输入内容', trigger: 'change' }
         ],
         school: [
-          { required: true, message: '请选择校区', trigger: 'change' }
+          { required: true, message: '请选择分类', trigger: 'change' }
         ],
         price: [
           { required: false, message: '请输入价格', trigger: 'change' }
         ]
-        // files: [
-        //   { required: false, message: '请输入价格', trigger: 'change' }
-        // ]
       },
       dialogImageUrl: '',
       dialogVisible: false,

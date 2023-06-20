@@ -1,15 +1,18 @@
 // 日期格式化
-export function formatDate (date) {
-  const dt = new Date(date)
-  const y = dt.getFullYear()
-  const m = (dt.getMonth() + 1 + '').padStart(2, '0')
-  const d = (dt.getDate() + '').padStart(2, '0')
+import dayjs from 'dayjs'
 
-  const hh = (dt.getHours() + '').padStart(2, '0')
-  const mm = (dt.getMinutes() + '').padStart(2, '0')
-  const ss = (dt.getSeconds() + '').padStart(2, '0')
-  // yyyy-mm-dd hh:mm:ss
-  return `${y}-${m}-${d} ${hh}:${mm}:${ss}`
+export function formatDate (date) {
+  const currentDate = dayjs()
+  const targetDate = dayjs(date)
+  if (currentDate.day() === targetDate.day()) {
+    return targetDate.format('今天 HH:mm')
+  } else if (currentDate.diff(targetDate, 'day') <= 1) {
+    return targetDate.format('昨天 HH:mm')
+  } else if (currentDate.year() === targetDate.year()) { // 如果日期的年份与当前年份相同，则只显示月日
+    return targetDate.format('M-D')
+  } else {
+    return targetDate.format('YYYY-M-D')
+  }
 }
 
 export const calcDate = (date1, date2) => {

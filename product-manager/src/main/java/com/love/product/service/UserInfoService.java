@@ -57,11 +57,10 @@ public interface UserInfoService extends IService<UserInfo> {
     Result<UserInfoVO> update(Long userId, String nickname, MultipartFile file,Integer  gender,String hobby,String remark);
 
     /**
-     *
      * @param id
      * @return
      */
-    UserInfoVO getUserInfoAndFansById(Long id);
+    Result<UserInfoVO> getUserInfoAndFansById(Long id);
 
     /**
      * 修改用户密码
