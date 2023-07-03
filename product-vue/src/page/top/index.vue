@@ -1,8 +1,8 @@
 <template>
   <div style="font-size: 14px;display: flex;height: 60px;padding: 0 30px;background-color: #ffffff;">
-    <div style="display: flex;">
+    <div style="display: flex; cursor: pointer" @click="pathFun('/index')">
       <div>
-        <img src="../../../public/img/logo.png" style="width: 50px;height: 50px;margin: 5px 0;" alt="">
+        <img src="../../../public/img/logo3.png" style="width: 50px;height: 50px;margin: 5px 0;" alt="">
       </div>
       <div style="font-size: 28px;font-weight: 700;line-height: 60px;margin-left: 10px;">
       校园墙
@@ -13,15 +13,33 @@
         <el-menu-item v-for="(item,index) in menus" :index="item.path" :key="item.path" @click="pathFun(item.path)">{{item.name}}</el-menu-item>
       </el-menu>
     </div>
-  <div style="width: 150px;text-align: right">
+  <div style="width: 300px;text-align: right">
       <div v-if="!userInfo || !userInfo.id" style="line-height: 60px;">
         <el-button type="primary" plain @click="toLogin">登录</el-button>
       </div>
       <div v-if="userInfo && userInfo.id">
-        <el-dropdown>
+        <el-popover
+          placement="bottom-end"
+          width="300"
+          trigger="hover">
+          <el-image fit="cover" style="height: 80px;width: 300px" :src="userInfo?userInfo.avatar:''"></el-image>
+          <el-row>
+            <el-col :span="6">
+              <el-image :src="userInfo?userInfo.avatar:''" style="width: 60px;height: 60px;border-radius:50%;margin-left: 5px;" ></el-image>
+            </el-col>
+            <el-col :span="18">
+              <div style="padding: 15px 0;">{{userInfo.nickname}}
+                <i>♂</i>
+                <el-tag size="small" type="success">{{userInfo.role}}</el-tag></div>
+              <div style="padding: 5px 0"><span>{{userInfo.followNum}} 关注 </span> <span>{{userInfo.fansNum}} 粉丝 </span><span>11 获赞 </span></div>
+              <div style="padding: 15px 0">{{userInfo.remark}}</div>
+            </el-col>
+          </el-row>
+          <el-image :src="userInfo.avatar" slot="reference" @click="pathFun('/personal')" style="cursor:pointer;width: 40px;height: 40px;margin: 10px 10px;border-radius: 50%;"></el-image>
+        </el-popover>
+        <el-dropdown style="top: -25px">
           <div style="display: flex;">
-            <el-image :src="userInfo.avatar" style="width: 40px;height: 40px;margin: 10px 10px;border-radius: 50%;"></el-image>
-            <span style="line-height: 60px;">
+            <span style="line-height: 35px;">
                 {{userInfo.nickname}}
               <i class="el-icon-arrow-down el-icon--right"></i>
             </span>
@@ -44,6 +62,7 @@
 import { mapGetters } from 'vuex'
 import UpdatePwd from '../login/UpdatePwd'
 import login from '../login/login.vue'
+import * as path from 'path'
 
 export default {
   data () {
@@ -55,7 +74,7 @@ export default {
         {name: '首页', path: '/index'},
         {name: '校园分享', path: '/share'},
         {name: '个人中心', path: '/personal'},
-        {name: '留言板', path: '/boards'},
+        {name: '留言板', path: '/messageBoard'},
         {name: '关于我们', path: '/about-us'}
       ]
     }
@@ -76,6 +95,9 @@ export default {
     }, 1000)
   },
   methods: {
+    path () {
+      return path
+    },
     pathFun (path) {
       this.$router.push({path: path})
     },

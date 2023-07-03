@@ -3,7 +3,7 @@ package com.shiyi.service.impl;
 import cn.dev33.satoken.stp.SaLoginModel;
 import cn.dev33.satoken.stp.StpUtil;
 import com.google.code.kaptcha.Producer;
-import com.shiyi.common.ResponseResult;
+import com.shiyi.common.Result;
 import com.shiyi.common.Constants;
 import com.shiyi.entity.User;
 import com.shiyi.mapper.UserMapper;
@@ -59,7 +59,7 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public ResponseResult login(LoginDTO vo) {
+    public Result login(LoginDTO vo) {
         //校验用户名和密码
         User user = userMapper.selectNameAndPassword(vo.getUsername(), AesEncryptUtils.aesEncrypt(vo.getPassword()));
         Assert.isTrue(user != null, ERROR_PASSWORD.getDesc());
@@ -70,6 +70,6 @@ public class LoginServiceImpl implements LoginService {
             StpUtil.login(user.getId().longValue());
         }
         StpUtil.getSession().set(Constants.CURRENT_USER,userMapper.getById(user.getId()));
-        return ResponseResult.success(StpUtil.getTokenValue());
+        return Result.success(StpUtil.getTokenValue());
     }
 }

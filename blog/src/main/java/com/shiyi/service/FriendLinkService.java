@@ -1,7 +1,7 @@
 package com.shiyi.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.shiyi.common.ResponseResult;
+import com.shiyi.common.Result;
 import com.shiyi.entity.FriendLink;
 
 import java.util.List;
@@ -16,21 +16,21 @@ import java.util.List;
  */
 public interface FriendLinkService extends IService<FriendLink> {
 
-    ResponseResult listFriendLink(String name, Integer status);
+    Result listFriendLink(String name, Integer status);
 
-    ResponseResult insertFriendLink(FriendLink friendLink);
+    Result insertFriendLink(FriendLink friendLink);
 
-    ResponseResult updateFriendLink(FriendLink friendLink);
+    Result updateFriendLink(FriendLink friendLink);
 
-    ResponseResult deleteBatch(List<Integer> ids);
+    Result deleteBatch(List<Integer> ids);
 
-    ResponseResult top(Integer id);
+    Result top(Integer id);
 
 
     //    ----web端开始-----
-    ResponseResult webFriendLinkList();
+    Result webFriendLinkList();
 
-    ResponseResult applyFriendLink(FriendLink friendLink);
+    Result applyFriendLink(FriendLink friendLink);
 
 
 }

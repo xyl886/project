@@ -2,7 +2,7 @@ package com.shiyi.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.shiyi.common.ResponseResult;
+import com.shiyi.common.Result;
 import com.shiyi.common.SqlConf;
 import com.shiyi.entity.AdminLog;
 import com.shiyi.mapper.AdminLogMapper;
@@ -30,10 +30,10 @@ public class AdminLogServiceImpl extends ServiceImpl<AdminLogMapper, AdminLog> i
      * @return
      */
     @Override
-    public ResponseResult listAdminLog() {
+    public Result listAdminLog() {
         Page<AdminLog> sysLogPage = baseMapper.selectPage(new Page<>(PageUtils.getPageNo(), PageUtils.getPageSize()),
                 new QueryWrapper<AdminLog>().orderByDesc(SqlConf.CREATE_TIME));
-        return ResponseResult.success(sysLogPage);
+        return Result.success(sysLogPage);
     }
 
     /**
@@ -43,8 +43,8 @@ public class AdminLogServiceImpl extends ServiceImpl<AdminLogMapper, AdminLog> i
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult deleteAdminLog(List<Long> ids) {
+    public Result deleteAdminLog(List<Long> ids) {
         int rows = baseMapper.deleteBatchIds(ids);
-        return rows > 0 ? ResponseResult.success(): ResponseResult.error("批量删除操作日志失败");
+        return rows > 0 ? Result.success(): Result.error("批量删除操作日志失败");
     }
 }

@@ -41,6 +41,7 @@ public class ResourceConfiguration extends ResourceServerConfigurerAdapter {
                         "/posts/getDetail",
                         "/posts/browse",
                         "/banner/listAll",
+                        "/postsComment/listByPostsId",
                         "/image/**",//图片
                         "/js/**",
                         "/doc.html/**",

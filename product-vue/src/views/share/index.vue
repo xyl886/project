@@ -1,19 +1,20 @@
 <template>
   <div class="body">
-    <div style="font-size: 14px;margin: 0 100px;padding: 30px 0 30px 0;" v-infinite-scroll="loadFun">
+    <div style="font-size: 14px;margin: 0 100px;padding: 20px 0;" v-infinite-scroll="loadFun">
         <el-row>
-          <el-col :span="16">
+          <el-col :span="17">
             <div class="share-tab" style="width: 880px; display: inline-block;padding: 0 25px">
           <el-tabs style="" v-model="activeName" @tab-click="handleClick">
          <el-tab-pane v-for="tab in Tabs" @tab-click="handleClick" :label="tab.label" :name="tab.name" :key="tab.name">
-           <All :ref="tab.name"></All>
+           <All :ref="tab.name" :search-text="searchText"></All>
          </el-tab-pane>
           </el-tabs>
             </div>
         </el-col>
-        <el-col :span="8" style="left: 50px;position: relative;">
+        <el-col :span="7" style="position: relative;" class="right-search">
           <div class="search">
-            <el-input style="line-height: 50px;padding: 5px 20px;width: 80%" v-model="searchText" name="search" placeholder="搜索"></el-input>
+            <el-input style="line-height: 50px;padding: 5px 20px;width: 70%" v-model="searchText" name="search" placeholder="搜索"></el-input>
+            <el-button @click="getSearch()"><i class="el-icon-search"></i></el-button>
           </div>
           <div class="recommendation" :class="{ 'fixed': isFixed }">
             <div class="title-header"><b>向你推荐</b></div>
@@ -41,17 +42,16 @@ export default {
     return {
       isFixed: false,
       searchText: '',
-      activeName: 'first',
+      activeName: '1',
       tabs: [
-        { label: '全部', name: 'first' },
-        { label: '学习', name: 'second' },
-        { label: '生活', name: 'third' },
-        { label: '娱乐', name: 'fourth' },
-        { label: '求助', name: 'fifth' },
-        { label: '就业', name: 'sixth' },
-        { label: '新闻/公告', name: 'seventh' },
-        { label: '我的分享', name: 'eighth', requiresLogin: true },
-        { label: '我的关注', name: 'ninth', requiresLogin: true }
+        { label: '全部', name: '1' },
+        { label: '学习', name: '2' },
+        { label: '生活', name: '3' },
+        { label: '娱乐', name: '4' },
+        { label: '求助', name: '5' },
+        { label: '就业', name: '6' },
+        { label: '新闻/公告', name: '7' },
+        { label: '我的关注', name: '8', requiresLogin: true }
       ],
       title: '向你推荐',
       recommendationItems: [
@@ -68,6 +68,8 @@ export default {
       ],
       school: null
     }
+  },
+  watch: {
   },
   computed: {
     Tabs () {
@@ -88,8 +90,11 @@ export default {
     window.removeEventListener('scroll', this.handleScroll)
   },
   methods: {
+    getSearch () {
+      this.$refs[this.activeName][0].load()
+    },
     handleScroll () {
-      this.isFixed = window.scrollY > 140
+      this.isFixed = document.documentElement.scrollTop > 140
     },
     handleClick (tab, event) {
       if (tab.index !== '0') {
@@ -98,7 +103,7 @@ export default {
         this.school = null
       }
       this.$refs[tab.name][0].init(this.school)
-      console.log(tab, event)
+      console.log(tab.name + ',' + this.school)
     },
     loadFun () {
       this.$refs[this.activeName][0].load()
@@ -120,12 +125,16 @@ export default {
 <style scoped>
 .body{
   margin: 0;
-//padding: 20px 0;
   width: 100%;
   height: calc(100%- 120px);
   background-image: url("../../../public/img/back-ground.png");
   background-size: cover;
   background-attachment: fixed;
+}
+@media screen and (max-width: 1500px) {
+  .right-search {
+    display: none!important;
+  }
 }
 .search{
   display: inline-block;
@@ -141,11 +150,6 @@ export default {
   float: right;
   line-height: 60px;
   margin-top: auto;
-}
-@media screen and(max-width: 1500px) {
-  .search,.recommendation {
-    display: none;
-  }
 }
 .recommendation {
   width: 360px;

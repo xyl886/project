@@ -49,7 +49,7 @@ public class OauthInterceptor extends OAuth2AuthenticationEntryPoint {
      * 在启动类中注入了restTemplate Bean
      */
     @Resource
-    RestTemplate restTemplate;
+    private RestTemplate restTemplate;
     @Resource
     private RedisService redisService;
     @Resource

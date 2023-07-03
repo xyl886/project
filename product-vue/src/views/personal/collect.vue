@@ -8,7 +8,7 @@
             <span class="el-dropdown-link">
               {{ command }}<i class="el-icon-arrow-down el-icon--right"></i>
             </span>
-              <el-dropdown-menu slot="dropdown">
+              <el-dropdown-menu slot="dropdown" size="mini">
                 <el-dropdown-item command="最近收藏">最近收藏</el-dropdown-item>
                 <el-dropdown-item command="最多浏览">最多浏览</el-dropdown-item>
                 <el-dropdown-item command="最新发布">最新发布</el-dropdown-item>
@@ -27,6 +27,7 @@
             <!--              class="search-box-input"-->
             <!--              type="text"/>-->
             <el-select
+              size="mini"
               v-model="searchText"
               placeholder="请输入搜索内容"
               @input="handleInput"
@@ -43,21 +44,22 @@
             </el-select>
           </el-col>
           <el-col :span="2" style="margin-left: 15px">
-            <div @click="handleClear"><el-button>重置</el-button></div>
+            <div @click="handleClear"><el-button size="mini">重置</el-button></div>
           </el-col>
           <el-col :span="6">
             <div>
-              <el-button type="primary">查询</el-button>
+              <el-button type="primary" size="mini">查询</el-button>
             </div>
           </el-col>
           <el-col :span="6">
-            <el-button type="primary" v-show="isSelect" @click="CheckboxShow">取消</el-button>
-            <el-button type="primary" style="float: right" @click="CheckboxShow" v-show="!isSelect">批量操作</el-button>
+            <el-button type="primary" v-show="isSelect" @click="CheckboxShow" size="mini">取消</el-button>
+            <el-button type="primary" style="float: right" @click="CheckboxShow" v-show="!isSelect" size="mini">批量操作</el-button>
             <el-button
               v-show="isSelect"
               @click="Cancel"
               :disabled="this.selected.length === 0"
               class="cancel"
+              size="mini"
             >取消收藏
             </el-button>
           </el-col>
@@ -88,23 +90,30 @@
               </div>
             </div>
             <div class="collect-box-title" @click="detailFun(item2.posts)">{{item2.posts.title}}</div>
-            <div>
+            <div style="padding: 5px"> <span style="color: #999;">收藏于:{{item2.updateTime}}</span>
+              <el-dropdown size="small" style="float: right;">
+                <span><i class="el-icon-more" style="padding: 5px;"></i></span>
+                <el-dropdown-menu >
+                  <el-dropdown-item @click.native="cancelCollect(item2.postsId)">取消收藏</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
             </div>
           </el-card>
-          <el-card v-else>
-            <el-image class="collect-box-img">
-            <div slot="error" class="image-slot" style="padding:25%;">
-<!--            <i  class="el-icon-picture-outline"></i>-->
-          </div>
+          <el-card v-else :body-style="{ padding: '0px' }">
+            <el-image class="collect-box-img" style="height: 200px">
+            <div slot="error" class="image-slot" style="padding: 35% 45%;">
+            <i class="el-icon-picture-outline"></i>
+            </div>
             </el-image>
+            <div style="padding: 5px"> <span style="color: #999;">收藏于:{{item2.updateTime}}</span>
+              <el-dropdown size="small" style="float: right;">
+                <span><i class="el-icon-more" style="padding: 5px;"></i></span>
+                <el-dropdown-menu >
+                  <el-dropdown-item @click.native="cancelCollect(item2.postsId)">取消收藏</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </div>
           </el-card>
-          <span style="color: #999;">收藏于:{{item2.updateTime}}</span>
-          <el-dropdown size="small" style="float: right;">
-            <span><i class="el-icon-more" style="padding: 5px;"></i></span>
-            <el-dropdown-menu >
-              <el-dropdown-item @click.native="cancelCollect(item2.postsId)">取消收藏</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
           <div class="checkbox" v-if="isSelect" @click="Checkbox(item2.id)">
                 <span style="display: inline-block;position: absolute;right: 5%;top: 5%;font-size: 25px;">
                    <i class="iconfont icon-xuanzhong" style="font-size: 25px"
@@ -214,6 +223,7 @@ export default {
           let arr = []
           for (let i = 0; i < res.data.length; i++) {
             console.log(res.data[i].updateTime)
+            res.data[i].createTime = formatDate(res.data[i].createTime)
             res.data[i].updateTime = formatDate(res.data[i].updateTime)
             console.log(res.data[i].updateTime)
             count++
@@ -286,8 +296,16 @@ export default {
     },
     Cancel () {
       // 弹窗是否确认
+      const collectIds = []
+      for (const group of this.collects) {
+        for (const collect of group) {
+          collectIds.push(collect.id)
+        }
+      }
+      this.selected = collectIds.join(',')
+      console.log(this.selected)
       MessageBox.confirm(
-        '你将要取消收藏' + this.selected.length + '个商品',
+        '你将要取消收藏' + collectIds.length + '个商品',
         '确认提示',
         {
           confirmButtonText: '确定',
@@ -298,14 +316,11 @@ export default {
           closeOnPressEscape: false
         }
       ).then(() => {
-        this.selected.forEach((item) => {
-          this.cancelList.push(this.myLike[item].id)
-        })
-        this.cancelCollect()
+        this.cancelCollect(this.selected)
         setTimeout(() => {
           this.$message({
             type: 'success',
-            message: '删除成功!'
+            message: '取消成功!'
           })
         }, 1000)
       }).catch(() => {
@@ -324,6 +339,7 @@ export default {
     width: calc(20% - 10px);
     margin: 5px;
     position: relative;
+    transition: .2s;
   }
   .collect-item:hover{
     box-shadow: 1px 1px 10px rgba(0,0,0, 0.2);
@@ -334,12 +350,15 @@ export default {
   }
   .collect-box-img{
     width: 100%;
+    object-fit: cover;
+    height: 200px;
   }
   .collect-box-title{
     height: 40px;
     font-size: 12px;
     padding: 5px;
     overflow: hidden;
+    cursor: pointer;
   }
   .video-info {
     position: absolute;

@@ -1,7 +1,7 @@
 package com.shiyi.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.shiyi.common.ResponseResult;
+import com.shiyi.common.Result;
 import com.shiyi.entity.Role;
 
 import java.util.List;
@@ -17,16 +17,16 @@ import java.util.List;
 public interface RoleService extends IService<Role> {
 
 
-    ResponseResult listRole(String name);
+    Result listRole(String name);
 
-     ResponseResult insertRole(Role role);
+     Result insertRole(Role role);
 
-    ResponseResult updateRole(Role role);
+    Result updateRole(Role role);
 
-    ResponseResult deleteBatch(List<Integer> ids);
+    Result deleteBatch(List<Integer> ids);
 
-    ResponseResult getCurrentUserRole();
+    Result getCurrentUserRole();
 
-    ResponseResult selectById(Integer roleId);
+    Result selectById(Integer roleId);
 
 }

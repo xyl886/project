@@ -2,7 +2,7 @@ package com.shiyi.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.shiyi.common.ResponseResult;
+import com.shiyi.common.Result;
 import com.shiyi.common.SqlConf;
 import com.shiyi.entity.ExceptionLog;
 import com.shiyi.mapper.ExceptionLogMapper;
@@ -26,18 +26,18 @@ import java.util.List;
 public class ExceptionLogServiceImpl extends ServiceImpl<ExceptionLogMapper, ExceptionLog> implements ExceptionLogService {
 
     @Override
-    public ResponseResult listExceptionLog() {
+    public Result listExceptionLog() {
         QueryWrapper<ExceptionLog> queryWrapper = new QueryWrapper<>();
         queryWrapper.orderByDesc(SqlConf.CREATE_TIME);
         Page<ExceptionLog> pg = new Page<>(PageUtils.getPageNo(), PageUtils.getPageSize());
         Page<ExceptionLog> sysLogPage = baseMapper.selectPage(pg, queryWrapper);
-        return ResponseResult.success(sysLogPage);
+        return Result.success(sysLogPage);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult deleteBatch(List<Long> ids) {
+    public Result deleteBatch(List<Long> ids) {
         int rows = baseMapper.deleteBatchIds(ids);
-        return rows > 0 ? ResponseResult.success(): ResponseResult.error("批量删除操作日志失败");
+        return rows > 0 ? Result.success(): Result.error("批量删除操作日志失败");
     }
 }

@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.util.annotation.Nullable;
 
 /**
  * @author Administrator
@@ -22,7 +23,7 @@ public class PostsVO extends Posts {
     @ApiModelProperty(value = "新上传文件")
     private MultipartFile[] Files;
 
-    @ApiModelProperty(value = "上传文件")
+    @ApiModelProperty(value = "已上传文件")
     private String oldFiles;
 
     @ApiModelProperty(value = "移除的文件")

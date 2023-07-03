@@ -2,7 +2,7 @@ package com.shiyi.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.shiyi.common.ResponseResult;
+import com.shiyi.common.Result;
 import com.shiyi.common.SqlConf;
 import com.shiyi.entity.Photo;
 import com.shiyi.mapper.PhotoMapper;
@@ -32,9 +32,9 @@ public class PhotoServiceImpl extends ServiceImpl<PhotoMapper, Photo> implements
      * @return
      */
     @Override
-    public ResponseResult listPhoto(Integer albumId) {
+    public Result listPhoto(Integer albumId) {
         Page<Photo> photoPage = baseMapper.selectPage(new Page<>(PageUtils.getPageNo(), PageUtils.getPageSize()), new QueryWrapper<Photo>().eq(SqlConf.ALBUM_ID, albumId));
-        return ResponseResult.success(photoPage);
+        return Result.success(photoPage);
     }
 
     /**
@@ -43,9 +43,9 @@ public class PhotoServiceImpl extends ServiceImpl<PhotoMapper, Photo> implements
      * @return
      */
     @Override
-    public ResponseResult getPhotoById(Integer id) {
+    public Result getPhotoById(Integer id) {
         Photo photo = baseMapper.selectById(id);
-        return ResponseResult.success(photo);
+        return Result.success(photo);
     }
 
     /**
@@ -55,9 +55,9 @@ public class PhotoServiceImpl extends ServiceImpl<PhotoMapper, Photo> implements
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult insertAlbum(Photo photo) {
+    public Result insertAlbum(Photo photo) {
         int rows = baseMapper.insert(photo);
-        return rows > 0 ? ResponseResult.success(): ResponseResult.error("添加照片失败");
+        return rows > 0 ? Result.success(): Result.error("添加照片失败");
     }
 
     /**
@@ -67,9 +67,9 @@ public class PhotoServiceImpl extends ServiceImpl<PhotoMapper, Photo> implements
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult updatePhoto(Photo photo) {
+    public Result updatePhoto(Photo photo) {
         int rows = baseMapper.updateById(photo);
-        return rows > 0 ? ResponseResult.success(): ResponseResult.error("修改照片失败");
+        return rows > 0 ? Result.success(): Result.error("修改照片失败");
     }
 
     /**
@@ -79,11 +79,11 @@ public class PhotoServiceImpl extends ServiceImpl<PhotoMapper, Photo> implements
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult movePhoto(Map<String,Object> map) {
+    public Result movePhoto(Map<String,Object> map) {
         Integer albumId = (Integer) map.get("albumId");
         List<Integer> ids = (List<Integer>) map.get("ids");
         baseMapper.movePhoto(ids,albumId);
-        return ResponseResult.success();
+        return Result.success();
     }
 
     /**
@@ -93,8 +93,8 @@ public class PhotoServiceImpl extends ServiceImpl<PhotoMapper, Photo> implements
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult deleteBatch(List<Integer> ids) {
+    public Result deleteBatch(List<Integer> ids) {
         int rows = baseMapper.deleteBatchIds(ids);
-        return rows > 0 ? ResponseResult.success(): ResponseResult.error("删除照片失败");
+        return rows > 0 ? Result.success(): Result.error("删除照片失败");
     }
 }

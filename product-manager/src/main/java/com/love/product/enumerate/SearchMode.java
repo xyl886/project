@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum SearchModeEnum {
+public enum SearchMode {
 
     MYSQL("mysql", "mySqlSearchStrategyImpl"),
 
@@ -16,7 +16,7 @@ public enum SearchModeEnum {
     private final String strategy;
 
     public static String getStrategy(String mode) {
-        for (SearchModeEnum value : SearchModeEnum.values()) {
+        for (SearchMode value : SearchMode.values()) {
             if (value.getMode().equals(mode)) {
                 return value.getStrategy();
             }

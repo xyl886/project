@@ -3,9 +3,9 @@ package com.shiyi.controller.system;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import com.shiyi.common.Result;
 import com.shiyi.service.DictDataService;
 import com.shiyi.annotation.OperationLogger;
-import com.shiyi.common.ResponseResult;
 import com.shiyi.entity.DictData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -36,45 +36,45 @@ public class DictDataController {
 
     @RequestMapping(value = "/list",method = RequestMethod.GET)
     @SaCheckLogin
-    @ApiOperation(value = "字典数据列表", httpMethod = "GET", response = ResponseResult.class, notes = "字典数据列表")
-    public ResponseResult list(Integer dictId, Integer isPublish){
+    @ApiOperation(value = "字典数据列表", httpMethod = "GET", response = Result.class, notes = "字典数据列表")
+    public Result list(Integer dictId, Integer isPublish){
         return dictDataService.listDictData(dictId,isPublish);
     }
 
     @RequestMapping(value = "/add",method = RequestMethod.POST)
     @SaCheckPermission("/system/dictData/add")
-    @ApiOperation(value = "添加字典数据", httpMethod = "POST", response = ResponseResult.class, notes = "添加字典数据")
+    @ApiOperation(value = "添加字典数据", httpMethod = "POST", response = Result.class, notes = "添加字典数据")
     @OperationLogger(value = "添加字典数据")
-    public ResponseResult insert(@RequestBody DictData dictData){
+    public Result insert(@RequestBody DictData dictData){
         return dictDataService.insertDictData(dictData);
     }
 
     @RequestMapping(value = "/update",method = RequestMethod.POST)
     @SaCheckPermission("/system/dictData/update")
-    @ApiOperation(value = "修改字典数据", httpMethod = "POST", response = ResponseResult.class, notes = "修改字典数据")
+    @ApiOperation(value = "修改字典数据", httpMethod = "POST", response = Result.class, notes = "修改字典数据")
     @OperationLogger(value = "修改字典数据")
-    public ResponseResult update(@RequestBody DictData dictData){
+    public Result update(@RequestBody DictData dictData){
         return dictDataService.updateDictData(dictData);
     }
 
     @RequestMapping(value = "/delete",method = RequestMethod.DELETE)
     @SaCheckPermission("/system/dictData/delete")
-    @ApiOperation(value = "删除字典数据", httpMethod = "DELETE", response = ResponseResult.class, notes = "删除字典数据")
+    @ApiOperation(value = "删除字典数据", httpMethod = "DELETE", response = Result.class, notes = "删除字典数据")
     @OperationLogger(value = "删除字典数据")
-    public ResponseResult deleteDictData(Long id){
+    public Result deleteDictData(Long id){
         return dictDataService.deleteDictData(id);
     }
 
     @RequestMapping(value = "/deleteBatch",method = RequestMethod.DELETE)
     @SaCheckPermission("/system/dictData/deleteBatch")
-    @ApiOperation(value = "批量删除字典数据", httpMethod = "DELETE", response = ResponseResult.class, notes = "批量删除字典数据")
+    @ApiOperation(value = "批量删除字典数据", httpMethod = "DELETE", response = Result.class, notes = "批量删除字典数据")
     @OperationLogger(value = "批量删除字典数据")
-    public ResponseResult deleteBatch(@RequestBody List<Long> ids){
+    public Result deleteBatch(@RequestBody List<Long> ids){
         return dictDataService.deleteBatch(ids);
     }
 
     @RequestMapping(value = "/getDataByDictType",method = RequestMethod.POST)
-    public ResponseResult getDataByDictType(@RequestBody List<String> types){
+    public Result getDataByDictType(@RequestBody List<String> types){
         return dictDataService.getDataByDictType(types);
     }
 }

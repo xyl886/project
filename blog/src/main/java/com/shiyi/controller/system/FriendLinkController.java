@@ -4,7 +4,7 @@ package com.shiyi.controller.system;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.shiyi.annotation.OperationLogger;
-import com.shiyi.common.ResponseResult;
+import com.shiyi.common.Result;
 import com.shiyi.entity.FriendLink;
 import com.shiyi.service.FriendLinkService;
 import io.swagger.annotations.Api;
@@ -36,40 +36,40 @@ public class FriendLinkController {
 
     @RequestMapping(value = "/list",method = RequestMethod.GET)
     @SaCheckLogin
-    @ApiOperation(value = "友链列表", httpMethod = "GET", response = ResponseResult.class, notes = "友链列表")
-    public ResponseResult list(String name, Integer status){
+    @ApiOperation(value = "友链列表", httpMethod = "GET", response = Result.class, notes = "友链列表")
+    public Result list(String name, Integer status){
         return friendLinkService.listFriendLink(name,status);
     }
 
     @RequestMapping(value = "/create",method = RequestMethod.POST)
     @SaCheckPermission("/system/friend/create")
-    @ApiOperation(value = "添加友链", httpMethod = "POST", response = ResponseResult.class, notes = "添加友链")
+    @ApiOperation(value = "添加友链", httpMethod = "POST", response = Result.class, notes = "添加友链")
     @OperationLogger(value = "添加友链")
-    public ResponseResult insert(@RequestBody FriendLink friendLink){
+    public Result insert(@RequestBody FriendLink friendLink){
         return friendLinkService.insertFriendLink(friendLink);
     }
 
     @RequestMapping(value = "/update",method = RequestMethod.POST)
     @SaCheckPermission("/system/friend/update")
-    @ApiOperation(value = "修改友链", httpMethod = "POST", response = ResponseResult.class, notes = "修改友链")
+    @ApiOperation(value = "修改友链", httpMethod = "POST", response = Result.class, notes = "修改友链")
     @OperationLogger(value = "修改友链")
-    public ResponseResult update(@RequestBody FriendLink friendLink){
+    public Result update(@RequestBody FriendLink friendLink){
         return friendLinkService.updateFriendLink(friendLink);
     }
 
     @RequestMapping(value = "/remove",method = RequestMethod.DELETE)
     @SaCheckPermission("/system/friend/remove")
-    @ApiOperation(value = "删除友链", httpMethod = "DELETE", response = ResponseResult.class, notes = "删除友链")
+    @ApiOperation(value = "删除友链", httpMethod = "DELETE", response = Result.class, notes = "删除友链")
     @OperationLogger(value = "删除友链")
-    public ResponseResult deleteBatch(@RequestBody List<Integer> ids){
+    public Result deleteBatch(@RequestBody List<Integer> ids){
         return friendLinkService.deleteBatch(ids);
     }
 
     @RequestMapping(value = "/top",method = RequestMethod.GET)
     @SaCheckPermission("/system/friend/top")
-    @ApiOperation(value = "置顶友链", httpMethod = "GET", response = ResponseResult.class, notes = "置顶友链")
+    @ApiOperation(value = "置顶友链", httpMethod = "GET", response = Result.class, notes = "置顶友链")
     @OperationLogger(value = "置顶友链")
-    public ResponseResult top(Integer id){
+    public Result top(Integer id){
         return friendLinkService.top(id);
     }
 }

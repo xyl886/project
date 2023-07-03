@@ -1,6 +1,6 @@
 package com.shiyi.service;
 
-import com.shiyi.common.ResponseResult;
+import com.shiyi.common.Result;
 import com.shiyi.entity.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -14,11 +14,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface PageService extends IService<Page> {
 
-    ResponseResult listPage();
+    Result listPage();
 
-    ResponseResult insertPage(Page page);
+    Result insertPage(Page page);
 
-    ResponseResult updatePage(Page page);
+    Result updatePage(Page page);
 
-    ResponseResult deletePageById(Long id);
+    Result deletePageById(Long id);
 }

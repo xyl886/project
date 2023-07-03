@@ -4,7 +4,7 @@
         @close="close(form.files)"
         :visible.sync="dialogVisible"
         v-loading="loading"
-        width="50%"
+        width="80%"
         :top="'2vh'"
         :destroy-on-close="true"
         :close-on-click-modal="false"
@@ -40,7 +40,7 @@
         <el-radio-button v-for="tab in tabs" :key="tab.name" :label="tab.name">{{ tab.label }}</el-radio-button>
       </el-radio-group>
     </el-form-item>
-    <el-form-item label="价格" prop="price">
+    <el-form-item label="价格"  v-if="form.postsType === 1" prop="price">
       <el-input-number
         v-model="form.price"
         maxlength="13"
@@ -49,7 +49,7 @@
         :max="19999"
         clearable
         style="max-width: 700px; min-width: 50px"
-      >元</el-input-number>
+      ></el-input-number>  元
     </el-form-item>
     <el-form-item label="图片" required>
       <el-upload
@@ -121,7 +121,7 @@ export default {
           {min: 3, max: 100, message: '长度在 3 到 100 个字符', trigger: 'blur'}
         ],
         content: [{ required: true, message: '请填写内容', trigger: 'blur' },
-          {min: 10, max: 600, message: '长度在 10 到 600 个字符', trigger: 'blur'}
+          {min: 10, max: 60000, message: '长度在 10 到 600 个字符', trigger: 'blur'}
         ],
         school: [{ required: true, message: '请选择发布校区', trigger: 'change' }],
         price: [{ required: true, message: '请输入价格 , 价格范围 : 0.01~10000', trigger: 'blur' }]
@@ -153,6 +153,7 @@ export default {
       if (file.status === 'success') {
         this.removeFileList.push(file) // 已经上传的图片可选择移除
       }
+      console.log(this.removeFileList)
       this.fileList = fileList
     },
     handleChange (file, fileList) {
@@ -186,19 +187,19 @@ export default {
         if (valid) {
           this.loading = true
           const formData = new FormData()
-          formData.append('files', null)
+          // formData.append('Files', null)
           console.log('this.fileList:' + JSON.stringify(this.fileList))
           let originalImgUrls = ''
-          for (const file of this.fileList) { // 多个文件全部都放到files
+          for (const file of this.fileList) { // 未移除的和新上传的都在这里面
             if (file.raw === undefined) {
-              originalImgUrls += file.url + ','
+              originalImgUrls += file.url + ',' // 未移除的图片url
             } else {
               formData.append('Files', file.raw) // 新上传的照片
             }
           }
-          this.removeFileList.forEach((item) => {
-            formData.append('removeFiles', item) // 修改时移除的
-          })
+          if (this.removeFileList.length > 0) {
+            formData.append('removeFiles', this.removeFileList.map(item => item.url).join(',')) // 使用逗号连接多个URL// 修改时移除的
+          }
           formData.append('id', this.form.id)
           formData.append('userId', this.form.userId)
           formData.append('title', this.form.title)
@@ -208,23 +209,21 @@ export default {
           formData.append('price', this.form.price)
           console.log(formData)
           updateMyPost(formData).then((res) => {
-            const timer = setTimeout(() => {
-              if (res.status === 200) {
-                this.$message({
-                  message: '修改成功！',
-                  type: 'success'
-                })
-                this.loading = false
-                this.edit()
-              } else {
-                this.$message({
-                  message: '修改失败！',
-                  type: 'error'
-                })
-                clearTimeout(timer)
-              }
-              this.$emit('back-reference', false)
-            }, 500)
+            if (res.code === 200) {
+              this.$message({
+                message: '修改成功！',
+                type: 'success'
+              })
+              this.loading = false
+              this.dialogVisible = false
+              this.edit()
+              this.$emit('postUpdate') // 触发帖子信息更新
+            }
+          }, error => {
+            this.$message({
+              message: error,
+              type: 'error'
+            })
           })
         } else {
           return false
@@ -237,6 +236,7 @@ export default {
     },
     edit () {
       this.fileList = []
+      this.form.postsType = this.Form.postsType
       this.form.id = this.Form.id
       this.form.userId = this.Form.userId
       this.form.title = this.Form.title

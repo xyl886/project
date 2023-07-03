@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.love.product.entity.Collect;
+import com.love.product.entity.History;
 import com.love.product.entity.Posts;
 import com.love.product.entity.base.PageQuery;
 import com.love.product.entity.base.Result;
@@ -28,9 +29,13 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.love.product.enumerate.PostStatus.ALL;
+import static com.love.product.enumerate.PostStatus.PUBLISHED;
 
 /**
  * @author Administrator
@@ -50,41 +55,43 @@ public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> impl
     @Resource
     private PostsMapper postsMapper;
     @Override
-    public Result<?> add(Long userId, Long postsId,Integer deleted) {
-        Posts posts = postsMapper.getPostsById(postsId);
+    public Result<?> add(Long userId, Integer deleted, Long... postsIds) {
         YesOrNo yesOrNo = YesOrNo.valueOf(deleted);
-        if(yesOrNo == null){
+        if (yesOrNo == null) {
             yesOrNo = YesOrNo.NO;
         }
-        if(posts != null){ // && !posts.getStatus().equals(YesOrNo.YES.getValue())
-            LocalDateTime now = LocalDateTime.now();
-            Collect collect = new Collect();
-            collect.setId(IdWorker.getId());
-            collect.setUserId(userId);
-            collect.setPostsId(posts.getId());
-            collect.setPostsUserId(posts.getUserId());
-            collect.setDeleted(yesOrNo.getValue());
-            collect.setCreateTime(now);
-            collect.setUpdateTime(now);
-            collectMapper.add(collect);
-            if(yesOrNo.equals(YesOrNo.YES)){
-             posts.setCollectNum(Math.max(posts.collectNum - 1, 0));
-                postsService.updatePostsCollectNum(posts);
-                return Result.OKMsg("已取消收藏");
-            }else{
-                posts.setCollectNum(posts.collectNum+1);
-                postsService.updatePostsCollectNum(posts);
-                return Result.OKMsg("收藏成功");
+        LocalDateTime now = LocalDateTime.now();
+
+        for (Long postsId : postsIds) {
+            Posts posts = postsMapper.getPostsById(postsId);
+            if (posts != null) { // && !posts.getStatus().equals(YesOrNo.YES.getValue())
+                Collect collect = new Collect();
+                collect.setId(IdWorker.getId());
+                collect.setUserId(userId);
+                collect.setPostsId(posts.getId());
+                collect.setPostsUserId(posts.getUserId());
+                collect.setDeleted(yesOrNo.getValue());
+                collect.setCreateTime(now);
+                collect.setUpdateTime(now);
+                collectMapper.add(collect);
+                if (yesOrNo.equals(YesOrNo.YES)) {
+                    posts.setCollectNum(Math.max(posts.getCollectNum() - 1, 0));
+                    postsService.updatePostsCollectNum(posts);
+                    return Result.OKMsg("已取消收藏");
+                } else {
+                    posts.setCollectNum(posts.getCollectNum() + 1);
+                    postsService.updatePostsCollectNum(posts);
+                    return Result.OKMsg("收藏成功");
+                }
             }
-        }else{
-            LambdaQueryWrapper<Collect> queryWrapper = new LambdaQueryWrapper<>();
-            queryWrapper.eq(Collect::getUserId,userId)
-                    .eq(Collect::getPostsId,postsId)
-                    .last("LIMIT 1");
-            collectService.remove(queryWrapper);
-            return Result.failMsg("帖子不存在或已下架");
         }
+        LambdaQueryWrapper<Collect> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Collect::getUserId, userId)
+                .in(Collect::getPostsId,postsIds);
+        collectService.remove(queryWrapper);
+        return Result.OKMsg("取消收藏成功");
     }
+
 
     @Override
     public Collect getDetail(Long userId, Long postsId) {
@@ -101,8 +108,9 @@ public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> impl
     @Override
     public ResultPage<CollectVO> getPage(Long userId, PageQuery pageQuery) {
         LambdaQueryWrapper<Collect> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Collect::getUserId, userId);
-        queryWrapper.orderByDesc(Collect::getCreateTime);
+        queryWrapper.eq(Collect::getUserId, userId)
+                .orderByDesc(Collect::getCreateTime)
+                .eq(Collect::getStatus,ALL);
         Page<Collect> page = page(pageQuery.build(), queryWrapper);
         List<CollectVO> list = new ArrayList<>();
         List<Long> postsIds = new ArrayList<>();
@@ -128,7 +136,10 @@ public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> impl
         list.forEach(item -> {
             UserInfoVO user = users.get(item.getUserId());
             if (user != null) {
-                item.setUserInfo(new UserBasicInfoVO(user.id, user.nickname, user.avatar, Role.valueOf(user.role).getText()));
+                UserBasicInfoVO userBasicInfoVO = new UserBasicInfoVO();
+                BeanUtil.copyProperties(user, userBasicInfoVO);
+                userBasicInfoVO.setRole(Role.valueOf(user.getRole()).getText());
+                item.setUserInfo(userBasicInfoVO);
             }
         });
         return ResultPage.OK(page.getTotal(), page.getCurrent(), page.getSize(), list);

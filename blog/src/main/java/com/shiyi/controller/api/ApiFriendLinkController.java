@@ -2,7 +2,7 @@ package com.shiyi.controller.api;
 
 
 import com.shiyi.annotation.BusinessLogger;
-import com.shiyi.common.ResponseResult;
+import com.shiyi.common.Result;
 import com.shiyi.entity.FriendLink;
 import com.shiyi.service.FriendLinkService;
 import io.swagger.annotations.Api;
@@ -33,15 +33,15 @@ public class ApiFriendLinkController {
 
     @BusinessLogger(value = "友链模块-用户申请友链",type = "添加",desc = "用户申请友链")
     @RequestMapping(value = "/add",method = RequestMethod.POST)
-    @ApiOperation(value = "申请友链", httpMethod = "POST", response = ResponseResult.class, notes = "申请友链")
-    public ResponseResult addLink(@RequestBody FriendLink friendLink){
+    @ApiOperation(value = "申请友链", httpMethod = "POST", response = Result.class, notes = "申请友链")
+    public Result addLink(@RequestBody FriendLink friendLink){
         return friendLinkService.applyFriendLink(friendLink);
     }
 
     @BusinessLogger(value = "友链模块-用户访问页面",type = "查询",desc = "友链列表")
     @RequestMapping(value = "/list",method = RequestMethod.POST)
-    @ApiOperation(value = "友链列表", httpMethod = "POST", response = ResponseResult.class, notes = "友链列表")
-    public ResponseResult webFriendLinkList(){
+    @ApiOperation(value = "友链列表", httpMethod = "POST", response = Result.class, notes = "友链列表")
+    public Result webFriendLinkList(){
         return friendLinkService.webFriendLinkList();
     }
 

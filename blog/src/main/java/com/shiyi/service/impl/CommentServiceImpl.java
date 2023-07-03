@@ -6,10 +6,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.shiyi.common.Result;
 import com.shiyi.exception.BusinessException;
 import com.shiyi.vo.ReplyCountVO;
 import com.shiyi.vo.ReplyVO;
-import com.shiyi.common.ResponseResult;
 import com.shiyi.common.SqlConf;
 import com.shiyi.vo.SystemCommentVO;
 import com.shiyi.entity.Comment;
@@ -48,9 +48,9 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
      * @return
      */
     @Override
-    public ResponseResult listComment(String keywords) {
+    public Result listComment(String keywords) {
         Page<SystemCommentVO> dtoPage = baseMapper.selectPageList(new Page<>(PageUtils.getPageNo(), PageUtils.getPageSize()),keywords);
-        return ResponseResult.success(dtoPage);
+        return Result.success(dtoPage);
     }
 
     /**
@@ -59,9 +59,9 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
      * @return
      */
     @Override
-    public ResponseResult deleteBatch(List<Integer> ids) {
+    public Result deleteBatch(List<Integer> ids) {
         baseMapper.deleteBatchIds(ids);
-        return ResponseResult.success();
+        return Result.success();
     }
 
 
@@ -70,14 +70,14 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 
     //-----------------------web端方法开始-------------
     @Override
-    public ResponseResult comments(Long articleId) {
+    public Result comments(Long articleId) {
         // 查询文章评论量
         Integer commentCount = baseMapper.selectCount(new LambdaQueryWrapper<Comment>()
                 .eq(Objects.nonNull(articleId), Comment::getArticleId, articleId)
                 .isNull(Objects.isNull(articleId), Comment::getArticleId)
                 .isNull(Comment::getParentId));
         if (commentCount == 0) {
-            return ResponseResult.success();
+            return Result.success();
         }
         Page<Comment> pages = baseMapper.selectPage(new Page<>(PageUtils.getPageNo(), PageUtils.getPageSize()),
                 new QueryWrapper<Comment>().eq(SqlConf.ARTICLE_ID, articleId).isNull(SqlConf.PARENT_ID)
@@ -85,7 +85,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         // 分页查询评论集合
         List<Comment> comments = pages.getRecords();
         if (CollectionUtils.isEmpty(comments)) {
-            return ResponseResult.success();
+            return Result.success();
         }
         List<com.shiyi.vo.CommentVO> commentVOList = new ArrayList<>();
         List<ReplyVO> replyVOList;
@@ -108,12 +108,12 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         Map<String,Object> map =new HashMap<>();
         map.put("commentCount",commentCount);
         map.put("commentDTOList", commentVOList);
-        return ResponseResult.success(map);
+        return Result.success(map);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult addComment(CommentDTO commentDTO) {
+    public Result addComment(CommentDTO commentDTO) {
         if (commentDTO.getUserId() != null) {
             throw new BusinessException("非法请求评论!");
         }
@@ -131,11 +131,11 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         if (websiteConfig.getIsEmailNotice().equals(TRUE)) {
             notice(comment);
         }*/
-        return rows > 0? ResponseResult.success(comment): ResponseResult.error("评论失败");
+        return rows > 0? Result.success(comment): Result.error("评论失败");
     }
 
     @Override
-    public ResponseResult repliesByComId(Integer commentId) {
+    public Result repliesByComId(Integer commentId) {
         Page<Comment> page = baseMapper.selectPage(new Page<>(PageUtils.getPageNo(), PageUtils.getPageSize()), new QueryWrapper<Comment>().eq(SqlConf.PARENT_ID, commentId));
         List<ReplyVO> result = new ArrayList<>();
         for (Comment comment: page.getRecords()) {
@@ -151,6 +151,6 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             dto.setReplyNickname(replyUser.getNickname());
             result.add(dto);
         }
-        return ResponseResult.success(result);
+        return Result.success(result);
     }
 }

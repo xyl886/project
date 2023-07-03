@@ -2,6 +2,7 @@ package com.love.product.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -13,20 +14,20 @@ import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.dto.PostsSearchDTO;
 import com.love.product.entity.req.PostsPageReq;
 import com.love.product.entity.vo.*;
-import com.love.product.enumerate.PostsType;
-import com.love.product.enumerate.Role;
-import com.love.product.enumerate.School;
-import com.love.product.enumerate.YesOrNo;
+import com.love.product.enumerate.*;
 import com.love.product.mapper.PostsMapper;
 import com.love.product.service.*;
 import com.love.product.strategy.context.SearchStrategyContext;
+import com.love.product.util.JwtUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -71,6 +72,60 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
 
     @Resource
     private SearchStrategyContext searchStrategyContext;
+    // 1. 定义审核规则
+    private static final List<String> sensitiveWords = Arrays.asList("敏感词1", "敏感词2");
+
+    // 2. 在帖子创建或修改时进行自动审核
+    public void createOrUpdatePost(Posts post) {
+        boolean containsSensitiveWords = post.getTitle() != null && containsSensitiveWords(post.getTitle());
+        if (post.getContent() != null && containsSensitiveWords(post.getContent())) {
+            containsSensitiveWords = true;
+        }
+        if (containsSensitiveWords) {
+            // 如果帖子包含敏感词，则将其状态设置为 "待审核"
+            post.setStatus(PostStatus.PENDING.getValue());
+        } else {
+            // 否则将其状态设置为 "已发布"
+            post.setStatus(PostStatus.PUBLISHED.getValue());
+        }
+        // 保存帖子到数据库中
+        postsMapper.insert(post);
+    }
+
+    // 判断文本中是否包含敏感词
+    private boolean containsSensitiveWords(String text) {
+        for (String word : sensitiveWords) {
+            if (text.contains(word)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // 3. 编写定时任务或异步任务进行审核
+    @Scheduled(fixedDelay = 60000) // 每60秒执行一次
+    public void autoReviewPosts() {
+        // 查询所有状态为 "待审核" 的帖子
+        QueryWrapper<Posts> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("status", PostStatus.PENDING.getValue());
+        List<Posts> pendingPosts = postsMapper.selectList(queryWrapper);
+
+        // 对每个帖子进行审核
+        for (Posts post : pendingPosts) {
+            if (containsSensitiveWords(post.getTitle()) || containsSensitiveWords(post.getContent())) {
+                // 如果帖子仍然包含敏感词，则将其状态设置为 "审核不通过"
+                post.setStatus(PostStatus.REJECTED.getValue());
+            } else {
+                // 否则将其状态设置为 "已发布"
+                post.setStatus(PostStatus.PUBLISHED.getValue());
+            }
+            // 更新帖子状态到数据库中
+            postsMapper.updateById(post);
+        }
+    }
+
+
+
     /**
      * 发布帖子
      */
@@ -118,6 +173,7 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
         posts.setUserId(userId);
         posts.setCreateTime(now);
         posts.setUpdateTime(now);
+        posts.setStatus(PostStatus.PUBLISHED.getValue());
         if(imgPathList.size() > 0){
             posts.setCoverPath(imgPathList.get(0));
             posts.setImgPath(imgPathList.stream().map(String::valueOf).collect(Collectors.joining(",")));
@@ -150,13 +206,16 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
 //        如果查询参数postsPageReq的学校等于3，则加入一个等于userId的条件。
 //        加入一个等于帖子状态的条件。
 //        按照帖子创建时间降序排序。
+        log.info(String.valueOf(postsPageReq));
         LambdaQueryWrapper<Posts> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(postsPageReq.getPostsType()!=null,Posts::getPostsType, postsPageReq.getPostsType())
-        .eq(postsPageReq.getSchool()!=null&&postsPageReq.getSchool()!=7&&postsPageReq.getSchool()!=8,Posts::getSchool, postsPageReq.getSchool())
+        .eq(postsPageReq.getSchool()!=null&&postsPageReq.getSchool()!=7&&postsPageReq.getSchool()!=8, Posts::getSchool, postsPageReq.getSchool())
         .eq(Objects.equals(postsPageReq.getSchool(),7),Posts::getUserId, userId)
+        .like(StringUtils.isNotBlank(postsPageReq.getTitle()),Posts::getTitle, postsPageReq.getTitle())
         .in(Objects.equals(postsPageReq.getSchool(), 8), Posts::getUserId, followedUserIds)
-        .eq(Posts::getStatus, YesOrNo.NO.getValue())
+        .eq(postsPageReq.getStatus()!=null,Posts::getStatus, postsPageReq.getStatus())
         .orderByDesc(Posts::getCreateTime);
+        log.info(String.valueOf(postsPageReq));
         Page<Posts> page = page(postsPageReq.build(), queryWrapper);
         List<PostsDetailVO> list = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
@@ -178,11 +237,14 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
             userInfoVOMap = userInfoService.listByIds(userIds);
             postsLikeHashMap = postsLikeService.listByUserId(userId,postsIds);
             Map<Long, UserInfoVO> finalUserInfoVOMap = userInfoVOMap;
+            log.info(userInfoVOMap +","+userIds);
             Map<Long, PostsLike> finalPostsLikeHashMap = postsLikeHashMap;
             list.forEach(item -> {
                 UserInfoVO userInfoVO = finalUserInfoVOMap.get(item.getUserId());
-                item.setUserInfo(new UserBasicInfoVO(
-                        userInfoVO.getId(),userInfoVO.getNickname(),userInfoVO.getAvatar(), Role.valueOf(userInfoVO.role).getText()));
+                UserBasicInfoVO userBasicInfoVO=new UserBasicInfoVO();
+                BeanUtil.copyProperties(userInfoVO, userBasicInfoVO);
+                userBasicInfoVO.setRole(Role.valueOf(userInfoVO.getRole()).getText());
+                item.setUserInfo(userBasicInfoVO);
                 item.setLike(false);
                 PostsLike postsLike = finalPostsLikeHashMap.get(item.getId());
                 if(postsLike != null){
@@ -190,7 +252,7 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
                 }
             });
         }
-        log.info(String.valueOf(list));
+        log.info(String.valueOf(list.size()));
         return ResultPage.OK(page.getTotal(), page.getCurrent(), page.getSize(), list);
     }
 
@@ -208,7 +270,10 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
         }
         PostsDetailVO postsDetailVO = BeanUtil.copyProperties(posts, PostsDetailVO.class);
         UserInfoVO userInfoVO = userInfoService.getUserInfoById(posts.getUserId());
-        postsDetailVO.setUserInfo(new UserBasicInfoVO(userInfoVO.id,userInfoVO.nickname,userInfoVO.avatar, Role.valueOf(userInfoVO.role).getText()));
+        UserBasicInfoVO userBasicInfoVO=new UserBasicInfoVO();
+        BeanUtil.copyProperties(userInfoVO, userBasicInfoVO);
+        userBasicInfoVO.setRole(Role.valueOf(userInfoVO.getRole()).getText());
+        postsDetailVO.setUserInfo(userBasicInfoVO);
         initImgPath(postsDetailVO);
         postsDetailVO.setSchoolName(School.valueOf(posts.school).getText());
         postsDetailVO.setCollect(false);
@@ -231,24 +296,30 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
         Posts posts = getById(id);
         if(posts != null) {
             LocalDateTime now = LocalDateTime.now();
-            // 检查是否存在浏览记录
-            History existingHistory = historyService.findHistory(userId, id);
-            if (existingHistory != null) {
-                existingHistory.setUpdateTime(now); // 更新浏览时间
-                historyService.updateHistory(existingHistory);
-            } else {
-                // 创建浏览记录对象
-                History history = new History();
-                history.setUserId(userId);
-                history.setPostsId(id);
-                history.setCreateTime(now); // 填充创建时间
-                history.setUpdateTime(now); // 填充更新时间
+            if (userId == null) { // 未登录用户
+                posts.setBrowseNum(posts.getBrowseNum() + 1);
+                saveOrUpdate(posts);
+                return Result.OK();
+            } else { // 已登录用户
+                // 检查是否存在浏览记录
+                History existingHistory = historyService.findHistory(userId, id);
+                if (existingHistory != null) {
+                    existingHistory.setUpdateTime(now); // 更新浏览时间
+                    historyService.updateHistory(existingHistory);
+                } else {
+                    // 创建浏览记录对象
+                    History history = new History();
+                    history.setUserId(userId);
+                    history.setPostsId(id);
+                    history.setCreateTime(now); // 填充创建时间
+                    history.setUpdateTime(now); // 填充更新时间
 
-                // 将浏览记录保存到history表
-                historyService.saveHistory(history);
+                    // 将浏览记录保存到history表
+                    historyService.saveHistory(history);
+                }
+                posts.setBrowseNum(posts.getBrowseNum() + 1);
+                saveOrUpdate(posts);
             }
-            posts.setBrowseNum(posts.getBrowseNum() + 1);
-            saveOrUpdate(posts);
         }
         return Result.OK();
     }
@@ -288,10 +359,11 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
     /**
      * 帖子修改
      */
-    @SneakyThrows
     @Override
     public Result<?> update(PostsVO postsVO){
-        log.info("postsVO"+ postsVO);
+        if(!Objects.equals(JwtUtil.getUserId(), postsVO.getUserId())){
+            return Result.fail("您无权操作!");
+        }
         log.info("帖子id:"+ postsVO.getId());
         log.info("修改前Posts:"+getById(postsVO.getId()));
         if(postsVO.getId() != null){
@@ -307,19 +379,26 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
             posts.setSchool(postsVO.getSchool());
             posts.setContent(postsVO.getContent());
 
-//            if(postsVO.getFiles() == null||postsVO.getFiles().length == 0){
-//                return Result.failMsg("请至少上传一张图片");
-//            }
-            if(postsVO.getFiles() != null){
-                if((postsVO.getFiles().length) > 9){
+            List<String> imgPathList = new ArrayList<>();
+            Collections.addAll(imgPathList, postsService.getImgPathById(postsVO.getId()).split(","));
+            log.info("修改前imgPathList:" + imgPathList);
+
+            if(postsVO.getFiles() != null) {//上传新加的图片
+                if ((postsVO.getFiles().length) > 9) {
                     return Result.fail("最多可上传9张图片");
                 }
-                List<String> imgPathList = new ArrayList<>();
-                Collections.addAll(imgPathList,postsService.getImgPathById(postsVO.getId()).split(","));
-                log.info("修改前imgPathList:"+imgPathList);
-
-                String removeImgPath= postsVO.getRemoveFiles();
-                if(!removeImgPath.isEmpty()){
+                for (MultipartFile file : postsVO.getFiles()) {
+                    String imgPath;// todo oss存储
+                    try {
+                        imgPath = ossService.uploadFile(file);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    imgPathList.add(imgPath);
+                }
+            }
+                String removeImgPath = postsVO.getRemoveFiles();
+                if (removeImgPath != null) {
                     List<String> removeUrls = new ArrayList<>(Arrays.asList(removeImgPath.split(",")));
                     imgPathList.removeAll(removeUrls);
                     removeUrls.replaceAll(url -> url.replace(ALIYUNOSS_PREFIX, ""));//把前缀删掉
@@ -327,27 +406,23 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
                     for (String url : removeUrls) {
                         ossService.delFile(url);
                     }
-                    log.info("移除了"+ removeUrls);
-                    log.info("移除完的imgPathList:"+imgPathList);
+                    log.info("移除了" + removeUrls);
+                    log.info("移除完后的imgPathList:" + imgPathList);
 
                 }
-
-                for (MultipartFile file : postsVO.getFiles()) {//上传新加的图片
-                        String imgPath = ossService.uploadFile(file);// todo oss存储
-                        imgPathList.add(imgPath);
-                    }
-
-                log.info("修改后最终的imgpath:"+ imgPathList);
-                if(imgPathList.size() > 0){
+                log.info("修改后最终的imgpath:" + imgPathList);
+                if (imgPathList.size() > 0) {
                     posts.setCoverPath(imgPathList.get(0));
                     posts.setImgPath(imgPathList.stream().map(String::valueOf).collect(Collectors.joining(",")));
+                } else {
+                    return Result.failMsg("请至少上传一张图片!");
                 }
-            }
+
             saveOrUpdate(posts);
             BeanUtil.copyProperties(postsVO,getById(postsVO.getId()));
             return Result.OK("修改成功",getById(postsVO.getId()));
         }
-        return Result.fail("修改失败，请重试");
+        return Result.fail("修改失败，请重试!!!!");
     }
 
     /**

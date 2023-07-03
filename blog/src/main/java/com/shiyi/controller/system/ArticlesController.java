@@ -2,9 +2,9 @@ package com.shiyi.controller.system;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import com.shiyi.common.Result;
 import com.shiyi.service.ArticleService;
 import com.shiyi.annotation.OperationLogger;
-import com.shiyi.common.ResponseResult;
 import com.shiyi.dto.ArticleDTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -23,85 +23,85 @@ public class ArticlesController {
 
     @PostMapping(value = "/list")
     @SaCheckLogin
-    @ApiOperation(value = "文章列表", httpMethod = "POST", response = ResponseResult.class, notes = "文章列表")
-    public ResponseResult list(@RequestBody Map<String,Object> map) {
+    @ApiOperation(value = "文章列表", httpMethod = "POST", response = Result.class, notes = "文章列表")
+    public Result list(@RequestBody Map<String,Object> map) {
         return articleService.listArticle(map);
     }
 
     @GetMapping(value = "/info")
     @SaCheckPermission("/system/article/info")
-    @ApiOperation(value = "文章详情", httpMethod = "GET", response = ResponseResult.class, notes = "文章详情")
-    public ResponseResult getArticleById(Long id) {
+    @ApiOperation(value = "文章详情", httpMethod = "GET", response = Result.class, notes = "文章详情")
+    public Result getArticleById(Long id) {
         return articleService.getArticleById(id);
     }
 
     @PostMapping(value = "/add")
     @SaCheckPermission("/system/article/add")
-    @ApiOperation(value = "保存文章", httpMethod = "POST", response = ResponseResult.class, notes = "保存文章")
+    @ApiOperation(value = "保存文章", httpMethod = "POST", response = Result.class, notes = "保存文章")
     @OperationLogger(value = "保存文章")
-    public ResponseResult insert(@RequestBody ArticleDTO article) {
+    public Result insert(@RequestBody ArticleDTO article) {
         return  articleService.insertArticle(article);
     }
 
     @PostMapping(value = "/update")
     @SaCheckPermission("/system/article/update")
-    @ApiOperation(value = "修改文章", httpMethod = "POST", response = ResponseResult.class, notes = "修改文章")
+    @ApiOperation(value = "修改文章", httpMethod = "POST", response = Result.class, notes = "修改文章")
     @OperationLogger(value = "修改文章")
-    public ResponseResult update(@RequestBody ArticleDTO article) {
+    public Result update(@RequestBody ArticleDTO article) {
         return articleService.updateArticle(article);
     }
 
     @DeleteMapping(value = "/delete")
     @SaCheckPermission("/system/article/delete")
-    @ApiOperation(value = "删除文章", httpMethod = "DELETE", response = ResponseResult.class, notes = "删除文章")
+    @ApiOperation(value = "删除文章", httpMethod = "DELETE", response = Result.class, notes = "删除文章")
     @OperationLogger(value = "删除文章")
-    public ResponseResult delete(Long id) {
+    public Result delete(Long id) {
         return articleService.deleteArticle(id);
     }
 
     @DeleteMapping(value = "/deleteBatch")
     @SaCheckPermission("/system/article/deleteBatch")
-    @ApiOperation(value = "批量删除文章", httpMethod = "DELETE", response = ResponseResult.class, notes = "批量删除文章")
+    @ApiOperation(value = "批量删除文章", httpMethod = "DELETE", response = Result.class, notes = "批量删除文章")
     @OperationLogger(value = "批量删除文章")
-    public ResponseResult deleteBatch(@RequestBody List<Long> ids) {
+    public Result deleteBatch(@RequestBody List<Long> ids) {
         return articleService.deleteBatchArticle(ids);
     }
 
     @PostMapping(value = "/top")
     @SaCheckPermission("/system/article/top")
-    @ApiOperation(value = "置顶文章", httpMethod = "POST", response = ResponseResult.class, notes = "置顶文章")
+    @ApiOperation(value = "置顶文章", httpMethod = "POST", response = Result.class, notes = "置顶文章")
     @OperationLogger(value = "置顶文章")
-    public ResponseResult putTopArticle(@RequestBody ArticleDTO article) {
+    public Result putTopArticle(@RequestBody ArticleDTO article) {
         return articleService.putTopArticle(article);
     }
 
     @PostMapping(value = "/pubOrShelf")
     @SaCheckPermission("/system/article/pubOrShelf")
-    @ApiOperation(value = "发布或下架文章", httpMethod = "POST", response = ResponseResult.class, notes = "发布或下架文章")
+    @ApiOperation(value = "发布或下架文章", httpMethod = "POST", response = Result.class, notes = "发布或下架文章")
     @OperationLogger(value = "发布或下架文章")
-    public ResponseResult publishAndShelf(@RequestBody ArticleDTO article) {
+    public Result publishAndShelf(@RequestBody ArticleDTO article) {
         return articleService.publishAndShelf(article);
     }
 
     @PostMapping(value = "/baiduSeo")
     @SaCheckPermission("/system/article/baiduSeo")
-    @ApiOperation(value = "文章SEO", httpMethod = "POST", response = ResponseResult.class, notes = "文章SEO")
+    @ApiOperation(value = "文章SEO", httpMethod = "POST", response = Result.class, notes = "文章SEO")
     @OperationLogger(value = "文章SEO")
-    public ResponseResult articleSeo(@RequestBody List<Long> ids) {
+    public Result articleSeo(@RequestBody List<Long> ids) {
         return articleService.articleSeo(ids);
     }
 
     @GetMapping(value = "/reptile")
     @SaCheckPermission("/system/article/reptile")
-    @ApiOperation(value = "文章爬虫", httpMethod = "GET", response = ResponseResult.class, notes = "文章爬虫")
+    @ApiOperation(value = "文章爬虫", httpMethod = "GET", response = Result.class, notes = "文章爬虫")
     @OperationLogger(value = "文章爬虫")
-    public ResponseResult reptile(String url) {
+    public Result reptile(String url) {
         return articleService.reptile(url);
     }
 
     @GetMapping(value = "/randomImg")
-    @ApiOperation(value = "随机获取一张图片", httpMethod = "GET", response = ResponseResult.class, notes = "随机获取一张图片")
-    public ResponseResult randomImg() {
+    @ApiOperation(value = "随机获取一张图片", httpMethod = "GET", response = Result.class, notes = "随机获取一张图片")
+    public Result randomImg() {
         return articleService.randomImg();
     }
 

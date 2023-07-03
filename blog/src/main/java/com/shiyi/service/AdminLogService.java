@@ -1,6 +1,6 @@
 package com.shiyi.service;
 
-import com.shiyi.common.ResponseResult;
+import com.shiyi.common.Result;
 import com.shiyi.entity.AdminLog;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -18,12 +18,12 @@ public interface AdminLogService extends IService<AdminLog> {
      * 分页查询操作日志
      * @return
      */
-    ResponseResult listAdminLog();
+    Result listAdminLog();
 
     /**
      * 批量删除操作日志
      * @param ids 操作日志id集合
      * @return
      */
-    ResponseResult deleteAdminLog(List<Long> ids);
+    Result deleteAdminLog(List<Long> ids);
 }

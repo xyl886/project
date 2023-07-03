@@ -29,8 +29,8 @@ public class CollectController {
 
     @ApiOperation("新增收藏")
     @GetMapping("/add")
-    public Result<?> add(@RequestParam("postsId") Long postsId,@RequestParam("deleted") Integer deleted) {
-        return collectService.add(JwtUtil.getUserId(),postsId,deleted);
+    public Result<?> add(@RequestParam("postsIds")Long[] postsIds,@RequestParam("deleted") Integer deleted) {
+        return collectService.add(JwtUtil.getUserId(), deleted, postsIds);
     }
 
     @ApiOperation("分页")

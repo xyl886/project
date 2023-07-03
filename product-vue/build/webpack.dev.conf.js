@@ -20,7 +20,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
   // cheap-module-eval-source-map is faster for development
   devtool: config.dev.devtool,
 
-  // these devServer options should be customized in /config/index.js
+  // these devServer options should be customized in /config/chat.js
   devServer: {
     useLocalIp:true,
     clientLogLevel: 'warning',
@@ -57,7 +57,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       filename: 'index.html',
       template: 'index.html',
       inject: true,
-      favicon: 'public/img/logo.ico'
+      favicon: 'public/img/logo3.ico'
     }),
     // copy custom static assets
     new CopyWebpackPlugin([

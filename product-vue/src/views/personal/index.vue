@@ -1,11 +1,12 @@
 <template>
     <div style="font-size: 14px;">
-      <div style="top:5px;position: relative;overflow-x: hidden;" class="shell" @mouseenter="handleMouseEnter" @mousemove="handleMouseMove" @mouseleave="handleMouseLeave">
-        <div class="image-container" :style="`transform: translate(${imageMove}px, -8px);`">
-          <img src="../../../public/img/userheader.png" alt="Image">
-        </div>
-      </div>
-      <div style="margin: auto 15%;background-color:#ffffff;">
+<!--      <div style="top:5px;position: relative;overflow-x: hidden;" class="shell" @mouseenter="handleMouseEnter" @mousemove="handleMouseMove" @mouseleave="handleMouseLeave">-->
+<!--        <div class="image-container" :style="`transform: translate(${imageMove}px, -8px);`">-->
+<!--          <img src="../../../public/img/userheader.png" alt="Image">-->
+<!--        </div>-->
+<!--      </div>-->
+      <Header></Header>
+      <div style="margin: auto 10%;background-color:#ffffff;">
         <div style="border: 1px solid #e6e6e6;">
             <el-menu :default-active="activeIndex" mode="horizontal" class="el-menu-demo">
               <el-menu-item v-for="(item,index) in menus" :index="item.path" :key="item.path" @click="pathFun(item.path)">
@@ -23,8 +24,10 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import Header from './Header.vue'
 
 export default {
+  components: {Header},
   data () {
     return {
       x: 0,
@@ -97,7 +100,6 @@ export default {
 </script>
 
 <style scoped>
-@import '../../../static/iconfont/iconfont.css';
 * {
   padding: 0;
   margin: 0;

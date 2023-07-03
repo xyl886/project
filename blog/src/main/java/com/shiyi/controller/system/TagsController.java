@@ -4,7 +4,7 @@ package com.shiyi.controller.system;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.shiyi.annotation.OperationLogger;
-import com.shiyi.common.ResponseResult;
+import com.shiyi.common.Result;
 import com.shiyi.entity.Tags;
 import com.shiyi.service.TagsService;
 import io.swagger.annotations.Api;
@@ -32,55 +32,55 @@ public class TagsController {
 
     @RequestMapping(value = "/list",method = RequestMethod.GET)
     @SaCheckLogin
-    @ApiOperation(value = "标签列表", httpMethod = "GET", response = ResponseResult.class, notes = "标签列表")
-    public ResponseResult list(String name){
+    @ApiOperation(value = "标签列表", httpMethod = "GET", response = Result.class, notes = "标签列表")
+    public Result list(String name){
         return tagsService.listTags(name);
     }
 
     @RequestMapping(value = "/add",method = RequestMethod.POST)
     @SaCheckPermission("/system/tags/add")
-    @ApiOperation(value = "新增标签", httpMethod = "POST", response = ResponseResult.class, notes = "新增标签")
+    @ApiOperation(value = "新增标签", httpMethod = "POST", response = Result.class, notes = "新增标签")
     @OperationLogger(value = "新增标签")
-    public ResponseResult insert(@RequestBody Tags tags){
+    public Result insert(@RequestBody Tags tags){
         return tagsService.insertTag(tags);
     }
 
     @RequestMapping(value = "/info",method = RequestMethod.GET)
     @SaCheckPermission("/system/tags/info")
-    @ApiOperation(value = "标签详情", httpMethod = "GET", response = ResponseResult.class, notes = "标签详情")
-    public ResponseResult getTagsById(Long id){
+    @ApiOperation(value = "标签详情", httpMethod = "GET", response = Result.class, notes = "标签详情")
+    public Result getTagsById(Long id){
         return tagsService.getTagsById(id);
     }
 
     @RequestMapping(value = "/update",method = RequestMethod.POST)
     @SaCheckPermission("/system/tags/update")
-    @ApiOperation(value = "修改标签", httpMethod = "POST", response = ResponseResult.class, notes = "修改标签")
+    @ApiOperation(value = "修改标签", httpMethod = "POST", response = Result.class, notes = "修改标签")
     @OperationLogger(value = "修改标签")
-    public ResponseResult update(@RequestBody Tags tags){
+    public Result update(@RequestBody Tags tags){
         return tagsService.updateTag(tags);
     }
 
     @RequestMapping(value = "/remove",method = RequestMethod.DELETE)
     @SaCheckPermission("/system/tags/remove")
-    @ApiOperation(value = "删除标签", httpMethod = "DELETE", response = ResponseResult.class, notes = "删除标签")
+    @ApiOperation(value = "删除标签", httpMethod = "DELETE", response = Result.class, notes = "删除标签")
     @OperationLogger(value = "删除标签")
-    public ResponseResult deleteById(Long  id){
+    public Result deleteById(Long  id){
         return tagsService.deleteById(id);
     }
 
     @RequestMapping(value = "/deleteBatch",method = RequestMethod.DELETE)
     @SaCheckPermission("/system/tags/deleteBatch")
-    @ApiOperation(value = "批量删除标签", httpMethod = "DELETE", response = ResponseResult.class, notes = "批量删除标签")
+    @ApiOperation(value = "批量删除标签", httpMethod = "DELETE", response = Result.class, notes = "批量删除标签")
     @OperationLogger(value = "批量删除标签")
-    public ResponseResult deleteBatch(@RequestBody List<Long> ids){
+    public Result deleteBatch(@RequestBody List<Long> ids){
         return tagsService.deleteBatch(ids);
     }
 
     @RequestMapping(value = "/top",method = RequestMethod.GET)
     @SaCheckPermission("/system/tags/top")
-    @ApiOperation(value = "置顶标签", httpMethod = "GET", response = ResponseResult.class, notes = "置顶标签")
+    @ApiOperation(value = "置顶标签", httpMethod = "GET", response = Result.class, notes = "置顶标签")
     @OperationLogger(value = "置顶标签")
-    public ResponseResult top(Long id){
+    public Result top(Long id){
         return tagsService.top(id);
     }
 }

@@ -46,6 +46,7 @@ const actions = {
           setToken(res.data.accessToken)
           commit('SET_ROLE', res.data.role)
           commit('SET_USER_INFO', res.data)
+          console.log(res.data)
           // commit('SET_USER_INFO', {id: res.data.id, avatar: res.data.avatar, nickname: res.data.nickname})
         }
         resolve(res)

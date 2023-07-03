@@ -4,7 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.shiyi.annotation.OperationLogger;
 import com.shiyi.common.RedisConstants;
-import com.shiyi.common.ResponseResult;
+import com.shiyi.common.Result;
 import com.shiyi.vo.SysCacheVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -45,52 +45,52 @@ public class CacheMonitorController {
 
     @GetMapping("/getNames")
     @SaCheckLogin
-    public ResponseResult cache()
+    public Result cache()
     {
-        return ResponseResult.success(caches);
+        return Result.success(caches);
     }
 
     @GetMapping("/getKeys/{cacheName}")
-    public ResponseResult getCacheKeys(@PathVariable String cacheName)
+    public Result getCacheKeys(@PathVariable String cacheName)
     {
         Set<String> cacheKeys = redisTemplate.keys(cacheName + "*");
-        return ResponseResult.success(cacheKeys);
+        return Result.success(cacheKeys);
     }
 
     @GetMapping("/getValue/{cacheName}/{cacheKey}")
-    public ResponseResult getCacheValue(@PathVariable String cacheName, @PathVariable String cacheKey)
+    public Result getCacheValue(@PathVariable String cacheName, @PathVariable String cacheKey)
     {
         String cacheValue = redisTemplate.opsForValue().get(cacheKey);
         SysCacheVO sysCache = new SysCacheVO(cacheName, cacheKey, cacheValue);
-        return ResponseResult.success(sysCache);
+        return Result.success(sysCache);
     }
 
     @OperationLogger("删除key")
     @DeleteMapping("/clearCacheName/{cacheName}")
     @SaCheckPermission("/monitor/cache/clearCacheName")
-    public ResponseResult clearCacheName(@PathVariable String cacheName)
+    public Result clearCacheName(@PathVariable String cacheName)
     {
         Collection<String> cacheKeys = redisTemplate.keys(cacheName + "*");
         redisTemplate.delete(cacheKeys);
-        return ResponseResult.success();
+        return Result.success();
     }
 
     @OperationLogger("删除key")
     @SaCheckPermission("/monitor/cache/clearCacheKey")
     @DeleteMapping("/clearCacheKey/{cacheKey}")
-    public ResponseResult clearCacheKey(@PathVariable String cacheKey)
+    public Result clearCacheKey(@PathVariable String cacheKey)
     {
         redisTemplate.delete(cacheKey);
-        return ResponseResult.success();
+        return Result.success();
     }
 
     @OperationLogger("清空全部")
     @SaCheckPermission("/monitor/cache/clearCacheAll")
     @DeleteMapping("/clearCacheAll")
-    public ResponseResult clearCacheAll()
+    public Result clearCacheAll()
     {
         Collection<String> cacheKeys = redisTemplate.keys("*");
         redisTemplate.delete(cacheKeys);
-        return ResponseResult.success();
+        return Result.success();
     }
 }

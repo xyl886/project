@@ -3,12 +3,12 @@ import request from '@/utils/request'
 /**
  * 收藏
  */
-export const addCollect = (postsId, deleted) => {
+export const addCollect = (postsIds, deleted) => {
   return request({
     url: '/api/collect/add',
     method: 'get',
     params: {
-      postsId: postsId,
+      postsIds: postsIds,
       deleted: deleted
     }
   })

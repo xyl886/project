@@ -3,7 +3,7 @@ package com.shiyi.controller.system;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.shiyi.annotation.OperationLogger;
-import com.shiyi.common.ResponseResult;
+import com.shiyi.common.Result;
 import com.shiyi.entity.Menu;
 import com.shiyi.service.MenuService;
 import io.swagger.annotations.Api;
@@ -28,40 +28,40 @@ public class MenuController {
 
     @GetMapping(value = "/getMenuTree")
     @SaCheckLogin
-    @ApiOperation(value = "获取菜单树", httpMethod = "GET", response = ResponseResult.class, notes = "获取菜单树")
-    public ResponseResult getMenuTree() {
+    @ApiOperation(value = "获取菜单树", httpMethod = "GET", response = Result.class, notes = "获取菜单树")
+    public Result getMenuTree() {
         List<Menu> result = menuService.listMenuTree(menuService.list());
-        return ResponseResult.success("获取菜单树成功", result);
+        return Result.success("获取菜单树成功", result);
     }
 
     @GetMapping(value = "/getMenuApi")
     @SaCheckLogin
-    @ApiOperation(value = "获取所有接口", httpMethod = "GET", response = ResponseResult.class, notes = "获取所有接口")
-    public ResponseResult listMenuApi(Integer id) {
+    @ApiOperation(value = "获取所有接口", httpMethod = "GET", response = Result.class, notes = "获取所有接口")
+    public Result listMenuApi(Integer id) {
          return menuService.listMenuApi(id);
     }
 
     @PostMapping(value = "/create")
     @SaCheckPermission("/system/menu/create")
-    @ApiOperation(value = "添加菜单", httpMethod = "POST", response = ResponseResult.class, notes = "添加菜单")
+    @ApiOperation(value = "添加菜单", httpMethod = "POST", response = Result.class, notes = "添加菜单")
     @OperationLogger(value = "添加菜单")
-    public ResponseResult insert(@RequestBody Menu menu) {
+    public Result insert(@RequestBody Menu menu) {
         return menuService.insertMenu(menu);
     }
 
     @PostMapping(value = "/update")
     @SaCheckPermission("/system/menu/update")
-    @ApiOperation(value = "修改菜单", httpMethod = "POST", response = ResponseResult.class, notes = "修改菜单")
+    @ApiOperation(value = "修改菜单", httpMethod = "POST", response = Result.class, notes = "修改菜单")
     @OperationLogger(value = "修改菜单")
-    public ResponseResult update(@RequestBody Menu menu) {
+    public Result update(@RequestBody Menu menu) {
         return menuService.updateMenu(menu);
     }
 
     @DeleteMapping(value = "/remove")
     @SaCheckPermission("/system/menu/remove")
-    @ApiOperation(value = "删除菜单", httpMethod = "DELETE", response = ResponseResult.class, notes = "删除菜单")
+    @ApiOperation(value = "删除菜单", httpMethod = "DELETE", response = Result.class, notes = "删除菜单")
     @OperationLogger(value = "删除菜单")
-    public ResponseResult deleteMenuById(Integer id) {
+    public Result deleteMenuById(Integer id) {
         return menuService.deleteMenuById(id);
     }
 }

@@ -1,6 +1,6 @@
 package com.shiyi.service;
 
-import com.shiyi.common.ResponseResult;
+import com.shiyi.common.Result;
 import com.shiyi.entity.Category;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -21,49 +21,49 @@ public interface CategoryService extends IService<Category> {
      * @param name 分类名
      * @return
      */
-    ResponseResult listCategory(String name);
+    Result listCategory(String name);
 
     /**
      * 分类详情
      * @param id 分类id
      * @return
      */
-    ResponseResult getCategoryById(Long id);
+    Result getCategoryById(Long id);
 
     /**
      * 添加分类
      * @param category 分类对象
      * @return
      */
-    ResponseResult insertCategory(Category category);
+    Result insertCategory(Category category);
 
     /**
      * 修改分类
      * @param category 分类对象
      * @return
      */
-    ResponseResult updateCategory(Category category);
+    Result updateCategory(Category category);
 
     /**
      * 删除分类
      * @param id 分类id
      * @return
      */
-    ResponseResult deleteCategory(Long id);
+    Result deleteCategory(Long id);
 
     /**
      * 批量删除分类
      * @param list 分类对象集合
      * @return
      */
-    ResponseResult deleteBatch(List<Category> list);
+    Result deleteBatch(List<Category> list);
 
 
     /**
      * 置顶分类
      * @return 置顶分类
      */
-    ResponseResult top(Long id);
+    Result top(Long id);
 
 
     //-----------web端方法开始------------------
@@ -71,6 +71,6 @@ public interface CategoryService extends IService<Category> {
      * 首页分类列表
      * @return
      */
-    ResponseResult webList();
+    Result webList();
 
 }

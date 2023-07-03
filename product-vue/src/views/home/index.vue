@@ -11,33 +11,33 @@
     <div style="margin: 20px 0;">
       <el-row>
         <el-col :span="16"><div class="grid-content bg-purple">
-          <h2 style="display: inline-block">闲置帖子列表</h2></div></el-col>
+          <h2 style="display: inline-block">闲置帖子</h2></div></el-col>
         <el-col :span="8"><div class="grid-content bg-purple-light">
           <!-- 搜索框 -->
           <div style="display:inline-block;margin-top: 12px;" v-if="$route.path==='/index'">
             <el-input placeholder="请输入内容"  v-model="searchText" class="input-with-select">
-              <el-select style="width:100px" v-model="select" slot="prepend" placeholder="请选择" value="1">
-                <el-option label="1" value="1"></el-option>
-                <el-option label="2" value="2"></el-option>
-                <el-option label="3" value="3"></el-option>
-              </el-select>
-              <el-button slot="append" icon="el-icon-search"></el-button>
+<!--              <el-select style="width:100px" v-model="select" slot="prepend" placeholder="请选择" value="1">-->
+<!--                <el-option label="1" value="1"></el-option>-->
+<!--                <el-option label="2" value="2"></el-option>-->
+<!--                <el-option label="3" value="3"></el-option>-->
+<!--              </el-select>-->
+              <el-button slot="append" icon="el-icon-search" @click="getPageFun()"></el-button>
             </el-input>
           </div></div></el-col>
       </el-row>
     </div>
     <div class="posts-box" v-for="(item,index) in posts" :key="index">
       <div class="posts-item" v-for="(item2,index2) in item" :key="item2.id" @click="detailFun(item2)">
-        <div style="padding: 15px 15px;">
+        <div style="padding: 5px;">
           <div style="text-align: center;">
             <el-image :src="item2.coverPath" style="width: 100%;height: 170px;"></el-image>
           </div>
-          <div style="height: 36px;;overflow: hidden;margin-top: 20px;">
+          <div style="height: 30px;padding: 5px 10px;overflow: hidden;margin-top: 20px;">
             <div style="overflow: hidden;text-overflow: ellipsis;font-size: 15px;color: #18191c;">
               {{item2.title}}
             </div>
           </div>
-          <div style="display: flex;margin-top: 20px;">
+          <div style="display: flex;margin-top: 15px;">
             <div class="posts-item-price">
               ¥{{item2.price}}
             </div>
@@ -54,7 +54,7 @@
       <el-pagination
         background
         :current-page.sync="page.currentPage"
-        :page-sizes="[15, 25, 50, 100]"
+        :page-sizes="[10, 20, 40, 80]"
         :page-size="page.pageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="page.total"
@@ -75,6 +75,7 @@
 import {listAll} from '@/api/banner'
 import {getPage} from '@/api/posts'
 import {setStore} from '@/utils/store'
+import {config} from 'shelljs'
 export default {
   data () {
     return {
@@ -85,9 +86,10 @@ export default {
       posts: [],
       page: {
         total: 0,
-        pageSize: 15,
+        pageSize: 10,
         currentPage: 1,
-        postsType: 1
+        postsType: 1,
+        title: ''
       }
     }
   },
@@ -101,6 +103,7 @@ export default {
       listAll().then(res => {
         if (res.code === 200) {
           this.banners = res.data
+          console.log(this.banners)
         }
       })
     },
@@ -115,11 +118,14 @@ export default {
     getPageFun () {
       this.loading = true
       this.posts = []
+      this.page.title = this.searchText ? this.searchText : ''
+      console.log(this.page)
       getPage(this.page).then(res => {
         this.loading = false
         if (res.code === 200) {
           let count = 0
           let arr = []
+          console.log(res.data.length)
           for (let i = 0; i < res.data.length; i++) {
             count++
             if (count <= 5) {
@@ -154,9 +160,10 @@ export default {
   .posts-item{
     width: calc(20% - 10px);
     height: 300px;
-    margin: 10px 10px 5px 0;
+    margin: 5px;
     background-color: #ffffff;
     cursor: pointer;
+    transition: .2s;
     box-shadow: 1px 1px 10px rgba(0,0,0, 0.08);
   }
   .posts-item:hover{

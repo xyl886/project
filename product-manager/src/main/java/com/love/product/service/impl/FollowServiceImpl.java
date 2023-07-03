@@ -46,7 +46,7 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
     @Override
     public Result<?> add(Long userId, Long beFollowedUserId,Integer deleted) {
         UserInfo userInfo = userInfoService.getById(beFollowedUserId);
-        YesOrNo yesOrNo = YesOrNo.valueOf(deleted);
+        YesOrNo yesOrNo = YesOrNo.fromValue(deleted);
         if(yesOrNo == null){
             yesOrNo = YesOrNo.NO;
         }
@@ -54,7 +54,7 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
             LocalDateTime now = LocalDateTime.now();
             Follow follow = new Follow();
             follow.setUserId(userId);
-            follow.setBeFollowedUserId(userInfo.getId());
+            follow.setBeFollowedUserId(userInfo.id);
             follow.setDeleted(yesOrNo.getValue());
             follow.setCreateTime(now);
             follow.setUpdateTime(now);
@@ -186,8 +186,11 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
                     followStatus = 3;//互关
                 }
                 item.setFollowStatus(followStatus);
-                item.setUserInfo(new UserBasicInfoVO(
-                        userInfoVO.id,userInfoVO.nickname,userInfoVO.avatar, Role.valueOf(userInfoVO.role).getText()));
+
+                UserBasicInfoVO userBasicInfoVO=new UserBasicInfoVO();
+                BeanUtil.copyProperties(userInfoVO, userBasicInfoVO);
+                userBasicInfoVO.setRole(Role.valueOf(userInfoVO.getRole()).getText());
+                item.setUserInfo(userBasicInfoVO);
             });
         }
         return ResultPage.OK(page.getTotal(), page.getCurrent(), page.getSize(), list);

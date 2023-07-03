@@ -2,9 +2,9 @@ package com.shiyi.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.shiyi.common.Result;
 import com.shiyi.entity.JobLog;
 import com.shiyi.mapper.JobLogMapper;
-import com.shiyi.common.ResponseResult;
 import com.shiyi.common.SqlConf;
 import com.shiyi.service.JobLogService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -37,8 +37,8 @@ public class JobLogServiceImpl extends ServiceImpl<JobLogMapper, JobLog> impleme
      * @return
      */
     @Override
-    public ResponseResult listJobLog(String jobName, String jobGroup, String status, String startTime,
-                                   String endTime, Long jobId) {
+    public Result listJobLog(String jobName, String jobGroup, String status, String startTime,
+                             String endTime, Long jobId) {
         QueryWrapper<JobLog> queryWrapper = new QueryWrapper<JobLog>()
                 .orderByDesc(SqlConf.CREATE_TIME).eq(jobId != null,SqlConf.JOB_ID,jobId)
                 .like(StringUtils.isNotBlank(jobName),SqlConf.JOB_NAME,jobName)
@@ -46,7 +46,7 @@ public class JobLogServiceImpl extends ServiceImpl<JobLogMapper, JobLog> impleme
                 .eq(StringUtils.isNotBlank(status),SqlConf.STATUS,status)
                 .between(StringUtils.isNotBlank(startTime),SqlConf.START_TIME,startTime,endTime);
         Page<JobLog> page = baseMapper.selectPage(new Page<>(PageUtils.getPageNo(), PageUtils.getPageSize()), queryWrapper);
-        return ResponseResult.success(page);
+        return Result.success(page);
     }
 
     /**
@@ -56,9 +56,9 @@ public class JobLogServiceImpl extends ServiceImpl<JobLogMapper, JobLog> impleme
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult deleteBatch(List<Long> ids) {
+    public Result deleteBatch(List<Long> ids) {
         baseMapper.deleteBatchIds(ids);
-        return ResponseResult.success();
+        return Result.success();
     }
 
     /**
@@ -67,9 +67,9 @@ public class JobLogServiceImpl extends ServiceImpl<JobLogMapper, JobLog> impleme
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult clean() {
+    public Result clean() {
         baseMapper.clean();
-        return ResponseResult.success();
+        return Result.success();
     }
 
 }

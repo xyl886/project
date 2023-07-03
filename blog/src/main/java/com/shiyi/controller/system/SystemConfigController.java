@@ -4,7 +4,7 @@ package com.shiyi.controller.system;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.shiyi.annotation.OperationLogger;
-import com.shiyi.common.ResponseResult;
+import com.shiyi.common.Result;
 import com.shiyi.entity.SystemConfig;
 import com.shiyi.service.SystemConfigService;
 import io.swagger.annotations.Api;
@@ -34,16 +34,16 @@ public class SystemConfigController {
 
     @RequestMapping(value = "/getConfig",method = RequestMethod.GET)
     @SaCheckLogin
-    @ApiOperation(value = "查询系统配置", httpMethod = "GET", response = ResponseResult.class, notes = "查询系统配置")
-    public ResponseResult getConfig(){
+    @ApiOperation(value = "查询系统配置", httpMethod = "GET", response = Result.class, notes = "查询系统配置")
+    public Result getConfig(){
         return systemConfigService.getConfig();
     }
 
     @RequestMapping(value = "/update",method = RequestMethod.POST)
     @SaCheckPermission("/system/config/update")
-    @ApiOperation(value = "修改系统配置", httpMethod = "POST", response = ResponseResult.class, notes = "修改系统配置")
+    @ApiOperation(value = "修改系统配置", httpMethod = "POST", response = Result.class, notes = "修改系统配置")
     @OperationLogger(value = "修改系统配置")
-    public ResponseResult update(@RequestBody SystemConfig systemConfig){
+    public Result update(@RequestBody SystemConfig systemConfig){
         return systemConfigService.updateConfig(systemConfig);
     }
 }

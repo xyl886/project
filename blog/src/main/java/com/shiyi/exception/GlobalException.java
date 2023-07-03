@@ -2,7 +2,7 @@ package com.shiyi.exception;
 
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotPermissionException;
-import com.shiyi.common.ResponseResult;
+import com.shiyi.common.Result;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,51 +25,51 @@ public class GlobalException {
     // 业务异常
     @ExceptionHandler(BusinessException.class)
     @ResponseBody
-    public ResponseResult BusinessExceptionHandler(BusinessException ex) {
+    public Result BusinessExceptionHandler(BusinessException ex) {
         if (ex.getCode() != -1) {
             logger.error("code : " + ex.getCode() + " msg : " + ex.getMessage(), ex);
         }
         if(StringUtils.isBlank(ex.getLocalizedMessage())||StringUtils.isBlank(ex.getMessage())){
-            return ResponseResult.error(ERROR.getCode(), ERROR.getDesc());
+            return Result.error(ERROR.getCode(), ERROR.getDesc());
         }
-        return ResponseResult.error(ex.getCode(), ex.getMessage());
+        return Result.error(ex.getCode(), ex.getMessage());
     }
 
     // Assert业务异常
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseBody
-    public ResponseResult AssertExceptionHandler(IllegalArgumentException ex) {
+    public Result AssertExceptionHandler(IllegalArgumentException ex) {
         logger.error( " msg : " + ex.getMessage(), ex);
         if(StringUtils.isBlank(ex.getLocalizedMessage())){
-            return ResponseResult.error(ERROR.getCode(),ERROR.getDesc());
+            return Result.error(ERROR.getCode(),ERROR.getDesc());
         }
-        return ResponseResult.error(ex.getMessage());
+        return Result.error(ex.getMessage());
     }
 
     // 登录异常
     @ExceptionHandler(NotLoginException.class)
     @ResponseBody
-    public ResponseResult NotLoginExceptionHandler(NotLoginException ex) {
+    public Result NotLoginExceptionHandler(NotLoginException ex) {
         logger.error( " msg : " + ex.getMessage(), ex);
-        return ResponseResult.error(NOT_LOGIN.getCode(),NOT_LOGIN.getDesc());
+        return Result.error(NOT_LOGIN.getCode(),NOT_LOGIN.getDesc());
     }
 
     // 权限异常
     @ExceptionHandler(NotPermissionException.class)
     @ResponseBody
-    public ResponseResult NotPermissionExceptionHandler(NotPermissionException ex) {
+    public Result NotPermissionExceptionHandler(NotPermissionException ex) {
         logger.error( " msg : " + ex.getMessage(), ex);
-        return ResponseResult.error(NO_PERMISSION.getCode(),"无此权限：" + ex.getCode());
+        return Result.error(NO_PERMISSION.getCode(),"无此权限：" + ex.getCode());
     }
 
     // java异常异常
     @ExceptionHandler(Exception.class)
     @ResponseBody
-    public ResponseResult ExceptionHandler(Exception ex) {
+    public Result ExceptionHandler(Exception ex) {
         logger.error( " msg : " + ex.getMessage(), ex);
         if(StringUtils.isBlank(ex.getLocalizedMessage())){
-            return ResponseResult.error(ERROR.getCode(),ERROR.getDesc());
+            return Result.error(ERROR.getCode(),ERROR.getDesc());
         }
-        return ResponseResult.error(ex.getMessage());
+        return Result.error(ex.getMessage());
     }
 }

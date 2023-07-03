@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- banner -->
-    <div class="message-banner" :style="cover">
+    <div class="message-banner" >
       <!-- 弹幕输入框 -->
       <div class="message-container">
         <h1 class="message-title">留言板</h1>
@@ -9,12 +9,10 @@
           <input
             v-model="content"
             @click="show = true"
-            @keyup.enter="addToList"
             placeholder="说点什么吧"
           />
           <button
             class="ml-3 animated bounceInLeft"
-            @click="addToList"
             v-show="show"
           >
             发送
@@ -23,27 +21,26 @@
       </div>
       <!-- 弹幕列表 -->
       <div class="barrage-container">
-        <vue-baberrage :barrageList="barrageList">
-          <template v-slot:default="slotProps">
-            <span class="barrage-items">
-              <img
-                :src="slotProps.item.avatar"
-                width="30"
-                height="30"
-                style="border-radius:50%"
-              />
-              <span class="ml-2">{{ slotProps.item.nickname }} :</span>
-              <span class="ml-2">{{ slotProps.item.content }}</span>
-            </span>
-          </template>
-        </vue-baberrage>
+<!--        <vue-baberrage :barrageList="barrageList">-->
+<!--          <template v-slot:default="slotProps">-->
+<!--            <span class="barrage-items">-->
+<!--              <img-->
+<!--                :src="slotProps.item.avatar"-->
+<!--                width="30"-->
+<!--                height="30"-->
+<!--                style="border-radius:50%"-->
+<!--              />-->
+<!--              <span class="ml-2">{{ slotProps.item.nickname }} :</span>-->
+<!--              <span class="ml-2">{{ slotProps.item.content }}</span>-->
+<!--            </span>-->
+<!--          </template>-->
+<!--        </vue-baberrage>-->
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { listMessage, addMessage } from '@/api'
 export default {
   metaInfo: {
     meta: [
@@ -58,9 +55,9 @@ export default {
       }
     ]
   },
-  mounted () {
-    this.listMessage()
-  },
+  // mounted () {
+  //   this.listMessage()
+  // },
   data () {
     return {
       show: false,
@@ -70,63 +67,63 @@ export default {
       timer: null,
       barrageList: []
     }
-  },
-  methods: {
-    addToList () {
-      if (this.count) {
-        this.$toast({ type: 'error', message: '30秒后才能再次留言' })
-        return false
-      }
-      if (this.content.trim() === '') {
-        this.$toast({ type: 'error', message: '留言不能为空' })
-        return false
-      }
-      const userAvatar = this.$store.state.avatar
-        ? this.$store.state.avatar
-        : this.$store.state.blogInfo.webSite.touristAvatar
-      const userNickname = this.$store.state.nickname
-        ? this.$store.state.nickname
-        : '游客'
-      var message = {
-        avatar: userAvatar,
-        status: 1,
-        nickname: userNickname,
-        content: this.content,
-        time: Math.floor(Math.random() * (10 - 7)) + 7
-      }
-      this.barrageList.push(message)
-      this.content = ''
-      addMessage(message)
-      const TIME_COUNT = 30
-      if (!this.timer) {
-        this.count = TIME_COUNT
-        this.timer = setInterval(() => {
-          if (this.count > 0 && this.count <= 30) {
-            this.count--
-          } else {
-            clearInterval(this.timer)
-            this.timer = null
-          }
-        }, 1000)
-      }
-    },
-    listMessage () {
-      listMessage().then(res => {
-        this.barrageList = res.data
-      })
-    }
-  },
-  computed: {
-    cover () {
-      var cover = ''
-      this.$store.state.blogInfo.pageList.forEach(item => {
-        if (item.pageLabel == 'message') {
-          cover = item.pageCover
-        }
-      })
-      return 'background: url(' + cover + ') center center / cover no-repeat'
-    }
   }
+  // methods: {
+  //   addToList () {
+  //     if (this.count) {
+  //       this.$toast({ type: 'error', message: '30秒后才能再次留言' })
+  //       return false
+  //     }
+  //     if (this.content.trim() === '') {
+  //       this.$toast({ type: 'error', message: '留言不能为空' })
+  //       return false
+  //     }
+  //     const userAvatar = this.$store.state.avatar
+  //       ? this.$store.state.avatar
+  //       : this.$store.state.blogInfo.webSite.touristAvatar
+  //     const userNickname = this.$store.state.nickname
+  //       ? this.$store.state.nickname
+  //       : '游客'
+  //     var message = {
+  //       avatar: userAvatar,
+  //       status: 1,
+  //       nickname: userNickname,
+  //       content: this.content,
+  //       time: Math.floor(Math.random() * (10 - 7)) + 7
+  //     }
+  //     this.barrageList.push(message)
+  //     this.content = ''
+  //     addMessage(message)
+  //     const TIME_COUNT = 30
+  //     if (!this.timer) {
+  //       this.count = TIME_COUNT
+  //       this.timer = setInterval(() => {
+  //         if (this.count > 0 && this.count <= 30) {
+  //           this.count--
+  //         } else {
+  //           clearInterval(this.timer)
+  //           this.timer = null
+  //         }
+  //       }, 1000)
+  //     }
+  //   },
+  //   listMessage () {
+  //     listMessage().then(res => {
+  //       this.barrageList = res.data
+  //     })
+  //   }
+  // },
+  // computed: {
+  //   cover () {
+  //     var cover = ''
+  //     this.$store.state.blogInfo.pageList.forEach(item => {
+  //       if (item.pageLabel == 'message') {
+  //         cover = item.pageCover
+  //       }
+  //     })
+  //     return 'background: url(' + cover + ') center center / cover no-repeat'
+  //   }
+  // }
 }
 </script>
 

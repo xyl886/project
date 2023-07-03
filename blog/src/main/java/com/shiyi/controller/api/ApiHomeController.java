@@ -1,7 +1,7 @@
 package com.shiyi.controller.api;
 
 
-import com.shiyi.common.ResponseResult;
+import com.shiyi.common.Result;
 import com.shiyi.service.impl.HomeServiceImpl;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -28,14 +28,14 @@ public class ApiHomeController {
 
 
     @RequestMapping(value = "/webSiteInfo",method = RequestMethod.GET)
-    @ApiOperation(value = "网站信息", httpMethod = "GET", response = ResponseResult.class, notes = "网站信息")
-    public ResponseResult webSiteInfo(){
+    @ApiOperation(value = "网站信息", httpMethod = "GET", response = Result.class, notes = "网站信息")
+    public Result webSiteInfo(){
         return homeService.webSiteInfo();
     }
 
     @RequestMapping(value = "/report",method = RequestMethod.GET)
-    @ApiOperation(value = "增加访问量", httpMethod = "GET", response = ResponseResult.class, notes = "增加访问量")
-    public ResponseResult report(HttpServletRequest request){
+    @ApiOperation(value = "增加访问量", httpMethod = "GET", response = Result.class, notes = "增加访问量")
+    public Result report(HttpServletRequest request){
         return homeService.report(request);
     }
 }

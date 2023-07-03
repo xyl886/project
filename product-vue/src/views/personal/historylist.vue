@@ -57,6 +57,7 @@
               <el-row type="flex" justify="space-between">
                 <el-col :span="3" style="cursor: pointer;" v-show="item.postCoverPath != null">
                   <el-image
+                    @click="detailFun(item.posts)"
                     style="width: 118px; height: 74px; border-radius: 4px"
                     fit="cover"
                     :src="item.postCoverPath"
@@ -67,8 +68,8 @@
                   <div class="user">
                     <el-image :src="item.avatar" style="cursor: pointer;width: 25px;height: 25px;border-radius: 50%;">
                     </el-image>
-                    <span class="userName">{{ item.nickname }}|
-                    </span><span style="margin-left: 4px">{{item.schoolName}}</span>
+                  <span class="userName">{{ item.nickname }}|
+                    </span><div style="margin: 4px;font-size: 12px;text-align: center;color: rgba(0,0,0,0.45)">{{item.schoolName}}</div>
                   </div>
                 </el-col>
                 <el-col :span="1">
@@ -96,10 +97,10 @@
                 <el-col :span="16">
                   <h3 class="title" :key="item.id" style="cursor: pointer;" @click="detailFun(item.posts)">{{ item.postTitle}}</h3>
                   <div class="user">
-                    <el-image :src="item.avatar" style="cursor: pointer;width: 25px;height: 25px;border-radius: 50%;">
+                    <el-image  @click="detailFun(item.posts)" :src="item.avatar" style="cursor: pointer;width: 25px;height: 25px;border-radius: 50%;">
                     </el-image>
                     <span class="userName">{{ item.nickname }}|
-                    </span><span style="margin-left: 4px">{{item.schoolName}}</span>
+                    </span><span style="font-size: 12px;text-align: center;color: rgba(0,0,0,0.45)">{{item.schoolName}}</span>
                   </div>
                 </el-col>
                 <el-col :span="1">
@@ -151,7 +152,6 @@
 import { MessageBox } from 'element-ui'
 import {del, getPage} from '../../api/history'
 import {setStore} from '../../utils/store'
-import dayjs from 'dayjs'
 import {formatDate} from '../../utils/date'
 
 export default {
@@ -230,21 +230,6 @@ export default {
     handleClear () {
       // 点击清除按钮触发
       this.searchText = ''
-    },
-    formatDate (date) {
-      const currentDate = dayjs()
-      const targetDate = dayjs(date)
-      if (currentDate.diff(targetDate, 'minute') < 1) {
-        return targetDate.format('刚刚')
-      } else if (currentDate.day() === targetDate.day()) {
-        return targetDate.format('今天 HH:mm')
-      } else if (currentDate.diff(targetDate, 'day') === 1) {
-        return targetDate.format('昨天 HH:mm')
-      } else if (currentDate.year() === targetDate.year()) {
-        return targetDate.format('M-D')
-      } else {
-        return targetDate.format('YYYY-M-D')
-      }
     },
     getList () {
       this.loading = true
@@ -456,7 +441,7 @@ h3{
   color:  #0b94c4;
 }
 .user span {
-  color: #999aaa;
+  color: rgba(0, 0, 0, 0.85);
   margin-left: 5px;
   font-size: 14px;
   line-height: 25px;
@@ -513,7 +498,7 @@ h3{
 }
 .userName{
   font-size: 12px;
-  color: #6d757a;
+  color: #000000;
   cursor: pointer;
 }
 .title:hover,.userName:hover{

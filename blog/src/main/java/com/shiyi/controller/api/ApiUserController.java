@@ -2,7 +2,7 @@ package com.shiyi.controller.api;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import com.shiyi.annotation.BusinessLogger;
-import com.shiyi.common.ResponseResult;
+import com.shiyi.common.Result;
 import com.shiyi.service.UserAuthService;
 import com.shiyi.dto.EmailLoginDTO;
 import com.shiyi.dto.EmailRegisterDTO;
@@ -27,58 +27,58 @@ public class ApiUserController {
     private final UserAuthService userAuthService;
 
     @RequestMapping(value = "/emailLogin",method = RequestMethod.POST)
-    @ApiOperation(value = "邮箱登录", httpMethod = "POST", response = ResponseResult.class, notes = "邮箱登录")
-    public ResponseResult emailLogin(@Valid @RequestBody EmailLoginDTO emailLoginDTO){
+    @ApiOperation(value = "邮箱登录", httpMethod = "POST", response = Result.class, notes = "邮箱登录")
+    public Result emailLogin(@Valid @RequestBody EmailLoginDTO emailLoginDTO){
         return userAuthService.emailLogin(emailLoginDTO);
     }
 
     @RequestMapping(value = "/emailRegister",method = RequestMethod.POST)
-    @ApiOperation(value = "邮箱账号注册", httpMethod = "POST", response = ResponseResult.class, notes = "邮箱账号注册")
-    public ResponseResult emailRegister(@Valid @RequestBody EmailRegisterDTO emailRegisterDTO){
+    @ApiOperation(value = "邮箱账号注册", httpMethod = "POST", response = Result.class, notes = "邮箱账号注册")
+    public Result emailRegister(@Valid @RequestBody EmailRegisterDTO emailRegisterDTO){
         return userAuthService.emailRegister(emailRegisterDTO);
     }
 
     @RequestMapping(value = "/updatePassword",method = RequestMethod.POST)
     @BusinessLogger(value = "个人中心模块-邮箱账号修改密码",type = "修改",desc = "邮箱账号修改密码")
-    public ResponseResult updatePassword(@Valid @RequestBody EmailRegisterDTO emailRegisterDTO){
+    public Result updatePassword(@Valid @RequestBody EmailRegisterDTO emailRegisterDTO){
         return userAuthService.updatePassword(emailRegisterDTO);
     }
 
     @RequestMapping(value = "/login",method = RequestMethod.POST)
-    @ApiOperation(value = "QQ登录", httpMethod = "POST", response = ResponseResult.class, notes = "QQ登录")
-    public ResponseResult login(@Valid @RequestBody QQLoginDTO qqLoginDTO){
+    @ApiOperation(value = "QQ登录", httpMethod = "POST", response = Result.class, notes = "QQ登录")
+    public Result login(@Valid @RequestBody QQLoginDTO qqLoginDTO){
         return userAuthService.qqLogin(qqLoginDTO);
     }
 
     @RequestMapping(value = "/gitEELogin",method = RequestMethod.GET)
-    @ApiOperation(value = "gitEE登录", httpMethod = "GET", response = ResponseResult.class, notes = "gitEE登录")
-    public ResponseResult gitEELogin(String code){
+    @ApiOperation(value = "gitEE登录", httpMethod = "GET", response = Result.class, notes = "gitEE登录")
+    public Result gitEELogin(String code){
         return userAuthService.giteeLogin(code);
     }
 
     @RequestMapping(value = "/weiboLogin",method = RequestMethod.GET)
-    @ApiOperation(value = "微博登录", httpMethod = "GET", response = ResponseResult.class, notes = "微博登录")
-    public ResponseResult weiboLogin(String code){
+    @ApiOperation(value = "微博登录", httpMethod = "GET", response = Result.class, notes = "微博登录")
+    public Result weiboLogin(String code){
         return userAuthService.weiboLogin(code);
     }
 
     @RequestMapping(value = "/sendEmailCode",method = RequestMethod.GET)
-    @ApiOperation(value = "发送邮箱验证码", httpMethod = "GET", response = ResponseResult.class, notes = "发送邮箱验证码")
-    public ResponseResult sendEmailCode(String email){
+    @ApiOperation(value = "发送邮箱验证码", httpMethod = "GET", response = Result.class, notes = "发送邮箱验证码")
+    public Result sendEmailCode(String email){
         return userAuthService.sendEmailCode(email);
     }
 
     @RequestMapping(value = "/bindEmail",method = RequestMethod.POST)
     @SaCheckLogin
     @BusinessLogger(value = "个人中心模块-绑定邮箱",type = "修改",desc = "绑定邮箱")
-    public ResponseResult bindEmail(@RequestBody UserAuthDTO vo){
+    public Result bindEmail(@RequestBody UserAuthDTO vo){
         return userAuthService.bindEmail(vo);
     }
 
     @BusinessLogger(value = "个人中心模块-修改用户信息",type = "修改",desc = "修改用户信息")
     @SaCheckLogin
     @RequestMapping(value = "/updateUser",method = RequestMethod.POST)
-    public ResponseResult updateUser(@RequestBody UserAuthDTO vo){
+    public Result updateUser(@RequestBody UserAuthDTO vo){
         return userAuthService.updateUser(vo);
     }
 }

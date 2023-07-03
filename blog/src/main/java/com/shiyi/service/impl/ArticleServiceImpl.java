@@ -36,7 +36,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
@@ -90,9 +89,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, BlogArticle> 
      * @return
      */
     @Override
-    public ResponseResult listArticle(Map<String,Object> map) {
+    public Result listArticle(Map<String,Object> map) {
         Page<ArticleListVO> data = baseMapper.selectArticle(new Page<>((Integer)map.get("pageNo"), (Integer)map.get("pageSize")),map);
-        return ResponseResult.success(data);
+        return Result.success(data);
     }
 
     /**
@@ -100,10 +99,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, BlogArticle> 
      * @return
      */
     @Override
-    public ResponseResult getArticleById(Long id) {
+    public Result getArticleById(Long id) {
         ArticleDTO articleDTO = baseMapper.selectPrimaryKey(id);
         articleDTO.setTags(tagsMapper.selectByArticleId(id));
-        return ResponseResult.success(articleDTO);
+        return Result.success(articleDTO);
     }
 
     /**
@@ -112,7 +111,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, BlogArticle> 
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult insertArticle(ArticleDTO article) {
+    public Result insertArticle(ArticleDTO article) {
         BlogArticle blogArticle = BeanCopyUtils.copyObject(article, BlogArticle.class);
         blogArticle.setUserId(StpUtil.getLoginIdAsLong());
         //添加分类
@@ -126,7 +125,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, BlogArticle> 
         if (insert > 0) {
             tagsMapper.saveArticleTags(blogArticle.getId(),tagList);
         }
-        return ResponseResult.success();
+        return Result.success();
     }
 
     /**
@@ -135,7 +134,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, BlogArticle> 
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult updateArticle(ArticleDTO article) {
+    public Result updateArticle(ArticleDTO article) {
         BlogArticle blogArticle = baseMapper.selectById(article.getId());
         if (ObjectUtil.isNull(blogArticle)) {
             throw new BusinessException(ARTICLE_NOT_EXIST.getDesc());
@@ -156,7 +155,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, BlogArticle> 
         //然后新增标签
         tagsMapper.saveArticleTags(blogArticle.getId(),tagList);
 
-        return ResponseResult.success();
+        return Result.success();
     }
 
     /**
@@ -165,12 +164,12 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, BlogArticle> 
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult deleteArticle(Long id) {
+    public Result deleteArticle(Long id) {
         int row = baseMapper.deleteById(id);
         if (row > 0) {
             this.deleteAfter(Collections.singletonList(id));
         }
-        return ResponseResult.success();
+        return Result.success();
     }
 
     /**
@@ -180,12 +179,12 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, BlogArticle> 
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult deleteBatchArticle(List<Long> ids) {
+    public Result deleteBatchArticle(List<Long> ids) {
         int rows = baseMapper.deleteBatchIds(ids);
         if (rows > 0) {
             this.deleteAfter(ids);
         }
-        return ResponseResult.success();
+        return Result.success();
     }
 
     /**
@@ -194,9 +193,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, BlogArticle> 
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult putTopArticle(ArticleDTO article) {
+    public Result putTopArticle(ArticleDTO article) {
         baseMapper.putTopArticle(article);
-        return ResponseResult.success();
+        return Result.success();
     }
 
 
@@ -205,7 +204,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, BlogArticle> 
      * @return
      */
     @Override
-    public ResponseResult articleSeo(List<Long> ids) {
+    public Result articleSeo(List<Long> ids) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Host", "data.zz.baidu.com");
@@ -218,7 +217,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, BlogArticle> 
             HttpEntity<String> entity = new HttpEntity<>(url, headers);
             restTemplate.postForObject(baiduUrl, entity, String.class);
         });
-        return ResponseResult.success();
+        return Result.success();
     }
 
     /**
@@ -227,7 +226,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, BlogArticle> 
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult reptile(String url) {
+    public Result reptile(String url) {
         try {
             Document document = Jsoup.connect(url).get();
             Elements title  = document.getElementsByClass("title-article");
@@ -270,7 +269,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, BlogArticle> 
         } catch (IOException e) {
             throw new BusinessException(e);
         }
-        return ResponseResult.success();
+        return Result.success();
     }
 
     /**
@@ -279,17 +278,17 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, BlogArticle> 
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult publishAndShelf(ArticleDTO article) {
+    public Result publishAndShelf(ArticleDTO article) {
         baseMapper.publishAndShelf(article);
-        return ResponseResult.success();
+        return Result.success();
     }
 
     @Override
-    public ResponseResult randomImg() {
+    public Result randomImg() {
         //文章封面图片 由https://api.btstu.cn/该网站随机获取
         String result = restTemplate.getForObject(IMG_URL_API, String.class);
         Object imgUrl = JSON.parseObject(result).get("imgurl");
-        return ResponseResult.success(imgUrl);
+        return Result.success(imgUrl);
     }
 
     //    ----------web端方法开始-------
@@ -298,10 +297,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, BlogArticle> 
      * @return
      */
     @Override
-    public ResponseResult listWebArticle() {
+    public Result listWebArticle() {
         Page<ArticlePreviewVO> articlePreviewDTOPage = baseMapper.selectPreviewPage(new Page<>(PageUtils.getPageNo(), PageUtils.getPageSize()), PUBLISH.code,null,null);
         articlePreviewDTOPage.getRecords().forEach(item -> item.setTagVOList(tagsMapper.findByArticleIdToTags(item.getId())));
-        return ResponseResult.success(articlePreviewDTOPage);
+        return Result.success(articlePreviewDTOPage);
     }
 
     /**
@@ -309,7 +308,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, BlogArticle> 
      * @return
      */
     @Override
-    public ResponseResult webArticleInfo(Integer id) {
+    public Result webArticleInfo(Integer id) {
         ArticleInfoVO blogArticle = baseMapper.selectPrimaryKeyById(id);
         //标签
         List<TagVO> tags = tagsMapper.findByArticleIdToTags(blogArticle.getId());
@@ -351,7 +350,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, BlogArticle> 
         //增加文章阅读量
         threadPoolTaskExecutor.execute(() -> this.incr(id.longValue(),ARTICLE_READING));
 
-        return ResponseResult.success(blogArticle);
+        return Result.success(blogArticle);
     }
 
     /**
@@ -359,7 +358,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, BlogArticle> 
      * @return
      */
     @Override
-    public ResponseResult condition(Long categoryId, Long tagId, Integer pageSize) {
+    public Result condition(Long categoryId, Long tagId, Integer pageSize) {
         Map<String,Object> result = new HashMap<>();
         Page<ArticlePreviewVO>  blogArticlePage = baseMapper.selectPreviewPage(new Page<>(PageUtils.getPageNo(),pageSize),PUBLISH.getCode(),categoryId,tagId);
         blogArticlePage.getRecords().forEach(item -> {
@@ -376,7 +375,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, BlogArticle> 
         }
         result.put(SqlConf.NAME,name);
         result.put(RECORDS,blogArticlePage.getRecords());
-        return ResponseResult.success(result);
+        return Result.success(result);
     }
 
     /**
@@ -384,9 +383,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, BlogArticle> 
      * @return
      */
     @Override
-    public ResponseResult archive() {
+    public Result archive() {
         Page<ArticlePreviewVO> articlePage = baseMapper.selectArchivePage(new Page<>(PageUtils.getPageNo(), PageUtils.getPageSize()),PUBLISH.code);
-        return ResponseResult.success(articlePage);
+        return Result.success(articlePage);
     }
 
     /**
@@ -394,7 +393,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, BlogArticle> 
      * @return
      */
     @Override
-    public ResponseResult searchArticle(String keywords) {
+    public Result searchArticle(String keywords) {
         if (StringUtils.isBlank(keywords)) {
             throw new BusinessException(PARAMS_ILLEGAL.getDesc());
         }
@@ -403,7 +402,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, BlogArticle> 
         String strategy = SearchModelEnum.getStrategy(systemConfig.getSearchModel());
         //搜索逻辑
         List<ArticleSearchVO> articleSearchVOS = searchStrategyContext.executeSearchStrategy(strategy, keywords);
-        return ResponseResult.success(articleSearchVOS);
+        return Result.success(articleSearchVOS);
     }
 
     /**
@@ -412,7 +411,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, BlogArticle> 
      * @return
      */
     @Override
-    public ResponseResult articleLike(Integer articleId) {
+    public Result articleLike(Integer articleId) {
         // 判断是否点赞
         String articleLikeKey = ARTICLE_USER_LIKE + StpUtil.getLoginId();
         if (redisService.sIsMember(articleLikeKey, articleId)) {
@@ -426,7 +425,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, BlogArticle> 
             // 文章点赞量+1
             redisService.hIncr(ARTICLE_LIKE_COUNT, articleId.toString(), 1L);
         }
-        return ResponseResult.success();
+        return Result.success();
     }
 
     /**
@@ -434,7 +433,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, BlogArticle> 
      * @return
      */
     @Override
-    public ResponseResult checkSecret(String code) {
+    public Result checkSecret(String code) {
         //校验验证码
         String key = RedisConstants.WECHAT_CODE + code;
         Object redisCode = redisService.getCacheObject(key);
@@ -451,7 +450,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, BlogArticle> 
         redisService.setCacheList(CHECK_CODE_IP,cacheList);
         //通过删除验证码
         redisService.deleteObject(key);
-        return ResponseResult.success("验证成功");
+        return Result.success("验证成功");
     }
 
 

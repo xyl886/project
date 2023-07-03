@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.love.product.entity.base.BaseEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
+import lombok.experimental.Accessors;
 
 /**
  * @author Administrator
@@ -18,6 +19,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName(value ="follow")
+@Accessors(chain = true)
 public class Follow extends BaseEntity {
 
     @ApiModelProperty(value = "用户主键")

@@ -1,6 +1,6 @@
 package com.shiyi.service;
 
-import com.shiyi.common.ResponseResult;
+import com.shiyi.common.Result;
 import com.shiyi.entity.BlogArticle;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.shiyi.dto.ArticleDTO;
@@ -23,76 +23,76 @@ public interface ArticleService extends IService<BlogArticle> {
      * @param map 参数map
      * @return
      */
-    ResponseResult listArticle(Map<String,Object> map);
+    Result listArticle(Map<String,Object> map);
 
     /**
      * 后台根据主键获取文章详情
      * @param id 主键id
      * @return
      */
-    ResponseResult getArticleById(Long id);
+    Result getArticleById(Long id);
 
     /**
      * 添加文章
      * @param article 文章对象
      * @return
      */
-    ResponseResult insertArticle(ArticleDTO article);
+    Result insertArticle(ArticleDTO article);
 
     /**
      * 修改文章
      * @param article 文章对象
      * @return
      */
-    ResponseResult updateArticle(ArticleDTO article);
+    Result updateArticle(ArticleDTO article);
 
     /**
      * 后台根据文章id删除文章
      * @param id 文章id
      * @return
      */
-    ResponseResult deleteArticle(Long id);
+    Result deleteArticle(Long id);
 
     /**
      * 后台批量删除文章
      * @param ids 文章id集合
      * @return
      */
-    ResponseResult deleteBatchArticle(List<Long> ids);
+    Result deleteBatchArticle(List<Long> ids);
 
     /**
      * 置顶文章
      * @param article 文章对象
      * @return
      */
-    ResponseResult putTopArticle(ArticleDTO article);
+    Result putTopArticle(ArticleDTO article);
 
     /**
      * 发布或下架文章
      * @param article 文章对象
      * @return
      */
-    ResponseResult publishAndShelf(ArticleDTO article);
+    Result publishAndShelf(ArticleDTO article);
 
     /**
      * 百度seo
      * @param ids 文章id集合
      * @return
      */
-    ResponseResult articleSeo(List<Long> ids);
+    Result articleSeo(List<Long> ids);
 
     /**
      * 爬取文章
      * @param url 文章地址
      * @return
      */
-    ResponseResult reptile(String url);
+    Result reptile(String url);
 
     /**
      * 随机获取图片
      * @return
      */
-    ResponseResult randomImg();
+    Result randomImg();
 
 
 
@@ -103,14 +103,14 @@ public interface ArticleService extends IService<BlogArticle> {
      * 首页分页获取文章
      * @return
      */
-    ResponseResult listWebArticle();
+    Result listWebArticle();
 
     /**
      * 首页获取文章详情
      * @param id 文章id
      * @return
      */
-    ResponseResult webArticleInfo(Integer id);
+    Result webArticleInfo(Integer id);
 
     /**
      * 根据分类id或标签id获取文章
@@ -119,32 +119,32 @@ public interface ArticleService extends IService<BlogArticle> {
      * @param pageSize 每页数量
      * @return
      */
-    ResponseResult condition(Long categoryId, Long tagId, Integer pageSize);
+    Result condition(Long categoryId, Long tagId, Integer pageSize);
 
     /**
      * 校验秘钥
      * @param code 验证码
      * @return
      */
-    ResponseResult checkSecret(String code);
+    Result checkSecret(String code);
 
     /**
      * 文章归档
      * @return
      */
-    ResponseResult archive();
+    Result archive();
 
     /**
      * 搜索文章
      * @param keywords 搜索关键词
      * @return
      */
-    ResponseResult searchArticle(String keywords);
+    Result searchArticle(String keywords);
 
     /**
      * 文章点赞
      * @param articleId 文章id
      * @return
      */
-    ResponseResult articleLike(Integer articleId);
+    Result articleLike(Integer articleId);
 }

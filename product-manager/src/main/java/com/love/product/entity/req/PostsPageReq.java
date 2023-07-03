@@ -1,12 +1,17 @@
 package com.love.product.entity.req;
 
+import cn.hutool.core.util.ObjectUtil;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.love.product.entity.base.PageQuery;
-import com.love.product.entity.vo.UserBasicInfoVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+import lombok.extern.slf4j.Slf4j;
+
+import java.io.Serializable;
 
 /**
  * @author Administrator
@@ -31,7 +36,10 @@ public class PostsPageReq extends PageQuery {
     @ApiModelProperty(value = "分类")
     private Integer school;
 
-    @ApiModelProperty(value = "用户基本信息")
-    private UserBasicInfoVO userBasicInfo;
+    @ApiModelProperty(value = "标题")
+    private String title;
 
+
+    @ApiModelProperty(value = "状态")
+    public Integer status;
 }

@@ -1,6 +1,6 @@
 package com.shiyi.service.impl;
 
-import com.shiyi.common.ResponseResult;
+import com.shiyi.common.Result;
 import com.shiyi.entity.Page;
 import com.shiyi.mapper.PageMapper;
 import com.shiyi.service.PageService;
@@ -26,9 +26,9 @@ public class PageServiceImpl extends ServiceImpl<PageMapper, Page> implements Pa
      * @return
      */
     @Override
-    public ResponseResult listPage() {
+    public Result listPage() {
         List<Page> pages = baseMapper.selectList(null);
-        return ResponseResult.success(pages);
+        return Result.success(pages);
     }
 
     /**
@@ -38,9 +38,9 @@ public class PageServiceImpl extends ServiceImpl<PageMapper, Page> implements Pa
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult insertPage(Page page) {
+    public Result insertPage(Page page) {
         int rows = baseMapper.insert(page);
-        return rows > 0 ? ResponseResult.success(page): ResponseResult.error("添加失败");
+        return rows > 0 ? Result.success(page): Result.error("添加失败");
     }
 
     /**
@@ -50,9 +50,9 @@ public class PageServiceImpl extends ServiceImpl<PageMapper, Page> implements Pa
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult updatePage(Page page) {
+    public Result updatePage(Page page) {
         int rows = baseMapper.updateById(page);
-        return rows > 0 ? ResponseResult.success(): ResponseResult.error("修改失败");
+        return rows > 0 ? Result.success(): Result.error("修改失败");
     }
 
     /**
@@ -62,8 +62,8 @@ public class PageServiceImpl extends ServiceImpl<PageMapper, Page> implements Pa
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult deletePageById(Long id) {
+    public Result deletePageById(Long id) {
         int rows = baseMapper.deleteById(id);
-        return rows > 0 ? ResponseResult.success(): ResponseResult.error("删除失败");
+        return rows > 0 ? Result.success(): Result.error("删除失败");
     }
 }

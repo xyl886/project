@@ -3,7 +3,7 @@ package com.shiyi.service.impl;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.shiyi.common.ResponseResult;
+import com.shiyi.common.Result;
 import com.shiyi.common.SqlConf;
 import com.shiyi.exception.BusinessException;
 import com.shiyi.vo.CategoryVO;
@@ -44,9 +44,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
      * @return
      */
     @Override
-    public ResponseResult listCategory(String name) {
+    public Result listCategory(String name) {
         Page<Category> categoryPage = baseMapper.selectCategory(new Page<>(PageUtils.getPageNo(), PageUtils.getPageSize()), name);
-        return ResponseResult.success(categoryPage);
+        return Result.success(categoryPage);
     }
 
     /**
@@ -55,9 +55,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
      * @return
      */
     @Override
-    public ResponseResult getCategoryById(Long id) {
+    public Result getCategoryById(Long id) {
         Category category = baseMapper.selectById(id);
-        return ResponseResult.success(category);
+        return Result.success(category);
     }
     /**
      * 添加分类
@@ -66,13 +66,13 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult insertCategory(Category category) {
+    public Result insertCategory(Category category) {
         Category vo = baseMapper.selectOne(new QueryWrapper<Category>().eq(SqlConf.NAME, category.getName()));
         if (ObjectUtil.isNull(vo)) {
             throw new BusinessException("该分类名称已存在!");
         }
         int rows = baseMapper.insert(category);
-        return rows > 0 ? ResponseResult.success(): ResponseResult.error("添加分类失败");
+        return rows > 0 ? Result.success(): Result.error("添加分类失败");
     }
 
     /**
@@ -82,13 +82,13 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult updateCategory(Category category) {
+    public Result updateCategory(Category category) {
         Category vo = baseMapper.selectOne(new QueryWrapper<Category>().eq(SqlConf.NAME, category.getName()));
         Assert.isTrue(!(vo != null && !vo.getId().equals(category.getId())),CATEGORY_IS_EXIST.getDesc());
 
         int rows = baseMapper.updateById(category);
 
-        return rows > 0 ? ResponseResult.success(): ResponseResult.error("修改分类失败");
+        return rows > 0 ? Result.success(): Result.error("修改分类失败");
     }
 
     /**
@@ -98,9 +98,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult deleteCategory(Long id) {
+    public Result deleteCategory(Long id) {
         int rows = baseMapper.deleteById(id);
-        return rows > 0 ? ResponseResult.success(): ResponseResult.error("删除分类失败");
+        return rows > 0 ? Result.success(): Result.error("删除分类失败");
     }
 
     /**
@@ -110,10 +110,10 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult deleteBatch(List<Category> list) {
+    public Result deleteBatch(List<Category> list) {
         List<Long> ids = list.stream().map(Category::getId).collect(Collectors.toList());
         int rows = baseMapper.deleteBatchIds(ids);
-        return rows > 0 ? ResponseResult.success(): ResponseResult.error("批量删除分类失败");
+        return rows > 0 ? Result.success(): Result.error("批量删除分类失败");
     }
 
     /**
@@ -122,7 +122,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult top(Long id) {
+    public Result top(Long id) {
         Category category = baseMapper.selectOne(new QueryWrapper<Category>().orderByDesc(SqlConf.SORT).last(LIMIT_ONE));
         Assert.isTrue(!category.getId().equals(id), CATEGORY_IS_TOP.getDesc());
 
@@ -130,7 +130,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
                 .sort(category.getSort() + 1).updateTime(DateUtils.getNowDate()).id(id).build();
         int rows = baseMapper.updateById(vo);
 
-        return rows > 0? ResponseResult.success(): ResponseResult.error("置顶失败");
+        return rows > 0? Result.success(): Result.error("置顶失败");
     }
 
     //-----------------web端方法开始-------------
@@ -140,8 +140,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
      * @return
      */
     @Override
-    public ResponseResult webList() {
+    public Result webList() {
         List<CategoryVO> categories = baseMapper.selectAll();
-        return ResponseResult.success(categories);
+        return Result.success(categories);
     }
 }

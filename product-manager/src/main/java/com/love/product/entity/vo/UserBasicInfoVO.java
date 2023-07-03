@@ -29,8 +29,23 @@ public class UserBasicInfoVO {
     @ApiModelProperty(value = "用户昵称")
     public String nickname;
 
+    @ApiModelProperty(value = "性别")
+    public Integer gender;
+
+    @ApiModelProperty(value = "性别名称")
+    public String genderText;
+
+    @ApiModelProperty(value = "关注数量")
+    public Integer followNum;
+
+    @ApiModelProperty(value = "粉丝数量")
+    public Integer fansNum;
+
     @ApiModelProperty(value = "头像")
     public String avatar;
+
+    @ApiModelProperty(value = "简介")
+    public String remark;
 
     @ApiModelProperty(value = "身份")
     public String role;

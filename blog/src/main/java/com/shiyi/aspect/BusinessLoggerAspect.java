@@ -1,7 +1,7 @@
 package com.shiyi.aspect;
 
 import com.shiyi.annotation.BusinessLogger;
-import com.shiyi.common.ResponseResult;
+import com.shiyi.common.Result;
 import com.shiyi.entity.UserLog;
 import com.shiyi.mapper.UserLogMapper;
 import com.shiyi.util.DateUtils;
@@ -49,7 +49,7 @@ public class BusinessLoggerAspect {
 
         try {
             // 日志收集
-            handle(joinPoint,(ResponseResult) result);
+            handle(joinPoint,(Result) result);
 
         } catch (Exception e) {
             logger.error("日志记录出错!", e);
@@ -63,7 +63,7 @@ public class BusinessLoggerAspect {
      * @param result  方法返回值
      * @throws Throwable
      */
-    public void handle(ProceedingJoinPoint  joinPoint, ResponseResult result) throws Throwable {
+    public void handle(ProceedingJoinPoint  joinPoint, Result result) throws Throwable {
         // 获取RequestAttributes
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         // 从获取RequestAttributes中获取HttpServletRequest的信息

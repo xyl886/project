@@ -109,7 +109,7 @@ public class AliUploadStrategyImpl implements FileUploadStrategy {
      * 删除文件 -- 阿里云OSS
      *
      * @param key   文件url
-     * @return      ResponseResult
+     * @return      Result
      */
     @Override
     public Boolean deleteFile(String ...key) {

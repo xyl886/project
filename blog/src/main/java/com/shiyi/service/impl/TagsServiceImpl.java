@@ -2,9 +2,9 @@ package com.shiyi.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.shiyi.common.Result;
 import com.shiyi.vo.TagVO;
 import com.shiyi.entity.Tags;
-import com.shiyi.common.ResponseResult;
 import com.shiyi.common.SqlConf;
 import com.shiyi.mapper.TagsMapper;
 import com.shiyi.service.TagsService;
@@ -34,9 +34,9 @@ public class TagsServiceImpl extends ServiceImpl<TagsMapper, Tags> implements Ta
      * @return
      */
     @Override
-    public ResponseResult listTags(String name) {
+    public Result listTags(String name) {
         Page<Tags> list = baseMapper.selectPageRecord(new Page<>(PageUtils.getPageNo(), PageUtils.getPageSize()),name);
-        return ResponseResult.success(list);
+        return Result.success(list);
     }
 
     /**
@@ -45,9 +45,9 @@ public class TagsServiceImpl extends ServiceImpl<TagsMapper, Tags> implements Ta
      * @return
      */
     @Override
-    public ResponseResult getTagsById(Long id) {
+    public Result getTagsById(Long id) {
         Tags tags = baseMapper.selectById(id);
-        return ResponseResult.success(tags);
+        return Result.success(tags);
     }
 
     /**
@@ -57,10 +57,10 @@ public class TagsServiceImpl extends ServiceImpl<TagsMapper, Tags> implements Ta
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult insertTag(Tags tags) {
+    public Result insertTag(Tags tags) {
         validateName(tags.getName());
         baseMapper.insert(tags);
-        return ResponseResult.success();
+        return Result.success();
     }
 
     /**
@@ -70,11 +70,11 @@ public class TagsServiceImpl extends ServiceImpl<TagsMapper, Tags> implements Ta
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult updateTag(Tags tags) {
+    public Result updateTag(Tags tags) {
         Tags entity = baseMapper.selectById(tags.getId());
         if (!entity.getName().equals(tags.getName())) validateName(tags.getName());
         baseMapper.updateById(tags);
-        return ResponseResult.success();
+        return Result.success();
     }
 
     /**
@@ -84,9 +84,9 @@ public class TagsServiceImpl extends ServiceImpl<TagsMapper, Tags> implements Ta
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult deleteById(Long id) {
+    public Result deleteById(Long id) {
         baseMapper.deleteById(id);
-        return ResponseResult.success();
+        return Result.success();
     }
 
     /**
@@ -96,9 +96,9 @@ public class TagsServiceImpl extends ServiceImpl<TagsMapper, Tags> implements Ta
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult deleteBatch(List<Long> ids) {
+    public Result deleteBatch(List<Long> ids) {
         baseMapper.deleteBatchIds(ids);
-        return ResponseResult.success();
+        return Result.success();
     }
 
     /**
@@ -108,13 +108,13 @@ public class TagsServiceImpl extends ServiceImpl<TagsMapper, Tags> implements Ta
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult top(Long id) {
+    public Result top(Long id) {
         Tags tags = baseMapper.selectOne(new QueryWrapper<Tags>()
                 .last(LIMIT_ONE).orderByDesc(SqlConf.SORT));
         Assert.isTrue(!tags.getId().equals(id),"改标签已在最顶端!");
         Tags entity = Tags.builder().id(id).sort(tags.getSort()+1).build();
         int rows = baseMapper.updateById(entity);
-        return rows > 0 ? ResponseResult.success(): ResponseResult.error();
+        return rows > 0 ? Result.success(): Result.error();
     }
 
 
@@ -124,9 +124,9 @@ public class TagsServiceImpl extends ServiceImpl<TagsMapper, Tags> implements Ta
      * @return
      */
     @Override
-    public ResponseResult webList() {
+    public Result webList() {
         List<TagVO> list = baseMapper.selectAll();
-        return ResponseResult.success(list);
+        return Result.success(list);
     }
 
     //-----------自定义方法开始------------

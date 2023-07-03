@@ -4,7 +4,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.shiyi.common.ResponseResult;
+import com.shiyi.common.Result;
 import com.shiyi.common.SqlConf;
 import com.shiyi.entity.Role;
 import com.shiyi.mapper.RoleMapper;
@@ -27,10 +27,10 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
      * @return
      */
     @Override
-    public ResponseResult listRole(String name) {
+    public Result listRole(String name) {
         Page<Role> data = baseMapper.selectPage(new Page<>(PageUtils.getPageNo(), PageUtils.getPageSize()), new QueryWrapper<Role>()
                 .like(StringUtils.isNotBlank(name),SqlConf.NAME,name));
-        return ResponseResult.success(data);
+        return Result.success(data);
     }
 
     /**
@@ -40,10 +40,10 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult insertRole(Role role) {
+    public Result insertRole(Role role) {
         baseMapper.insert(role);
         baseMapper.insertBatchByRole(role.getMenus(), role.getId());
-        return ResponseResult.success();
+        return Result.success();
     }
 
     /**
@@ -53,13 +53,13 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult updateRole(Role role) {
+    public Result updateRole(Role role) {
         baseMapper.updateById(role);
 
         //先删所有权限在新增
         baseMapper.delByRoleId(role.getId(),null);
         baseMapper.insertBatchByRole(role.getMenus(), role.getId());
-        return ResponseResult.success("修改成功");
+        return Result.success("修改成功");
     }
 
     /**
@@ -69,10 +69,10 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult deleteBatch(List<Integer> ids) {
+    public Result deleteBatch(List<Integer> ids) {
         baseMapper.deleteBatchIds(ids);
         ids.forEach(id -> baseMapper.delByRoleId(id, null));
-        return ResponseResult.success();
+        return Result.success();
     }
 
     /**
@@ -81,10 +81,10 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
      * @return
      */
     @Override
-    public ResponseResult getCurrentUserRole() {
+    public Result getCurrentUserRole() {
         Integer roleId = baseMapper.queryByUserId(StpUtil.getLoginId());
         List<Integer> list = baseMapper.queryByRoleMenu(roleId);
-        return ResponseResult.success(list);
+        return Result.success(list);
     }
 
     /**
@@ -93,8 +93,8 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
      * @return
      */
     @Override
-    public ResponseResult selectById(Integer roleId) {
+    public Result selectById(Integer roleId) {
         List<Integer> list = baseMapper.queryByRoleMenu(roleId);
-        return ResponseResult.success(list);
+        return Result.success(list);
     }
 }

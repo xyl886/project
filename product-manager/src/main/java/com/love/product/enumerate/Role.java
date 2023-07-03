@@ -14,7 +14,7 @@ import lombok.Getter;
 public enum Role {
     VISITOR(0,"游客"),
     STUDENT(1,"学生"),
-    MANAGE(2,"管理"),
+    MANAGER(2,"管理员"),
             ;
     /**
      * 枚举值
@@ -30,7 +30,7 @@ public enum Role {
     public static Role valueOf(Integer value) {
         if (value != null) {
             for (Role item : Role.values()) {
-                if (value == item.value) {
+                if (value.equals(item.value)) {
                     return item;
                 }
             }

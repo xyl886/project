@@ -1,7 +1,7 @@
 package com.shiyi.service;
 
+import com.shiyi.common.Result;
 import com.shiyi.entity.Job;
-import com.shiyi.common.ResponseResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.shiyi.enums.TaskException;
 import org.quartz.SchedulerException;
@@ -18,22 +18,22 @@ import java.util.List;
  */
 public interface JobService extends IService<Job> {
 
-    ResponseResult listJob(String jobName, String jobGroup, String status);
+    Result listJob(String jobName, String jobGroup, String status);
 
-    ResponseResult getJobById(Long jobId);
+    Result getJobById(Long jobId);
 
-    ResponseResult insertJob(Job job) throws SchedulerException, TaskException;
+    Result insertJob(Job job) throws SchedulerException, TaskException;
 
-    ResponseResult updateJob(Job job) throws SchedulerException, TaskException;
+    Result updateJob(Job job) throws SchedulerException, TaskException;
 
-    ResponseResult deleteJob(Long jobId) throws SchedulerException;
+    Result deleteJob(Long jobId) throws SchedulerException;
 
-    ResponseResult deleteBatch(List<Long> ids);
+    Result deleteBatch(List<Long> ids);
 
-    ResponseResult pauseJob(Job job) throws SchedulerException ;
+    Result pauseJob(Job job) throws SchedulerException ;
 
-    ResponseResult run(Job job);
+    Result run(Job job);
 
-    ResponseResult changeStatus(Job job) throws SchedulerException;
+    Result changeStatus(Job job) throws SchedulerException;
 
 }

@@ -43,7 +43,12 @@ public enum YesOrNo {
     public void setText(String text) {
         this.text = text;
     }
-
+    public static YesOrNo fromValue(Integer value) {
+        if (value == null) {
+            return null;
+        }
+        return value == 1 ? YesOrNo.YES : YesOrNo.NO;
+    }
     public static YesOrNo valueOf(int value) {
         for (YesOrNo item : YesOrNo.values()) {
             if (value == item.value) {

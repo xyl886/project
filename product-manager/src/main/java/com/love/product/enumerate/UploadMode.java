@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum UploadModeEnum {
+public enum UploadMode {
 
     OSS("oss", "ossUploadStrategyImpl"),
 
@@ -16,7 +16,7 @@ public enum UploadModeEnum {
     private final String strategy;
 
     public static String getStrategy(String mode) {
-        for (UploadModeEnum value : UploadModeEnum.values()) {
+        for (UploadMode value : UploadMode.values()) {
             if (value.getMode().equals(mode)) {
                 return value.getStrategy();
             }

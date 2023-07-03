@@ -2,7 +2,7 @@ package com.shiyi.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.shiyi.common.ResponseResult;
+import com.shiyi.common.Result;
 import com.shiyi.entity.SystemConfig;
 import com.shiyi.entity.User;
 import com.shiyi.mapper.SystemConfigMapper;
@@ -38,13 +38,13 @@ public class SystemConfigServiceImpl extends ServiceImpl<SystemConfigMapper, Sys
      * @return
      */
     @Override
-    public ResponseResult getConfig() {
+    public Result getConfig() {
         QueryWrapper<SystemConfig> queryWrapper = new QueryWrapper<>();
         User user = userService.getById(StpUtil.getLoginIdAsInt());
         if (user.getRoleId() > USER_ROLE_ID) queryWrapper.orderByDesc(ID);
         queryWrapper.last(LIMIT_ONE);
         SystemConfig systemConfig = baseMapper.selectOne(queryWrapper);
-        return ResponseResult.success(systemConfig);
+        return Result.success(systemConfig);
     }
 
     /**
@@ -54,9 +54,9 @@ public class SystemConfigServiceImpl extends ServiceImpl<SystemConfigMapper, Sys
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult updateConfig(SystemConfig systemConfig) {
+    public Result updateConfig(SystemConfig systemConfig) {
         baseMapper.updateById(systemConfig);
-        return ResponseResult.success();
+        return Result.success();
     }
 
     //---------自定义方法----------

@@ -3,8 +3,8 @@ package com.shiyi.controller.system;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import com.shiyi.common.Result;
 import com.shiyi.service.JobLogService;
-import com.shiyi.common.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -30,23 +30,23 @@ public class JobLogController {
 
     @GetMapping(value = "/list")
     @SaCheckLogin
-    @ApiOperation(value = "定时任务日志列表", httpMethod = "GET", response = ResponseResult.class, notes = "定时任务日志列表")
-    public ResponseResult list(String jobName, String jobGroup, String status, String startTime,
-                                String endTime, Long jobId) {
+    @ApiOperation(value = "定时任务日志列表", httpMethod = "GET", response = Result.class, notes = "定时任务日志列表")
+    public Result list(String jobName, String jobGroup, String status, String startTime,
+                       String endTime, Long jobId) {
         return jobLogService.listJobLog(jobName,jobGroup,status,startTime,endTime,jobId);
     }
 
     @PostMapping(value = "/deleteBatch")
     @SaCheckPermission("/system/jobLog/deleteBatch")
-    @ApiOperation(value = "批量删除日志列表", httpMethod = "POST", response = ResponseResult.class, notes = "批量删除日志列表")
-    public ResponseResult deleteBatch(@RequestBody List<Long> ids) {
+    @ApiOperation(value = "批量删除日志列表", httpMethod = "POST", response = Result.class, notes = "批量删除日志列表")
+    public Result deleteBatch(@RequestBody List<Long> ids) {
         return jobLogService.deleteBatch(ids);
     }
 
     @GetMapping(value = "/clean")
     @SaCheckPermission("/system/jobLog/clean")
-    @ApiOperation(value = "清空日志列表", httpMethod = "GET", response = ResponseResult.class, notes = "清空日志列表")
-    public ResponseResult clean() {
+    @ApiOperation(value = "清空日志列表", httpMethod = "GET", response = Result.class, notes = "清空日志列表")
+    public Result clean() {
         return jobLogService.clean();
     }
 }

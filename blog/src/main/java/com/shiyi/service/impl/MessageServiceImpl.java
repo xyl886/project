@@ -3,7 +3,7 @@ package com.shiyi.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.shiyi.common.ResponseResult;
+import com.shiyi.common.Result;
 import com.shiyi.entity.Message;
 import com.shiyi.mapper.MessageMapper;
 import com.shiyi.service.MessageService;
@@ -42,11 +42,11 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
      * @return
      */
     @Override
-    public ResponseResult listMessage(String name) {
+    public Result listMessage(String name) {
         LambdaQueryWrapper<Message> queryWrapper = new QueryWrapper<Message>().lambda()
                 .like(StringUtils.isNotBlank(name),Message::getNickname,name).orderByDesc(Message::getCreateTime);
         Page<Message> list = baseMapper.selectPage(new Page<>(PageUtils.getPageNo(), PageUtils.getPageSize()),queryWrapper);
-        return ResponseResult.success(list);
+        return Result.success(list);
     }
 
     /**
@@ -56,10 +56,10 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult passBatch(List<Integer> ids) {
+    public Result passBatch(List<Integer> ids) {
         Assert.notEmpty(ids,PARAMS_ILLEGAL.getDesc());
         baseMapper.passBatch(ids);
-        return ResponseResult.success();
+        return Result.success();
     }
 
     /**
@@ -69,9 +69,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult deleteMessageById(int id) {
+    public Result deleteMessageById(int id) {
         baseMapper.deleteById(id);
-        return ResponseResult.success();
+        return Result.success();
     }
 
     /**
@@ -81,9 +81,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult deleteBatch(List<Integer> ids) {
+    public Result deleteBatch(List<Integer> ids) {
         int rows = baseMapper.deleteBatchIds(ids);
-        return rows > 0 ? ResponseResult.success(): ResponseResult.error("批量删除留言失败");
+        return rows > 0 ? Result.success(): Result.error("批量删除留言失败");
     }
 
 
@@ -94,12 +94,12 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
      * @return
      */
     @Override
-    public ResponseResult webMessage() {
+    public Result webMessage() {
         // 查询留言列表
         List<Message> messageList = baseMapper.selectList(new LambdaQueryWrapper<Message>()
                 .select(Message::getId, Message::getNickname, Message::getAvatar,
                         Message::getContent, Message::getTime));
-        return ResponseResult.success(messageList);
+        return Result.success(messageList);
     }
 
     /**
@@ -109,14 +109,14 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseResult webAddMessage(Message message) {
+    public Result webAddMessage(Message message) {
         // 获取用户ip
         String ipAddress = IpUtils.getIp(request);
         String ipSource = IpUtils.getCityInfo(ipAddress);
         message.setIpAddress(ipAddress);
         message.setIpSource(ipSource);
         baseMapper.insert(message);
-        return ResponseResult.success("留言成功");
+        return Result.success("留言成功");
     }
 
 

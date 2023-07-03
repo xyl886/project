@@ -1,6 +1,6 @@
 package com.shiyi.service;
 
-import com.shiyi.common.ResponseResult;
+import com.shiyi.common.Result;
 import com.shiyi.entity.ExceptionLog;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -16,7 +16,7 @@ import java.util.List;
  */
 public interface ExceptionLogService extends IService<ExceptionLog> {
 
-    ResponseResult listExceptionLog();
+    Result listExceptionLog();
 
-    ResponseResult deleteBatch(List<Long> ids);
+    Result deleteBatch(List<Long> ids);
 }

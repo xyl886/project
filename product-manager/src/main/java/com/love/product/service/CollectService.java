@@ -13,7 +13,7 @@ import com.love.product.entity.vo.CollectVO;
  */
 public interface CollectService extends IService<Collect> {
 
-    Result<?> add(Long userId,Long postsId,Integer deleted);
+    Result<?> add(Long userId, Integer deleted, Long... postsIds);
 
     Collect getDetail(Long userId, Long postsId);
 

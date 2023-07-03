@@ -1,15 +1,14 @@
 <template>
-  <div style="font-size: 14px;padding: 10px 0 0 20px;background-color: #ffffff;" v-loading="loading">
-    <!--    <div style="border-bottom: 1px solid #ccc;font-weight: bolder;font-size: 24px;line-height: 50px;">我的关注</div>-->
+  <div style="font-size: 14px;padding: 10px;background-color: #ffffff;" v-loading="loading">
     <div>
       <el-row style="padding: 20px 0">
         <el-col :span="2">
           <el-dropdown @command="handleCommand" style="top: 10px;position: relative;" >
-            <span class="el-dropdown-link">
+            <span class="el-dropdown-link" size="mini">
               {{ command }}
               <i class="el-icon-arrow-down el-icon--right"></i>
             </span>
-            <el-dropdown-menu slot="dropdown">
+            <el-dropdown-menu slot="dropdown" size="mini">
               <el-dropdown-item command="最多浏览">最多浏览</el-dropdown-item>
               <el-dropdown-item command="最新发布">最新发布</el-dropdown-item>
             </el-dropdown-menu>
@@ -27,6 +26,7 @@
           <!--              class="search-box-input"-->
           <!--              type="text"/>-->
           <el-select
+            size="mini"
             v-model="searchText"
             placeholder="请输入搜索内容"
             @input="handleInput"
@@ -43,57 +43,64 @@
           </el-select>
         </el-col>
         <el-col :span="2" style="margin-left: 15px">
-          <div @click="handleClear"><el-button>重置</el-button></div>
+          <div @click="handleClear"><el-button size="mini">重置</el-button></div>
         </el-col>
         <el-col :span="12">
-          <div><el-button type="primary">查询</el-button>
+          <div><el-button type="primary" size="mini">查询</el-button>
           </div>
         </el-col>
         <el-col :span="2">
-          <div><el-button type="primary">批量操作</el-button>
+          <div><el-button type="primary" size="mini">批量操作</el-button>
           </div>
         </el-col>
       </el-row>
     </div>
     <div class="collect-box" v-for="(item,index) in posts" :key="index">
-        <el-card :body-style="{ padding: '0px' }">
-          <div class="image-box" style="cursor: pointer;" @click="detailFun(item)">
+      <div class="collect-item" v-for="item2 in item" :key="item2.id">
+        <el-card v-if="item2" :body-style="{ padding: '0px' }">
+          <div class="image-box" style="cursor: pointer;" @click="detailFun(item2)">
             <div style="text-align: center;font-size: 25px;">
-              <el-image v-if="item.coverPath" :src="item.coverPath" class="collect-box-img">
-                <div slot="error" class="image-slot" style="padding:25%;">
+              <el-image v-if="item2.coverPath" :src="item2.coverPath" fit="cover" class="collect-box-img">
+                <div slot="error" class="image-slot" style="padding:50% 0;top: 20%;position: relative;">
                   <i class="el-icon-picture-outline"></i>
                 </div>
               </el-image>
             </div>
             <div class="video-info" style="font-size: 12px;">
-              <p style="position: relative;left: 15px;">浏览:{{item.browseNum}}</p>
-              <p style="position: relative;left: 15px;">收藏:{{item.collectNum}}</p>
-              <p style="position: relative;left: 15px;">{{item.userInfo.nickname}}</p>
-              <p style="position: relative;left: 15px;">发布于:{{item.createTime}}</p>
+              <p style="position: relative;left: 15px;">浏览:{{item2.browseNum}}</p>
+              <p style="position: relative;left: 15px;">收藏:{{item2.collectNum}}</p>
+              <p style="position: relative;left: 15px;">{{item2.userInfo.nickname}}</p>
+              <p style="position: relative;left: 15px;">发布于:{{item2.createTime}}</p>
             </div>
           </div>
-          <div class="collect-box-title" @click="detailFun(item)">{{item.title}}</div>
-          <div>
-            <span style="color: #999;">收藏于:{{item.createTime}}</span>
+          <div class="collect-box-title" @click="detailFun(item2)">{{item2.title}}</div>
+          <div style="padding: 5px">
+            <span style="color: #999;">发布于:{{item2.createTime}}</span>
             <el-dropdown style="float: right;">
               <span><i class="el-icon-more" style="padding: 5px;"></i></span>
               <el-dropdown-menu >
-                <el-dropdown-item @click.native="cancelCollect(item)">取消收藏</el-dropdown-item>
+                <el-dropdown-item @click.native="cancelCollect(item2)">删除</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </div>
         </el-card>
-        <div class="checkbox" v-if="isSelect" @click="Checkbox(item.id)">
+        <el-card v-else>
+          <el-image class="collect-box-img">
+            <div slot="error" class="image-slot" style="padding:50%;"></div>
+          </el-image>
+        </el-card>
+        <div class="checkbox" v-if="isSelect" @click="Checkbox(item2.id)">
                 <span style="display: inline-block;position: absolute;right: 5%;top: 5%;font-size: 25px;">
                    <i class="iconfont icon-xuanzhong" style="font-size: 25px"
-                      :style="selected.includes(item.id)?'color: #00a6ff':''"></i>
+                      :style="selected.includes(item2.id)?'color: #00a6ff':''"></i>
                 </span>
         </div>
+      </div>
     </div>
 
     <div v-if="posts.length === 0">
-      <el-empty description="您还没有发布过帖子哦！">
-        <el-button type="primary" @click.native="publish">发布帖子</el-button>
+      <el-empty description="空空如也！">
+        <el-button v-if="page.status===0" type="primary" @click.native="publish">发布帖子</el-button>
       </el-empty>
     </div>
     <div style="text-align: center;margin: 50px 0 30px 0;">
@@ -119,6 +126,7 @@ import {getPage} from '../../api/posts'
 import {MessageBox} from 'element-ui'
 import {setStore} from '../../utils/store'
 import {addCollect} from '../../api/collect'
+import {formatDate} from '../../utils/date'
 
 export default {
   name: '',
@@ -155,12 +163,12 @@ export default {
       posts: [],
       loading: false,
       page: {
-        pageTotal: 0,
         total: 0,
         pageSize: 10,
-        currentPage: 0,
+        currentPage: 1,
         postsType: null,
-        school: 7
+        school: 7,
+        status: null
       }
     }
   },
@@ -173,6 +181,19 @@ export default {
     this.getPageFun()
   },
   methods: {
+    init (status) {
+      this.page = {
+        total: 0,
+        pageSize: 10,
+        currentPage: 1,
+        postsType: null,
+        school: 7,
+        pageTotal: 0,
+        status: null
+      }
+      this.page.status = status
+      this.getPageFun()
+    },
     handleCommand (command) {
       this.command = command
     },
@@ -205,21 +226,32 @@ export default {
     getPageFun () {
       this.loading = true
       console.log(this.page.currentPage)
-      // this.page.currentPage++
+      this.posts = []
       console.log(this.page)
       getPage(this.page).then(res => {
         if (res.code === 200) {
-          if (this.page.currentPage === 1) {
-            this.posts = []
-            console.log('getPage:' + this.posts)
+          console.log(res.data)
+          let count = 0
+          let arr = []
+          for (let i = 0; i < res.data.length; i++) {
+            console.log(res.data[i].updateTime)
+            res.data[i].createTime = formatDate(res.data[i].createTime)
+            res.data[i].updateTime = formatDate(res.data[i].updateTime)
+            console.log(res.data[i].updateTime)
+            count++
+            if (count <= 5) {
+              arr.push(res.data[i])
+            }
+            if (count === 5 || i === (res.data.length - 1)) {
+              this.posts.push(arr)
+              console.log(this.posts)
+              arr = []
+              count = 0
+            }
           }
-          res.data.forEach(ele => {
-            ele['comment'] = false
-            ele['comments'] = []
-            this.posts.push(ele)
-          })
+          console.log(this.posts)
           this.page.total = res.dataTotal
-          this.page.pageTotal = res.pageTotal
+          // this.page.pageTotal = res.pageTotal
           this.loading = false
         } else {
           this.page.currentPage--
@@ -239,7 +271,7 @@ export default {
       })
     },
     cancelCollect (item) {
-      addCollect(item.id, '1').then(res => { // 每个单独地取消收藏
+      addCollect(item.id, '1').then(res => {
         if (res.code === 200) {
           this.getPageFun()
           this.$message.success(res.msg)
@@ -318,11 +350,8 @@ export default {
       }).catch(() => {})
     }
   },
-  // 生命周期 - 创建完成（可以访问当前this实例）
   created () {
-
-  },
-
+  }, // 生命周期 - 创建完成（可以访问当前this实例）
   beforeCreate () {
   }, // 生命周期 - 创建之前
   beforeMount () {
@@ -343,11 +372,14 @@ export default {
 @import '../../../static/iconfont/iconfont.css';
 .collect-box{
   display: flex;
+}
+.collect-item{
   width: calc(20% - 10px);
   margin: 5px;
   position: relative;
+  transition: .2s;
 }
-.collect-box:hover{
+.collect-item:hover{
   box-shadow: 1px 1px 10px rgba(0,0,0, 0.2);
   transform: translate(0px, 0px) scale(1.01) rotate(0deg);
 }
@@ -355,7 +387,8 @@ export default {
   color: #00a6ff;
 }
 .collect-box-img{
-  width: 100%;
+  height: 200px;
+  background-size: cover;
 }
 .collect-box-title{
   height: 40px;

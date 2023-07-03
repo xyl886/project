@@ -4,7 +4,9 @@ import dayjs from 'dayjs'
 export function formatDate (date) {
   const currentDate = dayjs()
   const targetDate = dayjs(date)
-  if (currentDate.day() === targetDate.day()) {
+  if (currentDate.diff(targetDate, 'minute') < 1) {
+    return targetDate.format('刚刚')
+  } else if (currentDate.day() === targetDate.day()) {
     return targetDate.format('今天 HH:mm')
   } else if (currentDate.diff(targetDate, 'day') <= 1) {
     return targetDate.format('昨天 HH:mm')

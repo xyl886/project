@@ -98,7 +98,7 @@ public class HomeServiceImpl {
      * redis监控
      * @return
      */
-    public ResponseResult getCacheInfo() {
+    public Result getCacheInfo() {
         RedisTemplate redisTemplate = redisService.getRedisTemplate();
         Properties info = (Properties) redisTemplate.execute((RedisCallback<Object>) connection -> connection.info());
         Properties commandStats = (Properties) redisTemplate.execute((RedisCallback<Object>) connection -> connection.info("commandstats"));
@@ -117,7 +117,7 @@ public class HomeServiceImpl {
             pieList.add(data);
         });
         result.put("commandStats", pieList);
-        return ResponseResult.success(result);
+        return Result.success(result);
     }
 
     //----------web端开始------------
@@ -125,7 +125,7 @@ public class HomeServiceImpl {
      * 获取站点信息
      * @return
      */
-    public ResponseResult webSiteInfo() {
+    public Result webSiteInfo() {
         //网站信息
         WebConfig webConfig = webConfigService.getOne(new LambdaQueryWrapper<WebConfig>()
                 .select(WebConfig::getAuthorAvatar,WebConfig::getIsMusicPlayer,WebConfig::getAuthorInfo,WebConfig::getTouristAvatar,WebConfig::getBulletin,
@@ -156,7 +156,7 @@ public class HomeServiceImpl {
         resultMap.put("pageList",pages);
         resultMap.put("webSite",webConfig);
         resultMap.put("count",map);
-        return ResponseResult.success(resultMap);
+        return Result.success(resultMap);
 
     }
 
@@ -165,7 +165,7 @@ public class HomeServiceImpl {
      * @param request
      * @return
      */
-    public ResponseResult report(HttpServletRequest request) {
+    public Result report(HttpServletRequest request) {
         // 获取ip
         String ipAddress = IpUtils.getIp(request);
         // 获取访问设备
@@ -192,7 +192,7 @@ public class HomeServiceImpl {
             // 保存唯一标识
             redisService.sAdd(RedisConstants.UNIQUE_VISITOR, md5);
         }
-        return ResponseResult.success();
+        return Result.success();
     }
 
 

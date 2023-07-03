@@ -1,6 +1,6 @@
 package com.shiyi.service;
 
-import com.shiyi.common.ResponseResult;
+import com.shiyi.common.Result;
 import com.shiyi.entity.FeedBack;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -16,11 +16,11 @@ import java.util.List;
  */
 public interface FeedBackService extends IService<FeedBack> {
 
-    ResponseResult listFeedBack(Integer type);
+    Result listFeedBack(Integer type);
 
-    ResponseResult deleteBatch(List<Integer> ids);
+    Result deleteBatch(List<Integer> ids);
 
 
-    ResponseResult insertFeedback(FeedBack feedBack);
+    Result insertFeedback(FeedBack feedBack);
 
 }

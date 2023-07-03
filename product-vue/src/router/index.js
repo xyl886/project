@@ -29,6 +29,16 @@ export const constantRoutes = [
     }]
   },
   {
+    path: '/messageBoard',
+    name: '留言板',
+    component: Index,
+    children: [{
+      path: '',
+      name: '留言板',
+      component: () => import('../views/message_borad/Index')
+    }]
+  },
+  {
     path: '/publish',
     name: '发布帖子',
     component: Index,
@@ -47,11 +57,6 @@ export const constantRoutes = [
     path: '/Article',
     name: '帖子详情',
     component: () => import('@/views/posts/Article')
-  },
-  {
-    path: '/personalpage',
-    name: '个人主页',
-    component: () => import('../views/home/PersonalPage')
   },
   {
     path: '/chat',
@@ -79,8 +84,8 @@ export const constantRoutes = [
       children: [
         {
           path: '/personal/my_post',
-          name: '个人资料',
-          component: () => import('@/views/personal/MyPost.vue')
+          name: '我的帖子',
+          component: () => import('@/views/personal/myPost/Index.vue')
         },
         {
           path: '/personal/user_info',

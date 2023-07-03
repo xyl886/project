@@ -4,7 +4,7 @@ package com.shiyi.controller.system;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.shiyi.annotation.OperationLogger;
-import com.shiyi.common.ResponseResult;
+import com.shiyi.common.Result;
 import com.shiyi.entity.WebConfig;
 import com.shiyi.service.WebConfigService;
 import io.swagger.annotations.Api;
@@ -30,16 +30,16 @@ public class WebConfigController {
 
     @GetMapping(value = "/list")
     @SaCheckLogin
-    @ApiOperation(value = "网站配置列表", httpMethod = "GET", response = ResponseResult.class, notes = "网站配置列表")
-    public ResponseResult list() {
+    @ApiOperation(value = "网站配置列表", httpMethod = "GET", response = Result.class, notes = "网站配置列表")
+    public Result list() {
         return webConfigService.listWebConfig();
     }
 
     @PostMapping(value = "/update")
     @SaCheckPermission("/system/webConfig/update")
-    @ApiOperation(value = "修改网站配置", httpMethod = "POST", response = ResponseResult.class, notes = "网站配置列表")
+    @ApiOperation(value = "修改网站配置", httpMethod = "POST", response = Result.class, notes = "网站配置列表")
     @OperationLogger(value = "修改网站配置")
-    public ResponseResult update(@RequestBody WebConfig webConfig) {
+    public Result update(@RequestBody WebConfig webConfig) {
         return webConfigService.updateWebConfig(webConfig);
     }
 }

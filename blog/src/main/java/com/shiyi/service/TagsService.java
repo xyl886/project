@@ -1,8 +1,8 @@
 package com.shiyi.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.shiyi.common.Result;
 import com.shiyi.entity.Tags;
-import com.shiyi.common.ResponseResult;
 
 import java.util.List;
 
@@ -16,22 +16,22 @@ import java.util.List;
  */
 public interface TagsService extends IService<Tags> {
 
-    ResponseResult listTags(String name);
+    Result listTags(String name);
 
-    ResponseResult insertTag(Tags tags);
+    Result insertTag(Tags tags);
 
-    ResponseResult updateTag(Tags tags);
+    Result updateTag(Tags tags);
 
-    ResponseResult deleteById(Long id);
+    Result deleteById(Long id);
 
-    ResponseResult deleteBatch(List<Long> ids);
+    Result deleteBatch(List<Long> ids);
 
-    ResponseResult getTagsById(Long id);
+    Result getTagsById(Long id);
 
-    ResponseResult top(Long id);
+    Result top(Long id);
 
 
     //    -----web端方法开始-----
-    ResponseResult webList();
+    Result webList();
 
 }

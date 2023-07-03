@@ -1,7 +1,7 @@
 package com.shiyi.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.shiyi.common.ResponseResult;
+import com.shiyi.common.Result;
 import com.shiyi.entity.User;
 
 import java.util.List;
@@ -14,23 +14,23 @@ import java.util.Map;
  */
 public interface UserService extends IService<User> {
 
-    ResponseResult listUser(String username, Integer loginType);
+    Result listUser(String username, Integer loginType);
 
-    ResponseResult getUserById(Integer id);
+    Result getUserById(Integer id);
 
-    ResponseResult insertUser(User user);
+    Result insertUser(User user);
 
-    ResponseResult updateUser(User user);
+    Result updateUser(User user);
 
-    ResponseResult deleteBatch(List<Integer> ids);
+    Result deleteBatch(List<Integer> ids);
 
-    ResponseResult getCurrentUserInfo();
+    Result getCurrentUserInfo();
 
-    ResponseResult getCurrentUserMenu();
+    Result getCurrentUserMenu();
 
-    ResponseResult updatePassword(Map<String, String> map);
+    Result updatePassword(Map<String, String> map);
 
-    ResponseResult listOnlineUsers(String keywords);
+    Result listOnlineUsers(String keywords);
 
-    ResponseResult kick(String token);
+    Result kick(String token);
 }

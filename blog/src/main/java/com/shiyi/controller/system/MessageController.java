@@ -4,7 +4,7 @@ package com.shiyi.controller.system;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.shiyi.annotation.OperationLogger;
-import com.shiyi.common.ResponseResult;
+import com.shiyi.common.Result;
 import com.shiyi.service.MessageService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -35,16 +35,16 @@ public class MessageController {
 
     @RequestMapping(value="/list",method = RequestMethod.GET)
     @SaCheckLogin
-    @ApiOperation(value = "留言列表", httpMethod = "GET", response = ResponseResult.class, notes = "留言列表")
-    public ResponseResult list(String name){
+    @ApiOperation(value = "留言列表", httpMethod = "GET", response = Result.class, notes = "留言列表")
+    public Result list(String name){
         return messageService.listMessage(name);
     }
 
     @RequestMapping(value="/passBatch",method = RequestMethod.POST)
     @SaCheckPermission("/system/message/passBatch")
     @OperationLogger(value = "批量通过")
-    @ApiOperation(value = "批量通过", httpMethod = "POST", response = ResponseResult.class, notes = "批量通过")
-    public ResponseResult passBatch(@RequestBody List<Integer> ids){
+    @ApiOperation(value = "批量通过", httpMethod = "POST", response = Result.class, notes = "批量通过")
+    public Result passBatch(@RequestBody List<Integer> ids){
         return messageService.passBatch(ids);
     }
 
@@ -52,8 +52,8 @@ public class MessageController {
     @RequestMapping(value = "/remove",method = RequestMethod.DELETE)
     @SaCheckPermission("/system/message/remove")
     @OperationLogger(value = "删除留言")
-    @ApiOperation(value = "删除留言", httpMethod = "DELETE", response = ResponseResult.class, notes = "删除留言")
-    public ResponseResult deleteMessageById(int id){
+    @ApiOperation(value = "删除留言", httpMethod = "DELETE", response = Result.class, notes = "删除留言")
+    public Result deleteMessageById(int id){
         return messageService.deleteMessageById(id);
     }
 
@@ -61,8 +61,8 @@ public class MessageController {
     @RequestMapping(value = "/deleteBatch",method = RequestMethod.DELETE)
     @SaCheckPermission("/system/message/deleteBatch")
     @OperationLogger(value = "批量删除留言")
-    @ApiOperation(value = "批量删除留言", httpMethod = "DELETE", response = ResponseResult.class, notes = "批量删除留言")
-    public ResponseResult deleteBatch(@RequestBody List<Integer> ids){
+    @ApiOperation(value = "批量删除留言", httpMethod = "DELETE", response = Result.class, notes = "批量删除留言")
+    public Result deleteBatch(@RequestBody List<Integer> ids){
         return messageService.deleteBatch(ids);
     }
 }

@@ -15,6 +15,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -68,7 +69,7 @@ public class PostsController {
             @ApiImplicitParam(name = "id", value = "帖子主键", required = true, dataType = "String", paramType = "query"),
     })
     @GetMapping("/browse")
-    public Result<?> browse(@RequestParam("userId") Long userId,@RequestParam("id") Long id) {
+    public Result<?> browse(@RequestParam(value = "userId",required = false) Long userId,@RequestParam("id") Long id) {
         return postsService.browse(userId,id);
     }
 
@@ -84,13 +85,8 @@ public class PostsController {
             @ApiImplicitParam(name = "removeFiles", value = "移除的图片列表", required = false, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "oldFiles", value = "图片列表", required = false, dataType = "String", paramType = "query")
     })
-    public Result<?> update(PostsVO postsVO) {
-          if(Objects.equals(JwtUtil.getUserId(), postsVO.getUserId())){
-              log.info(String.valueOf(postsVO));
+    public Result<?> update(@Validated PostsVO postsVO) {
               return postsService.update(postsVO);
-          }else {
-              return Result.fail("您无权操作!");
-          }
     }
     @ApiOperation(value = "搜索文章")
     @GetMapping("/articles/search")

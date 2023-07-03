@@ -46,6 +46,8 @@
 
 <script>
 
+import {addReport} from '../api/report'
+
 export default {
   name: 'Report',
   data () {

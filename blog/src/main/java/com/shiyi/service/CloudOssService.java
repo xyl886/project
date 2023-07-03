@@ -1,6 +1,6 @@
 package com.shiyi.service;
 
-import com.shiyi.common.ResponseResult;
+import com.shiyi.common.Result;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface CloudOssService {
@@ -9,12 +9,12 @@ public interface CloudOssService {
      * @param file 文件
      * @return
      */
-    ResponseResult upload(MultipartFile file);
+    Result upload(MultipartFile file);
 
     /**
      * 批量删除文件
      * @param key 文件名
      * @return
      */
-    ResponseResult delBatchFile(String ...key);
+    Result delBatchFile(String ...key);
 }

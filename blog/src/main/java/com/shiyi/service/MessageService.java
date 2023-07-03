@@ -1,6 +1,6 @@
 package com.shiyi.service;
 
-import com.shiyi.common.ResponseResult;
+import com.shiyi.common.Result;
 import com.shiyi.entity.Message;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -16,21 +16,21 @@ import java.util.List;
  */
 public interface MessageService extends IService<Message> {
 
-    ResponseResult listMessage(String name);
+    Result listMessage(String name);
 
-    ResponseResult deleteMessageById(int id);
+    Result deleteMessageById(int id);
 
-    ResponseResult passBatch(List<Integer> ids);
+    Result passBatch(List<Integer> ids);
 
-    ResponseResult deleteBatch(List<Integer> ids);
+    Result deleteBatch(List<Integer> ids);
 
 
 
 
     //    ------web端方法开始-----
-    ResponseResult webAddMessage(Message message);
+    Result webAddMessage(Message message);
 
-    ResponseResult webMessage();
+    Result webMessage();
 
 
 }

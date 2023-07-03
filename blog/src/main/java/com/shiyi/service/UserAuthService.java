@@ -1,6 +1,6 @@
 package com.shiyi.service;
 
-import com.shiyi.common.ResponseResult;
+import com.shiyi.common.Result;
 import com.shiyi.entity.UserAuth;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.shiyi.dto.EmailLoginDTO;
@@ -18,22 +18,22 @@ import com.shiyi.dto.UserAuthDTO;
  */
 public interface UserAuthService extends IService<UserAuth> {
 
-    ResponseResult emailRegister(EmailRegisterDTO emailRegisterDTO);
+    Result emailRegister(EmailRegisterDTO emailRegisterDTO);
 
-    ResponseResult updatePassword(EmailRegisterDTO emailRegisterDTO);
+    Result updatePassword(EmailRegisterDTO emailRegisterDTO);
 
-    ResponseResult emailLogin(EmailLoginDTO emailLoginDTO);
+    Result emailLogin(EmailLoginDTO emailLoginDTO);
 
-    ResponseResult qqLogin(QQLoginDTO qqLoginDTO);
+    Result qqLogin(QQLoginDTO qqLoginDTO);
 
-    ResponseResult weiboLogin(String code);
+    Result weiboLogin(String code);
 
-    ResponseResult giteeLogin(String code);
+    Result giteeLogin(String code);
 
-    ResponseResult sendEmailCode(String email);
+    Result sendEmailCode(String email);
 
-    ResponseResult bindEmail(UserAuthDTO vo);
+    Result bindEmail(UserAuthDTO vo);
 
-    ResponseResult updateUser(UserAuthDTO vo);
+    Result updateUser(UserAuthDTO vo);
 
 }

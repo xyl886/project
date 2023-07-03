@@ -14,6 +14,7 @@ import com.love.product.entity.vo.LoginVO;
 import com.love.product.entity.vo.RegisterVO;
 import com.love.product.enumerate.CodeType;
 import com.love.product.enumerate.Gender;
+import com.love.product.enumerate.Role;
 import com.love.product.enumerate.YesOrNo;
 import com.love.product.mapper.UserInfoMapper;
 import com.love.product.entity.dto.EmailDTO;
@@ -24,6 +25,7 @@ import com.love.product.service.RedisService;
 import com.love.product.service.UserInfoService;
 import com.love.product.util.CommonUtil;
 import com.love.product.util.EmailUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
@@ -80,7 +82,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
     /**
      * 发送邮箱验证码
-     *
+     * @param type
      * @param email
      * @return
      */
@@ -105,7 +107,11 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         }
         String code = getRandomCode();
         Map<String, Object> map = new HashMap<>();
-        map.put("content", "尊敬的用户"+email+"，您好:   您正在校园墙进行"+ CodeType.getType(type)+"操作，本次请求的邮件验证码是：" + code + "(为了保证您账号的安全性，请您在5分钟内完成设置)。本验证码5分钟内有效，请及时输入。 请不要告诉他人哦！");
+        log.info(code);
+        map.put("content", "尊敬的用户"+email+"，您好!<br><br>" +
+                "您正在校园墙进行<span style='font-weight:bold;'>" + CodeType.getType(type)+
+                "</span>操作，本次请求的邮件验证码是：<br><br><span style='font-weight:bold; font-size:25px;'>" + code +
+                "</span><br><br>本验证码5分钟内有效，为了保证您账号的安全性，请及时输入。请不要告诉他人哦！");
         EmailDTO emailDTO = EmailDTO.builder()
                 .email(email)
                 .subject("校园墙"+CodeType.getType(type)+CAPTCHA)
@@ -145,7 +151,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
                 }
             }else {
                 PasswordEncoder encoder = new BCryptPasswordEncoder();
-                boolean matches = encoder.matches(loginVO.password, userInfoVO.getPassword());
+                boolean matches = encoder.matches(loginVO.password, userInfoVO.password);
                 if (!matches) {
                     return Result.failMsg("账号或密码错误");
                 }
@@ -160,7 +166,6 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             }
             userInfoVO.setAccessToken(accessToken);
             userInfoVO.setEmail(loginVO.email);
-            userInfoVO.setPassword(loginVO.password);
             log.info(String.valueOf(userInfoVO));
 
             return Result.OK(userInfoVO);
@@ -210,6 +215,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         userInfoVO.setAvatar(fileUploadConfig.getDefaultAvatar());
         userInfoVO.setGender(Gender.DUNNO.getValue());
         userInfoVO.setStatus(YesOrNo.NO.getValue());
+        userInfoVO.setRole(Role.VISITOR.getValue());
         userInfoVO.setDeleted(YesOrNo.NO.getValue());
         userInfoVO.setCreateTime(now);
         userInfoVO.setUpdateTime(now);
@@ -223,7 +229,9 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     public Result<?> updatePwd(Long id, String currentPassword, String newPassword, String confirmPassword) {
         UserInfo userInfo = getById(id);
         if (userInfo != null) {
-            if (!currentPassword.equals(userInfo.getOriginalPassword())) {
+            PasswordEncoder encoder = new BCryptPasswordEncoder();
+            boolean matches = encoder.matches(currentPassword, userInfo.password);
+            if (!matches) {
                 return Result.failMsg("当前密码不正确！");
             }
             if (!newPassword.equals(confirmPassword)) {
@@ -360,9 +368,14 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         userInfos.forEach(item-> {
             UserInfoVO userInfoVO = new UserInfoVO();
             BeanUtil.copyProperties(item,userInfoVO);
+            Gender gender = Gender.valueOf(userInfoVO.getGender());
+            userInfoVO.setGenderText(gender.getText());
             userInfoVO.setAvatar(fileUploadService.getImgPath(userInfoVO.getAvatar()));
+            userInfoVO.setFollowNum(followService.getFollowNumByUserId(userInfoVO.getId()));
+            userInfoVO.setFansNum(followService.getFansNumByUserId(userInfoVO.getId()));
             userInfoVOMap.put(userInfoVO.getId(), userInfoVO);
         });
+        log.info(userInfoVOMap.toString());
         return userInfoVOMap;
     }
 
@@ -399,7 +412,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     }
 
     /**
-     * 获取用户详情
+     * 获取单个用户详情
      */
     @Override
     public Result<UserInfoVO> getUserInfoAndFansById(Long id) {

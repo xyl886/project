@@ -2,7 +2,7 @@ package com.shiyi.controller.system;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.stp.StpUtil;
-import com.shiyi.common.ResponseResult;
+import com.shiyi.common.Result;
 import com.shiyi.service.LoginService;
 import com.shiyi.dto.LoginDTO;
 import io.swagger.annotations.Api;
@@ -27,21 +27,21 @@ public class LoginController {
     private final LoginService loginService;
 
     @RequestMapping(value = "/captchaImage",method = RequestMethod.GET)
-    @ApiOperation(value = "获取验证码", httpMethod = "GET", response = ResponseResult.class, notes = "获取验证码")
-    public ResponseResult getCode(HttpServletResponse response) throws IOException {
+    @ApiOperation(value = "获取验证码", httpMethod = "GET", response = Result.class, notes = "获取验证码")
+    public Result getCode(HttpServletResponse response) throws IOException {
         Map<String,String> result = loginService.getCode(response);
-        return ResponseResult.success("获取验证码成功",result);
+        return Result.success("获取验证码成功",result);
     }
 
     @PostMapping("login")
-    public ResponseResult login(@Validated @RequestBody LoginDTO vo) {
+    public Result login(@Validated @RequestBody LoginDTO vo) {
         return loginService.login(vo);
     }
 
     @SaCheckLogin
     @GetMapping("logout")
-    public ResponseResult logout() {
+    public Result logout() {
         StpUtil.logout();
-        return ResponseResult.success("退出成功");
+        return Result.success("退出成功");
     }
 }

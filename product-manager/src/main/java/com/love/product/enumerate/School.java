@@ -26,7 +26,7 @@ public enum School {
     /**
      * 枚举值
      */
-    private final int value;
+    private final Integer value;
 
     /**
      * 枚举文本说明

@@ -1,21 +1,21 @@
 <template>
   <div class="body" v-loading="loading">
-    <div class="box" style="">
+    <div class="box">
       <div style="line-height: 50px;color: gray;">
         <span style="cursor: pointer;margin-left: 20px;" @click="backFun"><i class="el-icon-arrow-left"></i>返回</span>
       </div>
       <div style="float: right;margin-top: -25px;">
-        <el-dropdown>
+        <el-dropdown  v-if="userInfo.id === posts.userInfo.id">
           <div style="display: flex;">
                         <span style="margin-right: 20px;line-height: 20px;font-size: 22px;">
                           <i class="el-icon-more"></i>
                         </span>
           </div>
-          <el-dropdown-menu slot="dropdown">
+          <el-dropdown-menu
+            slot="dropdown">
             <el-button
               type="primary"
               icon="el-icon-edit-outline"
-              v-if="posts.userId === posts.userInfo.id"
               @click.native="edit(posts)">编辑</el-button>
             <el-dropdown-item icon="el-icon-delete" style="color:red;" @click.native="delMyPost(posts)">删除</el-dropdown-item>
           </el-dropdown-menu>
@@ -25,29 +25,34 @@
         <div style="margin-left: 50px;">
           <el-image :src="posts.userInfo.avatar" style="width: 60px;height: 60px;border-radius: 50%;"></el-image>
         </div>
-        <div style="margin-left: 10px;">
+        <div style="margin: 0 100px 0 0;">
           <div style="height: 20px;margin-bottom: 5px">
             {{posts.userInfo.nickname}}
             <el-tag size="small" v-if="userInfo.id === posts.userId" style="margin: 0 5px;">我自己</el-tag>
             <el-tag type="success" size="small">{{posts.userInfo.role}}</el-tag>
           </div>
           <div style="line-height: 40px;">
-            <el-button v-if="!posts.collect" type="primary" size="mini" @click="addCollectFun('0')"><i class="el-icon-star-off"></i> 收藏&nbsp;{{posts.collectNum}}</el-button>
-            <el-button v-if="posts.collect" type="info" plain size="mini" @click="addCollectFun('1')"><i class="el-icon-star-on"></i> 已收藏&nbsp;{{posts.collectNum}}</el-button>
-            <el-button v-if="!posts.follow && userInfo.id !== posts.userId" type="primary" size="mini" @click="addFollowFun('0')"><i class="el-icon-star-off"></i> 关注&nbsp;{{posts.followNum}}</el-button>
-            <el-button v-if="posts.follow && userInfo.id !== posts.userId" type="info" plain size="mini" @click="addFollowFun('1')"><i class="el-icon-star-on"></i> 已关注&nbsp;{{posts.followNum}}</el-button>
+            <el-button v-if="!posts.collect" type="primary" size="mini" @click="addCollectFun('0')"><i class="el-icon-star-off"></i> 收藏 {{posts.collectNum}}</el-button>
+            <el-button v-if="posts.collect" type="info" plain size="mini"
+                       @click="addCollectFun('1')"><i class="el-icon-star-on"></i> 已收藏 {{posts.collectNum}}</el-button>
+            <el-button v-if="!posts.follow && userInfo.id !== posts.userId" type="primary" size="mini" @click="addFollowFun('0')"><i class="el-icon-star-off"></i> 关注 {{posts.followNum}}</el-button>
+            <el-button v-if="posts.follow && userInfo.id !== posts.userId" type="info" plain size="mini" @click="addFollowFun('1')"><i class="el-icon-star-on"></i> 已关注 {{posts.followNum}}</el-button>
           </div>
         </div>
-        <div style="flex: 1;color: #606266;font-size: 12px;opacity: 0.6;">
-          <div style="text-align: right;margin-right: 20px;">{{posts.browseNum}}次浏览</div>
-          <div style="text-align: right;margin-right: 20px;">
-            <el-tag size="small">{{posts.schoolName}}</el-tag>| {{posts.createTime}} 发布
-          </div>
+        <div style="flex: 1;color: #606266;font-size: 12px;margin: 0 0 0 220px;">
+           <el-col :span="14">
+             <div style="font-size: 20px;font-weight: 700;">{{posts.title}}</div>
+           </el-col>
+           <el-col :span="10" style="opacity: 0.6;">
+             <div style="text-align: right;margin-right: 20px;">{{posts.browseNum}}次浏览</div>
+           <div style="text-align: right;margin-right: 20px;">
+             <el-tag size="small">{{posts.schoolName}}</el-tag>| {{posts.createTime}} 发布
+           </div>
+           </el-col>
         </div>
       </div>
-
       <div style="display: flex;margin: 20px;">
-        <div style="width: 50%;padding: 10px;">
+        <div style="width: 40%;padding: 10px;">
           <div style="width: 350px;height: 225px;text-align: center;border-radius: 10px;display:table-cell;vertical-align: middle;">
             <el-image :src="bigImgPath" :preview-src-list="posts.imgPath?posts.imgPath.split(','):[]" fit="contain" class="big-img"></el-image>
           </div>
@@ -55,24 +60,25 @@
             <el-image v-for="(item) in posts.imgPath?posts.imgPath.split(','):[]" :key="item" fit="contain" :src="item" @click="selImg(item)" style="width: 80px;height: 80px;border-radius: 5px;margin: 0 10px 10px 0;border: 1px solid #e5e5e5;box-sizing: border-box;" :class="bigImgPath===item?'sel-img':''"></el-image>
           </div>
         </div>
-        <div style="width: 45%;padding:10px;">
-          <div style="font-size: 20px;font-weight: 700;">{{posts.title}}</div>
+        <div style="width: 60%;padding:10px;overflow: scroll">
+<!--          <div style="font-size: 20px;font-weight: 700;">{{posts.title}}</div>-->
           <div class="my-content" style="height: 225px">
               <article
                 id="write"
                 class="article-content markdown-body"
                 v-html="posts.content"
                 ref="article"/>
-<!--              <el-input type="textarea" resize="none" :readonly="true" :autosize="{ minRows: 2, maxRows: 22}" v-model="posts.content"></el-input>-->
           </div>
-          <div class="posts-item-price" v-if="posts.postsType===1" style="color:#e9384d; display: block;margin: 10px;float: right;">
-          <span style="margin-right: 20px"> ¥{{posts.price}}</span>
+        </div>
+        <div style="position: absolute;bottom: 0;right: 100px;">
+          <div class="posts-item-price" v-if="posts.postsType===1 && userInfo.id !== posts.userInfo.id" style="color:#e9384d; display: block;margin: 10px;float: right;">
+            <span style="margin-right: 20px"> ¥{{posts.price}}</span>
             <el-button type="primary" @click="chat(userInfo.id)">想要</el-button>
           </div>
         </div>
       </div>
     </div>
-      <UpdateDialog ref="updateDialog" :Form="form"/>
+    <UpdateDialog ref="updateDialog" :Form="form"/>
   </div>
 </template>
 
@@ -116,9 +122,10 @@ export default {
     ])
   },
   mounted () {
-    let obj = getStore({
-      name: 'posts'
+    this.$on('postUpdate', () => {
+      this.getDetailFun() // 当帖子信息更新完后，重新获取数据
     })
+    let obj = getStore({name: 'posts'})
     console.log(obj)
     if (obj) {
       this.id = obj.id
@@ -147,9 +154,9 @@ export default {
       getDetail(this.id).then(res => {
         if (res.code === 200) {
           this.posts = res.data
-          console.log(this.posts.content)
+          console.log(this.posts)
           this.markdownToHtml(this.posts.content)
-          console.log(this.posts.content)
+          // console.log(this.posts.content)
           this.bigImgPath = res.data.coverPath
           // console.log(res.data)
           // console.log(this.bigImgPath)
@@ -170,20 +177,33 @@ export default {
           console.log(arr[file].substring(arr.lastIndexOf('/') + 1)) // 输出: pic1.jpg
           this.fileList.push({
             name: arr[file].substring(arr.lastIndexOf('/') + 1),
-            // raw: arr[file],
             url: arr[file]
           })
           console.log(this.fileList)
         }
       }
-      this.form = {
-        id: this.posts.id,
-        userId: this.posts.userInfo.id,
-        title: this.posts.title,
-        content: this.posts.content,
-        school: this.posts.school,
-        price: this.posts.price,
-        imageList: this.fileList
+      console.log(this.posts)
+      if (this.posts.postsType === '2') {
+        this.form = {
+          postsType: this.posts.postsType,
+          id: this.posts.id,
+          userId: this.posts.userInfo.id,
+          title: this.posts.title,
+          content: this.posts.content,
+          school: this.posts.school,
+          imageList: this.fileList
+        }
+      } else {
+        this.form = {
+          postsType: this.posts.postsType,
+          id: this.posts.id,
+          userId: this.posts.userInfo.id,
+          title: this.posts.title,
+          content: this.posts.content,
+          school: this.posts.school,
+          price: this.posts.price,
+          imageList: this.fileList
+        }
       }
       console.log(this.form)
     },
@@ -305,8 +325,8 @@ export default {
   }
   .box{
     font-size: 14px;
-    width: 65%;
-    height: 85%;
+    width: 90%;
+    height: 90%;
     background-color: #ffffff;
     border-radius: 10px;
     position:absolute; /*参照物是父容器*/

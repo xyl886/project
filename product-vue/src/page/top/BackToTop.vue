@@ -1,8 +1,9 @@
 <template>
   <transition :name="transitionName">
     <div v-show="visible" :style="customStyle" class="back-to-ceiling" @click="backToTop">
+<!--      <button class="rocket-button"></button>-->
       <svg width="16" height="16" viewBox="0 0 17 17" xmlns="http://www.w3.org/2000/svg" class="Icon Icon--backToTopArrow" aria-hidden="true" style="height:16px;width:16px"><path d="M12.036 15.59a1 1 0 0 1-.997.995H5.032a.996.996 0 0 1-.997-.996V8.584H1.03c-1.1 0-1.36-.633-.578-1.416L7.33.29a1.003 1.003 0 0 1 1.412 0l6.878 6.88c.782.78.523 1.415-.58 1.415h-3.004v7.004z" /></svg>
-    </div>
+     </div>
   </transition>
 </template>
 
@@ -26,7 +27,7 @@ export default {
           bottom: '50px',
           width: '40px',
           height: '40px',
-          'border-radius': '4px',
+          'border-radius': '10px',
           'line-height': '45px',
           background: '#e7eaf1'
         }
@@ -83,6 +84,40 @@ export default {
 </script>
 
 <style scoped>
+button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+button.rocket-button {
+  background-image: url("https://static.hdslb.com/bl2se/images/rocket_frame.png");
+  width: 150px;
+  height: 175px;
+  background-position-x: -600px;
+}
+
+.rocket-button:hover {
+  animation: fly 0.4s steps(1) infinite;
+}
+
+@keyframes fly {
+  0% {
+    background-position-x: 0;
+  }
+  25% {
+    background-position-x: -150px;
+  }
+  50% {
+    background-position-x: -300px;
+  }
+  75% {
+    background-position-x: -450px;
+  }
+  to {
+    background-position-x: -600px;
+  }
+}
 .back-to-ceiling {
   position: fixed;
   display: inline-block;

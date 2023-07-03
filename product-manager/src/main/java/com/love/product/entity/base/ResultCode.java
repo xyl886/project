@@ -10,7 +10,14 @@ public enum ResultCode {
      *
      */
     SUCCESS(200, "操作成功"),
-    FAILED(500, "操作失败，请重试")
+    FAILED(500, "操作失败，请重试"),
+    PARAM_ERROR(400, "参数错误"),
+    AUTH_ERROR(401, "认证错误"),
+    PERMISSION_ERROR(403, "权限错误"),
+    NOT_FOUND(404, "资源不存在"),
+    SERVER_ERROR(500, "服务器错误"),
+    TIMEOUT(504, "请求超时");
+
     ;
 
     /**
