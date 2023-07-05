@@ -11,7 +11,6 @@ import com.love.product.util.JwtUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -73,7 +72,6 @@ public class LoginController {
     @GetMapping("/userLogout")
     public Result<?> userLogout(HttpServletRequest request, HttpServletResponse response) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        log.info(request+","+response+","+ authentication);
         if (authentication != null) {//清除认证
             new SecurityContextLogoutHandler().logout(request, response, authentication);
         }

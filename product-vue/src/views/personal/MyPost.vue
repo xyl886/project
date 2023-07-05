@@ -3,14 +3,14 @@
     <div>
       <el-row style="padding: 20px 0">
         <el-col :span="2">
-          <el-dropdown @command="handleCommand" style="top: 10px;position: relative;" >
-            <span class="el-dropdown-link" size="mini">
+          <el-dropdown @command="handleCommand" style="top: 5px;font-size:12px;line-height:20px;position: relative;" >
+            <span class="el-dropdown-link">
               {{ command }}
               <i class="el-icon-arrow-down el-icon--right"></i>
             </span>
-            <el-dropdown-menu slot="dropdown" size="mini">
-              <el-dropdown-item command="最多浏览">最多浏览</el-dropdown-item>
-              <el-dropdown-item command="最新发布">最新发布</el-dropdown-item>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="最多浏览" style="font-size: 12px">最多浏览</el-dropdown-item>
+              <el-dropdown-item command="最新发布" style="font-size: 12px">最新发布</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </el-col>

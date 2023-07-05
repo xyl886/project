@@ -1,5 +1,9 @@
 <template>
     <div style="font-size: 14px;overflow:auto" @scroll="handleScroll">
+      <div class="search">
+        <el-input style="line-height: 50px;padding: 5px 20px;width: 70%" v-model="searchText" name="search" placeholder="搜索"></el-input>
+        <el-button @click="getSearch()"><i class="el-icon-search"></i></el-button>
+      </div>
       <div  v-for="(item,index) in posts" :key="item.id"  class="share-item">
         <div style="flex: 1;">
           <div style="height: 80px;">
@@ -263,11 +267,6 @@ export default {
       }
     }
   },
-  watch: {
-    searchText (newVal) {
-      this.page.title = newVal
-    }
-  },
   mounted () {
     // 监听滚动事件
     window.addEventListener('scroll', this.handleScroll)
@@ -326,6 +325,11 @@ export default {
         // console.log(this.page.currentPage)
         this.getPageFun()
       }
+    },
+    getSearch () {
+      this.searchText = this.page.title
+      this.posts = []
+      this.getPageFun()
     },
     getPageFun () {
       this.loading = true

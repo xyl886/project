@@ -1,9 +1,11 @@
 package com.love.product.config.rabbitmq;
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.FanoutExchange;
-import org.springframework.amqp.core.Queue;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.amqp.core.*;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,6 +14,7 @@ import static com.love.product.constant.RabbitMQConstant.*;
 @Configuration
 //@ConfigurationProperties("rabbitmq")
 public class RabbitMQConfig {
+
 
     @Bean
     public Queue articleQueue() {
@@ -57,5 +60,18 @@ public class RabbitMQConfig {
     public Binding bindingSubscribeDirect() {
         return BindingBuilder.bind(subscribeQueue()).to(subscribeExchange());
     }
+    @Bean
+    public Queue queue() {
+        return QueueBuilder.durable("testQueue").build();
+    }
 
+    @Bean
+    public Exchange exchange() {
+        return ExchangeBuilder.topicExchange("testExchange").build();
+    }
+
+    @Bean
+    public Binding binding(@Qualifier("queue") Queue queue, @Qualifier("exchange") Exchange exchange) {
+        return BindingBuilder.bind(queue).to(exchange).with("test.#").noargs();
+    }
 }

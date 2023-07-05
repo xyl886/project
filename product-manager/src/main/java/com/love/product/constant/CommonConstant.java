@@ -46,5 +46,10 @@ public interface CommonConstant {
     String COMMENT_REMIND = "评论提醒";
 
     String MENTION_REMIND = "@提醒";
+    // websocket
+    public static final String ENDPOINT = "/ws/timeless";
+    public static final String ALLOWED_ORIGINS = "http://localhost:8080";
+    public static final String SIMPLE_BROKER = "/topic";
+    public static final String DESTINATION_PREFIXES = "/ClientToServer";
 
 }

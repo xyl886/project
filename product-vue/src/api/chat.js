@@ -1,7 +1,7 @@
-import requests from '@/utils/request'
+import request from '@/utils/request'
 
 export function getAllUsers (username) {
-  return requests({
+  return request({
     url: '/ChatUserController/getAllUsers',
     method: 'get',
     params: {
@@ -9,28 +9,9 @@ export function getAllUsers (username) {
     }
   })
 }
-
-// 登录
-export function userLogin (username, password) {
-  return requests({
-    url: '/ChatUserController/login',
-    method: 'post',
-    data: { 'username': username, 'password': password }
-  })
-}
-
-// 注册
-export function userRegister (username, nickname, password) {
-  return requests({
-    url: '/ChatUserController/register',
-    method: 'post',
-    data: { 'username': username, 'nickname': nickname, 'password': password }
-  })
-}
-
 // 得到私聊消息
 export function listPrivateMessages (fromUsername, toUsername) {
-  return requests({
+  return request({
     url: `/PrivateMessageController/listPrivateMessages/${fromUsername}/${toUsername}`,
     method: 'get'
   })
@@ -38,7 +19,7 @@ export function listPrivateMessages (fromUsername, toUsername) {
 
 // 删除所有私聊消息
 export function deleteAllMsg (fromUsername, toUsername) {
-  return requests({
+  return request({
     url: `/PrivateMessageController/deleteAllMsg/${fromUsername}/${toUsername}`,
     method: 'delete'
   })

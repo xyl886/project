@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3 style="text-align: center">当前用户：{{ this.username }}</h3>
+    <h3 style="text-align: center">当前用户：{{ userInfo.nickname }}</h3>
     <h3 style="text-align: center">在线人数：{{ this.userNumber }}</h3>
     <!--    <h3 style="text-align: center">在线用户：-->
     <!--      <div v-for="user in usernameOnlineList" :key="user">{{ user }}</div>-->
@@ -43,15 +43,6 @@
           </li>
         </ul>
       </div>
-      <div class="middle">
-        <h2 style="text-align: center">群聊列表</h2>
-        <h2 style="text-align: center; color: rgb(57, 29, 216)">
-          功能开发中......
-        </h2>
-        <ul>
-          <!-- <li v-for="user in groupList" :key="user.id">{{ groupList.groupName }}</li> -->
-        </ul>
-      </div>
       <div class="right">
         <div v-if="selectedUser">
           <h2 style="text-align: center">
@@ -87,11 +78,6 @@
       </div>
     </div>
     <div>
-      <h1 class="bottom" style="text-align: center">好友申请</h1>
-
-      <h2 style="text-align: center; color: rgb(57, 29, 216)">
-        功能开发中......
-      </h2>
     </div>
   </div>
 </template>
@@ -101,6 +87,7 @@ import {getAllUsers, listPrivateMessages, deleteAllMsg} from '@/api/chat'
 import SockJS from 'sockjs-client'
 import Stomp from 'stompjs'
 import {Message} from 'element-ui'
+import {mapGetters} from 'vuex'
 
 export default {
   name: 'Room',
@@ -112,7 +99,7 @@ export default {
       message: '',
       stompClient: null,
       messageList: {}, // 使用对象来存储每个用户的聊天记录
-      username: '',
+      userInfo: '',
       usernameOnlineList: [],
       userNumber: 1,
       selectedUserMessage: {
@@ -121,9 +108,14 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapGetters([
+      'userInfo'
+    ])
+  },
   methods: {
     listAllUsers () {
-      getAllUsers(this.username).then((response) => {
+      getAllUsers(this.userInfo.id).then((response) => {
         this.userNumber = ++response.data.userNumber
         // this.usernameOnlineList = response.data.usernameOnlineList;
         this.userList = response.data.friends.filter(
@@ -244,11 +236,10 @@ export default {
   created () {
   },
   mounted () {
-    // 从sessionStorage中获取用户名
-    this.username = sessionStorage.getItem('username')
+    this.userInfo = mapGetters(['userInfo'])
     this.connect()
     this.listAllUsers()
-    // console.log(this.username);
+    console.log(this.userInfo)
   },
   beforeDestroy () {
     this.disconnect()

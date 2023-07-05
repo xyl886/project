@@ -2,20 +2,16 @@
   <div class="body">
     <div style="font-size: 14px;margin: 0 100px;padding: 20px 0;" v-infinite-scroll="loadFun">
         <el-row>
-          <el-col :span="17">
-            <div class="share-tab" style="width: 880px; display: inline-block;padding: 0 25px">
-          <el-tabs style="" v-model="activeName" @tab-click="handleClick">
-         <el-tab-pane v-for="tab in Tabs" @tab-click="handleClick" :label="tab.label" :name="tab.name" :key="tab.name">
+          <el-col :span="18">
+            <div class="share-tab" style="width: 960px; display: inline-block;padding: 0 10px">
+          <el-tabs style="min-height: 880px;" tab-position="left" v-model="activeName" @tab-click="handleClick">
+         <el-tab-pane  v-for="tab in Tabs" @tab-click="handleClick" :label="tab.label" :name="tab.name" :key="tab.name">
            <All :ref="tab.name" :search-text="searchText"></All>
          </el-tab-pane>
           </el-tabs>
             </div>
         </el-col>
-        <el-col :span="7" style="position: relative;" class="right-search">
-          <div class="search">
-            <el-input style="line-height: 50px;padding: 5px 20px;width: 70%" v-model="searchText" name="search" placeholder="搜索"></el-input>
-            <el-button @click="getSearch()"><i class="el-icon-search"></i></el-button>
-          </div>
+        <el-col :span="6" style="position: relative;" class="right-search">
           <div class="recommendation" :class="{ 'fixed': isFixed }">
             <div class="title-header"><b>向你推荐</b></div>
             <div class="title"  v-for="(item, index) in recommendationItems" :key="index">
@@ -41,7 +37,6 @@ export default {
   data () {
     return {
       isFixed: false,
-      searchText: '',
       activeName: '1',
       tabs: [
         { label: '全部', name: '1' },
@@ -90,11 +85,8 @@ export default {
     window.removeEventListener('scroll', this.handleScroll)
   },
   methods: {
-    getSearch () {
-      this.$refs[this.activeName][0].load()
-    },
     handleScroll () {
-      this.isFixed = document.documentElement.scrollTop > 140
+      this.isFixed = document.documentElement.scrollTop > 5
     },
     handleClick (tab, event) {
       if (tab.index !== '0') {
@@ -115,10 +107,15 @@ export default {
 <style>
   .share-tab .el-tabs__header{
     background-color: #ffffff!important;
-    padding: 0 20px!important;
+    position: fixed;
+  }
+  .share-tab .el-tabs__content{
+    max-width: 800px;
+    left: 150px;
   }
   .share-tab .el-tabs__nav{
-    height: 60px!important;
+    height: 880px!important;
+    width: 100px!important;
     line-height: 60px!important;
   }
 </style>
@@ -158,11 +155,11 @@ export default {
   border-radius: 5px;
   position: relative;
   padding: 10px;
-  margin-top: 25px;
+  margin-top: 5px;
 }
 .fixed{
   position: fixed;
-  top: 10px;
+  top: 70px;
 }
 .title-header{
   font-size: 20px;
