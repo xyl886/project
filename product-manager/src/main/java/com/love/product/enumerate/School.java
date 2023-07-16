@@ -36,7 +36,7 @@ public enum School {
     public static School valueOf(Integer value) {
         if (value != null) {
             for (School item : School.values()) {
-                if (value == item.value) {
+                if (value.equals(item.value)) {
                     return item;
                 }
             }

@@ -10,18 +10,8 @@
       <breadcrumb />
 
       <div class="right-menu">
-        <!--
-        <el-tooltip content="文档地址" effect="dark" placement="bottom">
-          <MoGuDoc id="mogu-doc" class="right-menu-item" />
-        </el-tooltip>
-        <el-tooltip effect="dark" content="换肤" placement="bottom">
-          <theme-picker class="theme-switch right-menu-item"></theme-picker>
-        </el-tooltip>-->
         <el-tooltip content="门户页面" effect="dark" placement="bottom">
           <Website id="website" class="right-menu-item" />
-        </el-tooltip>
-        <el-tooltip content="Gitee源码" effect="dark" placement="bottom">
-          <ShiYiGit id="ShiYiGit-git" class="right-menu-item" />
         </el-tooltip>
         <el-tooltip effect="dark" content="修改密码" placement="bottom">
           <password class="screenfull right-menu-item" />
@@ -32,7 +22,7 @@
         <el-dropdown class="avatar-container">
           <div class="avatar-wrapper">
             <img :src="avatar" class="user-avatar">
-            <i class="el-icon-caret-bottom" />
+            <!--            <i class="el-icon-caret-bottom" />-->
           </div>
           <el-dropdown-menu slot="dropdown" class="user-dropdown">
             <el-dropdown-item>
@@ -59,20 +49,17 @@ import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 import Screenfull from '@/components/Screenfull'
-import ShiYiGit from '@/components/Shiyi/Git'
 import Website from '@/components/Shiyi/Website'
 import Password from '@/components/Shiyi/password'
-/* import ThemePicker from "@/components/ThemePicker";
-*/
 
 export default {
   components: {
     Breadcrumb,
     Screenfull,
     Password,
-    ShiYiGit,
     Website,
     Hamburger
+
   },
   data() {
     return {

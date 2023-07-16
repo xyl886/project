@@ -10,7 +10,13 @@ public enum YesOrNo {
      *
      */
     NO(0, "否"),
+
     YES(1, "是"),
+
+    FALSE(0,"false"),
+
+    TRUE(1,"true")
+
     ;
 
     /**

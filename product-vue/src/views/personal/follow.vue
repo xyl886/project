@@ -15,7 +15,7 @@
           </div>
         </div>
         <div class="follow-item-but-box">
-          <el-button round :type="item.followStatus !== 2?'':'primary'" @click="addFollowFun(item.userInfo,item.followStatus !== 2?'1':'0')">
+          <el-button size="mini" round :type="item.followStatus !== 2?'':'primary'" @click="addFollowFun(item.userInfo,item.followStatus !== 2?'1':'0')">
             {{item.followStatus !== 2?'取消关注':'关注'}}
           </el-button>
         </div>
@@ -76,6 +76,7 @@ export default {
         this.loading = false
         if (res.code === 200) {
           this.follows = res.data
+          console.log(res.data)
           this.page.total = res.dataTotal
         }
       }, error => {

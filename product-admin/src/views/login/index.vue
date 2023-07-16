@@ -99,9 +99,9 @@
     <!--      <br>-->
     <!--      <br>-->
     <!--      <br>-->
-    <!--      <social-sign />-->
+    <!--      <SocialSign />-->
     <!--    </el-dialog>-->
-    <!--  底部  -->
+    <!--      底部  -->
     <div class="el-login-footer">
       <span>Copyright © 2022 <a href="http://www.shiyit.com" target="_blank">shiyit.com</a> All Rights Reserved.</span>
     </div>
@@ -111,11 +111,9 @@
 <script>
 import { validUsername } from '@/utils/validate'
 import { captchaImage, login } from '@/api/user'
-import SocialSign from './components/SocialSignin'
 export default {
   name: 'Login',
   components: {
-    SocialSign
   },
   data() {
     const validateUsername = (rule, value, callback) => {

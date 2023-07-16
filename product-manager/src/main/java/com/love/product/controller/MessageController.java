@@ -5,8 +5,11 @@ import com.love.product.entity.Follow;
 import com.love.product.entity.Message;
 import com.love.product.entity.base.Result;
 import com.love.product.service.MessageService;
+import com.love.product.service.WebSocketService;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,13 +26,11 @@ import java.util.stream.Collectors;
 @RestController
 @Slf4j
 @Api("消息")
+@RequestMapping("/message")
 public class MessageController {
 
     @Resource
     private MessageService messageService;
-
-    @Resource
-    private SimpMessagingTemplate template;
 
     /**
      * @Description: 添加一条消息
@@ -42,30 +43,16 @@ public class MessageController {
     }
 
     /**
-     * @Description: 查询私聊记录
-     * @Date: 2023/6/24 18:40
-     * @Author: timeless
+     * 获取与某用户的私聊记录
+     * @param fromId 当前用户id
+     * @param toId 查询私聊信息用户id
+     * @return Result.OK(messages)
      */
     @GetMapping("/listMessages")
     public Result listMessages(
-            @RequestParam("fromId") String fromId,
-            @RequestParam("toId") String toId) {
-
-        List<String> messages = messageService.list(Wrappers
-                        .<Message>lambdaQuery()
-                        .and(q -> q
-                                .eq(Message::getFromId, fromId)
-                                .eq(Message::getToId, toId)
-                        )
-                        .or(q -> q
-                                .eq(Message::getFromId, toId)
-                                .eq(Message::getToId, fromId)
-                        ))
-                .stream()
-                .map(Message::getMessage)
-                .collect(Collectors.toList());
-
-        return Result.OK(messages);
+            @RequestParam("fromId") Long fromId,
+            @RequestParam("toId") Long toId) {
+        return messageService.listMessages(fromId,toId);
     }
 
     /**
@@ -78,21 +65,7 @@ public class MessageController {
             @RequestParam("id") Long Id,
             @RequestParam("fromId") Long fromId,
             @RequestParam("toId") Long toId) {
-        messageService.remove((Wrappers
-                .<Message>lambdaQuery()
-                .and(q -> q
-                        .eq(Message::getFromId, fromId)
-                        .eq(Message::getToId, toId)
-                        .eq(Message::getId,Id)
-                )
-                .or(q -> q
-                        .eq(Message::getFromId, toId)
-                        .eq(Message::getToId, fromId)
-                        .eq(Message::getId,Id)
-                )));
-        Follow follow = Follow.builder().userId(fromId).beFollowedUserId(toId).build();
-        template.convertAndSend("/topic/ServerToClient.deleteMsg", follow);
-        return Result.OK();
+        return messageService.remove(Id,fromId,toId);
     }
 
 

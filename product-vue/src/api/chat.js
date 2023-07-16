@@ -1,19 +1,14 @@
 import request from '@/utils/request'
 
-export function getAllUsers (username) {
+// 得到私聊消息
+export const listPrivateMessages = (fromId, toId) => {
   return request({
-    url: '/ChatUserController/getAllUsers',
+    url: '/api/message/listMessages',
     method: 'get',
     params: {
-      username: username
+      fromId: fromId,
+      toId: toId
     }
-  })
-}
-// 得到私聊消息
-export function listPrivateMessages (fromUsername, toUsername) {
-  return request({
-    url: `/PrivateMessageController/listPrivateMessages/${fromUsername}/${toUsername}`,
-    method: 'get'
   })
 }
 

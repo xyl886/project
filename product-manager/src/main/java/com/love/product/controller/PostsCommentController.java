@@ -35,7 +35,11 @@ public class PostsCommentController {
     public Result<?> listByPostsId(@RequestParam("postsId") Long postsId) {
         return postsCommentService.listByPostsId(postsId);
     }
-
+    @ApiOperation("新增评论点赞")
+    @GetMapping("/addCommentLike")
+    public Result<?> add(@RequestParam("commentId") Long commentId, @RequestParam("deleted") Integer deleted) {
+        return postsCommentService.addCommentLike(JwtUtil.getUserId(),commentId,deleted);
+    }
     @ApiOperation("删除评论")
     @GetMapping("/del")
     public Result<?> del(@RequestParam("id") Long id) {

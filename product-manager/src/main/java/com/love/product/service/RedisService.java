@@ -13,7 +13,13 @@ import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("all")
 public interface RedisService {
-
+    /**
+     *
+     * @param s
+     * @param num
+     * @param i
+     * @param timeUnit
+     */
     void set(String s, long num, Long i, TimeUnit timeUnit);
     void set(String key, Object value, long time);
 

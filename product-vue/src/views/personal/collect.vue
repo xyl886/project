@@ -44,12 +44,10 @@
             </el-select>
           </el-col>
           <el-col :span="2" style="margin-left: 15px">
-            <div @click="handleClear"><el-button size="mini">重置</el-button></div>
+            <div><el-button type="primary" size="mini">查询</el-button></div>
           </el-col>
           <el-col :span="6">
-            <div>
-              <el-button type="primary" size="mini">查询</el-button>
-            </div>
+            <div @click="handleClear"><el-button size="mini">重置</el-button></div>
           </el-col>
           <el-col :span="6">
             <el-button type="primary" v-show="isSelect" @click="CheckboxShow" size="mini">取消</el-button>
@@ -59,8 +57,8 @@
               @click="Cancel"
               :disabled="this.selected.length === 0"
               class="cancel"
-              size="mini"
-            >取消收藏
+              size="mini">
+              取消收藏
             </el-button>
           </el-col>
           <el-col :span="2" style="float: right">

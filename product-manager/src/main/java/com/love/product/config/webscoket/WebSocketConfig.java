@@ -22,10 +22,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableConfigurationProperties(RabbitMQProperties.class)
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    private final RabbitMQProperties rabbitMQProperties;
-
     public WebSocketConfig(RabbitMQProperties rabbitMQProperties){
-        this.rabbitMQProperties = rabbitMQProperties;
         log.error(rabbitMQProperties.getHost());
     }
 

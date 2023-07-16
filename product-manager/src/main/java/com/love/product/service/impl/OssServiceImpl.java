@@ -1,7 +1,7 @@
 package com.love.product.service.impl;
 
-/**
- * @PackageName: com.love.product.service.impl
+/*
+  @PackageName: com.love.product.service.impl
  * @Description: OssServiceImpl
  * @Author: Administrator
  * @Date: 2023/4/28 11:25

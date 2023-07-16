@@ -49,7 +49,10 @@ public class PostsController {
     public Result<Posts> add(PostsVO postsVO){
         return postsService.add(JwtUtil.getUserId(), postsVO);
     }
-
+    @GetMapping("/listHot")
+    public  Result<Posts> listHot(){
+        return postsService.listHot();
+    }
     @ApiOperation("分页")
     @PostMapping("/getPage")
     public ResultPage<PostsDetailVO> getPage(@RequestBody PostsPageReq postsPageReq) {

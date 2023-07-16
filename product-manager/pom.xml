@@ -72,7 +72,12 @@
             <artifactId>logback-classic</artifactId>
             <version>1.2.6</version>
         </dependency>
-
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-quartz -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-quartz</artifactId>
+            <version>2.6.15</version>
+        </dependency>
         <!--springboot注解处理-->
         <dependency>
             <groupId>org.springframework.boot</groupId>

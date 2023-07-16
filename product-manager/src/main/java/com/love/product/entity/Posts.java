@@ -7,6 +7,9 @@ import com.love.product.entity.base.BaseEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import java.math.BigDecimal;
 
 /**
@@ -32,18 +35,22 @@ public class Posts extends BaseEntity {
     @ApiModelProperty(value = "帖子类型 1闲置帖 2校园帖")
     public Integer postsType;
 
+    @NotBlank(message = "标题不能为空")
     @ApiModelProperty(value = "标题")
     public String title;
 
+    @NotBlank(message = "帖子描述不能为空")
     @ApiModelProperty(value = "帖子描述")
     public String description;
 
+    @NotBlank(message = "内容不能为空")
     @ApiModelProperty(value = "内容")
     public String content;
 
     /**
      * {@link com.love.product.enumerate.School}
      */
+    @NotNull(message = "请选择分类")
     @ApiModelProperty(value = "校区")
     public Integer school;
 

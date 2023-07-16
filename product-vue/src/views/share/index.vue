@@ -4,9 +4,9 @@
         <el-row>
           <el-col :span="18">
             <div class="share-tab" style="width: 960px; display: inline-block;padding: 0 10px">
-          <el-tabs style="min-height: 880px;" tab-position="left" v-model="activeName" @tab-click="handleClick">
-         <el-tab-pane  v-for="tab in Tabs" @tab-click="handleClick" :label="tab.label" :name="tab.name" :key="tab.name">
-           <All :ref="tab.name" :search-text="searchText"></All>
+          <el-tabs style="min-height: 800px;"  tab-position="left" v-model="activeName" @tab-click="handleClick">
+         <el-tab-pane  v-for="tab in Tabs" @tab-click="handleClick" :label="tab.categoryName" :name="tab.id" :key="tab.id">
+           <All :ref="tab.id"></All>
          </el-tab-pane>
           </el-tabs>
             </div>
@@ -28,6 +28,7 @@
 import All from './all.vue'
 import BackToTop from '../../page/top/BackToTop.vue'
 import {getToken} from '../../utils/auth'
+import {listAllCategory} from '../../api/posts'
 
 export default {
   components: {
@@ -37,16 +38,16 @@ export default {
   data () {
     return {
       isFixed: false,
-      activeName: '1',
+      activeName: '0',
       tabs: [
-        { label: '全部', name: '1' },
-        { label: '学习', name: '2' },
-        { label: '生活', name: '3' },
-        { label: '娱乐', name: '4' },
-        { label: '求助', name: '5' },
-        { label: '就业', name: '6' },
-        { label: '新闻/公告', name: '7' },
-        { label: '我的关注', name: '8', requiresLogin: true }
+        { categoryName: '全部', id: '0' },
+        { categoryName: '关注', id: '1', requiresLogin: true }
+        // { categoryName: '学习', name: '2' },
+        // { categoryName: '生活', name: '3' },
+        // { categoryName: '娱乐', name: '4' },
+        // { categoryName: '求助', name: '5' },
+        // { categoryName: '就业', name: '6' },
+        // { categoryName: '新闻/公告', name: '7' },
       ],
       title: '向你推荐',
       recommendationItems: [
@@ -74,6 +75,13 @@ export default {
         return this.tabs.filter(tab => !tab.requiresLogin)
       }
     }
+  },
+  beforeCreate () {
+    listAllCategory().then(res => {
+      console.log(res.data)
+      this.tabs = this.tabs.concat(res.data)
+      console.log(this.tabs)
+    })
   },
   mounted () {
     this.$nextTick(() => {
@@ -117,6 +125,18 @@ export default {
     height: 880px!important;
     width: 100px!important;
     line-height: 60px!important;
+  }
+  .share-tab .el-tabs__nav-prev{
+    display: none!important;
+  }
+  .el-tabs--left .el-tabs__nav-wrap.is-left.is-scrollable{
+    padding: 0!important;
+  }
+  .share-tab .el-tabs__active-bar{
+    display: none!important;
+  }
+  .share-tab .el-tabs__item{
+    text-align: center!important;
   }
 </style>
 <style scoped>

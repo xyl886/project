@@ -60,7 +60,6 @@ service.interceptors.response.use(
         type: 'error',
         duration: 2 * 1000
       })
-      router.push({ path: '/' })
       return Promise.reject(new Error(res.msg || 'Error'))
     }
     return res

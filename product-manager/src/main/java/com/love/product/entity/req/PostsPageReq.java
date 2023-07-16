@@ -39,7 +39,6 @@ public class PostsPageReq extends PageQuery {
     @ApiModelProperty(value = "标题")
     private String title;
 
-
     @ApiModelProperty(value = "状态")
     public Integer status;
 }

@@ -38,4 +38,6 @@ public interface PostsService extends IService<Posts> {
     List<PostsSearchDTO> listPostsBySearch(ConditionVO condition);
 
     void updatePostsCollectNum(Posts posts);
+
+    Result<Posts> listHot();
 }

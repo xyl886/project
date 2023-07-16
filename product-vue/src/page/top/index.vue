@@ -8,12 +8,18 @@
       校园墙
       </div>
     </div>
-    <div style="margin-left: 100px;flex: 1;">
+    <div class="menu" style="margin:0 100px;flex: 1;">
       <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal">
         <el-menu-item v-for="(item,index) in menus" :index="item.path" :key="item.path" @click="pathFun(item.path)">{{item.name}}</el-menu-item>
       </el-menu>
+<!--      <el-dropdown trigger="click" class="dropdown" style="display: none">-->
+<!--        <span class="el-dropdown-link"><i class="el-icon-arrow-down el-icon&#45;&#45;right"></i></span>-->
+<!--        <el-dropdown-menu :default-active="activeIndex" slot="dropdown">-->
+<!--          <el-dropdown-item v-for="(item, index) in menus" :index="item.path" :key="item.path" @click="pathFun(item.path)">{{ item.name }}</el-dropdown-item>-->
+<!--        </el-dropdown-menu>-->
+<!--      </el-dropdown>-->
     </div>
-  <div style="width: 300px;text-align: right">
+  <div style="text-align: right">
       <div v-if="!userInfo || !userInfo.id" style="line-height: 60px;">
         <el-button type="primary" plain @click="toLogin">登录</el-button>
       </div>
@@ -95,6 +101,9 @@ export default {
     }, 1000)
   },
   methods: {
+    handleCommand (command) {
+      this.command = command
+    },
     path () {
       return path
     },

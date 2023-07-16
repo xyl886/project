@@ -1,6 +1,5 @@
 <template>
   <div class="dashboard-editor-container">
-    <github-corner class="github-corner" />
 
     <panel-group />
 
@@ -64,7 +63,6 @@
 </template>
 
 <script>
-import GithubCorner from '@/components/GithubCorner'
 import PanelGroup from './components/PanelGroup'
 import BoxCard from './components/BoxCard'
 import * as echarts from 'echarts'
@@ -74,7 +72,7 @@ import { init } from '@/api/home'
 export default {
   name: 'DashboardAdmin',
   components: {
-    GithubCorner,
+
     PanelGroup,
     BoxCard
   },

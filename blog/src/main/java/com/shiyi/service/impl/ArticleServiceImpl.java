@@ -90,7 +90,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, BlogArticle> 
      */
     @Override
     public Result listArticle(Map<String,Object> map) {
-        Page<ArticleListVO> data = baseMapper.selectArticle(new Page<>((Integer)map.get("pageNo"), (Integer)map.get("pageSize")),map);
+        Page<ArticleListVO> data = baseMapper.selectArticle(
+                new Page<>((Integer)map.get("pageNo"), (Integer)map.get("pageSize")),map);
         return Result.success(data);
     }
 

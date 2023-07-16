@@ -43,11 +43,10 @@
           </el-select>
         </el-col>
         <el-col :span="2" style="margin-left: 15px">
-          <div @click="handleClear"><el-button size="mini">重置</el-button></div>
+          <div><el-button type="primary" size="mini">查询</el-button></div>
         </el-col>
         <el-col :span="12">
-          <div><el-button type="primary" size="mini">查询</el-button>
-          </div>
+          <div @click="handleClear"><el-button size="mini">重置</el-button></div>
         </el-col>
         <el-col :span="2">
           <div><el-button type="primary" size="mini">批量操作</el-button>
@@ -167,7 +166,7 @@ export default {
         pageSize: 10,
         currentPage: 1,
         postsType: null,
-        school: 7,
+        school: -1,
         status: null
       }
     }
@@ -187,7 +186,7 @@ export default {
         pageSize: 10,
         currentPage: 1,
         postsType: null,
-        school: 7,
+        school: -1,
         pageTotal: 0,
         status: null
       }

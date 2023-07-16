@@ -31,9 +31,11 @@ public class ResourceConfiguration extends ResourceServerConfigurerAdapter {
     public void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers(
+                        "/webSocket/**",
                         "/getToken",
                         "/parseToken",
                         "/login/code",
+                        "/category/listAll",
                         "/login/userLogin",
                         "/login/userRegister",
                         "/user/reset",

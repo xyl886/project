@@ -1,6 +1,22 @@
 import request from '@/utils/request'
 
 /**
+ * 查询所有分类
+ * @returns {*}
+ */
+export const listAllCategory = () => {
+  return request({
+    url: '/api/category/listAll',
+    method: 'get'
+  })
+}
+export const listHot = () => {
+  return request({
+    url: '/api/posts/listHot',
+    method: 'get'
+  })
+}
+/**
  * 帖子分页
  */
 export const getPage = (data) => {

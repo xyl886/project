@@ -33,6 +33,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 // 放行
                 .antMatchers(
+                        "/webSocket/**",
+                        "/category/listAll",
                         "/login/code",
                         "/login/userLogin",
                         "/login/userRegister",

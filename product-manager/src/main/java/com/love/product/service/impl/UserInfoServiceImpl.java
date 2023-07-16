@@ -64,8 +64,6 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     @Value("${server.port}")
     private String port;
     @Resource
-    private EmailUtil emailUtil;
-    @Resource
     private RestTemplate restTemplate;
     @Resource
     private TokenConfig tokenConfig;

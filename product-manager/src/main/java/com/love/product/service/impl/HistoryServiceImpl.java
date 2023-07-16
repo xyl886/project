@@ -9,11 +9,11 @@ import com.love.product.entity.History;
 import com.love.product.entity.base.PageQuery;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
-import com.love.product.enumerate.School;
 import com.love.product.entity.vo.HistoryVO;
 import com.love.product.entity.vo.PostsDetailVO;
 import com.love.product.entity.vo.UserInfoVO;
 import com.love.product.mapper.HistoryMapper;
+import com.love.product.service.CategoryService;
 import com.love.product.service.HistoryService;
 import com.love.product.service.PostsService;
 import com.love.product.service.UserInfoService;
@@ -40,6 +40,8 @@ public class HistoryServiceImpl extends ServiceImpl<HistoryMapper, History> impl
     private PostsService postsService;
     @Resource
     private UserInfoService userInfoService;
+    @Resource
+    private CategoryService categoryService;
     @Override
     public History findHistory(Long userId, Long id) {
         LambdaQueryWrapper<History> queryWrapper=new LambdaQueryWrapper<>();
@@ -94,7 +96,8 @@ public class HistoryServiceImpl extends ServiceImpl<HistoryMapper, History> impl
                     historyVO.setPostCoverPath(postsDetailVO.getCoverPath());
                     historyVO.setPostType(postsDetailVO.getPostsType());
                     historyVO.setPosts(postsDetailVO);
-                    historyVO.setSchoolName(School.valueOf(postsDetailVO.getSchool()).getText());
+                    historyVO.setSchoolName(
+                            categoryService.getCategoryById(Long.valueOf(postsDetailVO.school)));
                 }
             }
         }

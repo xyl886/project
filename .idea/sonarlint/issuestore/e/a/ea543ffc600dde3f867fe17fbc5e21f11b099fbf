@@ -1,11 +1,0 @@
-
-PWeb:AvoidCommentedOutCodeCheck"Remove this commented out code.(±‹Ìæ8ĞšÛÕ‰1
-8	css:S4667"Unexpected empty source(ŸÖãáÿÿÿÿÿ8¡¹ÜÕ‰1
-@	css:S4668"#Unexpected double-slash CSS comment(ÃÑè8£¹ÜÕ‰1
-E	css:S4668"#Unexpected double-slash CSS comment(ı¦ÙÑùÿÿÿÿ8£¹ÜÕ‰1
-@	css:S4668‘"#Unexpected double-slash CSS comment(øïèÉ8£¹ÜÕ‰1
-@	css:S4668’"#Unexpected double-slash CSS comment(Ë¾¢Ç8£¹ÜÕ‰1
-E	css:S4654"(Unexpected unknown property "//position"(ÃÑè8£¹ÜÕ‰1
-J	css:S4654"(Unexpected unknown property "//position"(ı¦ÙÑùÿÿÿÿ8£¹ÜÕ‰1
-G	css:S4654‘"*Unexpected unknown property "//margin-top"(øïèÉ8£¹ÜÕ‰1
-D	css:S4654’"'Unexpected unknown property "//padding"(Ë¾¢Ç8¤¹ÜÕ‰1

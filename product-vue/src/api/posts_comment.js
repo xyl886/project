@@ -26,7 +26,19 @@ export const listByPostsId = (postsId) => {
     }
   })
 }
-
+/**
+ * 点赞
+ */
+export const addCommentLike = (commentId, deleted) => {
+  return request({
+    url: '/api/postsComment/addCommentLike',
+    method: 'get',
+    params: {
+      commentId: commentId,
+      deleted: deleted
+    }
+  })
+}
 /**
  * 删除评论
  */

@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.love.product.entity.Category;
 import com.love.product.entity.History;
 import com.love.product.entity.Posts;
 import com.love.product.entity.PostsLike;
@@ -69,6 +70,8 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
 
     @Resource
     private PostsService postsService;
+    @Resource
+    private  CategoryService categoryService;
 
     @Resource
     private SearchStrategyContext searchStrategyContext;
@@ -133,18 +136,18 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
     @Override
     public Result<Posts> add(Long userId, PostsVO postsVO) {
         PostsType postsType = PostsType.valueOf(postsVO.getPostsType());
-        if(postsType == null){
-            return Result.failMsg("请选择帖子类型");
-        }
-        if(StringUtils.isBlank(postsVO.getTitle())){
-            return Result.failMsg("标题不能为空");
-        }
-        if(StringUtils.isBlank(postsVO.getContent())){
-            return Result.failMsg("内容不能为空");
-        }
-        if(School.valueOf(postsVO.getSchool()) == null){
-            return Result.failMsg("请选择标签");
-        }
+//        if(postsType == null){
+//            return Result.failMsg("请选择帖子类型");
+//        }
+//        if(StringUtils.isBlank(postsVO.getTitle())){
+//            return Result.failMsg("标题不能为空");
+//        }
+//        if(StringUtils.isBlank(postsVO.getContent())){
+//            return Result.failMsg("内容不能为空");
+//        }
+//        if(School.valueOf(postsVO.getSchool()) == null){
+//            return Result.failMsg("请选择标签");
+//        }
         List<String> imgPathList = new ArrayList<>();
         if(postsType.equals(PostsType.LEAVE)){//闲置帖
             if(postsVO.getPrice() == null || postsVO.getPrice().doubleValue() <= 0){
@@ -193,41 +196,35 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
      */
     @Override
     public ResultPage<PostsDetailVO> getPage(Long userId, PostsPageReq postsPageReq) {
-        if(userId == null && (Objects.equals(postsPageReq.getSchool(),7) ||Objects.equals(postsPageReq.getSchool(),8))){  //未登录
-            return ResultPage.FAIL(403,"请登录");
-        }
+
         List<Long> followedUserIds = followService.getFollowedUserIdsByUserId(userId);
         log.info("已关注的用户id:"+followedUserIds);
-        if (Objects.equals(postsPageReq.getSchool(),8) && followedUserIds.isEmpty()) {
+        if (Objects.equals(postsPageReq.getSchool(),1) && followedUserIds.isEmpty()) {
             return ResultPage.OK(0, 1, 10, (Collection<PostsDetailVO>) null);
         }
-//        如果查询参数postsPageReq的帖子类型不为空，则加入一个等于帖子类型的条件。
-//        如果查询参数postsPageReq的学校不为空且不等于3，则加入一个等于学校的条件。
-//        如果查询参数postsPageReq的学校等于3，则加入一个等于userId的条件。
-//        加入一个等于帖子状态的条件。
-//        按照帖子创建时间降序排序。
+
         log.info(String.valueOf(postsPageReq));
         LambdaQueryWrapper<Posts> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(postsPageReq.getPostsType()!=null,Posts::getPostsType, postsPageReq.getPostsType())
-        .eq(postsPageReq.getSchool()!=null&&postsPageReq.getSchool()!=7&&postsPageReq.getSchool()!=8, Posts::getSchool, postsPageReq.getSchool())
-        .eq(Objects.equals(postsPageReq.getSchool(),7),Posts::getUserId, userId)
-        .like(StringUtils.isNotBlank(postsPageReq.getTitle()),Posts::getTitle, postsPageReq.getTitle())
-        .in(Objects.equals(postsPageReq.getSchool(), 8), Posts::getUserId, followedUserIds)
-        .eq(postsPageReq.getStatus()!=null,Posts::getStatus, postsPageReq.getStatus())
-        .orderByDesc(Posts::getCreateTime);
+        queryWrapper.eq(postsPageReq.getPostsType()!=null,Posts::getPostsType, postsPageReq.getPostsType())//帖子类型不为空，则加入一个等于帖子类型的条件
+                .eq(postsPageReq.getSchool()!=null&&postsPageReq.getSchool()!=1&&postsPageReq.getSchool()!=-1, Posts::getSchool, postsPageReq.getSchool()) //非关注
+                .eq(Objects.equals(postsPageReq.getSchool(),-1),Posts::getUserId, userId) //我的帖子
+                .like(StringUtils.isNotBlank(postsPageReq.getTitle()),Posts::getTitle, postsPageReq.getTitle())  //标题模糊查询
+                .in(Objects.equals(postsPageReq.getSchool(), 1), Posts::getUserId, followedUserIds)  //关注帖
+                .eq(postsPageReq.getStatus()!=null,Posts::getStatus, postsPageReq.getStatus())  //正常贴
+                .orderByDesc(Posts::getCreateTime);
         log.info(String.valueOf(postsPageReq));
         Page<Posts> page = page(postsPageReq.build(), queryWrapper);
+
         List<PostsDetailVO> list = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
         List<Long> postsIds = new ArrayList<>();
         if (page.getTotal() > 0) {
             list = page.getRecords().stream().map(posts -> {
                 PostsDetailVO postsDetailVO = BeanUtil.copyProperties(posts, PostsDetailVO.class);
-                School school = School.valueOf(postsDetailVO.getSchool());
-                postsDetailVO.setSchoolName(school!=null?school.getText():"");
+                postsDetailVO.setSchoolName(categoryService.getCategoryById(Long.valueOf(postsDetailVO.school)));
                 initImgPath(postsDetailVO);
-                userIds.add(postsDetailVO.getUserId());
-                postsIds.add(postsDetailVO.getId());
+                userIds.add(postsDetailVO.userId);
+                postsIds.add(postsDetailVO.id);
                 return postsDetailVO;
             }).collect(Collectors.toList());
         }
@@ -237,22 +234,21 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
             userInfoVOMap = userInfoService.listByIds(userIds);
             postsLikeHashMap = postsLikeService.listByUserId(userId,postsIds);
             Map<Long, UserInfoVO> finalUserInfoVOMap = userInfoVOMap;
-            log.info(userInfoVOMap +","+userIds);
             Map<Long, PostsLike> finalPostsLikeHashMap = postsLikeHashMap;
             list.forEach(item -> {
-                UserInfoVO userInfoVO = finalUserInfoVOMap.get(item.getUserId());
+                UserInfoVO userInfoVO = finalUserInfoVOMap.get(item.userId);
                 UserBasicInfoVO userBasicInfoVO=new UserBasicInfoVO();
                 BeanUtil.copyProperties(userInfoVO, userBasicInfoVO);
-                userBasicInfoVO.setRole(Role.valueOf(userInfoVO.getRole()).getText());
+                userBasicInfoVO.setRole(Role.valueOf(userInfoVO.role).getText());
                 item.setUserInfo(userBasicInfoVO);
                 item.setLike(false);
-                PostsLike postsLike = finalPostsLikeHashMap.get(item.getId());
+                PostsLike postsLike = finalPostsLikeHashMap.get(item.id);
                 if(postsLike != null){
                     item.setLike(true);
                 }
             });
         }
-        log.info(String.valueOf(list.size()));
+
         return ResultPage.OK(page.getTotal(), page.getCurrent(), page.getSize(), list);
     }
 
@@ -275,7 +271,7 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
         userBasicInfoVO.setRole(Role.valueOf(userInfoVO.getRole()).getText());
         postsDetailVO.setUserInfo(userBasicInfoVO);
         initImgPath(postsDetailVO);
-        postsDetailVO.setSchoolName(School.valueOf(posts.school).getText());
+        postsDetailVO.setSchoolName(categoryService.getCategoryById(Long.valueOf(postsDetailVO.school)));
         postsDetailVO.setCollect(false);
         postsDetailVO.setFollow(false);
         if(userId != null && collectService.getDetail(userId,posts.getId()) != null){
@@ -328,9 +324,9 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
      * 拼接图片获取绝对路径
      */
     private void initImgPath(PostsDetailVO postsDetailVO){
-        postsDetailVO.setCoverPath(ossService.getOssImgPath(postsDetailVO.getCoverPath()));//todo OSS存储
-        if(StringUtils.isNotEmpty(postsDetailVO.getImgPath())){
-            String[] arr = postsDetailVO.getImgPath().split(",");
+        postsDetailVO.setCoverPath(ossService.getOssImgPath(postsDetailVO.coverPath));//todo OSS存储
+        if(StringUtils.isNotEmpty(postsDetailVO.imgPath)){
+            String[] arr = postsDetailVO.imgPath.split(",");
             List<String> list = Arrays.asList(arr);
             List<String> imgPathList = new ArrayList<>();
             list.forEach(item-> {
@@ -367,10 +363,10 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
         log.info("帖子id:"+ postsVO.getId());
         log.info("修改前Posts:"+getById(postsVO.getId()));
         if(postsVO.getId() != null){
-            if(com.baomidou.mybatisplus.core.toolkit.StringUtils.isEmpty(postsVO.getTitle())){
+            if(StringUtils.isEmpty(postsVO.getTitle())){
                 return Result.fail("请输入标题");
             }
-            if(com.baomidou.mybatisplus.core.toolkit.StringUtils.isEmpty(postsVO.getContent())){
+            if(StringUtils.isEmpty(postsVO.getContent())){
                 return Result.fail("请输入内容");
             }
             Posts posts = new Posts();
@@ -486,5 +482,10 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
      */
     public void updatePostsCollectNum(Posts posts){
         saveOrUpdate(posts);
+    }
+
+    @Override
+    public Result<Posts> listHot() {
+        return null;
     }
 }

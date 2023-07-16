@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * <p>
- * 系统管理-权限资源表 
+ * 系统管理-权限资源表
  * </p>
  *
  * @author blue
@@ -29,7 +29,7 @@ public class Menu implements Serializable {
     private static final long serialVersionUID=1L;
 
     @ApiModelProperty(value = "主键")
-      @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     @ApiModelProperty(value = "上级资源ID")

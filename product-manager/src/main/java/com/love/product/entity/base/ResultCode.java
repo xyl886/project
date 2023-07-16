@@ -16,9 +16,8 @@ public enum ResultCode {
     PERMISSION_ERROR(403, "权限错误"),
     NOT_FOUND(404, "资源不存在"),
     SERVER_ERROR(500, "服务器错误"),
-    TIMEOUT(504, "请求超时");
-
-    ;
+    TIMEOUT(504, "请求超时"),
+    CATEGORY_IS_EXIST(10019,"该分类名称已存在!");
 
     /**
      * 状态码

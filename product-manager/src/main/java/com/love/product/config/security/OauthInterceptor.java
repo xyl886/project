@@ -72,7 +72,7 @@ public class OauthInterceptor extends OAuth2AuthenticationEntryPoint {
             String uri = request.getRequestURI();
             log.info("uri:{}", uri);
             log.info("请求方法：{}", request.getMethod());
-
+            log.info(String.valueOf(result));
             if(result.getStatusCodeValue() != 200 && (resultString == null || !resultString.contains("Access token expired"))){
                 if(result.getStatusCodeValue() == 401){
                     response.setHeader("Content-Type", "application/json;charset=utf-8");

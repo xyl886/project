@@ -23,6 +23,7 @@ public interface CommonConstant {
     String POST_TAG = "</mark>";
 
     String CURRENT = "current";
+    String CATEGORYNAME = "category_name";
 
     String SIZE = "size";
     Long EXPIRE_TIME = 60L;
@@ -46,10 +47,11 @@ public interface CommonConstant {
     String COMMENT_REMIND = "评论提醒";
 
     String MENTION_REMIND = "@提醒";
+
     // websocket
-    public static final String ENDPOINT = "/ws/timeless";
-    public static final String ALLOWED_ORIGINS = "http://localhost:8080";
-    public static final String SIMPLE_BROKER = "/topic";
-    public static final String DESTINATION_PREFIXES = "/ClientToServer";
+    String ENDPOINT = "/webSocket";
+    String ALLOWED_ORIGINS = "http://localhost:8088";
+    String SIMPLE_BROKER = "/topic";
+    String DESTINATION_PREFIXES = "/ClientToServer";
 
 }

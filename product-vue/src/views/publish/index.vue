@@ -8,12 +8,13 @@
           <!--          </el-form-item>-->
           <el-form-item label="分类:" prop="school">
             <el-radio-group v-model="form.school">
-              <el-radio-button label="1">学习</el-radio-button>
-              <el-radio-button label="2">生活</el-radio-button>
-              <el-radio-button label="3">娱乐</el-radio-button>
-              <el-radio-button label="4">求助</el-radio-button>
-              <el-radio-button label="5">就业</el-radio-button>
-              <el-radio-button label="6">新闻/公告</el-radio-button>
+              <el-radio-button v-for="(option, index) in options" :key="index" :label="option.id">{{ option.categoryName }}</el-radio-button>
+<!--              <el-radio-button label="1">学习</el-radio-button>-->
+<!--              <el-radio-button label="2">生活</el-radio-button>-->
+<!--              <el-radio-button label="3">娱乐</el-radio-button>-->
+<!--              <el-radio-button label="4">求助</el-radio-button>-->
+<!--              <el-radio-button label="5">就业</el-radio-button>-->
+<!--              <el-radio-button label="6">新闻/公告</el-radio-button>-->
             </el-radio-group>
           </el-form-item>
           <el-form-item label="类型:" prop="postsType">
@@ -84,30 +85,12 @@
         </el-form>
       </div>
     </div>
-    <!--    <div style="width: 500px;background-color: #ffffff;margin: 0 50px 0 30px;">-->
-    <!--      <div style="height: 50px;line-height: 50px;border-bottom: 1px solid #EEEEEE;text-align: center;font-weight: 700;font-size: 17px;color: rgb(64, 158, 255);">内容</div>-->
-    <!--      <el-input v-model="form.title" clearable></el-input>-->
-    <!--      <quill-editor v-model="form.content" :options="editorOptions"></quill-editor>-->
-    <!--      <div class="rule" style="margin: 20px 20px;">-->
-    <!--        <p>可发三种帖子闲置贴、求购贴、校园贴</p>-->
-    <!--        <p>闲置贴：发布自己闲置的物品标题、内容、图片均要填写</p>-->
-    <!--        <p>校园贴：分享在校园遇到的趣事,记录校园生活,标题、内容均要填写图片选填</p>-->
-    <!--        <p>小提示：</p>-->
-    <!--        <p>不允许发布不健康的东西,一经发现永久封号！！！！！</p>-->
-    <!--      </div>-->
-    <!--      <div style="text-align: center;margin-top: 50px;">-->
-    <!--        <img src="../../../public/img/logo.png" style="width: 200px;">-->
-    <!--      </div>-->
-    <!--      <div>-->
-    <!--        <div style="font-size: 40px;font-weight: 700;text-align: center;">TAOLVTC</div>-->
-    <!--      </div>-->
-    <!--    </div>-->
   </div>
 </template>
 
 <script>
 import {add} from '@/api/posts'
-// import top from '../top/index.vue'
+import {listAllCategory} from '../../api/posts'
 export default {
   data () {
     return {
@@ -116,11 +99,12 @@ export default {
       dynamicTags: [],
       inputVisible: false,
       inputValue: '',
+      options: [],
       form: {
         postsType: '1',
         title: '',
         content: '',
-        school: '1',
+        school: '2',
         price: 0,
         files: []
       },
@@ -172,6 +156,13 @@ export default {
     setInterval(function () { // 定位当前菜单
       that.activeIndex = that.$router.currentRoute.path
     }, 1000)
+  },
+  beforeCreate () {
+    listAllCategory().then(res => {
+      console.log(res.data)
+      this.options = this.options.concat(res.data.slice(1))
+      console.log(this.options)
+    })
   },
   methods: {
     backFun () {

@@ -20,4 +20,7 @@ public class PostsCommentVO extends PostsComment {
 
     @ApiModelProperty(value = "所属用户")
     private UserBasicInfoVO userInfo;
+
+    @ApiModelProperty(value = "是否点赞")
+    private Boolean like;
 }

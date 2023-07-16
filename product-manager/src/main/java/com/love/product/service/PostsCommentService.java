@@ -18,4 +18,6 @@ public interface PostsCommentService extends IService<PostsComment> {
     Result<List<PostsCommentVO>> listByPostsId(Long postsId);
 
     Result<?> del(Long userId, Long id);
+
+    Result<?> addCommentLike(Long userId, Long commentId, Integer deleted);
 }
