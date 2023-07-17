@@ -11,12 +11,13 @@
             {{item.userInfo.nickname}}
           </div>
           <div class="follow-item-time">
-            {{item.createTime}} {{item.followStatus === 2?' Ta关注了你':(item.followStatus === 1?'你关注了Ta':'你们已互关')}}
+            {{item.userInfo.remark}}
+<!--            {{item.followStatus === 2?' Ta关注了你':(item.followStatus === 1?'你关注了Ta':'你们已互关')}}-->
           </div>
         </div>
         <div class="follow-item-but-box">
           <el-button size="mini" round :type="item.followStatus !== 2?'':'warning'" @click="addFollowFun(item,item.followStatus !== 2?'1':'0')">
-            {{item.followStatus !== 2?'取消关注':'关注'}}
+            {{item.followStatus !== 2?(item.followStatus === 1?'已关注':'已互关'):'关注'}}
           </el-button>
         </div>
       </div>

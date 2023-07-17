@@ -6,10 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.love.product.entity.Category;
-import com.love.product.entity.History;
-import com.love.product.entity.Posts;
-import com.love.product.entity.PostsLike;
+import com.love.product.entity.*;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.dto.PostsSearchDTO;
@@ -17,6 +14,7 @@ import com.love.product.entity.req.PostsPageReq;
 import com.love.product.entity.vo.*;
 import com.love.product.enumerate.*;
 import com.love.product.mapper.PostsMapper;
+import com.love.product.mapper.TagsMapper;
 import com.love.product.service.*;
 import com.love.product.strategy.context.SearchStrategyContext;
 import com.love.product.util.JwtUtil;
@@ -46,7 +44,9 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
     @Resource
     private  PostsMapper postsMapper;
     @Resource
-    private TagService tagService;
+    private TagsService tagsService;
+    @Resource
+    private TagsMapper tagsMapper;
     @Resource
     private HistoryService historyService;
 
@@ -182,12 +182,34 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
             posts.setImgPath(imgPathList.stream().map(String::valueOf).collect(Collectors.joining(",")));
         }
         boolean flag = save(posts);
-        if(flag){
+        //添加标签
+        List<Long> tagList = getTagsList(postsVO);
+        log.info(tagList.toString());
+        log.info(String.valueOf(posts.id));
+        if (flag) {
+            tagsMapper.savePostsTags(posts.id,tagList);
             return Result.OK("发布成功",posts);
         }
         return Result.failMsg("发布失败，请重试");
     }
-
+    /**
+     * 将数据库不存在的标签新增
+     * @param article
+     * @return
+     */
+    private List<Long> getTagsList(PostsVO article) {
+        List<Long> tagList = new ArrayList<>();
+        article.getTags().forEach(item ->{
+            Tags tags = tagsMapper.selectOne(new QueryWrapper<Tags>().eq("tag_name", item));
+            if (tags == null){
+                tags = Tags.builder().id(IdWorker.getId()).tagName(item).build();
+                tagsMapper.insert(tags);
+            }
+            log.info(String.valueOf(tags));
+            tagList.add(tags.getId());
+        });
+        return tagList;
+    }
     /**
      * 分页
      * @param userId

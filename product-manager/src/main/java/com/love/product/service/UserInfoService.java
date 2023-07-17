@@ -82,4 +82,20 @@ public interface UserInfoService extends IService<UserInfo> {
     Result<?> sendCode(String email, String type);
 
     Result<?> reset(Long userId,RegisterVO resetVO);
+
+    Result listUser(String username, Integer loginType);
+
+    Result insertUser(UserInfo user);
+
+    Result getUserById(Integer id);
+
+    Result updateUser(UserInfo user);
+
+    Result deleteBatch(List<Integer> ids);
+
+    Result getCurrentUserInfo();
+
+    Result getCurrentUserMenu();
+
+    Result updatePassword(Map<String, String> map);
 }

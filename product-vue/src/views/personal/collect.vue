@@ -73,7 +73,7 @@
         <div class="collect-item" v-for="(item2,index2) in item" :key="item2.id">
           <el-card v-if="item2.posts" :body-style="{ padding: '0px' }">
             <div class="image-box" style="cursor: pointer;" @click="detailFun(item2.posts)">
-                <div style="text-align: center;font-size: 25px;width: 220px;height: 150px;overflow: hidden">
+                <div style="text-align: center;font-size: 25px;overflow: hidden">
                   <el-image v-if="item2.posts.coverPath" :src="item2.posts.coverPath" class="collect-box-img">
                     <div slot="error" class="image-slot" style="padding:25%;">
                       <i class="el-icon-picture-outline"></i>
@@ -87,7 +87,7 @@
                 <p style="position: relative;left: 15px;">发布于:{{item2.posts.createTime}}</p>
               </div>
             </div>
-            <div class="collect-box-title" @click="detailFun(item2.posts)">{{item2.posts.title}}</div>
+            <div class="collect-box-title" @click="detailFun(item2.posts)">{{item2.posts?item2.posts.title:"帖子不见了"}}</div>
             <div style="padding: 5px"> <span style="color: #999;">收藏于:{{item2.updateTime}}</span>
               <el-dropdown size="small" style="float: right;">
                 <span><i class="el-icon-more" style="padding: 5px;"></i></span>

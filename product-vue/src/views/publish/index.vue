@@ -66,20 +66,38 @@
               @close="handleClose(tag)">
               {{tag}}
             </el-tag>
-            <el-input
-              class="input-new-tag"
-              v-if="inputVisible"
-              v-model="inputValue"
-              ref="saveTagInput"
-              size="small"
-              @keyup.enter.native="handleInputConfirm"
-              @blur="handleInputConfirm">
-            </el-input>
-            <el-button v-else class="button-new-tag" size="small" @click="showInput">+ 添加标签</el-button>
+            <el-popover  placement="top-start"
+                         width="400"
+                         trigger="click">
+              <div class="popover-container">
+              <el-tag
+                v-for="(item,index) in Tags"
+                :key="index"
+                style="margin:5px"
+                :class="tagClass(item)"
+                @click="addTag(item)">
+                {{ item }}
+              </el-tag>
+              </div>
+              <el-input
+                style="width: 100%"
+                class="input-new-tag"
+                v-if="dynamicTags && dynamicTags.length < 3"
+                v-model="inputValue"
+                ref="saveTagInput"
+                size="small"
+                @keyup.enter.native="handleInputConfirm"
+                @blur="handleInputConfirm">
+              </el-input>
+            <el-button v-if="!inputVisible"
+                       v-show="dynamicTags.length < 3"
+                       class="button-new-tag"
+                       slot="reference"
+                       size="small">+ 添加标签</el-button>
+            </el-popover>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="submitForm('form')" class="el-icon-position">立即发布</el-button>
-            <!--            <el-button @click="saveForm('form')">保存草稿</el-button>-->
             <el-button @click="resetForm('form')">重置</el-button>
           </el-form-item>
         </el-form>
@@ -96,7 +114,8 @@ export default {
     return {
       loading: false,
       labelPosition: 'left',
-      dynamicTags: [],
+      dynamicTags: ['1', '2', '3'],
+      Tags: ['1', '2', '3', '4', '5', '6'],
       inputVisible: false,
       inputValue: '',
       options: [],
@@ -151,6 +170,14 @@ export default {
       }
     }
   },
+  computed: {
+    tagClass () {
+      return function (item) {
+        const index = this.dynamicTags.indexOf(item.name)
+        return index !== -1 ? 'tag-item-select' : 'tag-item'
+      }
+    }
+  },
   mounted () {
     let that = this
     setInterval(function () { // 定位当前菜单
@@ -165,6 +192,27 @@ export default {
     })
   },
   methods: {
+    addTag (item) {
+      if (this.dynamicTags.length > 2) {
+        this.$message.error('最多添加三个标签,如需继续添加,请先删除一个!')
+        return false
+      }
+      if (this.dynamicTags.indexOf(item) === -1) {
+        this.dynamicTags.push(item)
+      }
+    },
+    saveTag () {
+      if (this.tagName.trim() !== '') {
+        this.addTag({
+          name: this.tagName
+        })
+        this.tagName = ''
+      }
+    },
+    removeTag (item) {
+      const index = this.dynamicTags.indexOf(item)
+      this.article.tags.splice(index, 1)
+    },
     backFun () {
       this.$router.push({path: '/'})
     },
@@ -206,6 +254,7 @@ export default {
           formData.append('description', this.form.description)
           formData.append('content', this.form.content)
           formData.append('school', this.form.school)
+          formData.append('tags', this.dynamicTags)
           formData.append('price', this.form.price)
           add(formData).then(res => {
             this.loading = false

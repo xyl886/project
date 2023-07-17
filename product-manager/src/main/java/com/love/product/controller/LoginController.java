@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -51,11 +52,10 @@ public class LoginController {
     @ApiOperation(value = "账密登录", notes = "账密登录")
     @GetMapping("/userLogin")
     public Result<UserInfoVO> login(
-        LoginVO loginVO,
+        @Validated LoginVO loginVO,
             HttpServletRequest request, HttpServletResponse response
     ) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        log.info(request+","+response+","+String.valueOf(authentication));
         if (authentication != null) {//清除认证
             new SecurityContextLogoutHandler().logout(request, response, authentication);
         }

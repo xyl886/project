@@ -273,6 +273,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         }
         return Result.failMsg("用户异常，请联系管理员！");
     }
+
     @Override
     public UserInfoVO getByEmail(String email){
         UserInfoVO userInfoVO = null;
@@ -430,4 +431,45 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             return Result.failMsg("用户不存在!");
         }
     }
+
+    @Override
+    public Result listUser(String username, Integer loginType) {
+        return null;
+    }
+
+    @Override
+    public Result insertUser(UserInfo user) {
+        return null;
+    }
+
+    @Override
+    public Result getUserById(Integer id) {
+        return null;
+    }
+
+    @Override
+    public Result updateUser(UserInfo user) {
+        return null;
+    }
+
+    @Override
+    public Result deleteBatch(List<Integer> ids) {
+        return null;
+    }
+
+    @Override
+    public Result getCurrentUserInfo() {
+        return null;
+    }
+
+    @Override
+    public Result getCurrentUserMenu() {
+        return null;
+    }
+
+    @Override
+    public Result updatePassword(Map<String, String> map) {
+        return null;
+    }
+
 }

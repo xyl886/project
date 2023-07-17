@@ -16,6 +16,7 @@ import reactor.util.annotation.Nullable;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @author Administrator
@@ -54,6 +55,8 @@ public class PostsVO{
     @NotNull(message = "请选择分类")
     @ApiModelProperty(value = "校区")
     public Integer school;
+
+    private List<String> tags;
 
     @ApiModelProperty(value = "单价")
     public BigDecimal price;

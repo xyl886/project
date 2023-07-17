@@ -52,8 +52,7 @@
             <div :class="message.sentByMe?'message-right':'message-left'">
               <el-image class="message-avatar" :src="message?message.fromIdAvatar:''"></el-image>
               <div class="content">
-<!--                <div class="text" style="" v-html="replaceFace(message.message)"></div>-->
-                <div class="text" style="border-radius: 10px" v-html="message.message"></div>
+                <div class="text" style="border-radius: 10px;">{{message.message}}</div>
               </div>
             </div>
             </div>
@@ -62,18 +61,18 @@
         <el-divider style="margin: 10px 0"></el-divider>
         <div v-if="selectedUser" style="">
           <el-row :gutter="20">
-            <el-col :span="2"> <el-button>图片</el-button></el-col>
+            <el-col :span="2"> <el-button circle><i class="el-icon-picture"></i></el-button></el-col>
             <el-col :span="2">
               <el-popover placement="top" trigger="click" class="popover" style="margin: 20px;">
               <custom-emoji v-if="showEmojiCom" class="emoji-component" @addemoji="addEmoji"/>
-              <el-button slot="reference" @click.stop="showEmojiCom = !showEmojiCom" style="line-height:1px;height: 33px;">
+              <el-button slot="reference" circle @click.stop="showEmojiCom = !showEmojiCom">
                 😃
               </el-button>
             </el-popover>
             </el-col>
           </el-row>
           <div class="message-input">
-            <textarea class="textarea" v-model="selectedUserMessage.message"></textarea>
+            <textarea class="textarea" @keyup.enter="sendMsg" v-model="selectedUserMessage.message"></textarea>
           </div>
           <div class="button-container">
           <el-button type="primary" size="mini" style="margin-bottom: 5px;margin-right: 10px" @click="sendMsg">发送</el-button>
@@ -130,6 +129,9 @@ export default {
     ])
   },
   methods: {
+    handlerShowEmoji () {
+      this.showEmojiCom = false
+    },
     addEmoji (emoji = '') {
       console.log(emoji)
       this.selectedUserMessage.message += emoji
@@ -156,21 +158,12 @@ export default {
         this.userList = res.data.filter(
           (user) => user.id !== this.userInfo.id
         )
-        console.log(this.userList)
+        this.selectUser(this.userList[0])
+        console.log(this.userList[0])
       })
-      this.selectedUser = this.userList[0]
-      this.selectedUserMessage.user = this.userList[0]
       this.selectedUserMessage.message = ''
     },
     selectUser (user) {
-      // if (user.isFriend === 0 || user.isFriend === 2) {
-      //   // 不是好友，不能聊天
-      //   Message.error({
-      //     message: "非好友，不能聊天", // 错误信息
-      //     duration: 3000, // 持续时间（毫秒）
-      //   });
-      //   return;
-      // }
       if (!this.messageList[this.userInfo.id + user.beFollowedUserId]) {
         this.$set(this.messageList, this.userInfo.id + user.beFollowedUserId, [])
       }
@@ -180,6 +173,7 @@ export default {
         this.$set(this.messageList, this.userInfo.id + user.beFollowedUserId, response.data)
         console.log(response.data)
       })
+      console.log(this.messageList)
       console.log(user)
       this.selectedUser = user
       this.selectedUserMessage.user = user
@@ -205,13 +199,19 @@ export default {
         //     []
         //   );
         // }
-        this.messageList[this.userInfo.id + this.selectedUserMessage.user.beFollowedUserId].push(
-          this.selectedUserMessage.message
-        )
+        this.messageList[this.userInfo.id + this.selectedUserMessage.user.beFollowedUserId].push({
+          fromId: this.userInfo.id,
+          fromIdAvatar: this.userInfo.avatar,
+          message: this.selectedUserMessage.message,
+          sentByMe: true,
+          sentTime: Date.now(),
+          Id: this.selectedUserMessage.user.beFollowedUserId
+        })
         console.log(this.messageList)
+        console.log(this.selectedUserMessage.message)
         this.selectedUserMessage.message = '' // 清空输入框内容
       } else {
-        console.log('请输入信息')
+        this.$message.warning('请输入信息')
       }
     },
     deleteAllMsgs () {
@@ -276,12 +276,15 @@ export default {
     this.connect()
     this.listAllUsers()
     console.log(this.userInfo)
+    document.addEventListener('click', this.handlerShowEmoji)
   },
   mounted () {
   },
   beforeDestroy () {
     this.disconnect()
-  }
+    document.removeEventListener('click', this.handlerShowEmoji)
+  },
+
 }
 </script>
 
@@ -292,6 +295,12 @@ export default {
 .el-menu-item{
   padding: 5px 10px!important;
   height: 70px!important;
+}
+.el-menu-item.is-active{
+  color: #000;
+}
+.el-menu-item.selected{
+  background-color: #f4f5f7;
 }
 .container {
   display: flex;
@@ -320,15 +329,6 @@ export default {
 li {
   cursor: pointer;
   transition: color 0.3s ease;
-}
-
-li:hover {
-  color: blue;
-}
-
-li.selected {
-  color: blue;
-  font-weight: bold;
 }
 
 .send-button {
@@ -381,8 +381,9 @@ li.selected {
   margin-left: 5px;
 }
 .content >.text{
-  min-width:35px;
-  max-width:500px;
+  min-height: 40px;
+  min-width: 40px;
+  max-width: 500px;
   display:inline-block;
   background-color: #fff;
   margin-left: 10px;

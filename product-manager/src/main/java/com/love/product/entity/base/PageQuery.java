@@ -47,7 +47,6 @@ public class PageQuery implements Serializable {
         if (pageNum <= 0) {
             pageNum = DEFAULT_PAGE_NUM;
         }
-        log.info(pageNum+","+pageSize+","+currentPage);
         return new Page<>(pageNum, pageSize);
     }
 
