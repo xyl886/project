@@ -129,6 +129,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     @Override
     public Result<UserInfoVO> login(LoginVO loginVO){
         UserInfoVO userInfoVO = getByEmail(loginVO.email);
+        log.info(String.valueOf(loginVO));
         if(userInfoVO != null){
             if(userInfoVO.getDeleted().equals(YesOrNo.YES.getValue())){
                 return Result.failMsg("登录失败，账号已注销");

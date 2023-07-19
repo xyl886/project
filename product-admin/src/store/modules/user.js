@@ -1,15 +1,14 @@
-import { logout, getInfo, getMenuTree } from '@/api/user'
+/* eslint-disable eqeqeq */
+import {userLogin, userLogout} from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/auth'
-import { resetRouter } from '@/router'
 
 const getDefaultState = () => {
   return {
-    token: getToken(),
+    my_token: getToken(),
     name: '',
-    role: [],
-    routes: [],
-    pres: [],
-    avatar: ''
+    avatar: '',
+    role: '',
+    userInfo: localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : {}
   }
 }
 
@@ -20,85 +19,71 @@ const mutations = {
     Object.assign(state, getDefaultState())
   },
   SET_TOKEN: (state, token) => {
-    state.token = token
+    state.my_token = token
   },
   SET_NAME: (state, name) => {
     state.name = name
   },
-  SET_ROLE: (state, role) => {
-    state.role = role
-  },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
   },
-  SET_ROUTES: (state, routes) => {
-    state.routes = routes
+  SET_ROLE: (state, role) => {
+    state.role = role
   },
-  SET_PRES: (state, btnList) => {
-    state.pres = btnList
+  SET_USER_INFO: (state, action) => {
+    state.userInfo = action
+    localStorage.setItem('userInfo', JSON.stringify(state.userInfo))
   }
 }
 
 const actions = {
   // user login
-  login({ commit }, res) {
-    // const { username, password,code,uuid} = userInfo
+  login ({ commit }, userInfo) {
     return new Promise((resolve, reject) => {
-      commit('SET_TOKEN', res.token)
-      commit('SET_ROLE', 'admin')
-      setToken(res.token)
-      resolve(res)
-    })
-  },
-  getMenu({ commit, state }) {
-    return new Promise((resolve, reject) => {
-      getMenuTree().then(response => {
-        const menuArr = response.data
-        commit('SET_ROUTES', menuArr)
-        const btnList = []
-        menuArr.forEach(item => {
-          item.children.forEach(item1 => {
-            const children = item1.children
-            if (children != null) {
-              item1.children.forEach(item2 => {
-                btnList.push(item2.url)
-              })
-            }
-          })
-        })
-        commit('SET_PRES', btnList)
-        resolve(response)
-      }).catch(error => {
-        reject(error)
-      })
-    })
-  },
-  // get user info
-  getInfo({ commit, state }) {
-    return new Promise((resolve, reject) => {
-      getInfo(state.token).then(response => {
-        const { data } = response
-        if (!data) {
-          return reject('Verification failed, please Login again.')
+      userLogin(userInfo).then(res => {
+        if (res.code === 200) {
+          commit('SET_TOKEN', res.data.accessToken)
+          setToken(res.data.accessToken)
+          commit('SET_ROLE', res.data.role)
+          commit('SET_USER_INFO', res.data)
+          console.log(res.data)
+          // commit('SET_USER_INFO', {id: res.data.id, avatar: res.data.avatar, nickname: res.data.nickname})
         }
-        const { username, avatar } = data
-        commit('SET_NAME', username)
-        commit('SET_AVATAR', avatar)
-        resolve(data)
+        resolve(res)
       }).catch(error => {
         reject(error)
       })
     })
   },
 
+  // get user info
+  getInfo ({ commit, state }) {
+    // return new Promise((resolve, reject) => {
+    //   getInfo(state.my_token).then(response => {
+    //     const { data } = response
+    //
+    //     if (!data) {
+    //       return reject('Verification failed, please Login again.')
+    //     }
+    //
+    //     const { name, avatar } = data
+    //
+    //     commit('SET_NAME', name)
+    //     commit('SET_AVATAR', avatar)
+    //     resolve(data)
+    //   }).catch(error => {
+    //     reject(error)
+    //   })
+    // })
+  },
+
   // user logout
-  logout({ commit, state }) {
+  logout ({ commit }) {
     return new Promise((resolve, reject) => {
-      logout().then(() => {
+      userLogout().then(res => {
         removeToken() // must remove  token  first
-        resetRouter()
         commit('RESET_STATE')
-        resolve()
+        resolve(res)
       }).catch(error => {
         reject(error)
       })
@@ -106,19 +91,21 @@ const actions = {
   },
 
   // remove token
-  resetToken({ commit }) {
+  resetToken ({ commit }) {
     return new Promise(resolve => {
       removeToken() // must remove  token  first
       commit('RESET_STATE')
       resolve()
     })
+  },
+  SET_USER_INFO ({ commit }, data) {
+    commit('SET_USER_INFO', data)
   }
 }
 
 export default {
-  namespaced: true,
+  // namespaced: true,
   state,
   mutations,
   actions
 }
-

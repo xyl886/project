@@ -1,23 +1,6 @@
 module.exports = {
 
-  title: '拾壹博客后台管理',
-
-  /**
-   * 侧边栏主题 深色主题theme-dark，浅色主题theme-light
-   */
-  sideTheme: 'theme-dark',
-
-  /**
-   * @type {boolean} true | false
-   * @description Whether show the settings right-panel
-   */
-  showSettings: true,
-
-  /**
-   * @type {boolean} true | false
-   * @description Whether need tagsView
-   */
-  tagsView: true,
+  title: 'demo-test', // 网站标题
 
   /**
    * @type {boolean} true | false

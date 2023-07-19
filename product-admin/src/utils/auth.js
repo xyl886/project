@@ -1,26 +1,15 @@
-import Cookies from 'js-cookie'
+const TokenKey = 'my_token'
+const userInfoKey = 'userInfo'
 
-const TokenKey = 'Admin-Token'
-
-export function getToken() {
-  return Cookies.get(TokenKey)
+export function getToken () {
+  return localStorage.getItem(TokenKey)
 }
 
-export function setToken(token) {
-  return Cookies.set(TokenKey, token)
+export function setToken (token) {
+  return localStorage.setItem(TokenKey, token)
 }
 
-export function removeToken() {
-  return Cookies.remove(TokenKey)
-}
-
-export function hasAuth(perms, perm) {
-  let hasA = false
-  perms.forEach(p => {
-    if (p.indexOf(perm) !== -1) {
-      hasA = true
-      return false
-    }
-  })
-  return hasA
+export function removeToken () {
+  localStorage.removeItem(userInfoKey)
+  return localStorage.removeItem(TokenKey)
 }

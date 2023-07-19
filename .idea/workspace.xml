@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="660fe961-3438-440a-b6bb-65f17bcc2055" name="更改" comment="gg">
+      <change afterPath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/product-admin/build/build.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/product-admin/build/check-versions.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/product-admin/build/logo.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/product-admin/build/utils.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/product-admin/build/vue-loader.conf.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/product-admin/build/webpack.base.conf.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/product-admin/build/webpack.dev.conf.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/product-admin/build/webpack.prod.conf.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/product-admin/config/dev.env.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/product-admin/config/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/product-admin/config/prod.env.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/product-admin/config/test.env.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/product-admin/src/icons/svg/article.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/product-admin/src/icons/svg/editPassword.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/product-admin/src/icons/svg/giteeSvg.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/product-admin/src/icons/svg/great.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/product-admin/src/icons/svg/site.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/product-admin/src/icons/svg/validCode.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/product-admin/src/icons/svg/website.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/product-admin/src/icons/svg/wenhao.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/product-admin/src/sysviews/charts/components/PanelGroup.vue" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/product-admin/src/utils/date.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/product-admin/src/utils/store.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/product-admin/src/utils/tag-cloud.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/帖子.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/blog-error.2023-07-12.0.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/blog-info.2023-07-12.0.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/blog-info.2023-07-13.0.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/spring.log" beforeDir="false" afterPath="$PROJECT_DIR$/logs/spring.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/spring.log.2023-07-10.0.gz" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/spring.log.2023-07-11.0.gz" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/.env.development" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/.env.production" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/LICENSE" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/babel.config.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/build/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/blog-admin/build/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/product-admin/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/public/favicon.ico" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/public/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/App.vue" beforeDir="false" afterPath="$PROJECT_DIR$/product-admin/src/App.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/api/user.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/assets/404_images/404.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/assets/404_images/404_cloud.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/components/Breadcrumb/index.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/components/GithubCorner/index.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/components/Hamburger/index.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/components/PanThumb/index.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/components/RightPanel/index.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/components/Screenfull/index.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/components/SvgIcon/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/product-admin/src/components/SvgIcon/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/components/TextHoverEffect/Mallki.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/components/ThemePicker/index.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/icons/svg/peoples.svg" beforeDir="false" afterPath="$PROJECT_DIR$/product-admin/src/icons/svg/peoples.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/layout/components/AppMain.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/layout/components/Navbar.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/layout/components/Settings/index.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/layout/components/Sidebar/FixiOSBug.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/layout/components/Sidebar/Item.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/layout/components/Sidebar/Link.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/layout/components/Sidebar/Logo.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/layout/components/Sidebar/SidebarItem.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/layout/components/Sidebar/index.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/layout/components/TagsView/ScrollPane.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/layout/components/TagsView/index.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/layout/components/index.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/layout/index.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/layout/mixin/ResizeHandler.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/product-admin/src/main.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/permission.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/router/index.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/settings.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/store/getters.js" beforeDir="false" afterPath="$PROJECT_DIR$/product-admin/src/store/getters.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/store/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/product-admin/src/store/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/store/modules/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/product-admin/src/store/modules/app.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/store/modules/settings.js" beforeDir="false" afterPath="$PROJECT_DIR$/product-admin/src/store/modules/settings.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/store/modules/tagsView.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/store/modules/user.js" beforeDir="false" afterPath="$PROJECT_DIR$/product-admin/src/store/modules/user.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/styles/element-ui.scss" beforeDir="false" afterPath="$PROJECT_DIR$/product-admin/src/styles/element-ui.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/styles/element-variables.scss" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/styles/index.scss" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/styles/mixin.scss" beforeDir="false" afterPath="$PROJECT_DIR$/product-admin/src/styles/mixin.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/styles/sidebar.scss" beforeDir="false" afterPath="$PROJECT_DIR$/product-admin/src/styles/sidebar.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/styles/transition.scss" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/styles/variables.scss" beforeDir="false" afterPath="$PROJECT_DIR$/product-admin/src/styles/variables.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/utils/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/product-admin/src/utils/auth.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/utils/clipboard.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/utils/get-page-title.js" beforeDir="false" afterPath="$PROJECT_DIR$/product-admin/src/utils/get-page-title.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/utils/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/product-admin/src/utils/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/utils/request.js" beforeDir="false" afterPath="$PROJECT_DIR$/product-admin/src/utils/request.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/utils/scroll-to.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/utils/validate.js" beforeDir="false" afterPath="$PROJECT_DIR$/product-admin/src/utils/validate.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/views/dashboard/admin/components/BoxCard.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/views/dashboard/admin/components/PanelGroup.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/views/dashboard/admin/components/mixins/resize.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/views/dashboard/admin/index.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/views/dashboard/index.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/views/login/components/SocialSignin.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/views/login/index.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/vue.config.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/controller/LoginController.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/controller/LoginController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/service/impl/UserInfoServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/service/impl/UserInfoServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-vue/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/product-vue/src/router/index.js" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="mapper" />
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="useMavenConfig" value="true" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectId" id="2SgVazUO958OTNF4XO16Fg5Lcyj" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+    <option name="showVisibilityIcons" value="true" />
+    <option name="sortByType" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "master",
+    "javascript.nodejs.core.library.configured.version": "16.15.0",
+    "javascript.nodejs.core.library.typings.version": "16.18.38",
+    "last_opened_file_path": "C:/Users/Administrator/Desktop/product/product-admin/src/utils",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "SDK",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "preferences.keymap",
+    "spring.configuration.checksum": "566c8b7827bd9a0e48cc67e048b199a9",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Administrator\Desktop\product\product-admin\src\utils" />
+      <recent name="C:\Users\Administrator\Desktop\product\product-admin" />
+      <recent name="C:\Users\Administrator\Desktop\product\product-admin\src\components" />
+      <recent name="C:\Users\Administrator\Desktop\product\product-admin\src" />
+      <recent name="C:\Users\Administrator\Desktop\product\product-admin\src\sysviews\charts\components" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.love.product.controller.system" />
+      <recent name="com.love.product.entity.dto" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="configurationTypes">
+      <set>
+        <option value="SpringBootApplicationConfigurationType" />
+      </set>
+    </option>
+  </component>
+  <component name="RunManager" selected="npm.dev (1)">
+    <configuration name="BlogApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="shiyiblog" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.shiyi.BlogApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ProductApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
+      <module name="product" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.love.product.ProductApplication" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.love.product.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="dev (1)" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/product-admin/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="dev" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="dev (2)" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/blog-admin/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="dev" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="dev" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/product-vue/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="dev" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="npm.dev (1)" />
+        <item itemvalue="npm.dev (2)" />
+        <item itemvalue="Spring Boot.ProductApplication" />
+        <item itemvalue="npm.dev" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="应用程序级" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="默认任务">
+      <changelist id="660fe961-3438-440a-b6bb-65f17bcc2055" name="更改" comment="" />
+      <created>1689568280309</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1689568280309</updated>
+      <workItem from="1689568284329" duration="1008000" />
+      <workItem from="1689575508700" duration="17526000" />
+      <workItem from="1689595134202" duration="614000" />
+      <workItem from="1689595895142" duration="12000" />
+      <workItem from="1689596086228" duration="39000" />
+      <workItem from="1689596433070" duration="7000" />
+      <workItem from="1689597270108" duration="1855000" />
+      <workItem from="1689641777098" duration="11657000" />
+      <workItem from="1689675224700" duration="6302000" />
+      <workItem from="1689683997380" duration="11972000" />
+    </task>
+    <task id="LOCAL-00001" summary="gg">
+      <created>1689597549328</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1689597549328</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="gg" />
+    <option name="LAST_COMMIT_MESSAGE" value="gg" />
+  </component>
+</project>

@@ -5,9 +5,7 @@ const state = {
     opened: Cookies.get('sidebarStatus') ? !!+Cookies.get('sidebarStatus') : true,
     withoutAnimation: false
   },
-  openNotificationDialogVisible: true, // 仪表盘弹框通知
-  device: 'desktop',
-  size: Cookies.get('size') || 'medium'
+  device: 'desktop'
 }
 
 const mutations = {
@@ -25,26 +23,20 @@ const mutations = {
     state.sidebar.opened = false
     state.sidebar.withoutAnimation = withoutAnimation
   },
-  SetOpenNotification: (state, openNotificationDialogVisible) => {
-    state.openNotificationDialogVisible = openNotificationDialogVisible
-  },
   TOGGLE_DEVICE: (state, device) => {
     state.device = device
   }
 }
 
 const actions = {
-  toggleSideBar({ commit }) {
+  toggleSideBar ({ commit }) {
     commit('TOGGLE_SIDEBAR')
   },
-  closeSideBar({ commit }, { withoutAnimation }) {
+  closeSideBar ({ commit }, { withoutAnimation }) {
     commit('CLOSE_SIDEBAR', withoutAnimation)
   },
-  toggleDevice({ commit }, device) {
+  toggleDevice ({ commit }, device) {
     commit('TOGGLE_DEVICE', device)
-  },
-  setOpenNotification({ commit }, openNotificationDialogVisible) {
-    commit('SetOpenNotification', openNotificationDialogVisible)
   }
 }
 

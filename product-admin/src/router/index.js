@@ -1,158 +1,171 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import Login from '../sysviews/Login.vue'
+import NotFound from '../sysviews/404.vue'
+import Home from '../sysviews/Home.vue'
 
 Vue.use(Router)
-
-/* Layout */
-import Layout from '@/layout'
-
-/**
- * Note: sub-menu only appear when route children.length >= 1
- * Detail see: https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
- *
- * hidden: true                   if set true, item will not show in the sidebar(default is false)
- * alwaysShow: true               if set true, will always show the root menu
- *                                if not set alwaysShow, when item has more than one children route,
- *                                it will becomes friendLink mode, otherwise not show the root menu
- * redirect: noRedirect           if set noRedirect will no redirect in the breadcrumb
- * name:'router-name'             the name is used by <keep-alive> (must set!!!)
- * meta : {
-    roles: ['admin','editor']    control the page roles (you can set multiple roles)
-    title: 'title'               the name show in sidebar and breadcrumb (recommend set)
-    icon: 'svg-name'/'el-icon-x' the icon show in the sidebar
-    breadcrumb: false            if set false, the item will hidden in breadcrumb(default is true)
-    activeMenu: '/example/list'  if set path, the sidebar will highlight the path you set
-  }
- */
-
-/**
- * constantRoutes
- * a base page that does not have permission requirements
- * all roles can be accessed
- */
 export const constantRoutes = [
   {
-    path: '/login',
-    component: () => import('@/views/login/index'),
+    path: '/',
+    name: '主页',
+    redirect: '/login',
     hidden: true
   },
-
+  {
+    path: '/login',
+    component: Login,
+    hidden: true
+  },
   {
     path: '/404',
-    component: () => import('@/views/404'),
+    component: NotFound,
     hidden: true
   },
-
   {
-    path: '/',
-    component: Layout,
-    redirect: '/dashboard',
-    children: [{
-      path: 'dashboard',
-      name: 'Dashboard',
-      component: () => import('@/views/dashboard/index'),
-      meta: { title: '首页', icon: 'dashboard', affix: true }
-    }]
+    path: '/index',
+    component: Home,
+    name: 'Charts',
+    iconCls: 'el-icon-postcard',
+    children: [
+      { path: '/index/echarts', name: '数据统计', component: () => import('../sysviews/charts/echarts.vue') }
+    ]
+  },
+  {
+    path: '/index',
+    component: Home,
+    name: '帖子管理',
+    iconCls: 'el-icon-postcard', // 图标样式class
+    children: [
+      { path: '/index/main', name: '帖子管理', component: () => import('../sysviews/post/Posts.vue') },
+      { path: '/index/category', name: '分类管理', component: () => import('../sysviews/post/Category.vue') },
+      { path: '/index/tags', name: '标签管理', component: () => import('../sysviews/post/Tags.vue') }
+    ]
+  },
+  {
+    path: '/index',
+    component: Home,
+    name: '系统管理',
+    iconCls: 'el-icon-postcard',
+    children: [
+      { path: '/index/user', name: '用户管理', component: () => import('../sysviews/system/User.vue') },
+      { path: '/index/role', name: '角色管理', component: () => import('../sysviews/system/Role.vue') }
+    ]
+  },
+  {
+    path: '/index',
+    component: Home,
+    name: '消息管理',
+    iconCls: 'el-icon-message',
+    children: [
+      { path: '/index/message', name: '消息管理', component: () => import('../sysviews/message/message.vue') },
+      { path: '/index/comment', name: '评论管理', component: () => import('../sysviews/message/comment.vue') },
+      { path: '/index/feedback', name: '反馈管理', component: () => import('../sysviews/message/feedback.vue') }
+    ]
   }
-  /* {
-    path: '/articles',
-    component: Layout,
-    redirect: '/articles/index',
-    name: 'articles',
-    meta: { title: '文章管理', icon: 'article' },
-    children: [
-      {
-        path: 'index',
-        name: 'articles',
-        component: () => import('@/views/articles/index'),
-        meta: { title: '文章列表', icon: 'articleList',noCache: true}
-      },
-      {
-        path: 'tags',
-        name: 'tags',
-        component: () => import('@/views/tags'),
-        meta: { title: '标签管理', icon: 'tag',noCache: true }
-      }
-      /!*{
-        path: 'add',
-        name: 'add_articles',
-        component: () => import('@/views/articles/add'),
-        meta: { title: '添加文章', icon: 'form'},
-        hidden:true
-      },
-      {
-        path: 'edit',
-        name: 'edit_articles',
-        component: () => import('@/views/articles/edit'),
-        meta: { title: '修改文章', icon: 'form'},
-        hidden:true
-      }*!/
-    ]
-  },
-  {
-    path: '/site',
-    component: Layout,
-    redirect: '/friendLink/index',
-    name: 'site',
-    meta: { title: '网站管理', icon: 'site' },
-    children: [
-      {
-        path: 'friendLink',
-        name: 'friendLink',
-        component: () => import('@/views/friendLink'),
-        meta: { title: '友链管理', icon: 'friend',noCache: true }
-      },
-      {
-        path: 'news',
-        name: 'news',
-        component: () => import('@/views/news'),
-        meta: { title: '留言管理', icon: 'news',noCache: true }
-      },
-      {
-        path: 'config',
-        name: 'config',
-        component: () => import('@/views/system/config'),
-        meta: { title: '配置管理', icon: 'config',noCache: true }
-      }
-    ]
-  },
-  {
-    path: '/system',
-    component: Layout,
-    redirect: '/system/menu',
-    name: 'system',
-    meta: { title: '系统管理', icon: 'system' },
-    children: [
-      {
-        path: 'menu',
-        name: 'menu',
-        component: () => import('@/views/system/menu'),
-        meta: { title: '菜单管理', icon: 'menu',noCache: true}
-      },
-      {
-        path: 'role',
-        name: 'role',
-        component: () => import('@/views/system/role'),
-        meta: { title: '角色管理', icon: 'role' ,noCache: true}
-      },{
-        path: 'user',
-        name: 'user',
-        component: () => import('@/views/system/user'),
-        meta: { title: '用户管理', icon: 'user',noCache: true }
-      },
+  // {
+  //   path: '*',
+  //   hidden: true,
+  //   redirect: { path: '/404' }
+  // }
 
-    ]
-  },*/
-  // 404 page must be placed at the end !!!
-  // { path: '*', redirect: '/404', hidden: true }
-]
+  // {
+  //   path: '/messageBoard',
+  //   name: '留言板',
+  //   component: Index,
+  //   children: [{
+  //     path: '',
+  //     name: '留言板',
+  //     component: () => import('../views/message_borad/Index')
+  //   }]
+  // },
+  // {
+  //   path: '/publish',
+  //   name: '发布帖子',
+  //   component: Index,
+  //   children: [{
+  //     path: '',
+  //     name: '发布帖子',
+  //     component: () => import('@/views/publish/index')
+  //   }]
+  // },
+  // {
+  //   path: '/detail',
+  //   name: '帖子详情',
+  //   component: () => import('@/views/posts/detail')
+  // },
+  // {
+  //   path: '/Article',
+  //   name: '帖子详情',
+  //   component: () => import('@/views/posts/Article')
+  // },
+  // {
+  //   path: '/chat',
+  //   name: '私聊',
+  //   component: Index,
+  //   children: [{
+  //     path: '',
+  //     name: '私聊',
+  //     component: () => import('@/views/chat/Chat')
+  //   }]
+  // },
+  // {
+  //   path: '/about-us',
+  //   component: Index,
+  //   children: [{
+  //     path: '',
+  //     name: '关于我们',
+  //     component: () => import('@/views/about_us/index')
+  //   }]
+  // },
+  // {
+  //   path: '/personal',
+  //   component: Index,
+  //   redirect: '/personal/user_info',
+  //   children: [{
+  //     path: 'user_info',
+  //     name: '个人中心',
+  //     component: () => import('@/views/personal/index'),
+  //     redirect: '/personal/user_info',
+  //     children: [
+  //       {
+  //         path: '/personal/my_post',
+  //         name: '我的帖子',
+  //         component: () => import('@/views/personal/myPost/Index.vue')
+  //       },
+  //       {
+  //         path: '/personal/user_info',
+  //         name: '个人资料',
+  //         component: () => import('@/views/personal/user_info.vue')
+  //       },
+  //       {
+  //         path: '/personal/collect',
+  //         name: '我的收藏',
+  //         component: () => import('@/views/personal/collect.vue')
+  //       },
+  //       {
+  //         path: '/personal/follow',
+  //         name: '我的关注',
+  //         component: () => import('@/views/personal/follow.vue')
+  //       },
+  //       {
+  //         path: '/personal/fans',
+  //         name: '我的粉丝',
+  //         component: () => import('@/views/personal/fans.vue')
+  //       },
+  //       {
+  //         path: '/personal/history',
+  //         name: '浏览记录',
+  //         component: () => import('@/views/personal/history.vue')
+  //       }
+  //     ]
+  //   }]
+  // }
 
-/* 动态路由 */
-export const asyncRoutes = [
 ]
 
 const createRouter = () => new Router({
-  // mode: 'history', // 去掉url中的#
+  // mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes
 })
@@ -164,4 +177,5 @@ export function resetRouter() {
   const newRouter = createRouter()
   router.matcher = newRouter.matcher // reset router
 }
+
 export default router
