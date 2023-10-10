@@ -18,9 +18,9 @@ logging:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: root
-    url: jdbc:mysql://localhost:3306/school?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowMultiQueries=true&useAffectedRows=true&allowPublicKeyRetrieval=true
+    username: 
+    password: 
+    url: 
   redis:
     database: 1
     host: 127.0.0.1
@@ -49,8 +49,8 @@ spring:
           initial-interval: 3000
   mail:
     host: smtp.qq.com
-    username: 1803466516@qq.com
-    password: hjnvjyvlptlleihc
+    username: 
+    password: 
     default-encoding: UTF-8
     protocol: smtp
     port: 465
@@ -68,7 +68,7 @@ spring:
             required: true
   elasticsearch:
     rest:
-      uris: 127.0.0.1:9200
+      uris:
 
 token:
   config:
@@ -88,9 +88,9 @@ search:
 # 本地存储图片上传地址
 file-upload-config:
   #图片存储路径
-  image-real-path: D:\school\image\
+  image-real-path: 
   #图片的映射路径
-  image-mapper-path: /image/
+  image-mapper-path: 
   #后端地址
   host-ip: http://127.0.0.1:8089
   #默认头像
@@ -101,8 +101,8 @@ file-upload-config:
 #阿里云 OSS存储
 aliyun:
   oss:
-    endpoint: oss-cn-hangzhou.aliyuncs.com
-    accessKeyId: LTAI5tGJNawrKddsDfHy4Wh7
-    accessKeySecret: 9UK615Nd0YMQgIgguAxCaFJnKt6j7O
+    endpoint:
+    accessKeyId:
+    accessKeySecret:
     bucketName: 18066
 
