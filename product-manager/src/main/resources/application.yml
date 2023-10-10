@@ -28,7 +28,7 @@ spring:
     max-idle: 0
     max-wait: 1
     min-idle: 0
-    password: root
+    password: 
     port: 6379
     timeout: 2000
   servlet:
@@ -39,8 +39,8 @@ spring:
   rabbitmq:
     host: 127.0.0.1
     port: 5672
-    username: guest
-    password: guest
+    username:
+    password: 
     listener:
       simple:
         retry:
@@ -48,7 +48,7 @@ spring:
           max-attempts: 3
           initial-interval: 3000
   mail:
-    host: smtp.qq.com
+    host:
     username: 
     password: 
     default-encoding: UTF-8
