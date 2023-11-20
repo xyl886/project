@@ -329,7 +329,7 @@ export default {
             if (res.code === 200) {
               item1.commentNum = parseInt(item1.commentNum) - 1
               this.$message.success(res.msg)
-              this.getComment(item1)
+              this.getComment(item1.id)
             }
           })
         })

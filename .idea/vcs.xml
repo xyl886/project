@@ -3,6 +3,5 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vue-verify" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/vue-waterfall-plugin" vcs="Git" />
   </component>
 </project>

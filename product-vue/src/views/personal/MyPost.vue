@@ -331,27 +331,27 @@ export default {
     },
     getPageFun () {
       this.loading = true
-      this.posts = []
+      // this.posts = []
       this.WaterfallPosts = []
       getPage(this.page).then(res => {
         if (res.code === 200) {
-          let count = 0
-          let arr = []
+          // let count = 0
+          // let arr = []
           this.WaterfallPosts.push(...res.data)
           console.log(this.WaterfallPosts)
-          for (let i = 0; i < res.data.length; i++) {
-            res.data[i].createTime = formatDate(res.data[i].createTime)
-            res.data[i].updateTime = formatDate(res.data[i].updateTime)
-            count++
-            if (count <= 5) {
-              arr.push(res.data[i])
-            }
-            if (count === 5 || i === (res.data.length - 1)) {
-              this.posts.push(arr)
-              arr = []
-              count = 0
-            }
-          }
+          // for (let i = 0; i < res.data.length; i++) {
+          //   res.data[i].createTime = formatDate(res.data[i].createTime)
+          //   res.data[i].updateTime = formatDate(res.data[i].updateTime)
+          //   count++
+          //   if (count <= 5) {
+          //     arr.push(res.data[i])
+          //   }
+          //   if (count === 5 || i === (res.data.length - 1)) {
+          //     this.posts.push(arr)
+          //     arr = []
+          //     count = 0
+          //   }
+          // }
           this.page.total = res.dataTotal
           // this.page.pageTotal = res.pageTotal
           this.loading = false
