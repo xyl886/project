@@ -1,101 +1,105 @@
 <template>
-  <div class="body" v-loading="loading">
+  <div v-loading="loading" class="body">
     <div class="box">
       <div style="line-height: 50px;color: gray;">
-        <span style="cursor: pointer;margin-left: 20px;" @click="backFun"><i class="el-icon-arrow-left"></i>返回</span>
+        <span style="cursor: pointer;margin-left: 20px;" @click="backFun"><i class="el-icon-arrow-left"/>返回</span>
       </div>
       <div style="float: right;margin-top: -25px;">
-        <el-dropdown  v-if="userInfo.id === posts.userInfo.id">
-          <div style="display: flex;">
-                        <span style="margin-right: 20px;line-height: 20px;font-size: 22px;">
-                          <i class="el-icon-more"></i>
-                        </span>
-          </div>
-          <el-dropdown-menu
-            slot="dropdown">
-            <el-button
-              type="primary"
-              icon="el-icon-edit-outline"
-              @click.native="edit(posts)">编辑</el-button>
-            <el-dropdown-item icon="el-icon-delete" style="color:red;" @click.native="delMyPost(posts)">删除</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
+        <!--        <el-dropdown  v-if="userInfo.id === posts.userInfo.id">-->
+        <!--          <div style="display: flex;">-->
+        <!--                        <span style="margin-right: 20px;line-height: 20px;font-size: 22px;">-->
+        <!--                          <i class="el-icon-more"></i>-->
+        <!--                        </span>-->
+        <!--          </div>-->
+        <!--          <el-dropdown-menu-->
+        <!--            slot="dropdown">-->
+        <!--            <el-button-->
+        <!--              type="primary"-->
+        <!--              icon="el-icon-edit-outline"-->
+        <!--              @click.native="edit(posts)">编辑</el-button>-->
+        <!--            <el-dropdown-item icon="el-icon-delete" style="color:red;" @click.native="delMyPost(posts)">删除</el-dropdown-item>-->
+        <!--          </el-dropdown-menu>-->
+        <!--        </el-dropdown>-->
       </div>
       <div style="display: flex;margin-top: 30px;height: 60px;">
         <div style="margin-left: 50px;">
-          <el-image :src="posts.userInfo.avatar" style="width: 60px;height: 60px;border-radius: 50%;"></el-image>
+          <el-image :src="posts.userInfo.avatar" style="width: 60px;height: 60px;border-radius: 50%;"/>
         </div>
         <div style="margin: 0 100px 0 0;">
           <div style="height: 20px;margin-bottom: 5px">
-            {{posts.userInfo.nickname}}
-            <el-tag size="small" v-if="userInfo.id === posts.userId" style="margin: 0 5px;">我自己</el-tag>
-            <el-tag type="success" size="small">{{posts.userInfo.role}}</el-tag>
+            {{ posts.userInfo.nickname }}
+            <el-tag v-if="userInfo.id === posts.userId" size="small" style="margin: 0 5px;">我自己</el-tag>
+            <el-tag type="success" size="small">{{ posts.userInfo.role }}</el-tag>
           </div>
           <div style="line-height: 40px;">
-            <el-button v-if="!posts.collect" type="primary" size="mini" @click="addCollectFun('0')"><i class="el-icon-star-off"></i> 收藏 {{posts.collectNum}}</el-button>
-            <el-button v-if="posts.collect" type="info" plain size="mini"
-                       @click="addCollectFun('1')"><i class="el-icon-star-on"></i> 已收藏 {{posts.collectNum}}</el-button>
-            <el-button v-if="!posts.follow && userInfo.id !== posts.userId" type="primary" size="mini" @click="addFollowFun('0')"><i class="el-icon-star-off"></i> 关注 {{posts.followNum}}</el-button>
-            <el-button v-if="posts.follow && userInfo.id !== posts.userId" type="info" plain size="mini" @click="addFollowFun('1')"><i class="el-icon-star-on"></i> 已关注 {{posts.followNum}}</el-button>
+            <el-button v-if="!posts.collect" type="primary" size="mini" @click="addCollectFun('0')"><i class="el-icon-star-off"/> 收藏 {{ posts.collectNum }}</el-button>
+            <el-button
+              v-if="posts.collect"
+              type="info"
+              plain
+              size="mini"
+              @click="addCollectFun('1')"><i class="el-icon-star-on"/> 已收藏 {{ posts.collectNum }}</el-button>
+            <el-button v-if="!posts.follow && userInfo.id !== posts.userId" type="primary" size="mini" @click="addFollowFun('0')"><i class="el-icon-star-off"/> 关注 {{ posts.followNum }}</el-button>
+            <el-button v-if="posts.follow && userInfo.id !== posts.userId" type="info" plain size="mini" @click="addFollowFun('1')"><i class="el-icon-star-on"/> 已关注 {{ posts.followNum }}</el-button>
           </div>
         </div>
         <div style="flex: 1;color: #606266;font-size: 12px;margin: 0 0 0 220px;">
-           <el-col :span="14">
-             <div style="font-size: 20px;font-weight: 700;">{{posts.title}}</div>
-           </el-col>
-           <el-col :span="10" style="opacity: 0.6;">
-             <div style="text-align: right;margin-right: 20px;">{{posts.browseNum}}次浏览</div>
-           <div style="text-align: right;margin-right: 20px;">
-             <el-tag size="small">{{posts.schoolName}}</el-tag>| {{posts.createTime}} 发布
-           </div>
-           </el-col>
+          <el-col :span="14">
+            <div style="font-size: 20px;font-weight: 700;">{{ posts.title }}</div>
+          </el-col>
+          <el-col :span="10" style="opacity: 0.6;">
+            <div style="text-align: right;margin-right: 20px;">{{ posts.browseNum }}次浏览</div>
+            <div style="text-align: right;margin-right: 20px;">
+              <el-tag size="small">{{ posts.schoolName }}</el-tag>| {{ posts.createTime }} 发布
+            </div>
+          </el-col>
         </div>
       </div>
       <div style="display: flex;margin: 20px;">
         <div style="width: 40%;padding: 10px;">
           <div style="width: 350px;height: 225px;text-align: center;border-radius: 10px;display:table-cell;vertical-align: middle;">
-            <el-image :src="bigImgPath" :preview-src-list="posts.imgPath?posts.imgPath.split(','):[]" fit="contain" class="big-img"></el-image>
+            <el-image :src="bigImgPath" :preview-src-list="posts.imgPath?posts.imgPath.split(','):[]" fit="contain" class="big-img"/>
           </div>
           <div style="margin-top: 10px;">
-            <el-image v-for="(item) in posts.imgPath?posts.imgPath.split(','):[]" :key="item" fit="contain" :src="item" @click="selImg(item)" style="width: 80px;height: 80px;border-radius: 5px;margin: 0 10px 10px 0;border: 1px solid #e5e5e5;box-sizing: border-box;" :class="bigImgPath===item?'sel-img':''"></el-image>
+            <el-image v-for="(item) in posts.imgPath?posts.imgPath.split(','):[]" :key="item" :src="item" :class="bigImgPath===item?'sel-img':''" fit="contain" style="width: 80px;height: 80px;border-radius: 5px;margin: 0 10px 10px 0;border: 1px solid #e5e5e5;box-sizing: border-box;" @click="selImg(item)"/>
           </div>
         </div>
         <div style="width: 60%;padding:10px;overflow: scroll">
-<!--          <div style="font-size: 20px;font-weight: 700;">{{posts.title}}</div>-->
+          <!--          <div style="font-size: 20px;font-weight: 700;">{{posts.title}}</div>-->
           <div class="my-content" style="height: 225px">
-              <article
-                id="write"
-                class="article-content markdown-body"
-                v-html="posts.content"
-                ref="article"/>
+            <article
+              id="write"
+              ref="article"
+              class="article-content markdown-body"
+              v-html="posts.content"/>
           </div>
         </div>
         <div style="position: absolute;bottom: 0;right: 100px;">
-          <div class="posts-item-price" v-if="posts.postsType===1 && userInfo.id !== posts.userInfo.id" style="color:#e9384d; display: block;margin: 10px;float: right;">
-            <span style="margin-right: 20px"> ¥{{posts.price}}</span>
+          <div v-if="posts.postsType===1 && userInfo.id !== posts.userInfo.id" class="posts-item-price" style="color:#e9384d; display: block;margin: 10px;float: right;">
+            <span style="margin-right: 20px"> ¥{{ posts.price }}</span>
             <el-button type="primary" @click="chat(userInfo.id)">想要</el-button>
           </div>
         </div>
       </div>
     </div>
-    <UpdateDialog ref="updateDialog" :Form="form"/>
+    <UpdateDialog ref="updateDialog" :form="form"/>
   </div>
 </template>
 
 <script>
-import {browse, getDetail} from '@/api/posts'
-import {addCollect} from '@/api/collect'
-import {addFollow} from '@/api/follow'
-import {mapGetters} from 'vuex'
-import {getStore} from '../../utils/store'
-import {delMyPost} from '../../api/posts'
+import { browse, getDetail } from '@/api/posts'
+import { addCollect } from '@/api/collect'
+import { addFollow } from '@/api/follow'
+import { mapGetters } from 'vuex'
+import { getStore } from '../../utils/store'
+import { delMyPost } from '../../api/posts'
 import UpdateDialog from './UpdateDialog'
 
 export default {
   components: {
     UpdateDialog
   },
-  data () {
+  data() {
     return {
       loading: false,
       id: '',
@@ -121,11 +125,11 @@ export default {
       'userInfo'
     ])
   },
-  mounted () {
+  mounted() {
     this.$on('postUpdate', () => {
       this.getDetailFun() // 当帖子信息更新完后，重新获取数据
     })
-    let obj = getStore({name: 'posts'})
+    const obj = getStore({ name: 'posts' })
     console.log(obj)
     if (obj) {
       this.id = obj.id
@@ -133,23 +137,23 @@ export default {
       this.bigImgPath = this.posts.imgPath ? this.posts.imgPath.split(',')[0] : ''
       this.selImg(this.bigImgPath)
       this.getDetailFun()
-      let that = this
-      setTimeout(function () {
+      const that = this
+      setTimeout(function() {
         that.browseFun()
       }, 1000)
     }
   },
   methods: {
-    backFun () {
+    backFun() {
       history.back()
     },
-    selImg (url) {
+    selImg(url) {
       this.bigImgPath = url
     },
-    chat () {
-      this.$router.push({path: '/chat'})
+    chat() {
+      this.$router.push({ path: '/chat' })
     },
-    getDetailFun () {
+    getDetailFun() {
       this.loading = true
       getDetail(this.id).then(res => {
         if (res.code === 200) {
@@ -167,7 +171,7 @@ export default {
         this.loading = false
       })
     },
-    edit () {
+    edit() {
       this.$refs.updateDialog.showDialog()
       if (this.posts.imgPath) {
         const arr = this.posts.imgPath.split(',')
@@ -207,7 +211,7 @@ export default {
       }
       console.log(this.form)
     },
-    delMyPost (item) {
+    delMyPost(item) {
       this.$confirm('确定要删除该帖子吗?', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -217,7 +221,7 @@ export default {
           delMyPost(item.id, item.userInfo.id).then(res => {
             if (res.code === 200) {
               this.$message.success(res.msg)
-              this.$router.push({path: '/index'})
+              this.$router.push({ path: '/index' })
               this.getPageFun()
               this.load()
               this.init()
@@ -225,14 +229,14 @@ export default {
           })
         })
     },
-    markdownToHtml (posts) {
+    markdownToHtml(posts) {
       const MarkdownIt = require('markdown-it')
       const hljs = require('highlight.js')
       const md = new MarkdownIt({
         html: true,
         linkify: true,
         typographer: true,
-        highlight: function (str, lang) {
+        highlight: function(str, lang) {
           // 当前时间加随机数生成唯一的id标识
           let d = new Date().getTime()
           if (
@@ -243,7 +247,7 @@ export default {
           }
           const codeIndex = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(
             /[xy]/g,
-            function (c) {
+            function(c) {
               var r = (d + Math.random() * 16) % 16 | 0
               d = Math.floor(d / 16)
               return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16)
@@ -276,7 +280,7 @@ export default {
       // 将markdown替换为html标签
       this.posts.content = md.render(posts)
     },
-    browseFun () {
+    browseFun() {
       console.log(this.userInfo.id + ',' + this.id)
       browse(this.userInfo.id, this.id).then(res => {
         if (res.code === 200) {
@@ -284,7 +288,7 @@ export default {
         }
       })
     },
-    addCollectFun (deleted) {
+    addCollectFun(deleted) {
       addCollect(this.id, deleted).then(res => {
         if (res.code === 200) {
           if (deleted === '0') {
@@ -296,7 +300,7 @@ export default {
         }
       })
     },
-    addFollowFun (deleted) {
+    addFollowFun(deleted) {
       addFollow(this.posts.userInfo.id, deleted).then(res => {
         if (res.code === 200) {
           if (deleted === '0') {

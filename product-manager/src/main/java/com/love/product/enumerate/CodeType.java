@@ -11,7 +11,9 @@ public enum CodeType {
      *
      */
     LOGIN("login", "登录"),
+
     REGISTER("register", "注册"),
+
     RESET("forget", "密码重置"),
     ;
 

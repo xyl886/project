@@ -6,27 +6,27 @@
 
     <insert id="add" parameterType="com.love.product.entity.Follow" keyProperty="id" useGeneratedKeys="true">
         INSERT INTO
-        follow
-        (
-            id,
-            user_id,
-            be_followed_user_id,
-            deleted,
-            create_time,
-            update_time
-        )
+            s_follow
+            (
+                id,
+                user_id,
+                be_followed_user_id,
+                deleted,
+                create_time,
+                update_time
+            )
         values
-        (
-            #{id},
-            #{userId},
-            #{beFollowedUserId},
-            #{deleted},
-            #{createTime},
-            #{updateTime}
-        )
+            (
+                #{id},
+                #{userId},
+                #{beFollowedUserId},
+                #{deleted},
+                #{createTime},
+                #{updateTime}
+            )
         ON DUPLICATE KEY UPDATE
-        deleted = values(deleted),
-        update_time = values(update_time)
+                             deleted     = values(deleted),
+                             update_time = values(update_time)
     </insert>
 
 </mapper>

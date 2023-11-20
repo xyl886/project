@@ -4,109 +4,219 @@
       <el-col :span="24">
         <PanelGroup/>
       </el-col>
-      <el-col :span="24">
-        <div id="chartLine" style="width:100%; height:400px;"/>
-      </el-col>
-      <!-- 文章标签统计 -->
-      <el-col :xs="24" :sm="24" :lg="8">
-        <el-card style="height: 417px">
-          <div class="e-title">文章标签统计</div>
-          <div>
-            <tag-cloud :data="tagDTOList" style="margin-top:1.5rem" />
-          </div>
+      <!--      <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">-->
+      <!--        <div id="container" style=" width: 100%; height: 300px;" />-->
+      <!--      </el-row>-->
+      <el-col :span="24" style="padding:0;background:#fff;">
+        <el-card>
+          <div id="container" style="width:100%; height:300px;"/>
         </el-card>
       </el-col>
-      <el-col :span="12">
-        <div id="chartColumn" style="width:100%; height:400px;"/>
+      <el-col :span="8">
+        <el-card>
+          <div class="e-title">帖子浏览量排行</div>
+          <el-table :data="Data.posts" style="width: 100%;padding-top: 15px">
+            <el-table-column label="标题" width="250">
+              <template slot-scope="scope">
+                <el-link
+                  :underline="false"
+                  style="overflow: hidden;text-overflow: ellipsis;white-space: nowrap;"
+                  @click="onClick(scope.row)">{{ scope.row.title }}</el-link>
+                <el-tag v-if="scope.row.postsType===1" type="">闲置</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="浏览量" prop="browseNum" width="100" align="center" />
+          </el-table>
+        </el-card>
       </el-col>
-      <el-col :span="12">
-        <div id="chartBar" style="width:100%; height:400px;"/>
+      <!-- 帖子标签统计 -->
+      <el-col :span="8">
+        <el-card>
+          <div class="e-title" style="text-align: left;">帖子标签统计</div>
+          <TagCloud :box-width="350" :speed="600" :random-color="true" style="height:370px;text-align: center"/>
+        </el-card>
       </el-col>
-
-      <el-col :span="12">
-        <div id="chartPie" style="width:100%; height:400px;"/>
+      <el-col :span="8">
+        <el-card>
+          <div id="chartPie" style="width:100%; height:400px;"/>
+        </el-card>
       </el-col>
+      <!--      <el-col :span="12">-->
+      <!--        <el-card>-->
+      <!--          <div id="chartColumn" style="width:100%; height:400px;"/>-->
+      <!--        </el-card>-->
+      <!--      </el-col>-->
+      <!--      <el-col :span="12">-->
+      <!--        <el-card>-->
+      <!--          <div id="chartBar" style="width:100%; height:400px;"/>-->
+      <!--        </el-card>-->
+      <!--      </el-col>-->
     </el-row>
   </section>
 </template>
 
 <script>
-import echarts from 'echarts'
+import * as echarts from 'echarts'
+require('echarts/theme/macarons') // echarts theme
 import PanelGroup from './components/PanelGroup.vue'
+import TagCloud from './components/TagCloud.vue'
+import { init } from '../../api/init'
 
 export default {
-  components: { PanelGroup },
+  components: { PanelGroup, TagCloud },
   data() {
     return {
-      tagDTOList: [
-        {
-          'name': 'blog',
-          'id': 10
-        },
-        {
-          'name': 'cs1',
-          'id': 39
-        },
-        {
-          'name': 'elasticsearch',
-          'id': 2
-        },
-        {
-          'name': 'IDEA',
-          'id': 29
-        },
-        {
-          'name': 'linux',
-          'id': 18
-        },
-        {
-          'name': 'markdown',
-          'id': 15
-        },
-        {
-          'name': 'mysql',
-          'id': 31
-        },
-        {
-          'name': 'nginx',
-          'id': 32
-        },
-        {
-          'name': 'redis',
-          'id': 17
-        },
-        {
-          'name': 'springboot',
-          'id': 1
-        },
-        {
-          'name': 'springcloud',
-          'id': 13
-        },
-        {
-          'name': 'vue',
-          'id': 12
-        },
-        {
-          'name': 'webmagic',
-          'id': 14
-        }
-      ],
+      Data: {
+        categoryPostCountDTO: [],
+        contribute: [],
+        posts: [],
+        tagVO: []
+      },
+      category: [],
       chartColumn: null,
       chartBar: null,
       chartLine: null,
       chartPie: null
     }
   },
-
-  mounted: function() {
+  mounted() {
     this.drawCharts()
   },
-  updated: function() {
-    this.drawCharts()
-  },
+  // updated() {
+  //   this.drawCharts()
+  // },
 
   methods: {
+    onClick() {
+
+    },
+    drawCharts() {
+      init().then(res => {
+        console.log(res.data)
+        this.Data = res.data
+        // this.drawColumnChart()
+        // this.drawBarChart()
+        this.initContributeDate(res.data.contribute.contributeDate, res.data.contribute.postContributeCount)
+        this.drawPieChart(
+          res.data.categoryPostCountDTO.map(item => `${item.name} (${item.count})`),
+          res.data.categoryPostCountDTO.map(item => {
+            return {
+              name: `${item.name} (${item.count})`,
+              value: item.count
+            }
+          }))
+      })
+    },
+    // 初始化文章贡献度
+    initContributeDate: function(contributeDate, postContributeCount) {
+      const chart = echarts.init(document.getElementById('container'))
+      const option = {
+        // 设置背景
+        // backgroundColor: '#d0d0d0',
+        title: {
+          top: 0,
+          text: '帖子贡献度',
+          subtext: '一年内帖子提交的数量',
+          left: 'center',
+          textStyle: {
+            color: '#000'
+          }
+        },
+        tooltip: {
+          trigger: 'item',
+          formatter: function(params) {
+            return (params.data[0] + '<br>帖子数：' + params.data[1])
+          }
+        },
+        visualMap: {
+          min: 0,
+          max: 100,
+          type: 'piecewise',
+          orient: 'horizontal',
+          left: 'center',
+          top: 50
+        },
+        legend: {
+          top: '30',
+          left: '100',
+          // data: ['帖子数', 'Top 12'],
+          textStyle: {
+            // 设置字体颜色
+            color: '#000'
+          }
+        },
+        calendar: [{
+          top: 100,
+          left: 'center',
+          range: contributeDate,
+          splitLine: {
+            show: true,
+            lineStyle: {
+              // 设置月份分割线的颜色
+              color: 'rgba(0,0,0,0.06)',
+              width: 4,
+              type: 'solid'
+            }
+          },
+          yearLabel: { show: false },
+          dayLabel: {
+            nameMap: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'], // 设置中文显示
+            textStyle: {
+              // 设置周显示颜色
+              color: '#000'
+            },
+            firstDay: 1 // 从周一开始
+          },
+          monthLabel: {
+            nameMap: 'cn', // 设置中文显示
+            textStyle: {
+              // 设置月显示颜色
+              color: '#000'
+            }
+          },
+          itemStyle: {
+            normal: {
+              // 设置背景颜色
+              color: '#ffffff',
+              borderWidth: 1,
+              // 设置方块分割线段颜色
+              borderColor: '#D3D3D3'
+            }
+          }
+        }],
+        series: [
+          {
+            name: '帖子数',
+            type: 'scatter',
+            coordinateSystem: 'calendar',
+            data: postContributeCount,
+            // 根据值设置原点大小
+            symbolSize: function(val) {
+              if (val[1] === 0) {
+                return val[1]
+              } else {
+                let size = 8 + val[1] * 2
+                if (size > 18) {
+                  size = 18
+                }
+                return size
+              }
+            },
+            itemStyle: {
+              normal: {
+                // 设置圆点颜色
+                color: '#2ec7c9'
+              }
+            }
+          }
+        ]
+      }
+      chart.setOption(option)
+      window.addEventListener('resize', function() {
+        chart.resize()
+      })
+    },
+
     drawColumnChart() {
       this.chartColumn = echarts.init(document.getElementById('chartColumn'))
       this.chartColumn.setOption({
@@ -171,7 +281,7 @@ export default {
       this.chartLine = echarts.init(document.getElementById('chartLine'))
       this.chartLine.setOption({
         title: {
-          text: 'Line Chart'
+          text: '帖子统计'
         },
         tooltip: {
           trigger: 'axis'
@@ -215,13 +325,12 @@ export default {
         ]
       })
     },
-    drawPieChart() {
+    drawPieChart(categoryName, data) {
       this.chartPie = echarts.init(document.getElementById('chartPie'))
       this.chartPie.setOption({
         title: {
-          text: 'Pie Chart',
-          subtext: '纯属虚构',
-          x: 'center'
+          text: '帖子分类统计',
+          x: 'left'
         },
         tooltip: {
           trigger: 'item',
@@ -229,22 +338,15 @@ export default {
         },
         legend: {
           orient: 'vertical',
-          left: 'left',
-          data: ['直接访问', '邮件营销', '联盟广告', '视频广告', '搜索引擎']
+          left: 'right',
+          data: categoryName
         },
         series: [
           {
             name: '访问来源',
             type: 'pie',
             center: ['50%', '60%'],
-            roseType: 'area',
-            data: [
-              { value: 135, name: '直接访问' },
-              { value: 110, name: '邮件营销' },
-              { value: 134, name: '联盟广告' },
-              { value: 135, name: '视频广告' },
-              { value: 148, name: '搜索引擎' }
-            ],
+            data: data,
             itemStyle: {
               emphasis: {
                 shadowBlur: 10,
@@ -255,12 +357,6 @@ export default {
           }
         ]
       })
-    },
-    drawCharts() {
-      this.drawColumnChart()
-      this.drawBarChart()
-      this.drawLineChart()
-      this.drawPieChart()
     }
   }
 }
@@ -277,6 +373,6 @@ export default {
     }*/
 
     .el-col {
-        padding: 30px 20px;
+        padding: 10px;
     }
 </style>

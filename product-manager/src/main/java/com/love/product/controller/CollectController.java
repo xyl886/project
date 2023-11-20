@@ -3,6 +3,7 @@ package com.love.product.controller;
 import com.love.product.entity.base.PageQuery;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
+import com.love.product.entity.req.CollectPageReq;
 import com.love.product.entity.vo.CollectVO;
 import com.love.product.service.CollectService;
 import com.love.product.util.JwtUtil;
@@ -12,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @author Administrator
@@ -32,10 +34,14 @@ public class CollectController {
     public Result<?> add(@RequestParam("postsIds")Long[] postsIds,@RequestParam("deleted") Integer deleted) {
         return collectService.add(JwtUtil.getUserId(), deleted, postsIds);
     }
-
+    @ApiOperation("批量取消收藏")
+    @PostMapping("/deleteBatch")
+    public Result<?> deleteBatch(@RequestBody List<Long> postsIds) {
+        return collectService.deleteBatch(JwtUtil.getUserId(),postsIds);
+    }
     @ApiOperation("分页")
     @PostMapping("/getPage")
-    public ResultPage<CollectVO> getPage(@RequestBody PageQuery pageQuery) {
+    public ResultPage<CollectVO> getPage(@RequestBody CollectPageReq pageQuery) {
         return collectService.getPage(JwtUtil.getUserId(),pageQuery);
     }
 }

@@ -3,4 +3,58 @@
 <mapper namespace="com.love.product.mapper.CategoryMapper">
 
 
+    <select id="getCategoryPostCount" resultType="com.love.product.entity.dto.CategoryPostCountDTO">
+        SELECT
+            c.category_name AS Name,
+            COUNT(p.id) AS Count
+        FROM
+        s_category c
+                LEFT JOIN s_posts p
+                          ON p.school = c.id
+        <where>
+            <if test="id != null and id != ''">
+                AND c.id = #{id}
+            </if>
+        </where>
+        GROUP BY
+            c.category_name
+    </select>
+    <select id="getCategoryList" resultType="com.love.product.entity.vo.CategoryVO">
+        SELECT
+            c.id,
+            c.category_name,
+            c.icon,
+            c.deleted,
+            c.create_time,
+            COUNT(p.id) AS postCount
+        FROM
+        s_category c
+                LEFT JOIN
+        s_posts p
+                ON p.school = c.id
+        <where>
+            <if test="categoryName != null and categoryName != ''">
+                AND c.category_name like concat('%',#{categoryName},'%')
+            </if>
+        </where>
+        GROUP BY
+            c.id,
+            c.category_name
+        order by c.create_time desc
+    </select>
+    <select id="getPostCountById" resultType="java.lang.Integer">
+        SELECT
+            COUNT(p.id) AS Count
+        FROM
+        s_category c
+                LEFT JOIN s_posts p
+                          ON p.school = c.id
+        <where>
+            <if test="id != null and id != ''">
+                AND c.id = #{id}
+            </if>
+        </where>
+        GROUP BY
+            c.category_name
+    </select>
 </mapper>

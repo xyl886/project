@@ -3,6 +3,8 @@ package com.love.product.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.love.product.entity.PostsComment;
 import com.love.product.entity.base.Result;
+import com.love.product.entity.base.ResultPage;
+import com.love.product.entity.req.CommentPageReq;
 import com.love.product.entity.vo.PostsCommentVO;
 
 import java.util.List;
@@ -20,4 +22,10 @@ public interface PostsCommentService extends IService<PostsComment> {
     Result<?> del(Long userId, Long id);
 
     Result<?> addCommentLike(Long userId, Long commentId, Integer deleted);
+
+    Result deleteBatch(List<Long> ids);
+
+    ResultPage listComment(CommentPageReq commentPageReq);
+
+    Result deleteComment(Long id);
 }

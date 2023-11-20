@@ -1,10 +1,16 @@
 package com.love.product.controller;
 
 import com.love.product.entity.Category;
+import com.love.product.entity.base.PageQuery;
 import com.love.product.entity.base.Result;
+import com.love.product.entity.base.ResultPage;
+import com.love.product.entity.dto.CategoryDTO;
+import com.love.product.entity.req.CategoryPageReq;
+import com.love.product.entity.vo.CategoryVO;
 import com.love.product.service.CategoryService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.models.auth.In;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -24,10 +30,10 @@ public class CategoryController {
     @Resource
     private CategoryService categoryService;
 
-    @GetMapping("/listAll")
-    @ApiOperation(value = "分类列表", httpMethod = "GET", response = Result.class, notes = "分类列表")
-    public Result<List<Category>> listAll(){
-        return categoryService.listAll();
+    @PostMapping("/listAll")
+    @ApiOperation(value = "分类列表", httpMethod = "POST", response = Result.class, notes = "分类列表")
+    public ResultPage<CategoryVO> listAll(@RequestBody CategoryPageReq categoryPageReq){
+        return categoryService.listAll(categoryPageReq);
     }
 
     @RequestMapping(value = "/info",method = RequestMethod.GET)
@@ -44,13 +50,13 @@ public class CategoryController {
 
     @RequestMapping(value = "/update",method = RequestMethod.POST)
     @ApiOperation(value = "修改分类", httpMethod = "POST", response = Result.class, notes = "修改分类")
-    public Result update(@RequestBody Category category){
-        return categoryService.updateCategory(category);
+    public Result update(@RequestBody CategoryDTO categoryDTO){
+        return categoryService.updateCategory(categoryDTO);
     }
 
     @RequestMapping(value = "/delete",method = RequestMethod.DELETE)
     @ApiOperation(value = "删除分类", httpMethod = "DELETE", response = Result.class, notes = "删除分类")
-    public Result deleteCategory(Long id){
+    public Result deleteCategory(Integer id){
         return categoryService.deleteCategory(id);
     }
 

@@ -13,34 +13,44 @@
 <!--              @blur="InputFocused = false"-->
 <!--              class="search-box-input"-->
 <!--              type="text"/>-->
-            <el-select
-              v-model="searchText"
-              placeholder="请输入搜索内容"
-              @input="handleInput"
-              @focus="InputFocused = true"
-              @blur="InputFocused = false"
-              class="search-box-input"
-              filterable>
-              <el-option
-              v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-            </el-select>
+<!--            <el-select-->
+<!--              v-model="searchText"-->
+<!--              placeholder="请输入搜索内容"-->
+<!--              @input="handleInput"-->
+<!--              @focus="InputFocused = true"-->
+<!--              @blur="InputFocused = false"-->
+<!--              class="search-box-input"-->
+<!--              filterable>-->
+<!--            </el-select>-->
+            <el-input v-model="page.title" clearable style="width: 150px" size="small" placeholder="请输入内容" />
+        </el-col>
+        <el-col :span="8">
+          <div class="block">
+            <el-date-picker
+                size="small"
+                v-model="dateTime"
+                type="daterange"
+                value-format = "yyyy-MM-dd HH:mm:ss"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                :default-time="['00:00:00', '23:59:59']"
+                @change="handleDateTimeChange">
+            </el-date-picker>
+          </div>
         </el-col>
         <el-col :span="2">
-          <div @click="handleClear"><el-button>重置</el-button></div>
-        </el-col>
-        <el-col :span="15">
-          <div><el-button type="primary">查询</el-button>
+          <div><el-button size="small" type="primary" @click="handleFind">查询</el-button>
           </div>
+        </el-col>
+        <el-col :span="6">
+          <div><el-button size="small" @click="resetQuery">重置</el-button></div>
         </el-col>
         <el-col :span="2">
           <div>
             <el-button
               type="danger"
               plain
+              size="small"
               @click="removeAll"
               v-show="postType !== '0'&& page.total!==0"
             >清空历史</el-button>
@@ -50,9 +60,13 @@
       <div v-if="page.total == 0" style="text-align: center">
         <span style="color: #999aaa; font-size: 15px">近期没有浏览记录</span>
       </div>
-      <div v-if="postType === '1'">
+      <div>
         <el-timeline>
-          <el-timeline-item  :timestamp="item.updateTime"  v-for="(item, index) in historyGoodsList" :key="index" placement="top">
+          <el-timeline-item
+              :timestamp="item.updateTime"
+              v-for="(item, index) in history"
+              :key="item.id"
+              placement="top">
             <el-card>
               <el-row type="flex" justify="space-between">
                 <el-col :span="3" style="cursor: pointer;" v-show="item.postCoverPath != null">
@@ -82,66 +96,20 @@
           </el-timeline-item>
         </el-timeline>
       </div>
-      <div v-if="postType === '2'">
-        <el-timeline>
-          <el-timeline-item  :timestamp="item.updateTime"  v-for="(item, index) in historyPostList" :key="index" placement="top">
-            <el-card>
-              <el-row type="flex" justify="space-between">
-                <el-col :span="3" style="cursor: pointer;" v-show="item.postCoverPath != null">
-                  <el-image
-                    style="width: 118px; height: 74px; border-radius: 4px"
-                    fit="cover"
-                    :src="item.postCoverPath"
-                  ></el-image>
-                </el-col>
-                <el-col :span="16">
-                  <h3 class="title" :key="item.id" style="cursor: pointer;" @click="detailFun(item.posts)">{{ item.postTitle}}</h3>
-                  <div class="user">
-                    <el-image  @click="detailFun(item.posts)" :src="item.avatar" style="cursor: pointer;width: 25px;height: 25px;border-radius: 50%;">
-                    </el-image>
-                    <span class="userName">{{ item.nickname }}|
-                    </span><span style="font-size: 12px;text-align: center;color: rgba(0,0,0,0.45)">{{item.schoolName}}</span>
-                  </div>
-                </el-col>
-                <el-col :span="1">
-                  <i class="el-icon-delete"
-                     style="line-height:75px;cursor: pointer;"
-                     @click="remove(item.id,item.userId)"></i>
-                </el-col>
-              </el-row>
-            </el-card>
-          </el-timeline-item>
-        </el-timeline>
-      </div>
-      <div v-if="postType === '0'">
-        <el-timeline>
-          <el-timeline-item  :timestamp="item.updateTime"  v-for="(item, index) in historyLikeList" :key="index" placement="top">
-            <el-card>
-              <el-row type="flex" justify="space-between">
-                <el-col :span="3" style="cursor: pointer;" v-show="item.postCoverPath != null">
-                  <el-image
-                    style="width: 118px; height: 74px; border-radius: 4px"
-                    fit="cover"
-                    :src="item.postCoverPath"
-                  ></el-image>
-                </el-col>
-                <el-col :span="16">
-                  <h3 class="title" :key="item.id" style="cursor: pointer;" @click="detailFun(item.posts)">{{ item.postTitle}}</h3>
-                  <div class="user">
-                    <el-image :src="item.avatar" style="cursor: pointer;width: 25px;height: 25px;border-radius: 50%;">
-                    </el-image>
-                    <span class="userName">{{ item.nickname }}|
-                    </span><span style="margin-left: 4px">{{item.schoolName}}</span>
-                  </div>
-                </el-col>
-              </el-row>
-            </el-card>
-          </el-timeline-item>
-        </el-timeline>
-      </div>
       <div style="text-align: center;color: rgb(168, 176, 183);">
         <p v-if="loading">加载中...</p>
-        <p v-if="!loading">没有更多了</p>
+        <p v-if="!loading&&page.currentPage===pageTotal">没有更多了</p>
+      </div>
+      <div style="text-align: right;margin-top: 10px;">
+        <el-pagination
+            background
+            :current-page.sync="page.currentPage"
+            :page-sizes="[10, 20, 40, 80]"
+            :page-size="page.pageSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="page.total"
+            @size-change="sizeChange"
+            @current-change="currentChange"/>
       </div>
     </div>
   </div>
@@ -150,9 +118,10 @@
 <script>
 // import { UserPostLike } from '@/api/PostLike'
 import { MessageBox } from 'element-ui'
-import {del, getPage} from '../../api/history'
+import {del, getLikePage, getPage} from '../../api/history'
 import {setStore} from '../../utils/store'
 import {formatDate} from '../../utils/date'
+import {mapGetters} from 'vuex'
 
 export default {
   name: 'HistoryList',
@@ -163,54 +132,53 @@ export default {
   },
   data () {
     return {
+      dateTime: [],
       command: '最近收藏',
-      options: [{
-        value: '选项1',
-        label: '黄金糕'
-      }, {
-        value: '选项2',
-        label: '双皮奶'
-      }, {
-        value: '选项3',
-        label: '蚵仔煎'
-      }, {
-        value: '选项4',
-        label: '龙须面'
-      }, {
-        value: '选项5',
-        label: '北京烤鸭'
-      }],
+      options: [],
       value: '',
       InputFocused: false,
       searchText: '',
       loading: false,
       history: [],
       selectedIds: [],
+      pageTotal: '',
       page: {
         total: 0,
         pageSize: 9,
         currentPage: 1,
-        postType: '1'
+        postsType: 1,
+        title: '',
+        dateTime: '',
+        startTime: '',
+        endTime: ''
       },
-      historyGoodsList: [],
-      historyPostList: [],
-      historyLikeList: [],
       total: 0,
       listLength: 0
     }
   },
   watch: {
     postType () {
-      this.init(this.postType)
+      this.init(this.postsType)
     }
   },
   computed: {
+    ...mapGetters([
+      'userInfo'
+    ])
   },
   methods: {
-    init () {
-      this.historyGoodsList = []
-      this.historyPostList = []
-      this.historyLikeList = []
+    handleDateTimeChange (value) {
+      if (value && value.length === 2) {
+        this.page.startTime = value[0]
+        this.page.endTime = value[1]
+      } else {
+        this.page.startTime = ''
+        this.page.endTime = ''
+      }
+    },
+    init (postType) {
+      this.history = []
+      this.page.postsType = postType
       console.log(this.page)
       this.getList()
     },
@@ -227,31 +195,57 @@ export default {
         console.log('搜索：', this.searchText)
       }
     },
-    handleClear () {
-      // 点击清除按钮触发
-      this.searchText = ''
+    resetQuery () {
+      this.page.categoryId = 1
+      this.page.title = ''
+      this.page.startTime = ''
+      this.page.endTime = ''
+      this.dateTime = ''
+      this.getList()
+    },
+    sizeChange (pageSize) { // 页数
+      this.page.pageSize = pageSize
+      this.getList()
+    },
+    currentChange (currentPage) { // 当前页
+      this.page.currentPage = currentPage
+      this.getList()
+    },
+    handleFind () {
+      this.getList()
     },
     getList () {
       this.loading = true
-      getPage(this.page).then((res) => {
-        this.loading = false
-        if (res.code === 200) {
-          console.log(res.data)
-          this.history = res.data
-          for (let i = 0; i < res.data.length; i++) {
-            this.history[i].updateTime = formatDate(res.data[i].updateTime)
-            if (this.history[i].postType == '1') {
-              this.historyGoodsList.push(this.history[i])
-            } else if (this.history[i].postType == '2') {
-              this.historyPostList.push(this.history[i])
-            } else {
-              this.historyLikeList.push(this.history[i])
+      this.history = []
+      if (this.page.postsType === '0') {
+        getLikePage(this.page).then((res) => {
+          this.loading = false
+          if (res.code === 200) {
+            console.log(res.data)
+            this.history = res.data
+            for (let i = 0; i < res.data.length; i++) {
+              this.history[i].updateTime = formatDate(res.data[i].updateTime)
             }
+            this.page.total = res.dataTotal
+            this.pageTotal = res.pageTotal
           }
-          this.page.total = res.dataTotal
-        }
-        this.loading = false
-      })
+          this.loading = false
+        })
+      } else {
+        getPage(this.page).then((res) => {
+          this.loading = false
+          if (res.code === 200) {
+            console.log(res.data)
+            this.history = res.data
+            for (let i = 0; i < res.data.length; i++) {
+              this.history[i].updateTime = formatDate(res.data[i].updateTime)
+            }
+            this.page.total = res.dataTotal
+            this.pageTotal = res.pageTotal
+          }
+          this.loading = false
+        })
+      }
     },
     detailFun (item) {
       setStore({ name: 'posts', content: item })
@@ -266,7 +260,7 @@ export default {
           } else {
             this.$message.warning(res.msg)
           }
-          this.init()
+          this.getList()
         }).catch((error) => {
           this.$message.error(error)
         })
@@ -301,6 +295,9 @@ export default {
 </script>
 
 <style  scoped>
+.el-timeline{
+  padding-left: 0;
+}
 @media screen and (max-width:1100px) {
   .el-col-3{
     margin-right: 40px !important;

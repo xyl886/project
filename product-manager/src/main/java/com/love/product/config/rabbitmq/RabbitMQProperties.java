@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 @NoArgsConstructor
 @AllArgsConstructor
 @Configuration
-@ConfigurationProperties(prefix = "spring.rabbitmq")
+@ConfigurationProperties("spring.rabbitmq")
 public class RabbitMQProperties {
     private String host;
     private String username;

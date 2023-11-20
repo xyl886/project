@@ -35,10 +35,7 @@
       </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
-
-      <el-button type="primary" @click="submitUpload('ruleForm')"
-      >确 定</el-button
-      >
+      <el-button type="primary" @click="submitUpload('ruleForm')">确 定</el-button>
       <el-button @click="back">取 消</el-button>
     </span>
   </el-dialog>
@@ -47,6 +44,8 @@
 <script>
 
 import {addReport} from '../api/report'
+import {getStore} from '../utils/store'
+import {mapGetters} from 'vuex'
 
 export default {
   name: 'Report',
@@ -75,14 +74,15 @@ export default {
       this.centerDialogVisible = true
       this.$nextTick(() => {
         this.$refs.ruleForm.resetFields()
+        let obj = getStore({name: 'posts'})
+        console.log(obj)
+        this.userInfo = localStorage.getItem('userInfo')
+        console.log(this.userInfo)
       })
     },
     submitUpload (formName) {
       this.$refs[formName].validate((valid) => {
-        if (
-          this.ruleForm.ViolateCompassesType === '其他(不属于以上情况)' &&
-          this.illegalContent === ''
-        ) {
+        if (this.ruleForm.ViolateCompassesType === '其他(不属于以上情况)' && this.illegalContent === '') {
           this.$message({
             showClose: true,
             message: '请填写违规类型',
@@ -105,38 +105,29 @@ export default {
         if (this.ruleForm.ViolateCompassesType === '其他(不属于以上情况)') {
           content = this.illegalContent
         }
-        var ReportingInformation = this.$store.state.ReportingInformation
-
+        let obj = getStore({name: 'posts'})
+        this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
         let form = {
-          informerId: ReportingInformation.informerId,
-          beAPersonId: ReportingInformation.beApersonId,
-          postId: ReportingInformation.postid,
-          goodsId: ReportingInformation.goodsid,
-          commentId: ReportingInformation.commentid,
-          replyId: ReportingInformation.replyid,
-          reportContent: content,
-          id: null,
-          reportTime: null,
-          reportNumber: null,
-          state: 1
+          reportUserId: this.userInfo.id,
+          postId: obj.id,
+          content: content
         }
+        console.log(form)
         addReport(form).then((res) => {
-          // if (res.status === 200) {
-          //   this.$message({
-          //     message: res.data.data === true ? '举报成功,耐心等待管理员审核' : res.data.data,
-          //     type: 'success'
-          //   })
-          //   this.back()
-          //   this.$refs[formName].resetFields()
-          //   this.illegalContent = ''
-          // if (res.data > 5) {
-          //   this.time = false;
-          //   let timer = setTimeout(() => {
-          //     this.time = true;
-          //     clearInterval(timer);
-          //   }, 30000);
-          // }
-          // }
+          this.centerDialogVisible = false
+          if (res.code === 200) {
+            this.$message.success(res.msg)
+            this.back()
+            this.$refs[formName].resetFields()
+            this.illegalContent = ''
+            if (res.data > 5) {
+              this.time = false
+              let timer = setTimeout(() => {
+                this.time = true
+                clearInterval(timer)
+              }, 30000)
+            }
+          }
         })
       })
     }

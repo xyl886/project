@@ -15,14 +15,13 @@
         <el-col :span="8"><div class="grid-content bg-purple-light">
           <!-- 搜索框 -->
           <div style="display:inline-block;margin-top: 12px;" v-if="$route.path==='/index'">
-            <el-input placeholder="请输入内容"  v-model="searchText" class="input-with-select">
-<!--              <el-select style="width:100px" v-model="select" slot="prepend" placeholder="请选择" value="1">-->
-<!--                <el-option label="1" value="1"></el-option>-->
-<!--                <el-option label="2" value="2"></el-option>-->
-<!--                <el-option label="3" value="3"></el-option>-->
-<!--              </el-select>-->
+            <el-input  clearable style="width: 70%" placeholder="请输入内容"  v-model="page.tltle" class="input-with-select">
+              <el-select style="min-width:80px;max-width: 200px" v-model="page.categoryId" slot="prepend" placeholder="" value="1">
+                <el-option v-for="tabs in tabs" :key="tabs.id" :label="tabs.categoryName" :value="tabs.id"></el-option>
+              </el-select>
               <el-button slot="append" icon="el-icon-search" @click="getPageFun()"></el-button>
             </el-input>
+            <el-button icon="el-icon-refresh" style="padding: 10px!important;" @click="resetQuery">重置</el-button>
           </div></div></el-col>
       </el-row>
     </div>
@@ -42,7 +41,14 @@
               ¥{{item2.price}}
             </div>
             <div class="posts-item-des">
-              <el-tag size="small">{{item2.schoolName}}</el-tag>
+              <el-tag size="small">{{item2.categoryName}}</el-tag>
+              <el-tag
+                  size="small"
+                  v-for="(item2,index) in item.tags"
+                  :key="index"
+                  style="margin:5px">
+                {{ item2 }}
+              </el-tag>
               <i class="el-icon-view" style="margin-left: 5px;"/>{{item2.browseNum}}
             </div>
           </div>
@@ -75,29 +81,51 @@
 import {listAll} from '@/api/banner'
 import {getPage} from '@/api/posts'
 import {setStore} from '@/utils/store'
-import {config} from 'shelljs'
+import {listAllCategory} from '../../api/posts'
 export default {
   data () {
     return {
-      searchText: '',
       select: '',
       loading: false,
       banners: [],
       posts: [],
+      tabs: [],
       page: {
         total: 0,
         pageSize: 10,
         currentPage: 1,
         postsType: 1,
-        title: ''
+        categoryId: null,
+        title: null,
+        status: 3
       }
     }
   },
+  watch: {
+    'page.categoryId': {
+      handler: 'getPageFun', // 监听 page.categoryId 的变化，执行 loadData 方法
+      immediate: true // 当组件首次加载时，立即执行一次 loadData 方法
+    }
+  },
+  beforeCreate () {
+    const data = {total: 0, pageSize: 10, currentPage: 1, categoryName: null}
+    listAllCategory(data).then(res => {
+      console.log(res.data)
+      this.tabs = res.data
+      console.log(this.tabs)
+    })
+  },
   mounted () {
     this.listAllFun()
-    this.getPageFun()
+    // this.getPageFun()
   },
   methods: {
+    resetQuery () {
+      this.page.tltle = null
+      this.page.categoryId = null
+      this.posts = []
+      this.getPageFun()
+    },
     listAllFun () {
       this.banners = []
       listAll().then(res => {
@@ -118,7 +146,6 @@ export default {
     getPageFun () {
       this.loading = true
       this.posts = []
-      this.page.title = this.searchText ? this.searchText : ''
       console.log(this.page)
       getPage(this.page).then(res => {
         this.loading = false
@@ -154,6 +181,9 @@ export default {
 </script>
 
 <style scoped>
+  .el-select__input {
+  width: auto !important;
+  }
   .posts-box{
     display: flex;
   }

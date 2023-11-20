@@ -3,6 +3,8 @@ package com.love.product.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.love.product.entity.Tags;
 import com.love.product.entity.base.Result;
+import com.love.product.entity.base.ResultPage;
+import com.love.product.entity.req.TagPageReq;
 
 import java.util.List;
 
@@ -26,7 +28,7 @@ public interface TagsService extends IService<Tags>{
 
     Result insertTag(Tags tags);
 
-    Result listTags(String name);
+    ResultPage<Tags> listTags(TagPageReq tagPageReq);
 
     Result webList();
 }

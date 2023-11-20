@@ -372,9 +372,9 @@ INSERT INTO `b_menu` VALUES (38, '35', '/system/tags/info', '', '详情', 2, NUL
 INSERT INTO `b_menu` VALUES (39, '35', '/system/tags/update', '', '修改', 2, NULL, NULL, 'btn', NULL, NULL, '2021-11-11 18:12:08', NULL, NULL, '0');
 INSERT INTO `b_menu` VALUES (40, '35', '/system/tags/remove', '/sys/tags/remove', '删除', 2, NULL, NULL, 'btn', NULL, '2021-11-10 17:34:38', '2021-11-11 18:12:01', NULL, '/sys/tags/remove', '0');
 INSERT INTO `b_menu` VALUES (41, '0', '/site', 'Layout', '网站管理', 0, 2, 'el-icon-guide', 'menu', NULL, NULL, '2021-11-16 15:48:41', '/friendLink/index', '', '1');
-INSERT INTO `b_menu` VALUES (47, '245', '/messages', '/news/message', '留言管理', 1, 2, 'el-icon-message', 'menu', NULL, NULL, '2021-11-16 15:43:46', '/message/index', '/message', '1');
-INSERT INTO `b_menu` VALUES (48, '47', '/system/message/list', '', '列表', 2, NULL, NULL, 'btn', NULL, '2021-09-26 11:50:33', '2021-11-11 18:12:56', NULL, NULL, '0');
-INSERT INTO `b_menu` VALUES (49, '47', '/system/message/remove', NULL, '删除', 2, 1, NULL, NULL, NULL, NULL, '2021-11-15 15:36:28', NULL, NULL, '0');
+INSERT INTO `b_menu` VALUES (47, '245', '/messages', '/news/chatMessage', '留言管理', 1, 2, 'el-icon-chatMessage', 'menu', NULL, NULL, '2021-11-16 15:43:46', '/chatMessage/index', '/chatMessage', '1');
+INSERT INTO `b_menu` VALUES (48, '47', '/system/chatMessage/list', '', '列表', 2, NULL, NULL, 'btn', NULL, '2021-09-26 11:50:33', '2021-11-11 18:12:56', NULL, NULL, '0');
+INSERT INTO `b_menu` VALUES (49, '47', '/system/chatMessage/remove', NULL, '删除', 2, 1, NULL, NULL, NULL, NULL, '2021-11-15 15:36:28', NULL, NULL, '0');
 INSERT INTO `b_menu` VALUES (50, '47', 'test', NULL, '回复', 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0');
 INSERT INTO `b_menu` VALUES (51, '41', 'friendLink', '/site/friendLink/index', '友情链接', 1, 3, 'el-icon-link', 'menu', NULL, NULL, '2021-11-16 15:43:55', NULL, 'friendLink', '1');
 INSERT INTO `b_menu` VALUES (52, '51', '/system/friend/list', NULL, '列表', 2, NULL, NULL, 'btn', NULL, NULL, NULL, NULL, NULL, '0');
@@ -459,8 +459,8 @@ INSERT INTO `b_menu` VALUES (242, '237', '/system/photo/update', '', '修改', 2
 INSERT INTO `b_menu` VALUES (243, '237', '/system/photo/deleteBatch', '', '批量删除', 2, 5, NULL, 'btn', '', '2021-12-31 08:51:08', NULL, NULL, NULL, '0');
 INSERT INTO `b_menu` VALUES (244, '237', '/system/photo/movePhoto', '', '移动照片', 2, 5, NULL, 'btn', '', '2021-12-31 08:51:08', NULL, NULL, NULL, '0');
 INSERT INTO `b_menu` VALUES (245, '0', '/news', 'Layout', '消息管理', 0, 3, 'el-icon-bell', 'menu', '', '2021-12-31 14:21:26', NULL, NULL, '/new', '1');
-INSERT INTO `b_menu` VALUES (246, '47', '/system/message/passBatch', '', '批量通过', 2, 3, NULL, 'btn', '', '2021-12-31 14:35:29', NULL, NULL, NULL, '0');
-INSERT INTO `b_menu` VALUES (247, '47', '/system/message/deleteBatch', '', '批量删除', 2, 4, NULL, 'btn', '', '2021-12-31 14:35:47', NULL, NULL, NULL, '0');
+INSERT INTO `b_menu` VALUES (246, '47', '/system/chatMessage/passBatch', '', '批量通过', 2, 3, NULL, 'btn', '', '2021-12-31 14:35:29', NULL, NULL, NULL, '0');
+INSERT INTO `b_menu` VALUES (247, '47', '/system/chatMessage/deleteBatch', '', '批量删除', 2, 4, NULL, 'btn', '', '2021-12-31 14:35:47', NULL, NULL, NULL, '0');
 INSERT INTO `b_menu` VALUES (248, '66', '/web/comment/addComment', '', '发表评论', 2, 5, NULL, 'btn', '', '2022-01-06 09:27:46', NULL, NULL, NULL, '0');
 INSERT INTO `b_menu` VALUES (249, '0', '/album', 'Layout', '相册管理', 0, 3, 'el-icon-picture-outline', 'menu', '', '2021-12-31 14:21:26', '2022-01-06 15:00:44', NULL, '/album', '1');
 INSERT INTO `b_menu` VALUES (250, '57', '/system/userLog/delete', '', '删除', 2, 2, NULL, 'btn', '', '2022-01-06 15:41:01', NULL, NULL, NULL, '0');
@@ -524,7 +524,7 @@ INSERT INTO `b_page` VALUES (4, '标签', 'tag', 'http://img.shiyit.com/16424812
 INSERT INTO `b_page` VALUES (5, '相册', 'album', 'http://img.shiyit.com/1642481260439.png', '2021-08-07 10:32:36', '2022-01-18 12:47:42');
 INSERT INTO `b_page` VALUES (6, '友链', 'link', 'http://img.shiyit.com/1642481271507.jpg', '2021-08-07 10:32:36', '2022-01-18 12:47:53');
 INSERT INTO `b_page` VALUES (7, '关于', 'about', 'http://img.shiyit.com/1642481282043.jpg', '2021-08-07 10:32:36', '2022-01-18 12:48:04');
-INSERT INTO `b_page` VALUES (8, '留言', 'message', 'http://img.shiyit.com/1642481294001.png', '2021-08-07 10:32:36', '2022-01-18 12:48:15');
+INSERT INTO `b_page` VALUES (8, '留言', 'chatMessage', 'http://img.shiyit.com/1642481294001.png', '2021-08-07 10:32:36', '2022-01-18 12:48:15');
 INSERT INTO `b_page` VALUES (9, '个人中心', 'user', 'http://img.shiyit.com/1642481301788.jpeg', '2021-08-07 10:32:36', '2022-01-18 12:48:23');
 INSERT INTO `b_page` VALUES (10, '文章列表', 'articleList', 'http://img.shiyit.com/1642481333013.jpg', '2021-08-10 15:36:19', '2022-01-18 12:48:54');
 

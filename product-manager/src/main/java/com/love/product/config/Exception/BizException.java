@@ -22,16 +22,16 @@ public class BizException extends RuntimeException {
         super();
     }
 
-    public BizException(BaseErrorInfoInterface errorInfoInterface) {
-        super(String.valueOf(errorInfoInterface.getResultCode()));
-        this.errorCode = errorInfoInterface.getResultCode();
-        this.errorMsg = errorInfoInterface.getResultMsg();
+    public BizException(BaseError baseError) {
+        super(String.valueOf(baseError.getResultCode()));
+        this.errorCode = baseError.getResultCode();
+        this.errorMsg = baseError.getResultMsg();
     }
 
-    public BizException(BaseErrorInfoInterface errorInfoInterface, Throwable cause) {
-        super(String.valueOf(errorInfoInterface.getResultCode()), cause);
-        this.errorCode = errorInfoInterface.getResultCode();
-        this.errorMsg = errorInfoInterface.getResultMsg();
+    public BizException(BaseError baseError, Throwable cause) {
+        super(String.valueOf(baseError.getResultCode()), cause);
+        this.errorCode = baseError.getResultCode();
+        this.errorMsg = baseError.getResultMsg();
     }
 
     public BizException(String errorMsg) {

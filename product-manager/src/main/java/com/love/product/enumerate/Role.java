@@ -12,9 +12,9 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum Role {
-    VISITOR(0,"游客"),
-    STUDENT(1,"学生"),
-    MANAGER(2,"管理员"),
+    VISITOR(1,"游客"),
+    STUDENT(2,"学生"),
+    MANAGER(3,"管理员"),
             ;
     /**
      * 枚举值

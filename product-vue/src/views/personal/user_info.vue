@@ -2,7 +2,8 @@
     <div style="font-size: 14px;margin: 20px 20px;">
       <div style="display: flex;">
         <div style="width: 100px;height: 100px;">
-          <el-image :src="user.avatar" style="width: 100px;height: 100px;border-radius: 50%;"></el-image>
+          <img :src="user.avatar" alt="" style="width: 100px;height: 100px;border-radius: 50%;">
+<!--          <el-image :src="user.avatar" ></el-image>-->
         </div>
         <div style="flex: 1;text-align: right;line-height: 100px;">
           <el-button type="primary" icon="el-icon-edit" circle @click="updateModal"></el-button>
@@ -92,6 +93,7 @@
               <el-upload
                 class="avatar-uploader"
                 action=""
+                style="border-radius: 50%"
                 ref="upload"
                 :show-file-list="false"
                 :auto-upload="false"
@@ -99,7 +101,7 @@
                 :on-change="handleChange"
                 :on-remove="handleRemove"
               >
-                <img v-if="form.avatar" :src="form.avatar" class="avatar" alt="">
+                <img  style="border-radius: 50%" v-if="form.avatar" :src="form.avatar" class="avatar" alt="">
                 <i v-else class="el-icon-plus avatar-uploader-icon" />
               </el-upload>
             </el-form-item>
@@ -166,7 +168,7 @@ export default {
   },
   mounted () {
     this.user = this.userInfo
-    this.detailFun()
+    console.log(this.user)
   },
   methods: {
     beforeUpload (file) {
@@ -191,6 +193,7 @@ export default {
       detail().then(res => {
         if (res.code === 200) {
           this.user = res.data
+          console.log(this.user)
         }
       }, error => {
         this.$message.error(error)

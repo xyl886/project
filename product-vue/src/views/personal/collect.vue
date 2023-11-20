@@ -3,18 +3,18 @@
 <!--      <div style="border-bottom: 1px solid #ccc;font-weight: bolder;font-size: 24px;line-height: 50px;">我的收藏</div>-->
       <div>
         <el-row style="padding:20px 0">
-          <el-col :span="2">
-            <el-dropdown @command="handleCommand" style="top: 10px;position: relative;" >
-            <span class="el-dropdown-link">
-              {{ command }}<i class="el-icon-arrow-down el-icon--right"></i>
-            </span>
-              <el-dropdown-menu slot="dropdown" size="mini">
-                <el-dropdown-item command="最近收藏">最近收藏</el-dropdown-item>
-                <el-dropdown-item command="最多浏览">最多浏览</el-dropdown-item>
-                <el-dropdown-item command="最新发布">最新发布</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-          </el-col>
+<!--          <el-col :span="2">-->
+<!--            <el-dropdown @command="handleCommand" style="top: 10px;position: relative;" >-->
+<!--            <span class="el-dropdown-link">-->
+<!--              {{ command }}<i class="el-icon-arrow-down el-icon&#45;&#45;right"></i>-->
+<!--            </span>-->
+<!--              <el-dropdown-menu slot="dropdown" size="mini">-->
+<!--                <el-dropdown-item command="最近收藏">最近收藏</el-dropdown-item>-->
+<!--                <el-dropdown-item command="最多浏览">最多浏览</el-dropdown-item>-->
+<!--                <el-dropdown-item command="最新发布">最新发布</el-dropdown-item>-->
+<!--              </el-dropdown-menu>-->
+<!--            </el-dropdown>-->
+<!--          </el-col>-->
           <el-col :span="4">
             <!--          <div class="search-box" :class="{ active: InputFocused }"> </div>-->
             <!--            <div class="el-icon-search" @click="handleSearch"></div>-->
@@ -28,7 +28,7 @@
             <!--              type="text"/>-->
             <el-select
               size="mini"
-              v-model="searchText"
+              v-model="categoryId"
               placeholder="请输入搜索内容"
               @input="handleInput"
               @focus="InputFocused = true"
@@ -36,18 +36,18 @@
               class="search-box-input"
               filterable>
               <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
+                  v-for="item in category"
+                  :key="item.id"
+                  :label="item.categoryName"
+                  :value="item.id">
               </el-option>
             </el-select>
           </el-col>
           <el-col :span="2" style="margin-left: 15px">
-            <div><el-button type="primary" size="mini">查询</el-button></div>
+            <div><el-button type="primary" size="mini" @click="handleSearch">查询</el-button></div>
           </el-col>
           <el-col :span="6">
-            <div @click="handleClear"><el-button size="mini">重置</el-button></div>
+            <div @click="handleClear"><el-button size="mini" @click="resetQuery">重置</el-button></div>
           </el-col>
           <el-col :span="6">
             <el-button type="primary" v-show="isSelect" @click="CheckboxShow" size="mini">取消</el-button>
@@ -87,7 +87,7 @@
                 <p style="position: relative;left: 15px;">发布于:{{item2.posts.createTime}}</p>
               </div>
             </div>
-            <div class="collect-box-title" @click="detailFun(item2.posts)">{{item2.posts?item2.posts.title:"帖子不见了"}}</div>
+            <div class="collect-box-title"  @click="detailFun(item2.posts)">{{item2.posts ? item2.posts.title : '帖子不见了'}}</div>
             <div style="padding: 5px"> <span style="color: #999;">收藏于:{{item2.updateTime}}</span>
               <el-dropdown size="small" style="float: right;">
                 <span><i class="el-icon-more" style="padding: 5px;"></i></span>
@@ -98,11 +98,9 @@
             </div>
           </el-card>
           <el-card v-else :body-style="{ padding: '0px' }">
-            <el-image class="collect-box-img" style="height: 200px">
-            <div slot="error" class="image-slot" style="padding: 35% 45%;">
-            <i class="el-icon-picture-outline"></i>
-            </div>
+            <el-image class="collect-box-img" src="../../public/images/error.png" style="height: 200px">
             </el-image>
+            <div class="collect-box-title" style="cursor: default">帖子不见了!</div>
             <div style="padding: 5px"> <span style="color: #999;">收藏于:{{item2.updateTime}}</span>
               <el-dropdown size="small" style="float: right;">
                 <span><i class="el-icon-more" style="padding: 5px;"></i></span>
@@ -112,10 +110,10 @@
               </el-dropdown>
             </div>
           </el-card>
-          <div class="checkbox" v-if="isSelect" @click="Checkbox(item2.id)">
+          <div class="checkbox" v-if="isSelect" @click="Checkbox(item2.postsId)">
                 <span style="display: inline-block;position: absolute;right: 5%;top: 5%;font-size: 25px;">
                    <i class="iconfont icon-xuanzhong" style="font-size: 25px"
-                      :style="selected.includes(item2.id)?'color: #00a6ff':''"></i>
+                      :style="selected.includes(item2.postsId)?'color: #00a6ff':''"></i>
                 </span>
           </div>
         </div>
@@ -144,26 +142,13 @@ import {getPage, addCollect} from '@/api/collect'
 import {setStore} from '@/utils/store'
 import {MessageBox} from 'element-ui'
 import {formatDate} from '../../utils/date'
+import {listAllCategory} from '../../api/posts'
+import {deleteCollectBatch} from '../../api/collect'
 export default {
   data () {
     return {
       command: '最近收藏',
-      options: [{
-        value: '选项1',
-        label: '黄金糕'
-      }, {
-        value: '选项2',
-        label: '双皮奶'
-      }, {
-        value: '选项3',
-        label: '蚵仔煎'
-      }, {
-        value: '选项4',
-        label: '龙须面'
-      }, {
-        value: '选项5',
-        label: '北京烤鸭'
-      }],
+      options: [],
       value: '',
       myLike: '',
       isSelect: false,
@@ -171,20 +156,34 @@ export default {
       selected: [],
       cancelList: '',
       InputFocused: false,
-      searchText: '',
+      categoryId: '',
       loading: false,
       collects: [],
+      category: [],
       page: {
         total: 0,
         pageSize: 10,
-        currentPage: 1
+        currentPage: 1,
+        categoryId: ''
       }
     }
   },
   mounted () {
+    this.listCategory()
     this.getPageFun()
   },
   methods: {
+    resetQuery () {
+      this.page.categoryId = ''
+      this.posts = []
+      this.getPageFun()
+    },
+    listCategory () {
+      const data = {total: 0, pageSize: 10, currentPage: 1, categoryName: null}
+      listAllCategory(data).then(res => {
+        this.category = res.data
+      })
+    },
     handleCommand (command) {
       this.command = command
     },
@@ -193,14 +192,15 @@ export default {
     },
     handleSearch () {
       // 点击搜索按钮触发
-      if (this.searchText) {
+      if (this.categoryId) {
         // 执行搜索操作
-        console.log('搜索：', this.searchText)
+        this.page.categoryId = this.categoryId
+        this.getPageFun()
       }
     },
     handleClear () {
       // 点击清除按钮触发
-      this.searchText = ''
+      this.categoryId = ''
     },
     sizeChange (pageSize) { // 页数
       this.page.pageSize = pageSize
@@ -216,21 +216,17 @@ export default {
       getPage(this.page).then(res => {
         this.loading = false
         if (res.code === 200) {
-          console.log(res.data)
           let count = 0
           let arr = []
           for (let i = 0; i < res.data.length; i++) {
-            console.log(res.data[i].updateTime)
             res.data[i].createTime = formatDate(res.data[i].createTime)
             res.data[i].updateTime = formatDate(res.data[i].updateTime)
-            console.log(res.data[i].updateTime)
             count++
             if (count <= 5) {
               arr.push(res.data[i])
             }
             if (count === 5 || i === (res.data.length - 1)) {
               this.collects.push(arr)
-              console.log(this.collects)
               arr = []
               count = 0
             }
@@ -238,7 +234,7 @@ export default {
           this.page.total = res.dataTotal
         }
       }, error => {
-        console.log(error)
+        this.$message.error(error)
         this.loading = false
       })
     },
@@ -269,7 +265,9 @@ export default {
         this.isAllSelected = false
         return false
       } else {
-        this.selected = this.collects.flatMap(item => item.map(item2 => item2.id)) // 全选按钮未选中，将selected数组设置为所有选项的id
+        this.selected = this.collects.flatMap(
+          item => item.map(item2 => item2.postsId)) // 全选按钮未选中，将selected数组设置为所有选项的id
+        console.log(this.selected)
         this.isAllSelected = true
       }
     },
@@ -294,16 +292,16 @@ export default {
     },
     Cancel () {
       // 弹窗是否确认
-      const collectIds = []
-      for (const group of this.collects) {
-        for (const collect of group) {
-          collectIds.push(collect.id)
-        }
-      }
-      this.selected = collectIds.join(',')
+      // const collectIds = []
+      // for (const group of this.collects) {
+      //   for (const collect of group) {
+      //     collectIds.push(collect.postsId)
+      //   }
+      // }
+      // this.selected = collectIds.join(',')
       console.log(this.selected)
       MessageBox.confirm(
-        '你将要取消收藏' + collectIds.length + '个商品',
+        '你将要取消收藏' + this.selected.length + '个商品',
         '确认提示',
         {
           confirmButtonText: '确定',
@@ -314,13 +312,19 @@ export default {
           closeOnPressEscape: false
         }
       ).then(() => {
-        this.cancelCollect(this.selected)
-        setTimeout(() => {
-          this.$message({
-            type: 'success',
-            message: '取消成功!'
-          })
-        }, 1000)
+        deleteCollectBatch(this.selected).then(res => {
+          if (res.code === 200) {
+            this.getPageFun()
+            this.$message.success(res.msg)
+          }
+        })
+        // this.cancelCollect(this.selected)
+        // setTimeout(() => {
+        //   this.$message({
+        //     type: 'success',
+        //     message: '取消成功!'
+        //   })
+        // }, 1000)
       }).catch(() => {
       })
     }

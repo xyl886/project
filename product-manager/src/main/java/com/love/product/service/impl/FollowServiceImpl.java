@@ -205,7 +205,7 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
         LambdaQueryWrapper<Follow> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Follow::getUserId,userId).eq(Follow::getDeleted, YesOrNo.NO.getValue());
         List<Follow> follows = list(queryWrapper);
-        log.info("follows:" + follows);
+//        log.info("follows:" + follows);
         follows.forEach(item-> followedUserIds.add(item.getBeFollowedUserId()));
         return followedUserIds;
     }

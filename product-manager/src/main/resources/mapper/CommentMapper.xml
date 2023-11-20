@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.love.product.mapper.PostsCommentMapper">
+
+    <select id="selectPageList" resultType="com.love.product.entity.vo.CommentVO">
+        SELECT
+        c.id,
+        au.avatar,
+        au.nickname,
+        IF(ru.nickname is null,'无',ru.nickname) as replyNickname,
+        p.title as title,
+        c.content,
+        c.create_time
+        FROM
+        s_posts_comment c
+        LEFT JOIN ( SELECT id, avatar, nickname FROM s_user_info ) au ON c.user_id = au.id
+        LEFT JOIN ( SELECT id, title FROM s_posts ) p ON c.posts_id = p.id
+        LEFT JOIN ( SELECT id, avatar, nickname FROM s_user_info ) ru ON c.posts_user_id = ru.id
+        <where>
+            <if test="pageQuery.content != null and pageQuery.content != ''">
+                au.nickname like concat('%',#{pageQuery.content},'%')
+                or c.content like concat('%',#{pageQuery.content},'%')
+                or p.title like concat('%',#{pageQuery.content},'%')
+            </if>
+            and c.deleted = 0
+        </where>
+        order by c.create_time desc
+    </select>
+</mapper>

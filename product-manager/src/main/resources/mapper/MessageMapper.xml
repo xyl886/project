@@ -2,23 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.love.product.mapper.MessageMapper">
 
-
-        <resultMap id="MessageDTOResultMap" type="com.love.product.entity.dto.MessageDTO">
-            <id property="id" column="id"/>
-            <result property="fromId" column="from_id"/>
-            <result property="fromIdAvatar" column="avatar"/>
-            <result property="toId" column="to_id"/>
-            <result property="message" column="message"/>
-            <result property="sentTime" column="create_time"/>
-        </resultMap>
-
-        <select id="listMessages" resultMap="MessageDTOResultMap">
-            SELECT
-                m.id, m.from_id, m.to_id, m.message, m.create_time, ui.avatar
-            FROM message m
-                     JOIN user_info ui ON m.from_id = ui.id
-            WHERE (m.from_id = #{fromId} AND m.to_id = #{toId})
-               OR (m.from_id = #{toId} AND m.to_id = #{fromId})
-            ORDER BY m.create_time ASC
-        </select>
+    <update id="passBatch">
+        update s_message  where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
 </mapper>

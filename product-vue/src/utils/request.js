@@ -56,7 +56,7 @@ service.interceptors.response.use(
       router.push({ path: '/login' })
     } else if (res.code !== 200) {
       Message({
-        message: res.msg || '系统异常，请联系技术人员',
+        message: '系统异常，请联系技术人员',
         type: 'error',
         duration: 2 * 1000
       })

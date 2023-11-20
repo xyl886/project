@@ -2,17 +2,153 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
     <mapper namespace="com.love.product.mapper.PostsMapper">
+    <update id="audit">
+        update s_posts
+        set
+            status=#{postsDTO.status}
+        where
+            id = #{postsDTO.id}
+    </update>
 
         <select id="getImgPathById" resultType="string">
-            SELECT img_path
-            FROM posts
-            WHERE id = #{id}
+            SELECT
+                img_path
+            FROM
+                s_posts
+            WHERE
+                id = #{id}
         </select>
+    <resultMap id="postResultMap" type="com.love.product.entity.vo.PostsDetailVO">
+
+
+    </resultMap>
+    <select id="getPostsList" resultMap="postResultMap">
+        SELECT p.*,
+               c.category_name
+               t.tag_name
+               u.user_name     AS user_name,
+               u.role          AS user_role,
+               CASE
+                   WHEN f.followed_user_id IS NOT NULL
+                       THEN 1
+                   ELSE 0
+                   END         AS followed,
+               CASE
+                   WHEN pl.posts_id IS NOT NULL
+                       THEN 1
+                   ELSE 0
+                   END         AS liked
+        FROM posts p
+                 LEFT JOIN category c
+                           ON p.school = c.id
+                 LEFT JOIN
+             (SELECT pt.posts_id,GROUP_CONCAT(t.tag_name) AS tag_name
+              FROM s_posts_tag pt
+                       INNER JOIN s_tags t
+                                  ON pt.tag_id = t.id
+              GROUP BY pt.posts_id) t
+             ON p.id = t.posts_id
+                 LEFT JOIN USER u
+                           ON p.user_id = u.id
+                 LEFT JOIN
+             (SELECT user_id,
+                     followed_user_id
+              FROM follow
+              WHERE user_id = #{userId}) f
+             ON p.user_id = f.followed_user_id
+                 LEFT JOIN
+             (SELECT user_id,
+                     posts_id
+              FROM posts_like
+              WHERE user_id = #{userId}) pl
+             ON p.id = pl.posts_id
+        <where>
+            <if test="postsType != null">
+                AND posts_type = #{postsType}
+            </if>
+            <if test="categoryId != null and categoryId != 1 and categoryId != -1">
+                AND school = #{categoryId}
+            </if>
+            <if test="tagId != null">
+                AND id IN (
+                SELECT pt.posts_id
+                FROM s_posts_tag pt
+                WHERE pt.tag_id IN (
+                SELECT id
+                FROM s_tags
+                WHERE deleted = 0 AND id = #{tagId}
+                )
+                )
+            </if>
+            <if test="categoryId != null and categoryId = -1">
+                AND user_id = #{userId}
+            </if>
+            <if test="title != null and title != ''">
+                AND title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="categoryId != null and categoryId = 1">
+                AND user_id IN
+                <foreach item="followedUserId" collection="followedUserIds" open="(" separator="," close=")">
+                    #{followedUserId}
+                </foreach>
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+            <if test="description != null and description != ''">
+                OR description LIKE CONCAT('%', #{description}, '%')
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
     <select id="getPostsById" resultType="com.love.product.entity.Posts">
-        SELECT id,user_id,posts_type,title,description,content,school,price,cover_path,img_path,
-               browse_num,collect_num,like_num,comment_num,version,status,deleted,create_time,update_time
-        FROM posts
-        WHERE id = #{id}
+        SELECT
+            id,
+            user_id,
+            posts_type,
+            title,
+            description,
+            content,
+            school,
+            price,
+            cover_path,
+            img_path,
+            browse_num,
+            collect_num,
+            like_num,
+            comment_num,
+            version,
+            status,
+            deleted,
+            create_time,
+            update_time
+        FROM
+            s_posts
+        WHERE
+            id = #{id}
+    </select>
+    <select id="contribute" resultType="com.love.product.entity.vo.ContributeVO">
+        select
+            count,
+            date
+        from
+            (SELECT
+                 count(id) as count,
+                 DATE_FORMAT(create_time, '%Y-%m-%d') as date,
+                 create_time
+             FROM
+            s_posts
+             where
+                 DATE_FORMAT(create_time, '%Y-%m-%d') between #{lastTime} and #{nowTime}
+             GROUP BY
+                 create_time) AS s_post
+        ORDER BY
+            s_post.create_time ASC
     </select>
 
-    </mapper>
+    <select id="listPostWithDelete" resultType="com.love.product.entity.Posts">
+        select *
+        from post
+        where updateTime >= #{minUpdateTime}
+    </select>
+</mapper>

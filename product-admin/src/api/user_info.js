@@ -1,5 +1,13 @@
 import request from '@/utils/request'
 
+export const list = (data) => {
+  return request({
+    url: '/api/system/user/list',
+    method: 'post',
+    data
+  })
+}
+
 /**
  * 详情
  */
@@ -9,7 +17,16 @@ export const detail = () => {
     method: 'get'
   })
 }
-
+/**
+ * 更新用户信息
+ */
+export const sysUpdate = (data) => {
+  return request({
+    url: '/api/system/user/update',
+    method: 'post',
+    data
+  })
+}
 /**
  * 更新用户信息
  */

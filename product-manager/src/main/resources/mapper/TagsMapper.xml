@@ -1,20 +1,52 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.love.product.mapper.TagsMapper">
+    <resultMap id="tagResultMap" type="com.love.product.entity.vo.TagVO">
+        <id column="id" property="id"/>
+        <result column="tag_name" property="tag_name"/>
+    </resultMap>
+
     <insert id="savePostsTags">
-        insert ignore into  posts_tag(posts_id,tag_id) values
+        insert ignore into
+        s_posts_tag(
+                posts_id,
+                tag_id
+            )
+        values
         <foreach collection="tagList" item="tagsId" index="index" separator=",">
             ( #{posts_id},#{tagsId})
         </foreach>
     </insert>
 
 
-    <select id="getTagNameById" resultType="java.lang.String">
-        <!-- 根据 tagId 获取 tagName -->
-            SELECT tag_name FROM tags WHERE id = #{tagId}
+    <select id="getTagNameById" resultType="java.lang.String">  <!-- 根据 tagId 获取 tagName -->
+        SELECT
+            tag_name
+        FROM
+        s_tags
+        WHERE
+            id = #{tagId}
     </select>
 
-    <select id="selectAll">
+    <select id="selectAll" resultMap="tagResultMap">
+        SELECT
+            id,tag_name
+        FROM
+            s_tags
+        GROUP BY
+            id,
+            tag_name
 
+    </select>
+    <select id="selectByPostId" resultType="java.lang.String">
+        SELECT
+            st.tag_name
+        FROM
+            s_tags st
+                JOIN s_posts_tag spt
+                     ON st.id = spt.tag_id
+                         AND st.deleted = 0
+        WHERE
+            spt.posts_id = #{posts_id}
     </select>
 </mapper>

@@ -52,7 +52,7 @@
           </div>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item @click.native="publish">发布帖子</el-dropdown-item>
-            <el-dropdown-item @click.native="myMessage">我的消息</el-dropdown-item>
+            <el-dropdown-item @click.native="chat(userInfo.id)">我的消息</el-dropdown-item>
             <el-dropdown-item @click.native="updatePwd">修改密码</el-dropdown-item>
             <el-dropdown-item style="color:red;" @click.native="logoutFun">退出登录</el-dropdown-item>
           </el-dropdown-menu>
@@ -81,7 +81,7 @@ export default {
         {name: '校园分享', path: '/share'},
         {name: '个人中心', path: '/personal'},
         {name: '留言板', path: '/messageBoard'},
-        {name: '关于我们', path: '/about-us'}
+        {name: '热搜', path: '/hot'}
       ]
     }
   },
@@ -109,6 +109,9 @@ export default {
     },
     pathFun (path) {
       this.$router.push({path: path})
+    },
+    chat () {
+      this.$router.push({path: '/chat'})
     },
     homePage () {
       this.$router.push({path: '/index'})

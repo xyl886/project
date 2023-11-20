@@ -1,41 +1,41 @@
 <template>
   <div class="body">
-    <div style="font-size: 14px;margin: 0 100px;padding: 20px 0;" v-infinite-scroll="loadFun">
-        <el-row>
-          <el-col :span="18">
-            <div class="share-tab" style="width: 960px; display: inline-block;padding: 0 10px">
-          <el-tabs style="min-height: 800px;"  tab-position="left" v-model="activeName" @tab-click="handleClick">
-         <el-tab-pane  v-for="tab in Tabs" @tab-click="handleClick" :label="tab.categoryName" :name="tab.id" :key="tab.id">
-           <All :ref="tab.id"></All>
-         </el-tab-pane>
-          </el-tabs>
-            </div>
+    <div v-infinite-scroll="loadFun" style="font-size: 14px;margin: 0 100px;padding: 20px 0;">
+      <el-row>
+        <el-col :span="18">
+          <div class="share-tab" style="width: 960px; display: inline-block;padding: 0 10px">
+            <el-tabs v-model="activeName" style="min-height: 800px;" tab-position="left" @tab-click="handleClick">
+              <el-tab-pane v-for="tab in Tabs" :label="tab.categoryName" :name="tab.id" :key="tab.id" @tab-click="handleClick">
+                <All :ref="tab.id"/>
+              </el-tab-pane>
+            </el-tabs>
+          </div>
         </el-col>
         <el-col :span="6" style="position: relative;" class="right-search">
-          <div class="recommendation" :class="{ 'fixed': isFixed }">
+          <div :class="{ 'fixed': isFixed }" class="recommendation">
             <div class="title-header"><b>向你推荐</b></div>
-            <div class="title"  v-for="(item, index) in recommendationItems" :key="index">
-           <span><i class="iconfont icon-comment"></i></span>{{ item.title }}
+            <div v-for="(item, index) in recommendationItems" :key="index" class="title">
+              <span><i class="iconfont icon-comment"/></span>{{ item.title }}
             </div>
           </div>
         </el-col>
-        </el-row>
-      </div>
+      </el-row>
+    </div>
   </div>
 </template>
 
 <script>
 import All from './all.vue'
 import BackToTop from '../../page/top/BackToTop.vue'
-import {getToken} from '../../utils/auth'
-import {listAllCategory} from '../../api/posts'
+import { getToken } from '../../utils/auth'
+import { listAllCategory } from '../../api/posts'
 
 export default {
   components: {
     All,
     BackToTop
   },
-  data () {
+  data() {
     return {
       isFixed: false,
       activeName: '0',
@@ -65,10 +65,8 @@ export default {
       school: null
     }
   },
-  watch: {
-  },
   computed: {
-    Tabs () {
+    Tabs() {
       if (getToken()) {
         return this.tabs
       } else {
@@ -76,27 +74,29 @@ export default {
       }
     }
   },
-  beforeCreate () {
+  watch: {
+  },
+  beforeCreate() {
     listAllCategory().then(res => {
       console.log(res.data)
       this.tabs = this.tabs.concat(res.data)
       console.log(this.tabs)
     })
   },
-  mounted () {
+  mounted() {
     this.$nextTick(() => {
       this.$refs[this.activeName][0].init(this.school)
     })
     window.addEventListener('scroll', this.handleScroll)
   },
-  beforeDestroy () {
+  beforeDestroy() {
     window.removeEventListener('scroll', this.handleScroll)
   },
   methods: {
-    handleScroll () {
+    handleScroll() {
       this.isFixed = document.documentElement.scrollTop > 5
     },
-    handleClick (tab, event) {
+    handleClick(tab, event) {
       if (tab.index !== '0') {
         this.school = tab.index
       } else {
@@ -105,7 +105,7 @@ export default {
       this.$refs[tab.name][0].init(this.school)
       console.log(tab.name + ',' + this.school)
     },
-    loadFun () {
+    loadFun() {
       this.$refs[this.activeName][0].load()
     }
   }

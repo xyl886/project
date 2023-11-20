@@ -36,6 +36,10 @@ export default {
   computed: {},
   // 监控data中的数据变化
   watch: {},
+  // 生命周期 - 挂载完成（可以访问DOM元素）
+  mounted () {
+    this.$refs[1][0].init(null)
+  },
   // 方法集合
   methods: {
     handleClick (tab, event) {
@@ -50,9 +54,6 @@ export default {
   },
   // 生命周期 - 创建完成（可以访问当前this实例）
   created () {
-  },
-  // 生命周期 - 挂载完成（可以访问DOM元素）
-  mounted () {
   },
   // 生命周期 - 创建之前
   beforeCreate () {

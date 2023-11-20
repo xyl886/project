@@ -15,7 +15,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName(value = "banner")
+@TableName(value = "s_banner")
 public class Banner extends BaseEntity {
 
     @ApiModelProperty(value = "图片路径")

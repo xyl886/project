@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * @author xyl
  * @date 2022-12-28 10:44
@@ -19,7 +21,16 @@ import lombok.NoArgsConstructor;
 public class PostsDetailVO extends Posts {
 
     @ApiModelProperty(value = "校区名称")
-    private String schoolName;
+    private String categoryName;
+
+    @ApiModelProperty(value = "标签")
+    private List<String> tags;
+
+    @ApiModelProperty(value = "帖子状态")
+    private String postStatus;
+
+    @ApiModelProperty(value = "帖子类型")
+    private String type;
 
     @ApiModelProperty(value = "所属用户")
     private UserBasicInfoVO userInfo;

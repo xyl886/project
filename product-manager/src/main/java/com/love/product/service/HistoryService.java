@@ -2,9 +2,11 @@ package com.love.product.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.love.product.entity.History;
+import com.love.product.entity.Posts;
 import com.love.product.entity.base.PageQuery;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
+import com.love.product.entity.req.HistoryPageReq;
 import com.love.product.entity.vo.HistoryVO;
 
 /**
@@ -22,7 +24,7 @@ public interface HistoryService extends IService<History> {
 
     void saveHistory(History history);
 
-    ResultPage<HistoryVO> getPage(Long userId, PageQuery pageQuery);
+    ResultPage<HistoryVO> getPage(Long userId, HistoryPageReq pageQuery);
 
     Result<?> del(Long userId, Long... ids);
 }

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.love.product.mapper.ChatMessageMapper">
+
+
+    <resultMap id="MessageDTOResultMap" type="com.love.product.entity.dto.ChatMessageDTO">
+        <id property="id" column="id"/>
+        <result property="fromId" column="from_id"/>
+        <result property="fromIdAvatar" column="avatar"/>
+        <result property="toId" column="to_id"/>
+        <result property="message" column="message"/>
+        <result property="sentTime" column="create_time"/>
+    </resultMap>
+
+    <select id="listMessages" resultMap="MessageDTOResultMap">
+        SELECT
+            m.id,
+            m.from_id,
+            m.to_id,
+            m.message,
+            m.create_time,
+            ui.avatar
+        FROM
+            s_chat_message m
+                JOIN s_user_info ui
+                     ON m.from_id = ui.id
+        WHERE
+            (m.from_id = #{fromId} AND m.to_id = #{toId})
+            OR (m.from_id = #{toId} AND m.to_id = #{fromId})
+        ORDER BY
+            m.create_time ASC
+    </select>
+
+</mapper>

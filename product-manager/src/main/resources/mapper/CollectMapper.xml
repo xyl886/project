@@ -6,7 +6,7 @@
 
     <insert id="add" parameterType="com.love.product.entity.Collect" keyProperty="id" useGeneratedKeys="true">
         INSERT INTO
-        collect
+            s_collect
         (
         id,
         user_id,

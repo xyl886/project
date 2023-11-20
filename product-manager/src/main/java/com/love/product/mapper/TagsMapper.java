@@ -19,6 +19,6 @@ public interface TagsMapper extends BaseMapper<Tags> {
      String getTagNameById(Long tagId) ;
 
      void savePostsTags(@Param("posts_id")Long id, @Param("tagList")List<Long> tagList);
-
+     List<String> selectByPostId(@Param("posts_id")Long PostsId);
      List<TagVO> selectAll();
 }

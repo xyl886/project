@@ -31,13 +31,10 @@ import java.util.Map;
 /**
  * @author Administrator
  * @date 2022-10-31 15:35
- * @describe
- *
- * OAuth2配置类
- *
+ * @describe OAuth2配置类
+ * <p>
  * 1.配置令牌加载的属性
  * 2.自定义用户信息到token令牌内
- *
  */
 @Configuration
 @EnableAuthorizationServer
@@ -69,14 +66,13 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
      * 定义oauth/token类接口信息
      *
      * @description tokenConfig map
-     *        map.get("clientId")    类比为token的用户名
-     *        map.get("secret")    类比为token的密码
-     *      map.get("grantTypes")表示授权类型 grant_type： password(密码模式)
-     *      map.get("scopes")权限范围
-     *      map.get("accessTokenValidity")token有效期
-     *      map.get("refreshTokenValidity")刷新token有效时间
-     *      map.get("resourceId")定义资源令牌头部,资源服务器验证令牌时用到
-     *
+     * map.get("clientId")    类比为token的用户名
+     * map.get("secret")    类比为token的密码
+     * map.get("grantTypes")表示授权类型 grant_type： password(密码模式)
+     * map.get("scopes")权限范围
+     * map.get("accessTokenValidity")token有效期
+     * map.get("refreshTokenValidity")刷新token有效时间
+     * map.get("resourceId")定义资源令牌头部,资源服务器验证令牌时用到
      */
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
@@ -100,8 +96,8 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
      * token令牌配置
      *
      * @description 1.定义自定义token生成方式、tokenStore、、认证管理器
-     *                 2.定义token加解密转换器
-     *                 3.定义token请求方式
+     * 2.定义token加解密转换器
+     * 3.定义token请求方式
      */
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
@@ -116,8 +112,8 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
      * OAuth2服务配置
      *
      * @description 1.允许/oauth/token被调用，默认deny
-     *                 2.允许所有检查token，默认deny。必须加，否则check_token不能访问显示401未授权错误
-     *                 3.允许表单认证
+     * 2.允许所有检查token，默认deny。必须加，否则check_token不能访问显示401未授权错误
+     * 3.允许表单认证
      */
     @Override
     public void configure(AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
@@ -129,6 +125,7 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
 
     /**
      * 生成jwt令牌
+     *
      * @return
      */
     @Bean
@@ -142,12 +139,12 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
             public OAuth2AccessToken enhance(OAuth2AccessToken accessToken, OAuth2Authentication authentication) {
                 Authentication user = authentication.getUserAuthentication();
                 String email = user.getName();
-                if(email == null){
-                    throw new BizException(403,"请重新登录");
+                if (email == null) {
+                    throw new BizException(403, "请重新登录");
                 }
                 UserInfoVO userInfoVO = userInfoService.getByEmail(email);
-                if(userInfoVO == null){
-                    throw new BizException(403,"请重新登录");
+                if (userInfoVO == null) {
+                    throw new BizException(403, "请重新登录");
                 }
                 userInfoVO = (UserInfoVO) redisService.get("user:userinfo:" + userInfoVO.getId());
                 Collection<SimpleGrantedAuthority> authority = new ArrayList<>();

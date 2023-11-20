@@ -2,19 +2,19 @@
   <div style="font-size: 14px;display: flex;padding: 20px 20px;background: #f5f7f9;">
     <div style="flex: 1;background-color: #ffffff;border-radius: 5px;">
       <div style="padding: 24px;">
-        <el-form ref="form" :rules="rules" :label-position="labelPosition" :model="form" label-width="200px" v-loading="loading">
+        <el-form v-loading="loading" ref="form" :rules="rules" :label-position="labelPosition" :model="form" label-width="200px">
           <!--          <el-form-item label="内容" prop="content">-->
           <!--            <el-input type="textarea" resize="none" v-model="form.content" clearable></el-input>-->
           <!--          </el-form-item>-->
           <el-form-item label="分类:" prop="school">
             <el-radio-group v-model="form.school">
               <el-radio-button v-for="(option, index) in options" :key="index" :label="option.id">{{ option.categoryName }}</el-radio-button>
-<!--              <el-radio-button label="1">学习</el-radio-button>-->
-<!--              <el-radio-button label="2">生活</el-radio-button>-->
-<!--              <el-radio-button label="3">娱乐</el-radio-button>-->
-<!--              <el-radio-button label="4">求助</el-radio-button>-->
-<!--              <el-radio-button label="5">就业</el-radio-button>-->
-<!--              <el-radio-button label="6">新闻/公告</el-radio-button>-->
+              <!--              <el-radio-button label="1">学习</el-radio-button>-->
+              <!--              <el-radio-button label="2">生活</el-radio-button>-->
+              <!--              <el-radio-button label="3">娱乐</el-radio-button>-->
+              <!--              <el-radio-button label="4">求助</el-radio-button>-->
+              <!--              <el-radio-button label="5">就业</el-radio-button>-->
+              <!--              <el-radio-button label="6">新闻/公告</el-radio-button>-->
             </el-radio-group>
           </el-form-item>
           <el-form-item label="类型:" prop="postsType">
@@ -24,80 +24,81 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item label="标题:" prop="title">
-            <el-input v-model="form.title" placeholder="请输入帖子标题，最多 60 字" clearable></el-input>
+            <el-input v-model="form.title" placeholder="请输入帖子标题，最多 60 字" clearable/>
           </el-form-item>
           <el-form-item label="描述:" prop="description">
-            <el-input v-model="form.description" placeholder="请简单介绍帖子的内容" clearable></el-input>
+            <el-input v-model="form.description" placeholder="请简单介绍帖子的内容" clearable/>
           </el-form-item>
-          <el-form-item label="价格:" prop="price" v-show="form.postsType !== '2'">
-            <el-input-number v-model="form.price" :controls='false' :min="0" :max="19999" clearable></el-input-number>&nbsp;元
+          <el-form-item v-show="form.postsType !== '2'" label="价格:" prop="price">
+            <el-input-number v-model="form.price" :controls="false" :min="0" :max="19999" clearable/>&nbsp;元
           </el-form-item>
           <el-form-item label="内容:" prop="title">
             <!--            <quill-editor></quill-editor>-->
             <mavon-editor v-model="form.content" />
           </el-form-item>
-          <el-form-item label="图片:" :required="form.postsType !== '2'">
+          <el-form-item :required="form.postsType !== '2'" label="图片:">
             <el-upload
-              action=""
               v-model="form.files"
-              list-type="picture-card"
               :auto-upload="false"
               :limit="9"
               :before-upload="beforeUpload"
               :on-change="handleChange"
               :on-preview="handlePictureCardPreview"
               :disabled="disabled"
-              :on-remove="handleRemove">
-              <i class="el-icon-plus"></i>
+              :on-remove="handleRemove"
+              action=""
+              list-type="picture-card">
+              <i class="el-icon-plus"/>
             </el-upload>
             <div style="font-size: 12px;color: #666;">
               只能上传jpg/png文件,且不超过 2MB,最多上传 9 张图片
             </div>
             <el-dialog :visible.sync="dialogVisible">
-              <img width="100%" :src="dialogImageUrl" alt="">
+              <img :src="dialogImageUrl" width="100%" alt="">
             </el-dialog>
           </el-form-item>
           <el-form-item label="标签:">
             <el-tag
-              :key="tag"
               v-for="tag in dynamicTags"
-              closable
+              :key="tag"
               :disable-transitions="false"
+              closable
               @close="handleClose(tag)">
-              {{tag}}
+              {{ tag }}
             </el-tag>
-            <el-popover  placement="top-start"
-                         width="400"
-                         trigger="click">
+            <el-popover
+              placement="top-start"
+              width="400"
+              trigger="click">
               <div class="popover-container">
-              <el-tag
-                v-for="(item,index) in Tags"
-                :key="index"
-                style="margin:5px"
-                :class="tagClass(item)"
-                @click="addTag(item)">
-                {{ item }}
-              </el-tag>
+                <el-tag
+                  v-for="(item,index) in Tags"
+                  :key="index"
+                  :class="tagClass(item)"
+                  style="margin:5px"
+                  @click="addTag(item)">
+                  {{ item }}
+                </el-tag>
               </div>
               <el-input
+                v-if="dynamicTags && dynamicTags.length < 3"
+                ref="saveTagInput"
+                v-model="inputValue"
                 style="width: 100%"
                 class="input-new-tag"
-                v-if="dynamicTags && dynamicTags.length < 3"
-                v-model="inputValue"
-                ref="saveTagInput"
                 size="small"
                 @keyup.enter.native="handleInputConfirm"
-                @blur="handleInputConfirm">
-              </el-input>
-            <el-button v-if="!inputVisible"
-                       v-show="dynamicTags.length < 3"
-                       class="button-new-tag"
-                       slot="reference"
-                       size="small">+ 添加标签</el-button>
+                @blur="handleInputConfirm"/>
+              <el-button
+                v-if="!inputVisible"
+                v-show="dynamicTags.length < 3"
+                slot="reference"
+                class="button-new-tag"
+                size="small">+ 添加标签</el-button>
             </el-popover>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="submitForm('form')" class="el-icon-position">立即发布</el-button>
+            <el-button type="primary" class="el-icon-position" @click="submitForm('form')">立即发布</el-button>
             <el-button @click="resetForm('form')">重置</el-button>
           </el-form-item>
         </el-form>
@@ -107,15 +108,17 @@
 </template>
 
 <script>
-import {add} from '@/api/posts'
-import {listAllCategory} from '../../api/posts'
+import { add } from '@/api/posts'
+import { listAllCategory } from '../../api/posts'
 export default {
-  data () {
+  components: {
+  },
+  data() {
     return {
       loading: false,
       labelPosition: 'left',
-      dynamicTags: ['1', '2', '3'],
-      Tags: ['1', '2', '3', '4', '5', '6'],
+      dynamicTags: [],
+      Tags: [],
       inputVisible: false,
       inputValue: '',
       options: [],
@@ -149,10 +152,16 @@ export default {
       disabled: false
     }
   },
-  components: {
+  computed: {
+    tagClass() {
+      return function(item) {
+        const index = this.dynamicTags.indexOf(item.name)
+        return index !== -1 ? 'tag-item-select' : 'tag-item'
+      }
+    }
   },
   watch: {
-    'form.postsType' () {
+    'form.postsType'() {
       if (this.form.postsType === '1') {
         this.rules['price'][0]['required'] = true
       } else {
@@ -160,7 +169,7 @@ export default {
         this.rules['price'][0]['required'] = false
       }
     },
-    'form.files' () {
+    'form.files'() {
       // console.info(this.form.files.length)
       if (this.form.files.length >= 9) {
         this.disabled = true
@@ -170,21 +179,13 @@ export default {
       }
     }
   },
-  computed: {
-    tagClass () {
-      return function (item) {
-        const index = this.dynamicTags.indexOf(item.name)
-        return index !== -1 ? 'tag-item-select' : 'tag-item'
-      }
-    }
-  },
-  mounted () {
-    let that = this
-    setInterval(function () { // 定位当前菜单
+  mounted() {
+    const that = this
+    setInterval(function() { // 定位当前菜单
       that.activeIndex = that.$router.currentRoute.path
     }, 1000)
   },
-  beforeCreate () {
+  beforeCreate() {
     listAllCategory().then(res => {
       console.log(res.data)
       this.options = this.options.concat(res.data.slice(1))
@@ -192,7 +193,7 @@ export default {
     })
   },
   methods: {
-    addTag (item) {
+    addTag(item) {
       if (this.dynamicTags.length > 2) {
         this.$message.error('最多添加三个标签,如需继续添加,请先删除一个!')
         return false
@@ -201,7 +202,7 @@ export default {
         this.dynamicTags.push(item)
       }
     },
-    saveTag () {
+    saveTag() {
       if (this.tagName.trim() !== '') {
         this.addTag({
           name: this.tagName
@@ -209,33 +210,33 @@ export default {
         this.tagName = ''
       }
     },
-    removeTag (item) {
+    removeTag(item) {
       const index = this.dynamicTags.indexOf(item)
       this.article.tags.splice(index, 1)
     },
-    backFun () {
-      this.$router.push({path: '/'})
+    backFun() {
+      this.$router.push({ path: '/' })
     },
-    beforeUpload: function (file) {
+    beforeUpload: function(file) {
       const isLt2M = file.size / 1024 / 1024 < 2
       if (!isLt2M) {
         this.$message.error('上传头像图片大小不能超过 2MB!')
       }
       return isLt2M
     },
-    handleRemove (file, fileList) {
+    handleRemove(file, fileList) {
       this.form.files = fileList
       console.info(this.form)
     },
-    handleChange (file, fileList) {
+    handleChange(file, fileList) {
       this.form.files = fileList
       console.info(this.form)
     },
-    handlePictureCardPreview (file) {
+    handlePictureCardPreview(file) {
       this.dialogImageUrl = file.url
       this.dialogVisible = true
     },
-    submitForm (formName) {
+    submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           if (this.form.postsType === '1' && this.form.files.length === 0) {
@@ -243,7 +244,7 @@ export default {
             return false
           }
           this.loading = true
-          let formData = new FormData()
+          const formData = new FormData()
           for (const file of this.form.files) { // 多个文件全部都放到files
             if (file.raw) {
               formData.append('files', file.raw)
@@ -273,28 +274,30 @@ export default {
         }
       })
     },
-    handleClose (tag) {
+    handleClose(tag) {
       this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1)
     },
 
-    showInput () {
+    showInput() {
       this.inputVisible = true
       this.$nextTick(_ => {
         this.$refs.saveTagInput.$refs.input.focus()
       })
     },
 
-    handleInputConfirm () {
-      let inputValue = this.inputValue
+    handleInputConfirm() {
+      const inputValue = this.inputValue
       if (inputValue) {
-        this.dynamicTags.push(inputValue)
+        const newTag = { id: null, tag_name: inputValue }
+        this.dynamicTags.push(newTag)
+        console.log(this.dynamicTags)
       }
       this.inputVisible = false
       this.inputValue = ''
     },
-    saveForm (formName) {
+    saveForm(formName) {
     },
-    resetForm (formName) {
+    resetForm(formName) {
       this.$refs[formName].resetFields()
     }
   }

@@ -13,12 +13,13 @@ import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 import 'mavon-editor/dist/css/index.css'
 import MavonEditor from 'mavon-editor'
-
+import { vueBaberrage } from 'vue-baberrage'
 import '@/permission' // permission control
 // import 'default-passive-events'
 
 Vue.use(Element)
 Vue.use(MavonEditor)
+Vue.use(vueBaberrage)
 Vue.use(VueQuillEditor)
 Vue.config.productionTip = false
 

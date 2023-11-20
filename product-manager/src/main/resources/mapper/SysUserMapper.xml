@@ -3,8 +3,28 @@
 <mapper namespace="com.love.product.mapper.SysUserMapper">
 
 
-    <select id="selectNameAndPassword" resultType="com.love.product.entity.UserInfo">
-        select a.id,a.username,a.role_id,a.status,b.nickname,b.avatar from b_user a left join (select id,nickname,avatar from user_auth) b on a.user_auth_id=b.id
-        where username=#{username} and password=#{password}
+    <select id="selectNameAndPassword" resultType="com.love.product.entity.vo.UserInfoVO">
+        select
+            a.id,
+            nickname,
+            email,
+            password,
+            original_password,
+            avatar,
+            gender,
+            status,
+            hobby,
+            remark,
+            role,
+            deleted,
+            create_time,
+            update_time
+        from
+            s_user_info a
+                left join (select id, role_name from s_user_auth) b
+                          on a.role = b.id
+        where
+            email = #{email}
+            and a.role = 3
     </select>
 </mapper>

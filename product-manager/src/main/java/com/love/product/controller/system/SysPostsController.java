@@ -1,17 +1,21 @@
 package com.love.product.controller.system;
 
 
+import com.love.product.entity.base.Result;
+import com.love.product.entity.dto.PostsDTO;
+import com.love.product.service.PostsService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/system/article")
+@RequestMapping("/system/posts")
 @RequiredArgsConstructor
 @Api(tags = "后台文章管理")
 public class SysPostsController {
 
-//    private final PostsService articleService;
+    private final PostsService postsService;
 //
 //    @PostMapping(value = "/list")
 //    @ApiOperation(value = "文章列表", httpMethod = "POST", response = Result.class, notes = "文章列表")
@@ -55,11 +59,11 @@ public class SysPostsController {
 //        return articleService.putTopArticle(article);
 //    }
 //
-//    @PostMapping(value = "/pubOrShelf")
-//    @ApiOperation(value = "发布或下架文章", httpMethod = "POST", response = Result.class, notes = "发布或下架文章")
-//    public Result publishAndShelf(@RequestBody PostsDTO article) {
-//        return articleService.publishAndShelf(article);
-//    }
+    @PostMapping(value = "/audit")
+    @ApiOperation(value = "发布或下架文章", httpMethod = "POST", response = Result.class, notes = "发布或下架文章")
+    public Result publishAndShelf(@RequestBody PostsDTO postsDTO) {
+        return postsService.audit(postsDTO);
+    }
 //
 //    @GetMapping(value = "/randomImg")
 //    @ApiOperation(value = "随机获取一张图片", httpMethod = "GET", response = Result.class, notes = "随机获取一张图片")

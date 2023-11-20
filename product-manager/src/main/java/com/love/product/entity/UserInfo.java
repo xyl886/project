@@ -15,7 +15,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName(value ="user_info")
+@TableName(value ="s_user_info")
 public class UserInfo extends BaseEntity {
 
     @ApiModelProperty(value = "用户昵称")

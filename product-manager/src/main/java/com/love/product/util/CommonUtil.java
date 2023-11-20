@@ -1,5 +1,7 @@
 package com.love.product.util;
 
+import org.springframework.util.Assert;
+
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -10,12 +12,7 @@ import static com.love.product.constant.CommonConstant.PASSWORD_REGEX;
 public class CommonUtil {
 
     public static boolean checkEmail(String email) {
-        //正则表达式的模式 编译正则表达式
-        Pattern p = Pattern.compile(EMAIL_REGEX);
-        //正则表达式的匹配器
-        Matcher m = p.matcher(email);
-        //进行正则匹配
-        return m.matches();
+        return Pattern.compile(EMAIL_REGEX).matcher(email).matches();
     }
 
     // 匹配由数字、字母和特殊字符组成的密码，长度在 6 到 20 之间

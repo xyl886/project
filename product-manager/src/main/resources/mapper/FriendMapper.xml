@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.love.product.mapper.FriendMapper">
+
+
+    <insert id="add">
+        INSERT INTO
+            s_friend
+            (
+                id,
+                user_id,
+                friend_id,
+                deleted,
+                create_time,
+                update_time
+            )
+        values
+            (
+                #{id},
+                #{userId},
+                #{friendId},
+                #{deleted},
+                #{createTime},
+                #{updateTime}
+            )
+        ON DUPLICATE KEY UPDATE
+                             deleted     = values(deleted),
+                             update_time = values(update_time)
+
+
+    </insert>
+    <select id="selectFriendList" resultType="com.love.product.entity.Friend">
+        SELECT
+            r.id,
+            r.content,
+            r.create_time,
+            u.email,
+            u.nickname,
+            u.avatar,
+            p.title
+
+        FROM s_report r
+
+                 LEFT JOIN s_user_info u ON r.report_user_id = u.id
+
+                 LEFT JOIN s_posts p ON r.post_id = p.id
+    </select>
+</mapper>

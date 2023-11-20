@@ -1,11 +1,11 @@
 <template>
   <div>
     <!-- banner -->
-    <div class="message-banner" >
+    <div class="chatMessage-banner" >
       <!-- 弹幕输入框 -->
-      <div class="message-container">
-        <h1 class="message-title">留言板</h1>
-        <div class="animated fadeInUp message-input-wrapper">
+      <div class="chatMessage-container">
+        <h1 class="chatMessage-title">留言板</h1>
+        <div class="animated fadeInUp chatMessage-input-wrapper">
           <input
             v-model="content"
             @click="show = true"
@@ -71,11 +71,11 @@ export default {
   // methods: {
   //   addToList () {
   //     if (this.count) {
-  //       this.$toast({ type: 'error', message: '30秒后才能再次留言' })
+  //       this.$toast({ type: 'error', chatMessage: '30秒后才能再次留言' })
   //       return false
   //     }
   //     if (this.content.trim() === '') {
-  //       this.$toast({ type: 'error', message: '留言不能为空' })
+  //       this.$toast({ type: 'error', chatMessage: '留言不能为空' })
   //       return false
   //     }
   //     const userAvatar = this.$store.state.avatar
@@ -84,16 +84,16 @@ export default {
   //     const userNickname = this.$store.state.nickname
   //       ? this.$store.state.nickname
   //       : '游客'
-  //     var message = {
+  //     var chatMessage = {
   //       avatar: userAvatar,
   //       status: 1,
   //       nickname: userNickname,
   //       content: this.content,
   //       time: Math.floor(Math.random() * (10 - 7)) + 7
   //     }
-  //     this.barrageList.push(message)
+  //     this.barrageList.push(chatMessage)
   //     this.content = ''
-  //     addMessage(message)
+  //     addMessage(chatMessage)
   //     const TIME_COUNT = 30
   //     if (!this.timer) {
   //       this.count = TIME_COUNT
@@ -117,7 +117,7 @@ export default {
   //   cover () {
   //     var cover = ''
   //     this.$store.state.blogInfo.pageList.forEach(item => {
-  //       if (item.pageLabel == 'message') {
+  //       if (item.pageLabel == 'chatMessage') {
   //         cover = item.pageCover
   //       }
   //     })
@@ -128,7 +128,7 @@ export default {
 </script>
 
 <style scoped>
-.message-banner {
+.chatMessage-banner {
   position: absolute;
   top: -60px;
   left: 0;
@@ -137,11 +137,11 @@ export default {
   background-color: #49b1f5;
   animation: header-effect 1s;
 }
-.message-title {
+.chatMessage-title {
   color: #eee;
   animation: title-scale 1s;
 }
-.message-container {
+.chatMessage-container {
   position: absolute;
   width: 360px;
   top: 35%;
@@ -152,13 +152,13 @@ export default {
   margin: 0 auto;
   color: #fff;
 }
-.message-input-wrapper {
+.chatMessage-input-wrapper {
   display: flex;
   justify-content: center;
   height: 2.5rem;
   margin-top: 2rem;
 }
-.message-input-wrapper input {
+.chatMessage-input-wrapper input {
   outline: none;
   width: 70%;
   border-radius: 20px;
@@ -167,10 +167,10 @@ export default {
   color: #eee;
   border: #fff 1px solid;
 }
-.message-input-wrapper input::-webkit-input-placeholder {
+.chatMessage-input-wrapper input::-webkit-input-placeholder {
   color: #eeee;
 }
-.message-input-wrapper button {
+.chatMessage-input-wrapper button {
   outline: none;
   border-radius: 20px;
   height: 100%;

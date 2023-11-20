@@ -17,7 +17,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName(value ="posts_comment")
+@TableName(value ="s_posts_comment")
 public class PostsComment extends BaseEntity {
 
     @ApiModelProperty(value = "上级评论主键")

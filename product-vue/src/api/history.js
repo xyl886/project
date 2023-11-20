@@ -4,14 +4,19 @@ import request from '@/utils/request'
  * 分页
  */
 export const getPage = (data) => {
-  console.log('data' + JSON.stringify(data))
   return request({
     url: '/api/history/getPage',
     method: 'post',
     data
   })
 }
-
+export const getLikePage = (data) => {
+  return request({
+    url: '/api/postsLike/getPage',
+    method: 'post',
+    data
+  })
+}
 /**
  * 删除记录
  * @param ids

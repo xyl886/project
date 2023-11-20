@@ -1,42 +1,44 @@
 <template>
   <el-dialog
-    title="我要举报"
+    ref="tk"
     :visible.sync="centerDialogVisible"
     :close-on-click-modal="false"
     :close-on-press-escape="false"
-    ref="tk"
     :show-close="false"
+    title="我要举报"
     class="reportDialog"
   >
     <el-form
+      ref="ruleForm"
       :model="ruleForm"
       :rules="rules"
-      ref="ruleForm"
       label-width="100px"
       class="demo-ruleForm"
-      @submit.native.prevent
       style="height: auto"
+      @submit.native.prevent
     >
       <el-form-item prop="ViolateCompassesType">
         <el-radio-group v-model="ruleForm.ViolateCompassesType">
-          <el-radio label="违禁商品(出售平台禁止售卖的商品)"></el-radio>
-          <el-radio label="欺诈骗钱(在平台上被骗钱财或物品)"></el-radio>
-          <el-radio label="假货(假冒他人品牌的商品)"></el-radio>
-          <el-radio label="滥发信息(发布的商品存在夸大、引流等情况)"></el-radio>
-          <el-radio label="盗版(课程、书籍、软件等盗版商品)"></el-radio>
-          <el-radio label="破坏清朗环境(扰乱网络传播秩序等情况)"></el-radio>
-          <el-radio label="其他(不属于以上情况)"></el-radio>
+          <el-radio label="违禁商品(出售平台禁止售卖的商品)"/>
+          <el-radio label="欺诈骗钱(在平台上被骗钱财或物品)"/>
+          <el-radio label="假货(假冒他人品牌的商品)"/>
+          <el-radio label="滥发信息(发布的商品存在夸大、引流等情况)"/>
+          <el-radio label="盗版(课程、书籍、软件等盗版商品)"/>
+          <el-radio label="破坏清朗环境(扰乱网络传播秩序等情况)"/>
+          <el-radio label="其他(不属于以上情况)"/>
           <el-input
-            v-model="illegalContent"
             v-if="ruleForm.ViolateCompassesType === '其他(不属于以上情况)'"
+            v-model="illegalContent"
             maxlength="30"
-          ></el-input>
+          />
         </el-radio-group>
       </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
 
-      <el-button type="primary" @click="submitUpload('ruleForm')"
+      <el-button
+        type="primary"
+        @click="submitUpload('ruleForm')"
       >确 定</el-button
       >
       <el-button @click="back">取 消</el-button>
@@ -46,11 +48,11 @@
 
 <script>
 
-import {addReport} from '../api/report'
+import { addReport } from '../api/report'
 
 export default {
   name: 'Report',
-  data () {
+  data() {
     return {
       centerDialogVisible: false,
       ruleForm: {
@@ -65,19 +67,32 @@ export default {
       time: true
     }
   },
+  computed: {
+    display() {
+      return this.$store.state.display
+    }
+  },
+  watch: {
+    display(newValue, oldValue) {
+      this.centerDialogVisible = newValue
+    }
+  },
+  mounted() {
+    this.$refs.tk.$el.firstChild.style.height = 'auto'
+  },
   methods: {
-    back () {
+    back() {
       this.centerDialogVisible = false
       this.$refs.ruleForm.resetFields()
       this.$store.state.display = this.centerDialogVisible
     },
-    showDialog () {
+    showDialog() {
       this.centerDialogVisible = true
       this.$nextTick(() => {
         this.$refs.ruleForm.resetFields()
       })
     },
-    submitUpload (formName) {
+    submitUpload(formName) {
       this.$refs[formName].validate((valid) => {
         if (
           this.ruleForm.ViolateCompassesType === '其他(不属于以上情况)' &&
@@ -107,7 +122,7 @@ export default {
         }
         var ReportingInformation = this.$store.state.ReportingInformation
 
-        let form = {
+        const form = {
           informerId: ReportingInformation.informerId,
           beAPersonId: ReportingInformation.beApersonId,
           postId: ReportingInformation.postid,
@@ -121,38 +136,25 @@ export default {
           state: 1
         }
         addReport(form).then((res) => {
-          // if (res.status === 200) {
-          //   this.$message({
-          //     message: res.data.data === true ? '举报成功,耐心等待管理员审核' : res.data.data,
-          //     type: 'success'
-          //   })
-          //   this.back()
-          //   this.$refs[formName].resetFields()
-          //   this.illegalContent = ''
-          // if (res.data > 5) {
-          //   this.time = false;
-          //   let timer = setTimeout(() => {
-          //     this.time = true;
-          //     clearInterval(timer);
-          //   }, 30000);
-          // }
-          // }
+          if (res.code === 200) {
+            this.$message({
+              message: res.data === true ? '举报成功,耐心等待管理员审核' : res.data,
+              type: 'success'
+            })
+            this.back()
+            this.$refs[formName].resetFields()
+            this.illegalContent = ''
+            if (res.data > 5) {
+              this.time = false
+              const timer = setTimeout(() => {
+                this.time = true
+                clearInterval(timer)
+              }, 30000)
+            }
+          }
         })
       })
     }
-  },
-  computed: {
-    display () {
-      return this.$store.state.display
-    }
-  },
-  watch: {
-    display (newValue, oldValue) {
-      this.centerDialogVisible = newValue
-    }
-  },
-  mounted () {
-    this.$refs.tk.$el.firstChild.style.height = 'auto'
   }
 }
 </script>

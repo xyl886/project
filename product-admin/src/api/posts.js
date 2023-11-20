@@ -1,13 +1,28 @@
 import request from '@/utils/request'
 
+export const audit = (data) => {
+  return request({
+    url: '/api/system/posts/audit',
+    method: 'post',
+    data
+  })
+}
 /**
- * 查询所有分类
+ * 查询所有标签
  * @returns {*}
  */
-export const listAllCategory = () => {
+export const listAllTags = () => {
+  return request({
+    url: '/api/home/listAllTags',
+    method: 'get'
+  })
+}
+export const listAllCategory = (data) => {
+  console.log(JSON.stringify(data))
   return request({
     url: '/api/category/listAll',
-    method: 'get'
+    method: 'post',
+    data
   })
 }
 export const listHot = () => {
@@ -20,7 +35,6 @@ export const listHot = () => {
  * 帖子分页
  */
 export const getPage = (data) => {
-  // console.log('getpage.data' + JSON.stringify(data))
   return request({
     url: '/api/posts/getPage',
     method: 'post',

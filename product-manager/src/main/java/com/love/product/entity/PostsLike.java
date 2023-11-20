@@ -18,7 +18,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName(value ="posts_like")
+@TableName(value ="s_posts_like")
 public class PostsLike extends BaseEntity {
 
     @ApiModelProperty(value = "用户主键")

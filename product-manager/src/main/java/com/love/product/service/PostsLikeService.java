@@ -3,6 +3,9 @@ package com.love.product.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.love.product.entity.PostsLike;
 import com.love.product.entity.base.Result;
+import com.love.product.entity.base.ResultPage;
+import com.love.product.entity.req.HistoryPageReq;
+import com.love.product.entity.vo.HistoryVO;
 
 import java.util.List;
 import java.util.Map;
@@ -18,4 +21,6 @@ public interface PostsLikeService extends IService<PostsLike> {
     PostsLike getDetail(Long userId, Long postsId);
 
     Map<Long, PostsLike> listByUserId(Long userId, List<Long> postsIds);
+
+    ResultPage<HistoryVO> getPage(Long userId, HistoryPageReq pageQuery);
 }

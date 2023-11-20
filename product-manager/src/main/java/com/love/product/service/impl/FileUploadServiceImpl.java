@@ -33,7 +33,6 @@ public class FileUploadServiceImpl implements FileUploadService {
         if (file == null) {
             throw new BizException("图片不能为空");
         }
-
         //得到上传文件的文件名
         String fileName = file.getOriginalFilename();
         //以传入的字符串开头，到该字符串的结尾，前开后闭

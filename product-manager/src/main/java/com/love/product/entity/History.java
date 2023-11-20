@@ -20,7 +20,7 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName(value ="history")
+@TableName(value ="s_history")
 public class History extends BaseEntity {
 
     @ApiModelProperty(value = "帖子主键")

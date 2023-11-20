@@ -11,6 +11,7 @@ import com.love.product.entity.base.BaseEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -24,11 +25,8 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName(value ="tags")
-public class Tags{
-
-    @ApiModelProperty(value = "标签名")
-    public String tagName;
+@TableName(value ="s_tags")
+public class Tags implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -36,6 +34,9 @@ public class Tags{
     @TableId(type = IdType.ASSIGN_ID)
     @ApiModelProperty(name = "id", value = "表主键")
     public Long id;
+
+    @ApiModelProperty(value = "标签名")
+    public String tagName;
 
     /**
      * {@link com.love.product.enumerate.YesOrNo}

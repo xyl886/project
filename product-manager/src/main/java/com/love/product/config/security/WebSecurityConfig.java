@@ -30,9 +30,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
+                .cors().disable()
                 .authorizeRequests()
                 // 放行
                 .antMatchers(
+                        "/system/login",
+                        "/druid/**",
                         "/webSocket/**",
                         "/category/listAll",
                         "/login/code",
@@ -49,9 +52,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .and()
                 .authorizeRequests()
-                .anyRequest()
+                .anyRequest().authenticated();
                 // 其他需要拦截
-                .authenticated();
     }
 
     /**

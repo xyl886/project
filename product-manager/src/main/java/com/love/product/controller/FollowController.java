@@ -29,7 +29,9 @@ public class FollowController {
 
     @ApiOperation("新增关注")
     @GetMapping("/add")
-    public Result<?> add(@RequestParam("beFollowedUserId") Long beFollowedUserId,@RequestParam("deleted") Integer deleted) {
+    public Result<?> add(
+            @RequestParam("beFollowedUserId") Long beFollowedUserId,
+            @RequestParam("deleted") Integer deleted) {
         return followService.add(JwtUtil.getUserId(),beFollowedUserId,deleted);
     }
 

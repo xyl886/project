@@ -38,9 +38,7 @@ public class HistoryVO extends History {
      */
     @ApiModelProperty(value = "帖子类型 1闲置帖 2校园帖")
     public Integer postType;
-    /**
-     * {@link com.love.product.enumerate.School}
-     */
+
     @ApiModelProperty(value = "校区")
     public String schoolName;
 }

@@ -2,6 +2,7 @@ package com.love.product.controller;
 
 import com.love.product.annotation.AccessLimit;
 import com.love.product.entity.base.Result;
+import com.love.product.entity.vo.Captcha;
 import com.love.product.entity.vo.LoginVO;
 import com.love.product.entity.vo.RegisterVO;
 import com.love.product.entity.vo.UserInfoVO;
@@ -37,19 +38,25 @@ public class LoginController {
     @Resource
     private RedisService redisService;
 
-    @AccessLimit(seconds = 60,maxCount = 1)
+    @ApiOperation(value = "生成验证码拼图")
+    @PostMapping("get-captcha")
+    public Result getCaptcha(@RequestBody Captcha captcha) {
+        return Result.OK(userInfoService.getCaptcha(captcha));
+    }
+
+    @AccessLimit(seconds = 60, maxCount = 1)
     @ApiOperation(value = "发送邮箱验证码")
     @ApiImplicitParam(name = "email", value = "邮箱", required = true, dataType = "String")
     @GetMapping("/code")
     public Result<?> sendCode(@RequestParam("email") String email,
                               @RequestParam("type") String type) {
-        return userInfoService.sendCode(email,type);
+        return userInfoService.sendCode(email, type);
     }
 
     @ApiOperation(value = "账密登录", notes = "账密登录")
     @GetMapping("/userLogin")
     public Result<UserInfoVO> login(
-        @Validated LoginVO loginVO,
+            @Validated LoginVO loginVO,
             HttpServletRequest request, HttpServletResponse response
     ) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -60,6 +67,7 @@ public class LoginController {
     }
 
     @ApiOperation(value = "用户注册", notes = "用户注册")
+    @AccessLimit(seconds = 60, maxCount = 1)
     @GetMapping("/userRegister")
     public Result<UserInfoVO> userRegister(RegisterVO registerVO) {
         return userInfoService.userRegister(registerVO);

@@ -16,13 +16,10 @@ import java.util.Date;
 /**
  * @author Administrator
  * @date 2022-10-31 15:30
- * @describe
- *
- * token加解密
- *
+ * @describe token加解密
+ * <p>
  * 1.对称加解密
  * 2.非对称加解密(RSA)
- *
  */
 @Configuration
 public class JwtToken {
@@ -52,7 +49,7 @@ public class JwtToken {
      */
     public static String generateTokenRSA(String subject, int expirationSeconds) {
         Date nowDate = new Date();
-        Date expireDate = new Date(nowDate.getTime() + expirationSeconds * 1000);
+        Date expireDate = new Date(nowDate.getTime() + expirationSeconds * 1000L);
         return Jwts.builder()
                 .setClaims(null)
                 .setHeaderParam("typ", "JWT")
@@ -70,13 +67,12 @@ public class JwtToken {
         if (StringUtils.isEmpty(token)) {
             return null;
         }
-
         try {
             return Jwts.parser()
                     .setSigningKey(publicKey)
                     .parseClaimsJws(token)
                     .getBody();
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println("try-catch：validate is token error ");
             return null;
         }
@@ -84,7 +80,8 @@ public class JwtToken {
 
     /**
      * token是否过期
-     * @return  true：过期
+     *
+     * @return true：过期
      */
     public static boolean isTokenExpired(Date expiration) {
         return expiration.before(new Date());
@@ -93,10 +90,9 @@ public class JwtToken {
     /**
      * 生成jwt token(对称加密模式)
      */
-    public static String generateToken(String subject, int expirationSeconds,
-                                       String signingKey) {
+    public static String generateToken(String subject, int expirationSeconds, String signingKey) {
         Date nowDate = new Date();
-        Date expireDate = new Date(nowDate.getTime() + expirationSeconds * 1000);
+        Date expireDate = new Date(nowDate.getTime() + expirationSeconds * 1000L);
         return Jwts.builder()
                 .setHeaderParam("typ", "JWT")
                 .setSubject(subject)
@@ -109,7 +105,7 @@ public class JwtToken {
     /**
      * 解析jwt token(对称加密模式)
      */
-    public static String parseToken(String token,String signingKey) {
+    public static String parseToken(String token, String signingKey) {
         if (StringUtils.isEmpty(token)) {
             return null;
         }

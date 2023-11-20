@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import reactor.util.annotation.Nullable;
 
@@ -44,7 +45,6 @@ public class PostsVO{
     @ApiModelProperty(value = "标题")
     public String title;
 
-    @NotBlank(message = "帖子描述不能为空")
     @ApiModelProperty(value = "帖子描述")
     public String description;
 
@@ -56,7 +56,8 @@ public class PostsVO{
     @ApiModelProperty(value = "校区")
     public Integer school;
 
-    private List<String> tags;
+    @ApiModelProperty(value = "标签")
+    private String tags;
 
     @ApiModelProperty(value = "单价")
     public BigDecimal price;

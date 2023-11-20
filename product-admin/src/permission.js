@@ -9,14 +9,14 @@ import { getToken } from '@/utils/auth'
 import Vue from 'vue' // get token from cookie
 Vue.prototype.$bus = new Vue()
 
-router.beforeEach(function (to, from, next) {
+router.beforeEach(function(to, from, next) {
   // start progress bar
   if (router.currentRoute.path === to.path) {
     return
   }
   NProgress.start()
   const hasToken = getToken()
-  let flag = true
+  const flag = true
   if (flag || hasToken) {
     next()
     NProgress.done()

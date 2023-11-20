@@ -1,11 +1,10 @@
 package com.love.product.controller;
 
-import com.love.product.entity.Message;
+import com.love.product.entity.ChatMessage;
+import com.love.product.service.ChatMessageService;
 import com.love.product.service.MessageService;
-import com.love.product.service.WebSocketService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -20,11 +19,11 @@ import javax.annotation.Resource;
 @RestController
 public class WebSocketController {
     @Resource
-    private MessageService messageService;
+    private ChatMessageService chatMessageService;
 
     @MessageMapping("/privateChat")
-    public void singleChat(Message message) {
-        log.info("在这存消息到数据库："+message);
-        messageService.sendChatMessage(message);
+    public void singleChat(ChatMessage chatMessage) {
+        log.info("在这存消息到数据库："+ chatMessage);
+        chatMessageService.sendChatMessage(chatMessage);
     }
 }

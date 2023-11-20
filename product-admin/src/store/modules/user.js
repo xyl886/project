@@ -1,5 +1,5 @@
 /* eslint-disable eqeqeq */
-import {userLogin, userLogout} from '@/api/login'
+import { userLogin, userLogout } from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 
 const getDefaultState = () => {
@@ -38,7 +38,7 @@ const mutations = {
 
 const actions = {
   // user login
-  login ({ commit }, userInfo) {
+  login({ commit }, userInfo) {
     return new Promise((resolve, reject) => {
       userLogin(userInfo).then(res => {
         if (res.code === 200) {
@@ -47,7 +47,6 @@ const actions = {
           commit('SET_ROLE', res.data.role)
           commit('SET_USER_INFO', res.data)
           console.log(res.data)
-          // commit('SET_USER_INFO', {id: res.data.id, avatar: res.data.avatar, nickname: res.data.nickname})
         }
         resolve(res)
       }).catch(error => {
@@ -57,7 +56,7 @@ const actions = {
   },
 
   // get user info
-  getInfo ({ commit, state }) {
+  getInfo({ commit, state }) {
     // return new Promise((resolve, reject) => {
     //   getInfo(state.my_token).then(response => {
     //     const { data } = response
@@ -78,7 +77,7 @@ const actions = {
   },
 
   // user logout
-  logout ({ commit }) {
+  logout({ commit }) {
     return new Promise((resolve, reject) => {
       userLogout().then(res => {
         removeToken() // must remove  token  first
@@ -91,14 +90,14 @@ const actions = {
   },
 
   // remove token
-  resetToken ({ commit }) {
+  resetToken({ commit }) {
     return new Promise(resolve => {
       removeToken() // must remove  token  first
       commit('RESET_STATE')
       resolve()
     })
   },
-  SET_USER_INFO ({ commit }, data) {
+  SET_USER_INFO({ commit }, data) {
     commit('SET_USER_INFO', data)
   }
 }

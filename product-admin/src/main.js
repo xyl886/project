@@ -7,6 +7,7 @@ import Element from 'element-ui'
 import store from './store'
 
 import VueQuillEditor from 'vue-quill-editor'
+import RightToolbar from '@/components/RightToolbar'
 // require styles 引入样式
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
@@ -19,6 +20,7 @@ import '@/icons' // icon
 Vue.use(Element)
 Vue.use(MavonEditor)
 Vue.use(VueQuillEditor)
+Vue.component('RightToolbar', RightToolbar)
 Vue.config.productionTip = false
 
 // Vue.config.errorHandler = (err) => {

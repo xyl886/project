@@ -29,8 +29,12 @@ public class ResourceConfiguration extends ResourceServerConfigurerAdapter {
      */
     @Override
     public void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
+        http.csrf().disable()
+                .cors().disable()
+                .authorizeRequests()
                 .antMatchers(
+                        "/system/login",
+                        "/druid/**",
                         "/webSocket/**",
                         "/getToken",
                         "/parseToken",
@@ -39,10 +43,12 @@ public class ResourceConfiguration extends ResourceServerConfigurerAdapter {
                         "/login/userLogin",
                         "/login/userRegister",
                         "/user/reset",
+                        "/posts/listHot",
                         "/posts/getPage",
                         "/posts/getDetail",
                         "/posts/browse",
                         "/banner/listAll",
+                        "/banner/add",
                         "/postsComment/listByPostsId",
                         "/image/**",//图片
                         "/js/**",

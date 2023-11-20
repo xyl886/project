@@ -1,11 +1,7 @@
 package com.love.product.config.rabbitmq;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.amqp.core.*;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,7 +10,6 @@ import static com.love.product.constant.RabbitMQConstant.*;
 @Configuration
 //@ConfigurationProperties("rabbitmq")
 public class RabbitMQConfig {
-
 
     @Bean
     public Queue articleQueue() {

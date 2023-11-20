@@ -1,7 +1,7 @@
 // 日期格式化
 import dayjs from 'dayjs'
 
-export function formatDate (date) {
+export function formatDate(date) {
   const currentDate = dayjs()
   const targetDate = dayjs(date)
   if (currentDate.diff(targetDate, 'minute') < 1) {
@@ -44,7 +44,7 @@ export const calcDate = (date1, date2) => {
 /**
  * 日期格式化
  */
-export function dateFormat (date, format) {
+export function dateFormat(date, format) {
   format = format || 'yyyy-MM-dd hh:mm:ss'
   if (date !== 'Invalid Date') {
     const o = {

@@ -1,7 +1,8 @@
 package com.love.product.mapper;
 
 
-import com.love.product.entity.UserInfo;
+import com.love.product.entity.vo.UserInfoVO;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * @PackageName: com.love.product.mapper
@@ -11,6 +12,6 @@ import com.love.product.entity.UserInfo;
  */
 
 public interface SysUserMapper {
-  UserInfo selectNameAndPassword(String username, String encode) ;
+  UserInfoVO selectNameAndPassword(@Param("email") String email);
 
 }

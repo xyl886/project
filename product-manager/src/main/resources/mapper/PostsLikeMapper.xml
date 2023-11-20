@@ -6,7 +6,7 @@
 
     <insert id="add" parameterType="com.love.product.entity.PostsLike" keyProperty="id" useGeneratedKeys="true">
         INSERT INTO
-        posts_like
+            s_posts_like
         (
         id,
         user_id,
@@ -30,5 +30,43 @@
         deleted = values(deleted),
         update_time = values(update_time)
     </insert>
+    <select id="selectPageList" resultType="com.love.product.entity.vo.HistoryVO">
+        SELECT
+            h.id,
+            h.user_id,
+            h.posts_id,
+            h.deleted,
+            h.create_time,
+            h.update_time,
+            p.title AS postTitle,
+            p.cover_path AS postCoverPath,
+            u.nickname,
+            u.avatar,
+            p.posts_type AS postType,
+            p.school AS schoolName
+
+        FROM
+        s_posts_like h
+
+                JOIN s_posts p
+                     ON h.posts_id = p.id
+
+                JOIN s_user_info u
+                     ON h.user_id = u.id
+        WHERE
+            h.user_id = #{userId}
+        <if test="pageQuery != null and pageQuery.endTime != null">
+            AND
+            h.create_time
+                BETWEEN #{pageQuery.startTime} AND #{pageQuery.endTime}
+        </if>
+        <if test="pageQuery.title != null and pageQuery.title != ''">
+            AND
+            p.title
+                LIKE CONCAT('%', #{pageQuery.title}, '%')
+        </if>
+        order by
+            h.create_time desc
+    </select>
 
 </mapper>

@@ -22,7 +22,7 @@ import java.math.BigDecimal;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName(value ="posts")
+@TableName(value ="s_posts")
 public class Posts extends BaseEntity {
 
     @ApiModelProperty(value = "帖子所属用户主键")
@@ -39,7 +39,6 @@ public class Posts extends BaseEntity {
     @ApiModelProperty(value = "标题")
     public String title;
 
-    @NotBlank(message = "帖子描述不能为空")
     @ApiModelProperty(value = "帖子描述")
     public String description;
 
@@ -47,9 +46,6 @@ public class Posts extends BaseEntity {
     @ApiModelProperty(value = "内容")
     public String content;
 
-    /**
-     * {@link com.love.product.enumerate.School}
-     */
     @NotNull(message = "请选择分类")
     @ApiModelProperty(value = "校区")
     public Integer school;
@@ -78,9 +74,6 @@ public class Posts extends BaseEntity {
     @ApiModelProperty(value = "版本号")
     public Integer version;
 
-    /**
-     * {@link com.love.product.enumerate.YesOrNo}
-     */
     @ApiModelProperty(value = "状态")
     public Integer status;
 }

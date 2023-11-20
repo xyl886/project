@@ -1,24 +1,24 @@
 <template>
-  <div style="font-size: 14px;padding: 10px;background-color: #ffffff;" v-loading="loading">
+  <div style="font-size: 14px;padding: 10px 0;background-color: #ffffff;" v-loading="loading">
     <div>
       <el-row style="padding: 20px 0">
-        <el-col :span="2">
-          <el-dropdown @command="handleCommand" style="top: 5px;font-size:12px;line-height:20px;position: relative;" >
-            <span class="el-dropdown-link">
-              {{ command }}
-              <i class="el-icon-arrow-down el-icon--right"></i>
-            </span>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item command="最多浏览" style="font-size: 12px">最多浏览</el-dropdown-item>
-              <el-dropdown-item command="最新发布" style="font-size: 12px">最新发布</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-        </el-col>
+<!--        <el-col :span="2">-->
+<!--          <el-dropdown @command="handleCommand" style="top: 5px;font-size:12px;line-height:20px;position: relative;">-->
+<!--            <span class="el-dropdown-link">-->
+<!--              {{ command }}-->
+<!--              <i class="el-icon-arrow-down el-icon&#45;&#45;right"></i>-->
+<!--            </span>-->
+<!--            <el-dropdown-menu slot="dropdown">-->
+<!--              <el-dropdown-item command="最多浏览" style="font-size: 12px">最多浏览</el-dropdown-item>-->
+<!--              <el-dropdown-item command="最新发布" style="font-size: 12px">最新发布</el-dropdown-item>-->
+<!--            </el-dropdown-menu>-->
+<!--          </el-dropdown>-->
+<!--        </el-col>-->
         <el-col :span="4">
           <!--          <div class="search-box" :class="{ active: InputFocused }"> </div>-->
           <!--            <div class="el-icon-search" @click="handleSearch"></div>-->
           <!--            <input-->
-          <!--              v-model="searchText"-->
+          <!--              v-model="categoryId"-->
           <!--              placeholder="请输入搜索内容"-->
           <!--              @input="handleInput"-->
           <!--              @focus="InputFocused = true"-->
@@ -27,7 +27,7 @@
           <!--              type="text"/>-->
           <el-select
             size="mini"
-            v-model="searchText"
+            v-model="categoryId"
             placeholder="请输入搜索内容"
             @input="handleInput"
             @focus="InputFocused = true"
@@ -35,67 +35,122 @@
             class="search-box-input"
             filterable>
             <el-option
-              v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
+              v-for="item in category"
+              :key="item.id"
+              :label="item.categoryName"
+              :value="item.id">
             </el-option>
           </el-select>
         </el-col>
         <el-col :span="2" style="margin-left: 15px">
-          <div><el-button type="primary" size="mini">查询</el-button></div>
+          <div><el-button type="primary" size="mini" @click="handleSearch">查询</el-button></div>
         </el-col>
         <el-col :span="12">
-          <div @click="handleClear"><el-button size="mini">重置</el-button></div>
+          <div @click="handleClear"><el-button size="mini" @click="resetQuery">重置</el-button></div>
         </el-col>
-        <el-col :span="2">
-          <div><el-button type="primary" size="mini">批量操作</el-button>
-          </div>
-        </el-col>
+<!--        <el-col :span="2">-->
+<!--          <div><el-button type="primary" size="mini">批量操作</el-button>-->
+<!--          </div>-->
+<!--        </el-col>-->
       </el-row>
     </div>
-    <div class="collect-box" v-for="(item,index) in posts" :key="index">
-      <div class="collect-item" v-for="item2 in item" :key="item2.id">
-        <el-card v-if="item2" :body-style="{ padding: '0px' }">
-          <div class="image-box" style="cursor: pointer;" @click="detailFun(item2)">
-            <div style="text-align: center;font-size: 25px;">
-              <el-image v-if="item2.coverPath" :src="item2.coverPath" fit="cover" class="collect-box-img">
-                <div slot="error" class="image-slot" style="padding:50% 0;top: 20%;position: relative;">
-                  <i class="el-icon-picture-outline"></i>
-                </div>
-              </el-image>
-            </div>
-            <div class="video-info" style="font-size: 12px;">
-              <p style="position: relative;left: 15px;">浏览:{{item2.browseNum}}</p>
-              <p style="position: relative;left: 15px;">收藏:{{item2.collectNum}}</p>
-              <p style="position: relative;left: 15px;">{{item2.userInfo.nickname}}</p>
-              <p style="position: relative;left: 15px;">发布于:{{item2.createTime}}</p>
-            </div>
+<!--    <Waterfall :list="WaterfallPosts"  :gutter="options.gutter"-->
+<!--               :has-around-gutter="options.hasAroundGutter" :width="options.width" :breakpoints="options.breakpoints"-->
+<!--               :img-selector="options.imgSelector" :background-color="options.backgroundColor"-->
+<!--               :animation-effect="options.animationEffect" :animation-duration="options.animationDuration"-->
+<!--               :animation-delay="options.animationDelay" :lazyload="options.lazyload" :load-props="options.loadProps">-->
+<!--      <template #item="{ item, url, index }">-->
+<!--        <div class="card">-->
+<!--&lt;!&ndash;          <LazyImg :url="url" :key="item.id" />&ndash;&gt;-->
+<!--          <el-image :src="item.coverPath" />-->
+<!--          <p class="text">{{item.title}}</p>-->
+<!--        </div>-->
+<!--      </template>-->
+<!--    </Waterfall>-->
+    <Waterfall :list="WaterfallPosts" :row-key="options.rowKey" :gutter="options.gutter"
+               :has-around-gutter="options.hasAroundGutter" :width="options.width" :breakpoints="options.breakpoints"
+               :img-selector="options.imgSelector" :background-color="options.backgroundColor"
+               :animation-effect="options.animationEffect" :animation-duration="options.animationDuration"
+               :animation-delay="options.animationDelay" :lazyload="options.lazyload" :load-props="options.loadProps">
+      <template #item="{ item, url, index }">
+        <div class="bg-gray-900 rounded-lg shadow-md overflow-hidden transition-all duration-300 ease-linear hover:shadow-lg hover:shadow-gray-600 group">
+          <div class="overflow-hidden">
+            <el-image :src="item.coverPath" style="width: 200px;" class="cursor-pointer transition-all duration-300 ease-linear group-hover:scale-105"/>
+<!--            <LazyImg :url="url" class="cursor-pointer transition-all duration-300 ease-linear group-hover:scale-105" />-->
           </div>
-          <div class="collect-box-title" @click="detailFun(item2)">{{item2.title}}</div>
-          <div style="padding: 5px">
-            <span style="color: #999;">发布于:{{item2.createTime}}</span>
-            <el-dropdown style="float: right;">
+
+          <div class="collect-box-title" @click="detailFun(item)">{{item.title}}
+            <el-tag type="primary" size="mini">{{item.type}}</el-tag>
+          </div>
+          <div  style="padding: 5px">
+            <span style="color: #999;">发布于:{{item.createTime}}</span>
+            <el-dropdown style="float: right;" v-if="item.status!==5">
               <span><i class="el-icon-more" style="padding: 5px;"></i></span>
               <el-dropdown-menu >
-                <el-dropdown-item @click.native="cancelCollect(item2)">删除</el-dropdown-item>
+                <el-dropdown-item @click.native="handleDelete(item)">删除</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
+            <el-dropdown style="float: right;" v-if="item.status===5">
+              <span><i class="el-icon-more" style="padding: 5px;"></i></span>
+              <el-dropdown-menu >
+                <el-dropdown-item @click.native="Delete(item)">彻底删除</el-dropdown-item>
+                <el-dropdown-item @click.native="reStore(item)">还原</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+            <!--            <span v-else>帖子已删除！</span>-->
           </div>
-        </el-card>
-        <el-card v-else>
-          <el-image class="collect-box-img">
-            <div slot="error" class="image-slot" style="padding:50%;"></div>
-          </el-image>
-        </el-card>
-        <div class="checkbox" v-if="isSelect" @click="Checkbox(item2.id)">
-                <span style="display: inline-block;position: absolute;right: 5%;top: 5%;font-size: 25px;">
-                   <i class="iconfont icon-xuanzhong" style="font-size: 25px"
-                      :style="selected.includes(item2.id)?'color: #00a6ff':''"></i>
-                </span>
         </div>
-      </div>
-    </div>
+      </template>
+    </Waterfall>
+<!--    <div class="collect-box" v-for="(item,index) in posts" :key="index">-->
+<!--      <div class="collect-item" v-for="item2 in item" :key="item2.id">-->
+<!--        <el-badge :type="item2.status===3?'success':(item2.status===1?'primary':'info')" :value="item2.postStatus" class="item">-->
+<!--          <el-card v-if="item2" :body-style="{ padding: '0px' }">-->
+<!--          <div class="image-box" style="cursor: pointer;" @click="detailFun(item2)">-->
+<!--            <div style="text-align: center;font-size: 25px;">-->
+<!--              <el-image v-if="item2.coverPath" :src="item2.coverPath" fit="cover" class="collect-box-img">-->
+<!--&lt;!&ndash;                <div slot="error" class="image-slot" style="padding:50% 0;top: 20%;position: relative;">&ndash;&gt;-->
+<!--&lt;!&ndash;                  <i class="el-icon-picture-outline"></i>&ndash;&gt;-->
+<!--&lt;!&ndash;                </div>&ndash;&gt;-->
+<!--              </el-image>-->
+<!--            </div>-->
+<!--            <div class="video-info" style="font-size: 12px;">-->
+<!--              <p style="position: relative;left: 15px;">浏览:{{item2.browseNum}}</p>-->
+<!--              <p style="position: relative;left: 15px;">收藏:{{item2.collectNum}}</p>-->
+<!--              <p style="position: relative;left: 15px;">{{item2.userInfo.nickname}}</p>-->
+<!--              <p style="position: relative;left: 15px;">发布于:{{item2.createTime}}</p>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          <div class="collect-box-title" @click="detailFun(item2)">{{item2.title}}-->
+<!--          <el-tag type="primary" size="mini">{{item2.type}}</el-tag>-->
+<!--          </div>-->
+<!--          <div  style="padding: 5px">-->
+<!--            <span style="color: #999;">发布于:{{item2.createTime}}</span>-->
+<!--            <el-dropdown style="float: right;" v-if="item2.status!==5">-->
+<!--              <span><i class="el-icon-more" style="padding: 5px;"></i></span>-->
+<!--              <el-dropdown-menu >-->
+<!--                <el-dropdown-item @click.native="handleDelete(item2)">删除</el-dropdown-item>-->
+<!--              </el-dropdown-menu>-->
+<!--            </el-dropdown>-->
+<!--            <el-dropdown style="float: right;" v-if="item2.status===5">-->
+<!--              <span><i class="el-icon-more" style="padding: 5px;"></i></span>-->
+<!--              <el-dropdown-menu >-->
+<!--                <el-dropdown-item @click.native="Delete(item2)">彻底删除</el-dropdown-item>-->
+<!--                <el-dropdown-item @click.native="reStore(item2)">还原</el-dropdown-item>-->
+<!--              </el-dropdown-menu>-->
+<!--            </el-dropdown>-->
+<!--&lt;!&ndash;            <span v-else>帖子已删除！</span>&ndash;&gt;-->
+<!--          </div>-->
+<!--        </el-card>-->
+<!--        </el-badge>-->
+<!--        <div class="checkbox" v-if="isSelect" @click="Checkbox(item2.id)">-->
+<!--                <span style="display: inline-block;position: absolute;right: 5%;top: 5%;font-size: 25px;">-->
+<!--                   <i class="iconfont icon-xuanzhong" style="font-size: 25px"-->
+<!--                      :style="selected.includes(item2.id)?'color: #00a6ff':''"></i>-->
+<!--                </span>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
 
     <div v-if="posts.length === 0">
       <el-empty description="空空如也！">
@@ -121,36 +176,68 @@
 // 这里可以导入其他文件（比如：组件，工具js，第三方插件js，json文件，图片文件等等）
 // 例如：import 《组件名称》 from ‘《组件路径》‘;
 import {addFollow} from '../../api/follow'
-import {getPage} from '../../api/posts'
+import {del, delMyPost, getPage, listAllCategory, restore} from '../../api/posts'
 import {MessageBox} from 'element-ui'
 import {setStore} from '../../utils/store'
-import {addCollect} from '../../api/collect'
 import {formatDate} from '../../utils/date'
-
+import { LazyImg, Waterfall } from 'vue-waterfall-plugin'
+import 'vue-waterfall-plugin/dist/style.css'
+import loading from '../../../static/assets/loading.png'
+import error from '../../../static/assets/error.png'
 export default {
   name: '',
   // import引入的组件需要注入到对象中才能使用
-  components: {},
+  components: {
+    LazyImg,
+    Waterfall
+  },
   data () {
     // 这里存放数据
     return {
-      command: '最近收藏',
-      options: [{
-        value: '选项1',
-        label: '黄金糕'
-      }, {
-        value: '选项2',
-        label: '双皮奶'
-      }, {
-        value: '选项3',
-        label: '蚵仔煎'
-      }, {
-        value: '选项4',
-        label: '龙须面'
-      }, {
-        value: '选项5',
-        label: '北京烤鸭'
-      }],
+      options: {
+        // 唯一key值
+        rowKey: 'id',
+        // 卡片之间的间隙
+        gutter: 20,
+        // 是否有周围的gutter
+        hasAroundGutter: true,
+        // 卡片在PC上的宽度
+        width: 200,
+        // 自定义行显示个数，主要用于对移动端的适配
+        breakpoints: {
+          1200: {
+            // 当屏幕宽度小于等于1200
+            rowPerView: 4
+          },
+          800: {
+            // 当屏幕宽度小于等于800
+            rowPerView: 3
+          },
+          500: {
+            // 当屏幕宽度小于等于500
+            rowPerView: 2
+          }
+        },
+        // 动画效果
+        animationEffect: 'animate__fadeInUp',
+        // 动画时间
+        animationDuration: 1000,
+        // 动画延迟
+        animationDelay: 300,
+        // 背景色
+        backgroundColor: '#ffffff',
+        // imgSelector
+        imgSelector: 'coverPath',
+        // 加载配置
+        loadProps: {
+          loading,
+          error
+        },
+        // 是否懒加载
+        lazyload: true
+      },
+      command: '最新发布',
+      category: [],
       myLike: '',
       isSelect: false,
       isAllSelected: false,
@@ -158,16 +245,18 @@ export default {
       cancelList: '',
       value: '',
       InputFocused: false,
-      searchText: '',
+      categoryId: '',
       posts: [],
+      WaterfallPosts: [],
       loading: false,
       page: {
+        categoryId: -1,
         total: 0,
         pageSize: 10,
         currentPage: 1,
         postsType: null,
-        school: -1,
-        status: null
+        status: null,
+        condition: ''
       }
     }
   },
@@ -177,38 +266,57 @@ export default {
   watch: {},
   // 方法集合
   mounted () {
-    this.getPageFun()
   },
   methods: {
+    resetQuery () {
+      this.page.categoryId = -1
+      this.page.condition = ''
+      this.posts = []
+      this.getPageFun()
+    },
     init (status) {
       this.page = {
         total: 0,
         pageSize: 10,
         currentPage: 1,
         postsType: null,
-        school: -1,
+        categoryId: -1,
         pageTotal: 0,
-        status: null
+        status: null,
+        condition: ''
       }
       this.page.status = status
+      console.log(status)
       this.getPageFun()
+    },
+    listCategory () {
+      const data = {total: 0, pageSize: 10, currentPage: 1, categoryName: null}
+      listAllCategory(data).then(res => {
+        this.category = res.data
+      })
     },
     handleCommand (command) {
       this.command = command
+      if (this.command === '最新发布') {
+        this.page.condition = 'create_time'
+      } else if (this.command === '最多浏览') {
+        this.page.condition = 'browse_num'
+      }
     },
     handleInput () {
       // 输入框内容变化时触发
     },
     handleSearch () {
       // 点击搜索按钮触发
-      if (this.searchText) {
+      if (this.categoryId) {
         // 执行搜索操作
-        console.log('搜索：', this.searchText)
+        this.page.categoryId = this.categoryId
+        this.getPageFun()
       }
     },
     handleClear () {
       // 点击清除按钮触发
-      this.searchText = ''
+      this.categoryId = ''
     },
     publish () {
       this.$router.push({path: '/publish'})
@@ -219,36 +327,31 @@ export default {
     },
     currentChange (currentPage) { // 当前页
       this.page.currentPage = currentPage
-      console.log(this.page.currentPage)
       this.getPageFun()
     },
     getPageFun () {
       this.loading = true
-      console.log(this.page.currentPage)
       this.posts = []
-      console.log(this.page)
+      this.WaterfallPosts = []
       getPage(this.page).then(res => {
         if (res.code === 200) {
-          console.log(res.data)
           let count = 0
           let arr = []
+          this.WaterfallPosts.push(...res.data)
+          console.log(this.WaterfallPosts)
           for (let i = 0; i < res.data.length; i++) {
-            console.log(res.data[i].updateTime)
             res.data[i].createTime = formatDate(res.data[i].createTime)
             res.data[i].updateTime = formatDate(res.data[i].updateTime)
-            console.log(res.data[i].updateTime)
             count++
             if (count <= 5) {
               arr.push(res.data[i])
             }
             if (count === 5 || i === (res.data.length - 1)) {
               this.posts.push(arr)
-              console.log(this.posts)
               arr = []
               count = 0
             }
           }
-          console.log(this.posts)
           this.page.total = res.dataTotal
           // this.page.pageTotal = res.pageTotal
           this.loading = false
@@ -256,7 +359,7 @@ export default {
           this.page.currentPage--
         }
       }, error => {
-        console.log(error)
+        this.$message.error(error)
         this.page.currentPage--
         this.loading = false
       })
@@ -269,8 +372,24 @@ export default {
         }
       })
     },
-    cancelCollect (item) {
-      addCollect(item.id, '1').then(res => {
+    handleDelete (item) {
+      delMyPost(item.id, item.userId).then(res => {
+        if (res.code === 200) {
+          this.getPageFun()
+          this.$message.success(res.msg)
+        }
+      })
+    },
+    Delete (item) {
+      del(item.id, item.userId).then(res => {
+        if (res.code === 200) {
+          this.getPageFun()
+          this.$message.success(res.msg)
+        }
+      })
+    },
+    reStore (item) {
+      restore(item.id, item.userId).then(res => {
         if (res.code === 200) {
           this.getPageFun()
           this.$message.success(res.msg)
@@ -317,7 +436,7 @@ export default {
       this.selected.forEach((item) => {
         this.cancelList.push(this.myLike[item].id)
       })
-      this.cancelCollect()
+      this.handleDelete()
     },
     Cancel () {
       // 弹窗是否确认
@@ -336,7 +455,7 @@ export default {
         this.selected.forEach((item) => {
           this.cancelList.push(this.myLike[item].id)
         })
-        this.cancelCollect()
+        this.handleDelete()
         setTimeout(() => {
           this.$message(
             {
@@ -372,6 +491,19 @@ export default {
 .collect-box{
   display: flex;
 }
+
+.collect-item>>>.el-badge__content.is-fixed{
+  position: absolute;
+  top:auto;
+  bottom: 80px!important;
+  right: 55px!important;
+  border: none;
+}
+/deep/
+.collect-item .el-badge__content.is-fixed{
+  border: none;
+  border-radius: 0;
+}
 .collect-item{
   width: calc(20% - 10px);
   margin: 5px;
@@ -386,7 +518,8 @@ export default {
   color: #00a6ff;
 }
 .collect-box-img{
-  height: 200px;
+  height: 160px;
+  width: 200px;
   background-size: cover;
 }
 .collect-box-title{
@@ -404,7 +537,6 @@ export default {
   background-color: rgba(0, 0, 0, 0.15);
   color: white;
   display: none;
-  /* 其他样式设置，如文本居中、字体大小等 */
 }
 .image-box:hover .video-info {
   display: block;

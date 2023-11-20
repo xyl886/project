@@ -1,10 +1,11 @@
 <template>
   <div style="font-size: 14px;padding:20px;background-color: #f5f7f9;" v-loading="loading">
 <!--    <div style="border-bottom: 1px solid #ccc;font-weight: bolder;font-size: 24px;line-height: 50px;">浏览记录</div>-->
-    <el-tabs v-model="activeName"  @tab-click="handleClick">
-      <el-tab-pane v-for="tab in tabs" :label="tab.label" :name="tab.name" :key="tab.name"></el-tab-pane>
+    <el-tabs v-model="activeName" @tab-click="handleClick">
+      <el-tab-pane @tab-click="handleClick" v-for="tab in tabs" :label="tab.label" :name="tab.name" :key="tab.name">
+        <HistoryList :ref="tab.name"/>
+      </el-tab-pane>
     </el-tabs>
-    <HistoryList ref="hs" :postType="activeName" :activeLabel="activeLabel" :removeType="removeName"/>
   </div>
 </template>
 
@@ -42,17 +43,19 @@ export default {
     // this.$refs[this.activeName].init(this.activeName)
   },
   methods: {
-    handleClick (tab) {
-      this.activeLabel = tab.label
-      this.removeName = this.removeList[tab.index]
-    },
-    sizeChange (pageSize) { // 页数
-      this.page.pageSize = pageSize
-      // this.getPageFun()
-    },
-    currentChange (currentPage) { // 当前页
-      this.page.currentPage = currentPage
-      // this.getPageFun()
+    // handleClick (tab) {
+    //   this.activeLabel = tab.label
+    //   this.removeName = this.removeList[tab.index]
+    // },
+    handleClick (tab, event) {
+      console.log(tab.index + ',' + event)
+      if (tab.index !== '0') {
+        this.activeLabel = tab.index
+      } else {
+        this.activeLabel = null
+      }
+      this.$refs[tab.name][0].init(this.activeName)
+      console.log(tab.name + ',' + this.activeName)
     }
   },
   // 监听属性 类似于data概念

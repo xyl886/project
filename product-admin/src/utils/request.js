@@ -48,7 +48,8 @@ service.interceptors.response.use(
       Notification({
         title: '提示',
         message: '请登录~',
-        type: 'warning'
+        type: 'warning',
+        duration: 2 * 1000
       })
       // this.$message.fail(res.msg)
       removeToken()
@@ -95,7 +96,7 @@ service.interceptors.response.use(
     Message({
       message: error.message,
       type: 'error',
-      duration: 30 * 1000
+      duration: 3 * 1000
     })
     return Promise.reject(error)
   }

@@ -17,7 +17,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName(value ="collect")
+@TableName(value ="s_collect")
 public class Collect extends BaseEntity {
 
     @ApiModelProperty(value = "用户主键")

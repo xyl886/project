@@ -1,5 +1,6 @@
 package com.love.product.controller;
 
+import com.love.product.annotation.AccessLimit;
 import com.love.product.entity.Posts;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
@@ -17,6 +18,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -38,19 +40,11 @@ public class PostsController {
 
     @PostMapping("/add")
     @ApiOperation(value = "添加", notes = "添加")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "postsType", value = "发布类型", required = true, dataType = "Integer", paramType = "query"),
-            @ApiImplicitParam(name = "title", value = "标题", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "content", value = "内容", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "school", value = "校区", required = true, dataType = "Integer", paramType = "query"),
-            @ApiImplicitParam(name = "price", value = "价格", required = false, dataType = "BigDecimal", paramType = "query"),
-            @ApiImplicitParam(name = "files", value = "上传图片列表", required = false, dataType = "MultipartFile[]", paramType = "query")
-    })
     public Result<Posts> add(PostsVO postsVO){
         return postsService.add(JwtUtil.getUserId(), postsVO);
     }
     @GetMapping("/listHot")
-    public  Result<Posts> listHot(){
+    public  Result<List<Posts>> listHot(){
         return postsService.listHot();
     }
     @ApiOperation("分页")
@@ -100,5 +94,15 @@ public class PostsController {
     @DeleteMapping ("/del")
     public Result<?> del(Long userId,Long id) {
         return postsService.del(userId, id);
+    }
+    @ApiOperation("彻底删除")
+    @DeleteMapping ("/delete")
+    public Result<?> delete(Long userId,Long id) {
+        return postsService.delete(userId, id);
+    }
+    @ApiOperation("彻底删除")
+    @PostMapping ("/restore")
+    public Result<?> restore(Long userId,Long id) {
+        return postsService.restore(userId, id);
     }
 }

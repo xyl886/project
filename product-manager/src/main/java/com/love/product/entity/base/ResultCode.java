@@ -17,7 +17,12 @@ public enum ResultCode {
     NOT_FOUND(404, "资源不存在"),
     SERVER_ERROR(500, "服务器错误"),
     TIMEOUT(504, "请求超时"),
+    EMAIL_ERROR(-10,"邮箱格式不对，请检查后重试!"),
+    ERROR_EXCEPTION_MOBILE_CODE(10003,"验证码不正确或已过期，请重新输入"),
+    PARAMS_ILLEGAL(10018,"参数不合法!!"),
+    ROLE_IS_EXIST(10019,"该角色已存在！"),
     CATEGORY_IS_EXIST(10019,"该分类名称已存在!");
+
 
     /**
      * 状态码

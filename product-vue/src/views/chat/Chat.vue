@@ -2,11 +2,11 @@
   <div style="background-color: #d9ecff;">
     <div class="container" style="min-height: 660px">
       <div class="left" style="max-width: 300px;">
-        <div style="margin-top: 5px;margin-bottom: 10px">
-          <el-input placeholder="请输入内容" v-model="input3" class="input-with-select">
-            <el-button slot="append" icon="el-icon-search"></el-button>
-          </el-input>
-        </div>
+<!--        <div style="margin-top: 5px;margin-bottom: 10px">-->
+<!--          <el-input placeholder="请输入内容" v-model="input3" class="input-with-select">-->
+<!--            <el-button slot="append" icon="el-icon-search"></el-button>-->
+<!--          </el-input>-->
+<!--        </div>-->
         <el-menu>
           <el-menu-item
             v-for="user in userList"
@@ -17,8 +17,9 @@
               <el-image :src="user.userInfo?user.userInfo.avatar:''" style="width: 50px;height: 50px;border-radius:50%;margin-bottom: 5px"></el-image>
               <div class="list-right">
                 <p class="name">{{user.userInfo.nickname}}</p><span class="time">昨天 11:11</span>
-                <p class="lastmsg">{{user.userInfo.remark}}</p>
+                <p class="lastMsg">{{user.userInfo.remark}}</p>
               </div>
+              <i class="el-icon-delete delete-btn" @click.stop="handleDelete(user)"/>
             </div>
           </el-menu-item>
         </el-menu>
@@ -44,7 +45,7 @@
         </div>
         <el-divider style=""></el-divider>
 <!--        <div v-if="selectedUser">-->
-          <div v-if="selectedUser" style="height: 400px;overflow: scroll;">
+          <div v-if="selectedUser" class="chat-message" style="height: 400px;overflow: scroll;">
             <div style="margin: 5px;padding: 5px 0;line-height: 40px;"
               v-for="message in messageList[this.userInfo.id + selectedUser.beFollowedUserId]"
               :key="message.id">
@@ -61,7 +62,7 @@
         <el-divider style="margin: 10px 0"></el-divider>
         <div v-if="selectedUser" style="">
           <el-row :gutter="20">
-            <el-col :span="2"> <el-button circle><i class="el-icon-picture"></i></el-button></el-col>
+<!--            <el-col :span="2"> <el-button circle><i class="el-icon-picture"></i></el-button></el-col>-->
             <el-col :span="2">
               <el-popover placement="top" trigger="click" class="popover" style="margin: 20px;">
               <custom-emoji v-if="showEmojiCom" class="emoji-component" @addemoji="addEmoji"/>
@@ -94,6 +95,7 @@ import {mapGetters} from 'vuex'
 import {getPage} from '../../api/follow'
 import {formatDate} from '../../utils/date'
 import customEmoji from '../../components/emoji/index.vue'
+import {deleteFriend, getFriendList} from '../../api/chat'
 
 export default {
   name: 'Room',
@@ -129,6 +131,28 @@ export default {
     ])
   },
   methods: {
+    handleDelete (user) {
+      console.log(user)
+      this.$confirm('确认删除与该用户的聊天吗？', '删除确认', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 确认删除逻辑
+        const friendUserId = user.beFollowedUserId
+        deleteFriend(friendUserId).then((res) => {
+          if (res.code === 200) {
+            this.listAllUsers()
+            this.messageList[this.userInfo.id + this.selectedUserMessage.user.beFollowedUserId] = []
+            this.$message.success(res.msg)
+          } else {
+            this.$message.error(res.msg)
+          }
+        })
+      }).catch(() => {
+        // 取消删除逻辑
+      })
+    },
     handlerShowEmoji () {
       this.showEmojiCom = false
     },
@@ -151,9 +175,10 @@ export default {
       return con
     },
     listAllUsers () {
-      getPage(this.page).then((res) => {
+      // getPage(this.page).then((res) => {
+      getFriendList(this.page).then((res) => {
         this.userNum = res.data.length
-        console.log(this.userNum)
+        console.log(res.data)
         // this.usernameOnlineList = response.data.usernameOnlineList;
         this.userList = res.data.filter(
           (user) => user.id !== this.userInfo.id
@@ -169,9 +194,9 @@ export default {
       }
 
       // TODO 展示数据库中存在的信息，也就是聊天记录
-      listPrivateMessages(this.userInfo.id, user.beFollowedUserId).then((response) => {
-        this.$set(this.messageList, this.userInfo.id + user.beFollowedUserId, response.data)
-        console.log(response.data)
+      listPrivateMessages(this.userInfo.id, user.beFollowedUserId).then((res) => {
+        this.$set(this.messageList, this.userInfo.id + user.beFollowedUserId, res.data)
+        console.log(res.data)
       })
       console.log(this.messageList)
       console.log(user)
@@ -182,6 +207,18 @@ export default {
         u.selected = false
       })
       user.selected = true
+      // 获取节点
+      const chatHistory = document.getElementsByClassName('chat-message')
+      console.log(chatHistory)
+      console.log(chatHistory[0].scrollHeight)
+      console.log(chatHistory[0].clientHeight)
+      if (chatHistory[0].scrollHeight >= chatHistory[0].clientHeight) {
+        setTimeout(function () {
+          // 设置滚动条到最底部
+          chatHistory[0].scrollTop = chatHistory[0].scrollHeight
+          console.log('mmmm')
+        }, 0)
+      }
     },
     sendMsg () {
       if (this.stompClient !== null && this.selectedUserMessage.message !== '') {
@@ -272,7 +309,7 @@ export default {
     }
   },
   created () {
-    this.userInfo = mapGetters(['userInfo'])
+    // this.userInfo = mapGetters(['userInfo'])
     this.connect()
     this.listAllUsers()
     console.log(this.userInfo)
@@ -283,12 +320,25 @@ export default {
   beforeDestroy () {
     this.disconnect()
     document.removeEventListener('click', this.handlerShowEmoji)
-  },
-
+  }
 }
 </script>
 
 <style scoped>
+.delete-btn {
+  visibility: hidden;
+}
+.user-info:hover .delete-btn {
+  visibility: visible;
+}
+.emoji-component {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+.el-popover{
+  padding: 0 !important;
+}
 .el-divider{
   margin:10px 0!important;
 }
@@ -300,7 +350,7 @@ export default {
   color: #000;
 }
 .el-menu-item.selected{
-  background-color: #f4f5f7;
+  background-color: #cfe8fd;
 }
 .container {
   display: flex;
@@ -438,7 +488,7 @@ li {
   font-size: 10px;
 }
 
-.list-right .lastmsg {
+.list-right .lastMsg {
   margin: 0;
   padding: 0;
   position: absolute;

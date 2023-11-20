@@ -16,7 +16,7 @@ export const sendEmailCode = (email, type) => {
  */
 export const userLogin = (params) => {
   return request({
-    url: '/api/login/userLogin',
+    url: '/api/system/login',
     method: 'get',
     params: params
   })

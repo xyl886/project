@@ -18,7 +18,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@TableName("comment_like")
+@TableName("s_comment_like")
 public class CommentLike extends BaseEntity {
 
     @ApiModelProperty(value = "用户主键")

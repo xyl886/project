@@ -24,21 +24,18 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class PostsPageReq extends PageQuery {
 
-    /**
-     * {@link com.love.product.enumerate.PostsType}
-     */
     @ApiModelProperty(value = "帖子类型 1闲置帖 2校园帖")
     private Integer postsType;
 
-    /**
-     * {@link com.love.product.enumerate.School}
-     */
-    @ApiModelProperty(value = "分类")
-    private Integer school;
+    @ApiModelProperty(value = "标签id")
+    private Long tagId;
+
+    @ApiModelProperty(value = "分类id")
+    private Integer categoryId;
 
     @ApiModelProperty(value = "标题")
     private String title;
 
-    @ApiModelProperty(value = "状态")
+    @ApiModelProperty(value = "状态id")
     public Integer status;
 }

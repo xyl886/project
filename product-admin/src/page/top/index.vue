@@ -5,21 +5,21 @@
         <img src="../../../public/img/logo3.png" style="width: 50px;height: 50px;margin: 5px 0;" alt="">
       </div>
       <div style="font-size: 28px;font-weight: 700;line-height: 60px;margin-left: 10px;">
-      校园墙
+        校园墙
       </div>
     </div>
     <div class="menu" style="margin:0 100px;flex: 1;">
       <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal">
-        <el-menu-item v-for="(item,index) in menus" :index="item.path" :key="item.path" @click="pathFun(item.path)">{{item.name}}</el-menu-item>
+        <el-menu-item v-for="(item,index) in menus" :index="item.path" :key="item.path" @click="pathFun(item.path)">{{ item.name }}</el-menu-item>
       </el-menu>
-<!--      <el-dropdown trigger="click" class="dropdown" style="display: none">-->
-<!--        <span class="el-dropdown-link"><i class="el-icon-arrow-down el-icon&#45;&#45;right"></i></span>-->
-<!--        <el-dropdown-menu :default-active="activeIndex" slot="dropdown">-->
-<!--          <el-dropdown-item v-for="(item, index) in menus" :index="item.path" :key="item.path" @click="pathFun(item.path)">{{ item.name }}</el-dropdown-item>-->
-<!--        </el-dropdown-menu>-->
-<!--      </el-dropdown>-->
+      <!--      <el-dropdown trigger="click" class="dropdown" style="display: none">-->
+      <!--        <span class="el-dropdown-link"><i class="el-icon-arrow-down el-icon&#45;&#45;right"></i></span>-->
+      <!--        <el-dropdown-menu :default-active="activeIndex" slot="dropdown">-->
+      <!--          <el-dropdown-item v-for="(item, index) in menus" :index="item.path" :key="item.path" @click="pathFun(item.path)">{{ item.name }}</el-dropdown-item>-->
+      <!--        </el-dropdown-menu>-->
+      <!--      </el-dropdown>-->
     </div>
-  <div style="text-align: right">
+    <div style="text-align: right">
       <div v-if="!userInfo || !userInfo.id" style="line-height: 60px;">
         <el-button type="primary" plain @click="toLogin">登录</el-button>
       </div>
@@ -28,26 +28,26 @@
           placement="bottom-end"
           width="300"
           trigger="hover">
-          <el-image fit="cover" style="height: 80px;width: 300px" :src="userInfo?userInfo.avatar:''"></el-image>
+          <el-image :src="userInfo?userInfo.avatar:''" fit="cover" style="height: 80px;width: 300px"/>
           <el-row>
             <el-col :span="6">
-              <el-image :src="userInfo?userInfo.avatar:''" style="width: 60px;height: 60px;border-radius:50%;margin-left: 5px;" ></el-image>
+              <el-image :src="userInfo?userInfo.avatar:''" style="width: 60px;height: 60px;border-radius:50%;margin-left: 5px;" />
             </el-col>
             <el-col :span="18">
-              <div style="padding: 15px 0;">{{userInfo.nickname}}
+              <div style="padding: 15px 0;">{{ userInfo.nickname }}
                 <i>♂</i>
-                <el-tag size="small" type="success">{{userInfo.role}}</el-tag></div>
-              <div style="padding: 5px 0"><span>{{userInfo.followNum}} 关注 </span> <span>{{userInfo.fansNum}} 粉丝 </span><span>11 获赞 </span></div>
-              <div style="padding: 15px 0">{{userInfo.remark}}</div>
+              <el-tag size="small" type="success">{{ userInfo.role }}</el-tag></div>
+              <div style="padding: 5px 0"><span>{{ userInfo.followNum }} 关注 </span> <span>{{ userInfo.fansNum }} 粉丝 </span><span>11 获赞 </span></div>
+              <div style="padding: 15px 0">{{ userInfo.remark }}</div>
             </el-col>
           </el-row>
-          <el-image :src="userInfo.avatar" slot="reference" @click="pathFun('/personal')" style="cursor:pointer;width: 40px;height: 40px;margin: 10px 10px;border-radius: 50%;"></el-image>
+          <el-image slot="reference" :src="userInfo.avatar" style="cursor:pointer;width: 40px;height: 40px;margin: 10px 10px;border-radius: 50%;" @click="pathFun('/personal')"/>
         </el-popover>
         <el-dropdown style="top: -25px">
           <div style="display: flex;">
             <span style="line-height: 35px;">
-                {{userInfo.nickname}}
-              <i class="el-icon-arrow-down el-icon--right"></i>
+              {{ userInfo.nickname }}
+              <i class="el-icon-arrow-down el-icon--right"/>
             </span>
           </div>
           <el-dropdown-menu slot="dropdown">
@@ -59,8 +59,8 @@
         </el-dropdown>
       </div>
     </div>
-    <UpdatePwd ref="updatePwdDialog"></UpdatePwd>
-    <login ref="loginDialog"></login>
+    <UpdatePwd ref="updatePwdDialog"/>
+    <login ref="loginDialog"/>
   </div>
 </template>
 
@@ -71,64 +71,64 @@ import login from '../login/login.vue'
 import * as path from 'path'
 
 export default {
-  data () {
+  components: {
+    UpdatePwd,
+    login
+  },
+  data() {
     return {
       searchText: '',
       select: '1',
       activeIndex: '/index',
       menus: [
-        {name: '首页', path: '/index'},
-        {name: '校园分享', path: '/share'},
-        {name: '个人中心', path: '/personal'},
-        {name: '留言板', path: '/messageBoard'},
-        {name: '关于我们', path: '/about-us'}
+        { name: '首页', path: '/index' },
+        { name: '校园分享', path: '/share' },
+        { name: '个人中心', path: '/personal' },
+        { name: '留言板', path: '/messageBoard' },
+        { name: '关于我们', path: '/about-us' }
       ]
     }
-  },
-  components: {
-    UpdatePwd,
-    login
   },
   computed: {
     ...mapGetters([
       'userInfo'
     ])
   },
-  mounted () {
-    let that = this
-    setInterval(function () { // 定位当前菜单
+  mounted() {
+    const that = this
+    setInterval(function() { // 定位当前菜单
       that.activeIndex = that.$router.currentRoute.path
     }, 1000)
   },
   methods: {
-    handleCommand (command) {
+    handleCommand(command) {
       this.command = command
     },
-    path () {
+    path() {
       return path
     },
-    pathFun (path) {
-      this.$router.push({path: path})
+    pathFun(path) {
+      this.$router.push({ path: path })
     },
-    homePage () {
-      this.$router.push({path: '/index'})
+    homePage() {
+      this.$router.push({ path: '/index' })
     },
-    toLogin () {
+    toLogin() {
       this.$refs.loginDialog.showDialog()
     },
-    publish () {
-      this.$router.push({path: '/publish'})
+    publish() {
+      this.$router.push({ path: '/publish' })
     },
-    myMessage () {
-
+    myMessage() {
+      this.$router.push({ path: '/chat' })
     },
-    updatePwd () {
+    updatePwd() {
       this.$refs.updatePwdDialog.showDialog()
     },
-    getDataList () {
+    getDataList() {
 
     },
-    logoutFun () { // 退出登录
+    logoutFun() { // 退出登录
       this.$confirm('确定退出登录?', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -141,7 +141,7 @@ export default {
                 title: '退出成功',
                 type: 'success'
               })
-              this.$router.push({path: '/index'})
+              this.$router.push({ path: '/index' })
             }
           })
         })

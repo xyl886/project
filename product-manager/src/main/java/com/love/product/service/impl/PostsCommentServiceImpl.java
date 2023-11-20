@@ -3,12 +3,16 @@ package com.love.product.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.love.product.entity.CommentLike;
 import com.love.product.entity.Posts;
 import com.love.product.entity.PostsComment;
-import com.love.product.entity.PostsLike;
 import com.love.product.entity.base.Result;
+import com.love.product.entity.base.ResultPage;
+import com.love.product.entity.req.CommentPageReq;
+import com.love.product.entity.vo.CommentVO;
 import com.love.product.entity.vo.PostsCommentVO;
 import com.love.product.entity.vo.UserBasicInfoVO;
 import com.love.product.entity.vo.UserInfoVO;
@@ -16,6 +20,9 @@ import com.love.product.enumerate.Role;
 import com.love.product.enumerate.YesOrNo;
 import com.love.product.mapper.CommentLikeMapper;
 import com.love.product.mapper.PostsCommentMapper;
+import com.love.product.mapper.PostsMapper;
+import com.love.product.mapper.UserInfoMapper;
+import com.love.product.service.FileUploadService;
 import com.love.product.service.PostsCommentService;
 import com.love.product.service.PostsService;
 import com.love.product.service.UserInfoService;
@@ -40,7 +47,12 @@ public class PostsCommentServiceImpl extends ServiceImpl<PostsCommentMapper, Pos
 
     @Resource
     private PostsService postsService;
-
+    @Resource
+    private PostsMapper postsMapper;
+    @Resource
+    private UserInfoMapper userInfoMapper;
+    @Resource
+    private FileUploadService fileUploadService;
     @Resource
     private UserInfoService userInfoService;
     @Resource
@@ -143,6 +155,16 @@ public class PostsCommentServiceImpl extends ServiceImpl<PostsCommentMapper, Pos
     @Override
     public Result<?> addCommentLike(Long userId, Long commentId, Integer deleted) {
         PostsComment comment = getById(commentId);
+        YesOrNo yesOrNo = YesOrNo.valueOf(deleted);
+        if(yesOrNo == null){
+            yesOrNo = YesOrNo.NO;
+        }
+        // 为用户创建新的点赞对象并将其添加到评论中
+        CommentLike like = new CommentLike();
+        like.setUserId(userId);
+        like.setCommentId(commentId);
+        like.setDeleted(yesOrNo.getValue());
+        // 将点赞记录保存到数据库
         // 检查用户是否已经点过赞
         boolean hasLiked = commentLikeMapper.selectCount(new QueryWrapper<CommentLike>()
                 .eq("user_id", userId)
@@ -150,21 +172,60 @@ public class PostsCommentServiceImpl extends ServiceImpl<PostsCommentMapper, Pos
                 .last("LIMIT 1")) > 0;
 
         if (hasLiked) {
-            return Result.failMsg("您已经点过赞了！");
+            commentLikeMapper.update(like,new UpdateWrapper<CommentLike>()
+                    .eq("user_id", userId)
+                    .eq("comment_id", commentId)
+                    .last("LIMIT 1"));
+        }else {
+            commentLikeMapper.insert(like);
         }
-        // 为用户创建新的点赞对象并将其添加到评论中
-        CommentLike like = new CommentLike();
-        like.setUserId(userId);
-        like.setCommentId(commentId);
-        like.setDeleted(deleted);
-        // 将点赞记录保存到数据库
-        commentLikeMapper.insert(like);
-        comment.likeNum += 1;
+        String msg = "点赞成功";
+        if(yesOrNo.equals(YesOrNo.YES)){
+            comment.likeNum -= 1;
+            msg = "已取消点赞";
+        }else {
+            comment.likeNum += 1;
+        }
         // 增加点赞计数并保存评论
         if (comment.likeNum < 0) {
             comment.likeNum=0;
         }
         saveOrUpdate(comment);
-        return Result.OK("点赞成功！");
+        return Result.OKMsg(msg);
+    }
+    @Override
+    public ResultPage<CommentVO> listComment(CommentPageReq commentPageReq) {
+        Page<CommentVO> Page = baseMapper.selectPageList(
+                new Page<>(commentPageReq.getCurrentPage(), commentPageReq.getPageSize()), commentPageReq);
+        List<CommentVO> list=new ArrayList<>();
+        if (Page.getTotal() > 0) {
+            list = Page.getRecords();
+        }
+        return ResultPage.OK(Page.getTotal(), Page.getCurrent(), Page.getSize(), list);
+    }
+    @Override
+    public Result<?> deleteComment(Long id) {
+        PostsComment comment = getById(id);
+        if(comment != null){
+                removeById(id);
+                Posts posts = postsService.getById(comment.getPostsId());
+                int commentNum = posts.getCommentNum();
+                commentNum = commentNum - 1;
+                if(commentNum < 0){
+                    commentNum = 0;
+                }
+                posts.setCommentNum(commentNum);
+                //更新评论数
+                postsService.saveOrUpdate(posts);
+                return Result.OK("删除成功",comment);
+        }else{
+            return Result.failMsg("评论不存在或已删除");
+        }
+    }
+
+    @Override
+    public Result deleteBatch(List<Long> ids) {
+        baseMapper.deleteBatchIds(ids);
+        return Result.OK();
     }
 }

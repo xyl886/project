@@ -1,5 +1,12 @@
 import request from '@/utils/request'
 
+export function getCaptcha (data) {
+  return request({
+    url: '/api/login/Capatha',
+    method: 'post',
+    data
+  })
+}
 /**
  * 详情
  */

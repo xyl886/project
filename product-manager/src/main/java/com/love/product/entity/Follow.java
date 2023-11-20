@@ -18,7 +18,7 @@ import lombok.experimental.Accessors;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName(value ="follow")
+@TableName(value ="s_follow")
 @Accessors(chain = true)
 public class Follow extends BaseEntity {
 

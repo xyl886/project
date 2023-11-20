@@ -3,18 +3,9 @@
     <div style="flex: 1;background-color: #ffffff;border-radius: 5px;">
       <div style="padding: 24px;">
         <el-form ref="form" :rules="rules" :label-position="labelPosition" :model="form" label-width="200px" v-loading="loading">
-          <!--          <el-form-item label="内容" prop="content">-->
-          <!--            <el-input type="textarea" resize="none" v-model="form.content" clearable></el-input>-->
-          <!--          </el-form-item>-->
           <el-form-item label="分类:" prop="school">
             <el-radio-group v-model="form.school">
               <el-radio-button v-for="(option, index) in options" :key="index" :label="option.id">{{ option.categoryName }}</el-radio-button>
-<!--              <el-radio-button label="1">学习</el-radio-button>-->
-<!--              <el-radio-button label="2">生活</el-radio-button>-->
-<!--              <el-radio-button label="3">娱乐</el-radio-button>-->
-<!--              <el-radio-button label="4">求助</el-radio-button>-->
-<!--              <el-radio-button label="5">就业</el-radio-button>-->
-<!--              <el-radio-button label="6">新闻/公告</el-radio-button>-->
             </el-radio-group>
           </el-form-item>
           <el-form-item label="类型:" prop="postsType">
@@ -59,15 +50,15 @@
           </el-form-item>
           <el-form-item label="标签:">
             <el-tag
-              :key="tag"
-              v-for="tag in dynamicTags"
+              :key="tag.id"
+              v-for="tag in form.dynamicTags"
               closable
               :disable-transitions="false"
               @close="handleClose(tag)">
-              {{tag}}
+              {{tag.tag_name}}
             </el-tag>
             <el-popover  placement="top-start"
-                         width="400"
+                         width="300"
                          trigger="click">
               <div class="popover-container">
               <el-tag
@@ -76,21 +67,23 @@
                 style="margin:5px"
                 :class="tagClass(item)"
                 @click="addTag(item)">
-                {{ item }}
+                {{ item.tag_name }}
               </el-tag>
               </div>
               <el-input
-                style="width: 100%"
+                style="width: 90%;text-align: center"
                 class="input-new-tag"
-                v-if="dynamicTags && dynamicTags.length < 3"
+                v-if="form.dynamicTags && form.dynamicTags.length < 3"
                 v-model="inputValue"
                 ref="saveTagInput"
                 size="small"
+                clearable
+                maxlength="10"
                 @keyup.enter.native="handleInputConfirm"
                 @blur="handleInputConfirm">
               </el-input>
             <el-button v-if="!inputVisible"
-                       v-show="dynamicTags.length < 3"
+                       v-show="form.dynamicTags.length < 3"
                        class="button-new-tag"
                        slot="reference"
                        size="small">+ 添加标签</el-button>
@@ -108,24 +101,25 @@
 
 <script>
 import {add} from '@/api/posts'
-import {listAllCategory} from '../../api/posts'
+import { listAllCategory, listAllTags } from '../../api/posts'
 export default {
   data () {
     return {
       loading: false,
       labelPosition: 'left',
-      dynamicTags: ['1', '2', '3'],
-      Tags: ['1', '2', '3', '4', '5', '6'],
+      Tags: [],
       inputVisible: false,
       inputValue: '',
       options: [],
       form: {
         postsType: '1',
         title: '',
+        description: '',
         content: '',
         school: '2',
         price: 0,
-        files: []
+        files: [],
+        dynamicTags: []
       },
       rules: {
         postsType: [
@@ -173,7 +167,7 @@ export default {
   computed: {
     tagClass () {
       return function (item) {
-        const index = this.dynamicTags.indexOf(item.name)
+        const index = this.form.dynamicTags.indexOf(item.name)
         return index !== -1 ? 'tag-item-select' : 'tag-item'
       }
     }
@@ -185,20 +179,22 @@ export default {
     }, 1000)
   },
   beforeCreate () {
-    listAllCategory().then(res => {
-      console.log(res.data)
-      this.options = this.options.concat(res.data.slice(1))
-      console.log(this.options)
+    const data = {total: 0, pageSize: 10, currentPage: 1, categoryName: null}
+    listAllCategory(data).then(res => {
+      this.options = res.data
+    })
+    listAllTags().then(res => {
+      this.Tags = res.data
     })
   },
   methods: {
     addTag (item) {
-      if (this.dynamicTags.length > 2) {
+      if (this.form.dynamicTags.length > 2) {
         this.$message.error('最多添加三个标签,如需继续添加,请先删除一个!')
         return false
       }
-      if (this.dynamicTags.indexOf(item) === -1) {
-        this.dynamicTags.push(item)
+      if (this.form.dynamicTags.indexOf(item) === -1) {
+        this.form.dynamicTags.push(item)
       }
     },
     saveTag () {
@@ -210,7 +206,7 @@ export default {
       }
     },
     removeTag (item) {
-      const index = this.dynamicTags.indexOf(item)
+      const index = this.form.dynamicTags.indexOf(item)
       this.article.tags.splice(index, 1)
     },
     backFun () {
@@ -254,7 +250,7 @@ export default {
           formData.append('description', this.form.description)
           formData.append('content', this.form.content)
           formData.append('school', this.form.school)
-          formData.append('tags', this.dynamicTags)
+          formData.append('tags', this.form.dynamicTags.map(item => item.tag_name).join(','))
           formData.append('price', this.form.price)
           add(formData).then(res => {
             this.loading = false
@@ -274,7 +270,7 @@ export default {
       })
     },
     handleClose (tag) {
-      this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1)
+      this.form.dynamicTags.splice(this.form.dynamicTags.indexOf(tag), 1)
     },
 
     showInput () {
@@ -287,7 +283,16 @@ export default {
     handleInputConfirm () {
       let inputValue = this.inputValue
       if (inputValue) {
-        this.dynamicTags.push(inputValue)
+        // 检查是否有重复的tag_name
+        const isDuplicate = this.form.dynamicTags.some(tag => tag.tag_name.toLowerCase() === inputValue.toLowerCase())
+        if (isDuplicate) {
+          // 显示错误消息或以其他方式处理重复项
+          this.$message.warning('标签重复！')
+        } else {
+          // 将新标签添加到数组中
+          const newTag = { id: null, tag_name: inputValue }
+          this.form.dynamicTags.push(newTag)
+        }
       }
       this.inputVisible = false
       this.inputValue = ''

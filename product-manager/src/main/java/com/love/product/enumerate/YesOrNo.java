@@ -15,8 +15,11 @@ public enum YesOrNo {
 
     FALSE(0,"false"),
 
-    TRUE(1,"true")
+    TRUE(1,"true"),
 
+    NORMAL(0,"正常"),
+
+    DISABLE(1,"禁用中")
     ;
 
     /**

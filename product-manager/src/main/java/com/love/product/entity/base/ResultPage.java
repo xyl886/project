@@ -1,10 +1,9 @@
 package com.love.product.entity.base;
 
-import cn.hutool.db.PageResult;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import lombok.experimental.Accessors;
-import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -22,7 +21,6 @@ import java.util.List;
 @ToString(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-@Component
 @EqualsAndHashCode(callSuper = true)
 public class ResultPage<T> extends Result implements Serializable {
 
@@ -92,5 +90,4 @@ public class ResultPage<T> extends Result implements Serializable {
         resultPage.setMsg(msg);
         return resultPage;
     }
-
 }

@@ -37,7 +37,7 @@
     </el-form-item>
     <el-form-item label="校区" prop="school">
       <el-radio-group v-model="form.school">
-        <el-radio-button v-for="tab in tabs" :key="tab.name" :label="tab.name">{{ tab.label }}</el-radio-button>
+        <el-radio-button v-for="tab in category" :key="tab.id" :label="tab.id">{{ tab.categoryName }}</el-radio-button>
       </el-radio-group>
     </el-form-item>
     <el-form-item label="价格"  v-if="form.postsType === 1" prop="price">
@@ -84,7 +84,7 @@
 </template>
 
 <script>
-import {updateMyPost} from '../../api/posts'
+import {listAllCategory, updateMyPost} from '../../api/posts'
 export default {
   props: {
     Form: {
@@ -98,14 +98,7 @@ export default {
     return {
       dialogVisible: false,
       loading: false,
-      tabs: [
-        { label: '学习', name: '1' },
-        { label: '生活', name: '2' },
-        { label: '娱乐', name: '3' },
-        { label: '求助', name: '4' },
-        { label: '就业', name: '5' },
-        { label: '新闻/公告', name: '6' }
-      ],
+      category: [],
       form: {
         title: '',
         content: '',
@@ -135,11 +128,20 @@ export default {
     this.edit()
   },
   methods: {
+    queryCategory () {
+      const data = { total: 0, pageSize: 10, currentPage: 1, categoryName: null }
+      listAllCategory(data).then(res => {
+        console.log(res.data)
+        this.category = res.data
+        console.log(this.category)
+      })
+    },
     showDialog () {
       this.dialogVisible = true
       this.$nextTick(() => {
         this.$refs.form.resetFields()
         this.edit()
+        this.queryCategory()
       })
     },
     close () { // 关闭弹窗后清除表单数据-->
@@ -197,8 +199,8 @@ export default {
               formData.append('Files', file.raw) // 新上传的照片
             }
           }
-          if (this.removeFileList.length > 0) {
-            formData.append('removeFiles', this.removeFileList.map(item => item.url).join(',')) // 使用逗号连接多个URL// 修改时移除的
+          if (this.removeFileList.length > 0) { // 使用逗号连接多个URL// 修改时移除的
+            formData.append('removeFiles', this.removeFileList.map(item => item.url).join(','))
           }
           formData.append('id', this.form.id)
           formData.append('userId', this.form.userId)
@@ -217,7 +219,7 @@ export default {
               this.loading = false
               this.dialogVisible = false
               this.edit()
-              this.$emit('postUpdate') // 触发帖子信息更新
+              this.$emit('submit') // 触发帖子信息更新
             }
           }, error => {
             this.$message({

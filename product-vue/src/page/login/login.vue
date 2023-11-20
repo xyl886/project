@@ -81,7 +81,11 @@
                 </el-col>
               </el-row>
             </el-form-item>
-
+            <!-- 滑块验证 -->
+            <el-dialog title="请拖动滑块完成拼图" width="360px" :visible.sync="isShowSliderVerify"
+                       :close-on-click-modal="false" @closed="refresh" append-to-body>
+              <slider-verify ref="sliderVerify" @success="onSuccess" @fail="onFail" @again="onAgain" />
+            </el-dialog>
             <el-form-item>
               <el-button :type="formType === 'login'?'primary':'danger'"
                          style="width: 100%;"
@@ -109,11 +113,14 @@ import {mapGetters} from 'vuex'
 import Vue from 'vue'
 import {sendEmailCode} from '../../api/login'
 import {userReset} from '../../api/user_info'
+import SliderVerify from './components/SlideVerify.vue'
 
 export default {
   name: 'index',
+  components: {SliderVerify},
   data () {
     return {
+      isShowSliderVerify: false,
       isSending: false, // 是否正在发送验证码
       remainingTime: 60, // 剩余时间，单位为秒
       dialogVisible: false,
@@ -180,6 +187,7 @@ export default {
   mounted () {
     Vue.prototype.$bus.$on('showLoginDialog', () => {
       this.dialogVisible = true
+      this.isSending = false
     })
     // 在组件挂载时，自动记住密码，期限一天,从 localstorage 中获取数据
     // if (this.formType === 'login' && this.loginType === 'password') {
@@ -296,6 +304,7 @@ export default {
             spinner: 'el-icon-loading'
           })
           this.$store.dispatch('login', this.loginForm).then((res) => {
+            // this.$refs.sliderVerify.verifySuccessEvent()
             if (res.code === 200) {
               this.$notify({
                 title: '登录成功',
@@ -305,7 +314,10 @@ export default {
               this.dialogVisible = false
               this.$refs.loginForm.resetFields()
             }
-          }).finally(() =>
+          }).catch(err => {
+            // this.$refs.sliderVerify.verifyFailEvent()
+          }
+          ).finally(() =>
             loading.close()
           )
         }
@@ -357,6 +369,35 @@ export default {
             loading.close()
           )
         }
+      })
+    },
+    /* 滑动验证成功 */
+    onSuccess (captcha) {
+      Object.assign(this.loginForm, captcha)
+      this.loginForm.nonceStr = captcha.nonceStr
+      this.loginForm.value = captcha.value
+      this.login()
+    },
+    /* 滑动验证失败 */
+    onFail (msg) {
+      console.log(msg)
+      // this.message('error', msg || '验证失败，请控制拼图对齐缺口');
+    },
+    /* 滑动验证异常 */
+    onAgain () {
+      this.$message.error('滑动操作异常，请重试')
+    },
+    /* 刷新验证码 */
+    refresh () {
+      this.$refs.sliderVerify.refresh()
+    },
+    /* 提示弹框 */
+    message (type, message) {
+      this.$message({
+        showClose: true,
+        type: type,
+        message: message,
+        duration: 1500
       })
     }
   }

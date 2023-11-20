@@ -26,28 +26,32 @@ export const constantRoutes = [
     path: '/index',
     component: Home,
     name: 'Charts',
-    iconCls: 'el-icon-postcard',
+    hidden: true,
+    icon: 'el-icon-postcard',
     children: [
-      { path: '/index/echarts', name: '数据统计', component: () => import('../sysviews/charts/echarts.vue') }
+      { path: '/index/echarts', name: '数据统计', component: () => import('../sysviews/charts/echarts.vue') },
+      { path: '/index/banner', name: '轮播图管理', component: () => import('../sysviews/charts/Banner.vue') }
     ]
   },
   {
     path: '/index',
     component: Home,
     name: '帖子管理',
-    iconCls: 'el-icon-postcard', // 图标样式class
+    icon: 'el-icon-postcard', // 图标样式class
     children: [
-      { path: '/index/main', name: '帖子管理', component: () => import('../sysviews/post/Posts.vue') },
+      { path: '/index/post', name: '帖子管理', component: () => import('../sysviews/post/Posts.vue') },
       { path: '/index/category', name: '分类管理', component: () => import('../sysviews/post/Category.vue') },
       { path: '/index/tags', name: '标签管理', component: () => import('../sysviews/post/Tags.vue') }
+      // { path: '/index/post/detail', name: '标签管理', component: () => import('../views/posts/detail.vue') }
     ]
   },
   {
     path: '/index',
     component: Home,
     name: '系统管理',
-    iconCls: 'el-icon-postcard',
+    icon: 'el-icon-postcard',
     children: [
+      { path: '/index/banner', name: '轮播图管理', component: () => import('../sysviews/charts/Banner.vue') },
       { path: '/index/user', name: '用户管理', component: () => import('../sysviews/system/User.vue') },
       { path: '/index/role', name: '角色管理', component: () => import('../sysviews/system/Role.vue') }
     ]
@@ -56,11 +60,11 @@ export const constantRoutes = [
     path: '/index',
     component: Home,
     name: '消息管理',
-    iconCls: 'el-icon-message',
+    icon: 'el-icon-message',
     children: [
-      { path: '/index/message', name: '消息管理', component: () => import('../sysviews/message/message.vue') },
-      { path: '/index/comment', name: '评论管理', component: () => import('../sysviews/message/comment.vue') },
-      { path: '/index/feedback', name: '反馈管理', component: () => import('../sysviews/message/feedback.vue') }
+      { icon: 'el-icon-comment', path: '/index/chat', name: '消息管理', component: () => import('../views/chat/Chat.vue') },
+      { icon: 'el-icon-comment', path: '/index/comment', name: '评论管理', component: () => import('../sysviews/message/comment.vue') },
+      { icon: 'el-icon-comment', path: '/index/feedback', name: '反馈管理', component: () => import('../sysviews/message/feedback.vue') }
     ]
   }
   // {

@@ -3,37 +3,37 @@
     <div class="container" style="min-height: 660px">
       <div class="left" style="max-width: 300px;">
         <div style="margin-top: 5px;margin-bottom: 10px">
-          <el-input placeholder="请输入内容" v-model="input3" class="input-with-select">
-            <el-button slot="append" icon="el-icon-search"></el-button>
-          </el-input>
+          <!--          <el-input v-model="input3" placeholder="请输入内容" class="input-with-select">-->
+          <!--            <el-button slot="append" icon="el-icon-search"/>-->
+          <!--          </el-input>-->
         </div>
         <el-menu>
           <el-menu-item
             v-for="user in userList"
             :key="user.id"
-            :class="{ selected: user.selected }"
-            title="点击选择用户聊天">
-            <div class="user-info" @click="selectUser(user)">
-              <el-image :src="user.userInfo?user.userInfo.avatar:''" style="width: 50px;height: 50px;border-radius:50%;margin-bottom: 5px"></el-image>
+            :class="{ selected: user.selected }">
+            <div class="user-info"  @click="selectUser(user)">
+              <el-image :src="user.userInfo?user.userInfo.avatar:''" style="width: 50px;height: 50px;border-radius:50%;margin-bottom: 5px"/>
               <div class="list-right">
-                <p class="name">{{user.userInfo.nickname}}</p><span class="time">昨天 11:11</span>
-                <p class="lastmsg">{{user.userInfo.remark}}</p>
+                <p class="name">{{ user.userInfo.nickname }}</p><span class="time">昨天 11:11</span>
+                <p class="lastmsg">{{ user.userInfo.remark }}</p>
               </div>
+              <i class="el-icon-delete  delete-btn" @click.stop="handleDelete(user)"/>
             </div>
           </el-menu-item>
         </el-menu>
       </div>
-      <div class="right" style="max-width: 800px;">
+      <div class="right" style="max-width: 1000px;">
         <div v-if="selectedUser">
           <span style="padding:0 0 0 20px;">
-             {{ selectedUser.userInfo.nickname }}
+            {{ selectedUser.userInfo.nickname }}
           </span>
           <div style="float: right;">
             <el-dropdown>
               <div style="display: flex;">
-                        <span style="margin-right: 20px;line-height: 20px;font-size: 16px;">
-                          <i class="el-icon-more"></i>
-                        </span>
+                <span style="margin-right: 20px;line-height: 20px;font-size: 16px;">
+                  <i class="el-icon-more"/>
+                </span>
               </div>
               <el-dropdown-menu
                 slot="dropdown">
@@ -42,63 +42,62 @@
             </el-dropdown>
           </div>
         </div>
-        <el-divider style=""></el-divider>
-<!--        <div v-if="selectedUser">-->
-          <div v-if="selectedUser" style="height: 400px;overflow: scroll;">
-            <div style="margin: 5px;padding: 5px 0;line-height: 40px;"
-              v-for="message in messageList[this.userInfo.id + selectedUser.beFollowedUserId]"
-              :key="message.id">
-              <div class="time"><span>{{formatDate(message.sentTime)}}</span></div>
+        <el-divider style=""/>
+        <!--        <div v-if="selectedUser">-->
+        <div v-if="selectedUser" id="message-list" style="height: 400px;overflow: scroll;">
+          <div
+            v-for="message in messageList[this.userInfo.id + selectedUser.beFollowedUserId]"
+            :key="message.id"
+            style="margin: 5px;padding: 5px 0;line-height: 40px;">
+            <div class="time"><span>{{ formatDate(message.sentTime) }}</span></div>
             <div :class="message.sentByMe?'message-right':'message-left'">
-              <el-image class="message-avatar" :src="message?message.fromIdAvatar:''"></el-image>
+              <el-image :src="message?message.fromIdAvatar:''" class="message-avatar"/>
               <div class="content">
-                <div class="text" style="border-radius: 10px;">{{message.message}}</div>
+                <div class="text" style="border-radius: 10px;">{{ message.message }}</div>
               </div>
             </div>
-            </div>
           </div>
-<!--        </div>-->
-        <el-divider style="margin: 10px 0"></el-divider>
+        </div>
+        <!--        </div>-->
+        <el-divider style="margin: 10px 0"/>
         <div v-if="selectedUser" style="">
           <el-row :gutter="20">
-            <el-col :span="2"> <el-button circle><i class="el-icon-picture"></i></el-button></el-col>
+            <el-col :span="2"> <el-button circle><i class="el-icon-picture"/></el-button></el-col>
             <el-col :span="2">
               <el-popover placement="top" trigger="click" class="popover" style="margin: 20px;">
-              <custom-emoji v-if="showEmojiCom" class="emoji-component" @addemoji="addEmoji"/>
-              <el-button slot="reference" circle @click.stop="showEmojiCom = !showEmojiCom">
-                😃
-              </el-button>
-            </el-popover>
+                <custom-emoji v-if="showEmojiCom" class="emoji-component" @addemoji="addEmoji"/>
+                <el-button slot="reference" circle @click.stop="showEmojiCom = !showEmojiCom">
+                  😃
+                </el-button>
+              </el-popover>
             </el-col>
           </el-row>
           <div class="message-input">
-            <textarea class="textarea" @keyup.enter="sendMsg" v-model="selectedUserMessage.message"></textarea>
+            <textarea v-model="selectedUserMessage.message" class="textarea" @keyup.enter="sendMsg"/>
           </div>
           <div class="button-container">
-          <el-button type="primary" size="mini" style="margin-bottom: 5px;margin-right: 10px" @click="sendMsg">发送</el-button>
-        </div>
+            <el-button type="primary" size="mini" style="margin-bottom: 5px;margin-right: 10px" @click="sendMsg">发送</el-button>
+          </div>
         </div>
       </div>
     </div>
-    <div>
-    </div>
+    <div/>
   </div>
 </template>
 
 <script>
-import {listPrivateMessages, deleteAllMsg} from '@/api/chat'
 import SockJS from 'sockjs-client'
 import Stomp from 'stompjs'
-import {Message} from 'element-ui'
-import {mapGetters} from 'vuex'
-import {getPage} from '../../api/follow'
-import {formatDate} from '../../utils/date'
+import { Message } from 'element-ui'
+import { mapGetters } from 'vuex'
+import { formatDate } from '../../utils/date'
 import customEmoji from '../../components/emoji/index.vue'
+import { getFriendList, listPrivateMessages, deleteAllMsg, deleteFriend } from '../../api/chat'
 
 export default {
   name: 'Room',
-  components: {customEmoji},
-  data () {
+  components: { customEmoji },
+  data() {
     return {
       input3: '',
       select: '',
@@ -128,11 +127,51 @@ export default {
       'userInfo'
     ])
   },
+  created() {
+    this.userInfo = mapGetters(['userInfo'])
+    this.connect()
+    this.listAllUsers()
+    console.log(this.userInfo)
+    document.addEventListener('click', this.handlerShowEmoji)
+  },
+  mounted() {
+    this.scrollToBottom()
+  },
+  beforeDestroy() {
+    this.disconnect()
+    document.removeEventListener('click', this.handlerShowEmoji)
+  },
   methods: {
-    handlerShowEmoji () {
+    handleDelete(user) {
+      console.log(user)
+      this.$confirm('确认删除与该用户的聊天吗？', '删除确认', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 确认删除逻辑
+        const friendUserId = user.beFollowedUserId
+        deleteFriend(friendUserId).then((res) => {
+          if (res.code === 200) {
+            this.listAllUsers()
+            this.messageList[this.userInfo.id + this.selectedUserMessage.user.beFollowedUserId] = []
+            this.$message.success(res.msg)
+          } else {
+            this.$message.error(res.msg)
+          }
+        })
+      }).catch(() => {
+        // 取消删除逻辑
+      })
+    },
+    scrollToBottom() {
+      const container = document.getElementById('message-list')
+      container.scrollTop = container.scrollHeight - container.clientHeight
+    },
+    handlerShowEmoji() {
       this.showEmojiCom = false
     },
-    addEmoji (emoji = '') {
+    addEmoji(emoji = '') {
       console.log(emoji)
       this.selectedUserMessage.message += emoji
       console.log(this.selectedUserMessage.message)
@@ -140,7 +179,7 @@ export default {
     formatDate,
     //  在发送信息之后，将输入的内容中属于表情的部分替换成emoji图片标签
     //  再经过v-html 渲染成真正的图片
-    replaceFace (con) {
+    replaceFace(con) {
       if (con.includes('/:')) {
         const emojis = this.emojis
         for (let i = 0; i < emojis.length; i++) {
@@ -150,8 +189,9 @@ export default {
       }
       return con
     },
-    listAllUsers () {
-      getPage(this.page).then((res) => {
+    listAllUsers() {
+      // getPage(this.page).then((res) => {
+      getFriendList(this.page).then((res) => {
         this.userNum = res.data.length
         console.log(this.userNum)
         // this.usernameOnlineList = response.data.usernameOnlineList;
@@ -163,7 +203,7 @@ export default {
       })
       this.selectedUserMessage.message = ''
     },
-    selectUser (user) {
+    selectUser(user) {
       if (!this.messageList[this.userInfo.id + user.beFollowedUserId]) {
         this.$set(this.messageList, this.userInfo.id + user.beFollowedUserId, [])
       }
@@ -183,7 +223,7 @@ export default {
       })
       user.selected = true
     },
-    sendMsg () {
+    sendMsg() {
       if (this.stompClient !== null && this.selectedUserMessage.message !== '') {
         this.stompClient.send('/ClientToServer/privateChat', {},
           JSON.stringify({
@@ -214,7 +254,7 @@ export default {
         this.$message.warning('请输入信息')
       }
     },
-    deleteAllMsgs () {
+    deleteAllMsgs() {
       if (this.messageList[this.userInfo.id + this.selectedUserMessage.user.beFollowedUserId] === '') {
         Message.error('当前没有聊天记录')
         return
@@ -227,7 +267,7 @@ export default {
         }
       )
     },
-    connect () {
+    connect() {
       const socket = new SockJS('/api/webSocket')
       this.stompClient = Stomp.over(socket)
       this.stompClient.connect({}, (frame) => {
@@ -253,13 +293,13 @@ export default {
         })
       })
     },
-    disconnect () {
+    disconnect() {
       if (this.stompClient !== null) {
         this.stompClient.disconnect()
       }
       console.log('Disconnected')
     },
-    showContent (body, from, to) {
+    showContent(body, from, to) {
       // 处理接收到的消息
       // 示例代码，根据实际需求进行修改
       // console.log(this.selectedUser);
@@ -270,25 +310,18 @@ export default {
 
       // console.log(body);
     }
-  },
-  created () {
-    this.userInfo = mapGetters(['userInfo'])
-    this.connect()
-    this.listAllUsers()
-    console.log(this.userInfo)
-    document.addEventListener('click', this.handlerShowEmoji)
-  },
-  mounted () {
-  },
-  beforeDestroy () {
-    this.disconnect()
-    document.removeEventListener('click', this.handlerShowEmoji)
-  },
+  }
 
 }
 </script>
 
 <style scoped>
+.delete-btn {
+  visibility: hidden;
+}
+.user-info:hover .delete-btn {
+  visibility: visible;
+}
 .el-divider{
   margin:10px 0!important;
 }
@@ -305,7 +338,7 @@ export default {
 .container {
   display: flex;
   justify-content: space-between;
-  margin:0 200px ;
+  margin:0 100px ;
   padding: 20px 0;
   min-height: calc(100% - 100px);
 }

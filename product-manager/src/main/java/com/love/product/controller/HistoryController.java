@@ -3,6 +3,7 @@ package com.love.product.controller;
 import com.love.product.entity.base.PageQuery;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
+import com.love.product.entity.req.HistoryPageReq;
 import com.love.product.entity.vo.HistoryVO;
 import com.love.product.service.HistoryService;
 import com.love.product.util.JwtUtil;
@@ -31,7 +32,7 @@ public class HistoryController {
 
     @ApiOperation("分页")
     @PostMapping("/getPage")
-    public ResultPage<HistoryVO> getPage(@RequestBody PageQuery pageQuery) {
+    public ResultPage<HistoryVO> getPage(@RequestBody HistoryPageReq pageQuery) {
         return historyService.getPage(JwtUtil.getUserId(),pageQuery);
     }
     @ApiOperation("清空")

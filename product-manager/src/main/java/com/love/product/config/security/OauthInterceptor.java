@@ -29,12 +29,11 @@ import java.util.*;
 
 /**
  * OAuth2异常拦截类
- *
+ * <p>
  * 1.对oauth错误异常进行拦截，这里主要针对令牌过期进行处理
  * 2.新的令牌与刷新令牌的存储
  * 3.载入用户信息到spring Security的ContextHolder中，保证后续url转发
  * 4.刷新令牌过期后的返回状态
- *
  */
 @Slf4j
 public class OauthInterceptor extends OAuth2AuthenticationEntryPoint {
@@ -73,8 +72,8 @@ public class OauthInterceptor extends OAuth2AuthenticationEntryPoint {
             log.info("uri:{}", uri);
             log.info("请求方法：{}", request.getMethod());
             log.info(String.valueOf(result));
-            if(result.getStatusCodeValue() != 200 && (resultString == null || !resultString.contains("Access token expired"))){
-                if(result.getStatusCodeValue() == 401){
+            if (result.getStatusCodeValue() != 200 && (resultString == null || !resultString.contains("Access token expired"))) {
+                if (result.getStatusCodeValue() == 401) {
                     response.setHeader("Content-Type", "application/json;charset=utf-8");
                     response.getWriter().print("{\"code\":403,\"msg\":\"请登录\"}");
                     response.getWriter().flush();
@@ -90,7 +89,7 @@ public class OauthInterceptor extends OAuth2AuthenticationEntryPoint {
             if (resultString != null && resultString.contains("Access token expired")) {
                 //根据访问令牌，解析出当前令牌用户的用户名称，密码等信息
                 String localUser = JwtToken.parseToken(request.getHeader("Authorization"), tokenConfig.getSigningKey());
-                if(localUser == null){
+                if (localUser == null) {
                     response.setHeader("Content-Type", "application/json;charset=utf-8");
                     response.getWriter().print("{\"code\":403,\"msg\":\"token缺失\"}");
                     response.getWriter().flush();
@@ -98,25 +97,25 @@ public class OauthInterceptor extends OAuth2AuthenticationEntryPoint {
                 }
                 @SuppressWarnings("unchecked")
                 Map<String, Object> userMap = (Map<String, Object>) JsonUtil.json2Map(localUser);
-                if(userMap == null){
+                if (userMap == null) {
                     // 获取刷新令牌失败时（刷新令牌过期时），返回指定格式的错误信息
                     response.setHeader("Content-Type", "application/json;charset=utf-8");
                     response.getWriter().print("{\"code\":403,\"msg\":\"请登录\"}");
                     response.getWriter().flush();
                     return;
                 }
-                String email = (String)userMap.get("email");
-                Long userId = (Long)userMap.get("userId");
+                String email = (String) userMap.get("email");
+                Long userId = (Long) userMap.get("userId");
 
                 //根据用户名称，从数据库获取用户的刷新令牌 todo redis
                 String refresh_token = (String) redisService.get("refresh_token:" + userId);
-                if(refresh_token != null){
+                if (refresh_token != null) {
                     //获取当前用户信息
-                    UserInfoVO userInfoVO  = userInfoService.getByEmail(email);
+                    UserInfoVO userInfoVO = userInfoService.getByEmail(email);
 
                     //获取OAuth2框架的配置信息，用于访问刷新令牌接口
                     Map<String, String> tokenMap = tokenConfig.getConfig();
-                    Map<String,String> mapParam = new HashMap<>();
+                    Map<String, String> mapParam = new HashMap<>();
                     mapParam.put("email", userInfoVO.getEmail());
                     mapParam.put("password", userInfoVO.getOriginalPassword());
                     mapParam.put("client_id", tokenMap.get("clientId"));
@@ -128,12 +127,12 @@ public class OauthInterceptor extends OAuth2AuthenticationEntryPoint {
                         @SuppressWarnings("unchecked")
                         Map<String, String> mapResult = restTemplate
                                 .getForObject(
-                                        "http://localhost:"+port+"/oauth/token?username={email}&password={password}&client_id={client_id}&client_secret={client_secret}&grant_type={grant_type}&refresh_token={refresh_token}",
+                                        "http://localhost:" + port + "/oauth/token?username={email}&password={password}&client_id={client_id}&client_secret={client_secret}&grant_type={grant_type}&refresh_token={refresh_token}",
                                         Map.class, mapParam);
-                        if(mapResult != null){
+                        if (mapResult != null) {
                             // 如果刷新成功 跳转到原来需要访问的页面
                             //写入用户信息到redis，写入信息到SecurityContext中
-                            redisService.set("user:userinfo:" + userInfoVO.getId(),userInfoVO);
+                            redisService.set("user:userinfo:" + userInfoVO.getId(), userInfoVO);
                             List<GrantedAuthority> grantedAuthorityList = new ArrayList<>();
                             UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
                                     userInfoVO.getEmail(), userInfoVO.getOriginalPassword(), grantedAuthorityList);
@@ -148,7 +147,7 @@ public class OauthInterceptor extends OAuth2AuthenticationEntryPoint {
 //                            mapResult.get("refresh_token"));
 
                             //把新获取到的refresh_token存到redis
-                            userInfoService.setRefreshToken(userInfoVO.getId(),mapResult.get("refresh_token"));
+                            userInfoService.setRefreshToken(userInfoVO.getId(), mapResult.get("refresh_token"));
                             response.setHeader("isRefreshToken", "yes");
                             request.getRequestDispatcher(request.getRequestURI()).forward(request, response);
                             return;
@@ -161,14 +160,14 @@ public class OauthInterceptor extends OAuth2AuthenticationEntryPoint {
                         response.getWriter().flush();
                         return;
                     }
-                }else{
+                } else {
                     response.setHeader("Content-Type", "application/json;charset=utf-8");
                     response.getWriter().print("{\"code\":403,\"msg\":\"请登录\"}");
                     response.getWriter().flush();
                     return;
                 }
             }
-            super.commence(request,response,authException);
+            super.commence(request, response, authException);
         } catch (Exception e) {
             e.printStackTrace();
         }

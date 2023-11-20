@@ -1,5 +1,37 @@
 import request from '@/utils/request'
 
+export const listComment = (data) => {
+  return request({
+    url: '/api/system/comment/list',
+    method: 'post',
+    data
+  })
+}
+/**
+ * 删除
+ */
+export const deleteComment = (id) => {
+  return request({
+    url: '/api/system/comment/delete',
+    method: 'delete',
+    params: {
+      id: id
+    }
+  })
+}
+/**
+ * 批量删除
+ */
+export const deleteBatch = (data) => {
+  return request({
+    url: '/api/system/comment/deleteBatch',
+    method: 'delete',
+    data
+  })
+}
+
+/* -----------------web端---------------------*/
+
 /**
  * 新增评论
  */

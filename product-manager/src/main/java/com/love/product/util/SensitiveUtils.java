@@ -40,6 +40,73 @@ public class SensitiveUtils {
      */
     private static final TrieNode ROOT_NODE = new TrieNode();
 
+    public static Map<String, Integer> autofilter(String text) {
+        if (StringUtils.isBlank(text)) {
+            return null;
+        }
+        // 指针1
+        TrieNode tempNode = ROOT_NODE;
+        // 指针2
+        int begin = 0;
+        // 指针3
+        int position = 0;
+        // 结果
+        StringBuilder sb = new StringBuilder();
+        // 敏感词数量
+        int sensitiveWordCount = 0;
+
+        while (position < text.length()) {
+            char c = text.charAt(position);
+
+            // 跳过符号
+            if (isSymbol(c)) {
+                // 若指针1处于根节点,将此符号计入结果,让指针2向下走一步
+                if (tempNode == ROOT_NODE) {
+                    sb.append(c);
+                    begin++;
+                }
+                // 无论符号在开头或中间,指针3都向下走一步
+                position++;
+                continue;
+            }
+
+            // 检查下级节点
+            tempNode = tempNode.getSubNode(c);
+            if (tempNode == null) {
+                // 以begin开头的字符串不是敏感词
+                sb.append(text.charAt(begin));
+                // 进入下一个位置
+                position = ++begin;
+                // 重新指向根节点
+                tempNode = ROOT_NODE;
+            } else if (tempNode.isKeywordEnd()) {
+                // 发现敏感词,将begin~position字符串替换掉
+                sb.append(REPLACEMENT);
+                // 增加敏感词数量
+                sensitiveWordCount++;
+                // 进入下一个位置
+                begin = ++position;
+                // 重新指向根节点
+                tempNode = ROOT_NODE;
+            } else {
+                // 检查下一个字符
+                position++;
+            }
+        }
+
+        // 将最后一批字符计入结果
+        sb.append(text.substring(begin));
+
+        // 构建结果Map
+        Map<String, Integer> result = new HashMap<>();
+        result.put("filteredText", Integer.valueOf(sb.toString()));
+        result.put("sensitiveWordCount", sensitiveWordCount);
+        System.out.println(result);
+        return result;
+    }
+
+
+
     @PostConstruct
     public void init() {
         try (

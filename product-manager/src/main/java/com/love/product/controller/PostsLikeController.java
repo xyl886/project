@@ -1,15 +1,15 @@
 package com.love.product.controller;
 
 import com.love.product.entity.base.Result;
+import com.love.product.entity.base.ResultPage;
+import com.love.product.entity.req.HistoryPageReq;
+import com.love.product.entity.vo.HistoryVO;
 import com.love.product.service.PostsLikeService;
 import com.love.product.util.JwtUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -32,4 +32,12 @@ public class PostsLikeController {
     public Result<?> add(@RequestParam("postsId") Long postsId, @RequestParam("deleted") Integer deleted) {
         return postsLikeService.add(JwtUtil.getUserId(),postsId,deleted);
     }
+
+    @ApiOperation("分页")
+    @PostMapping("/getPage")
+    public ResultPage<HistoryVO> getPage(@RequestBody HistoryPageReq pageQuery) {
+        return postsLikeService.getPage(JwtUtil.getUserId(),pageQuery);
+    }
+
+
 }

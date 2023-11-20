@@ -2,14 +2,17 @@
   <div>
     <el-dialog title="修改密码" :visible.sync="dialogVisible">
       <el-form ref="passwordForm" :model="passwordForm" :rules="passwordRules" label-width="80px">
+        <el-form-item label="用户邮箱">
+          <el-input :disabled="true" v-model="userInfo.email"></el-input>
+        </el-form-item>
         <el-form-item label="当前密码" prop="currentPassword">
           <el-input type="password" v-model="passwordForm.currentPassword"></el-input>
         </el-form-item>
         <el-form-item label="新密码" prop="newPassword">
-          <el-input type="password" v-model="passwordForm.newPassword"></el-input>
+          <el-input type="password" placeholder="请输入新密码，由数字、字母和特殊字符组成，长度在 6 到 20 之间" v-model="passwordForm.newPassword"></el-input>
         </el-form-item>
         <el-form-item label="确认密码" prop="confirmPassword">
-          <el-input type="password" v-model="passwordForm.confirmPassword"></el-input>
+          <el-input type="password" placeholder="请确认密码" v-model="passwordForm.confirmPassword"></el-input>
         </el-form-item>
       </el-form>
 
@@ -23,6 +26,7 @@
 
 <script>
 import {updateUserPwd} from '../../api/user_info'
+import {mapGetters} from 'vuex'
 
 export default {
   data () {
@@ -53,6 +57,11 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapGetters([
+      'userInfo'
+    ])
+  },
   methods: {
     showDialog () {
       this.dialogVisible = true
@@ -74,6 +83,11 @@ export default {
               this.$notify({
                 message: res.msg,
                 type: 'success'
+              })
+              this.$store.dispatch('logout').then((res) => {
+                if (res.code === 200) {
+                  this.$router.push({path: '/'})
+                }
               })
               this.dialogVisible = false
             }

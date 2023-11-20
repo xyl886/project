@@ -1,84 +1,94 @@
 <template>
-	<el-row class="container">
-		<el-col :span="24" class="header">
-			<el-col :span="10" class="logo" :class="collapsed?'logo-collapse-width':'logo-width'">
-				{{collapsed?'':sysName}}
-			</el-col>
-			<el-col :span="10">
-				<div class="tools" @click.prevent="collapse">
-					<i class="fa fa-align-justify"></i>
-				</div>
-			</el-col>
-			<el-col :span="4" class="userinfo">
-				<el-dropdown trigger="hover">
-					<span class="el-dropdown-link userinfo-inner"><img :src="this.sysUserAvatar" /> {{sysUserName}}</span>
-					<el-dropdown-menu slot="dropdown">
-						<el-dropdown-item>我的消息</el-dropdown-item>
-						<el-dropdown-item>设置</el-dropdown-item>
-						<el-dropdown-item divided @click.native="logout">退出登录</el-dropdown-item>
-					</el-dropdown-menu>
-				</el-dropdown>
-			</el-col>
-		</el-col>
-		<el-col :span="24" class="main">
-			<aside :class="collapsed?'menu-collapsed':'menu-expanded'">
-				<!--导航菜单-->
-				<el-menu :default-active="$route.path" class="el-menu-vertical-demo" @open="handleopen" @close="handleclose" @select="handleselect"
-					 unique-opened router v-show="!collapsed">
-					<template v-for="(item,index) in $router.options.routes" v-if="!item.hidden">
-						<el-submenu :index="index+''" v-if="!item.leaf">
-							<template slot="title"><i :class="item.iconCls"></i>{{item.name}}</template>
-							<el-menu-item v-for="child in item.children" :index="child.path" :key="child.path" v-if="!child.hidden">{{child.name}}</el-menu-item>
-						</el-submenu>
-						<el-menu-item v-if="item.leaf&&item.children.length>0" :index="item.children[0].path"><i :class="item.iconCls"></i>{{item.children[0].name}}</el-menu-item>
-					</template>
-				</el-menu>
-				<!--导航菜单-折叠后-->
-				<ul class="el-menu el-menu-vertical-demo collapsed" v-show="collapsed" ref="menuCollapsed">
-					<li v-for="(item,index) in $router.options.routes" v-if="!item.hidden" class="el-submenu item">
-						<template v-if="!item.leaf">
-							<div class="el-submenu__title" style="padding-left: 20px;" @mouseover="showMenu(index,true)" @mouseout="showMenu(index,false)"><i :class="item.iconCls"></i></div>
-							<ul class="el-menu submenu" :class="'submenu-hook-'+index" @mouseover="showMenu(index,true)" @mouseout="showMenu(index,false)">
-								<li v-for="child in item.children" v-if="!child.hidden" :key="child.path" class="el-menu-item" style="padding-left: 40px;" :class="$route.path==child.path?'is-active':''" @click="$router.push(child.path)">{{child.name}}</li>
-							</ul>
-						</template>
-						<template v-else>
-							<li class="el-submenu">
-								<div class="el-submenu__title el-menu-item" style="height: 56px;line-height: 56px;padding: 0 20px;" :class="$route.path==item.children[0].path?'is-active':''" @click="$router.push(item.children[0].path)"><i :class="item.iconCls"></i></div>
-							</li>
-						</template>
-					</li>
-				</ul>
-			</aside>
-			<section class="content-container">
-				<div class="grid-content bg-purple-light">
-					<el-col :span="24" class="breadcrumb-container">
-						<strong class="title">{{$route.name}}</strong>
-						<el-breadcrumb separator="/" class="breadcrumb-inner">
-							<el-breadcrumb-item v-for="item in $route.matched" :key="item.path">
-								{{ item.name }}
-							</el-breadcrumb-item>
-						</el-breadcrumb>
-					</el-col>
-					<el-col :span="24" class="content-wrapper">
-						<transition name="fade" mode="out-in">
-							<router-view></router-view>
-						</transition>
-					</el-col>
-				</div>
-			</section>
-		</el-col>
-	</el-row>
+  <el-row class="container">
+    <el-col :span="24" class="header">
+      <el-col :span="10" :class="collapsed?'logo-collapse-width':'logo-width'" class="logo">
+        <img v-if="collapsed" src="../../public/img/logo3.png" style="position: absolute;width: 50px;height: 50px;left: 0;" alt="">
+        {{ collapsed?'':sysName }}
+      </el-col>
+      <el-col :span="10">
+        <div class="tools" @click.prevent="collapse">
+          <i class="fa fa-align-justify"/>
+        </div>
+      </el-col>
+      <el-col :span="4" class="userinfo">
+        <el-dropdown trigger="hover">
+          <span class="el-dropdown-link userinfo-inner"><img :src="userInfo.avatar" alt="">{{ userInfo.nickname }}</span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item @click.native="myMessage">我的消息</el-dropdown-item>
+<!--            <el-dropdown-item>设置</el-dropdown-item>-->
+            <el-dropdown-item divided @click.native="logout">退出登录</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+      </el-col>
+    </el-col>
+    <el-col :span="24" class="main">
+      <aside :class="collapsed?'menu-collapsed':'menu-expanded'">
+        <!--导航菜单-->
+        <el-menu
+          v-show="!collapsed"
+          :default-active="$route.path"
+          class="el-menu-vertical-demo"
+          unique-opened
+          router
+          @open="handleOpen"
+          @close="handleClose"
+          @select="handleSelect">
+          <el-menu-item @click="$router.push('/index/echarts')"><i class="el-icon-s-home"/>首页</el-menu-item>
+          <template v-for="(item,index) in $router.options.routes" v-if="!item.hidden">
+            <el-submenu v-if="!item.leaf" :index="index+''">
+              <template slot="title"><i :class="item.icon"/>{{ item.name }}</template>
+              <el-menu-item v-for="child in item.children" v-if="!child.hidden" :index="child.path" :key="child.path">{{ child.name }}</el-menu-item>
+            </el-submenu>
+            <el-menu-item v-if="item.leaf&&item.children.length>0" :index="item.children[0].path"><i :class="item.icon"/>{{ item.children[0].name }}</el-menu-item>
+          </template>
+        </el-menu>
+        <!--导航菜单-折叠后-->
+        <ul v-show="collapsed" ref="menuCollapsed" class="el-menu el-menu-vertical-demo collapsed">
+          <li v-for="(item,index) in $router.options.routes" v-if="!item.hidden" class="el-submenu item">
+            <template v-if="!item.leaf">
+              <div class="el-submenu__title" style="padding-left: 20px;" @mouseover="showMenu(index,true)" @mouseout="showMenu(index,false)"><i :class="item.icon"/></div>
+              <ul :class="'submenu-hook-'+index" class="el-menu submenu" @mouseover="showMenu(index,true)" @mouseout="showMenu(index,false)">
+                <li v-for="child in item.children" v-if="!child.hidden" :key="child.path" :class="$route.path==child.path?'is-active':''" class="el-menu-item" style="padding-left: 40px;" @click="$router.push(child.path)">
+                <i :class="child.icon"/>{{ child.name }}</li>
+              </ul>
+            </template>
+            <template v-else>
+              <li class="el-submenu">
+                <div :class="$route.path==item.children[0].path?'is-active':''" class="el-submenu__title el-menu-item" style="height: 56px;line-height: 56px;padding: 0 20px;" @click="$router.push(item.children[0].path)"><i :class="item.icon"/></div>
+              </li>
+            </template>
+          </li>
+        </ul>
+      </aside>
+      <section class="content-container">
+        <div class="grid-content bg-purple-light">
+          <el-col :span="24" class="breadcrumb-container">
+            <!--            <strong class="title">{{ $route.name }}</strong>-->
+            <!--            <el-breadcrumb separator="/" class="breadcrumb-inner">-->
+            <!--              <el-breadcrumb-item v-for="item in $route.matched" :key="item.path">-->
+            <!--                {{ item.name }}-->
+            <!--              </el-breadcrumb-item>-->
+            <!--            </el-breadcrumb>-->
+          </el-col>
+          <el-col :span="24" class="content-wrapper">
+            <transition name="fade" mode="out-in">
+              <router-view/>
+            </transition>
+          </el-col>
+        </div>
+      </section>
+    </el-col>
+  </el-row>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
-  data () {
+  data() {
     return {
-      sysName: 'VUEADMIN',
+      sysName: '校园墙后台管理',
       collapsed: false,
-      sysUserName: '',
-      sysUserAvatar: '',
       form: {
         name: '',
         region: '',
@@ -91,44 +101,54 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapGetters([
+      'userInfo'
+    ])
+  },
+  mounted() {
+  },
   methods: {
-    onSubmit () {
+    myMessage() {
+      this.$router.push({ path: '/index/chat' })
+    },
+    onSubmit() {
       console.log('submit!')
     },
-    handleopen () {
-      // console.log('handleopen');
+    handleOpen() {
+      // console.log('handleOpen');
     },
-    handleclose () {
-      // console.log('handleclose');
+    handleClose() {
+      // console.log('handleClose');
     },
-    handleselect: function (a, b) {
+    handleSelect: function(a, b) {
     },
     // 退出登录
-    logout: function () {
-      var _this = this
-      this.$confirm('确认退出吗?', '提示', {
-        // type: 'warning'
+    logout() {
+      this.$confirm('确定退出登录?', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       }).then(() => {
-        sessionStorage.removeItem('user')
-        _this.$router.push('/login')
-      }).catch(() => {
-
+        this.$store.dispatch('logout').then((res) => {
+          if (res.code === 200) {
+            this.$notify({
+              title: '退出成功',
+              type: 'success'
+            })
+            this.$router.push({ path: '/login' })
+          }
+        })
       })
     },
     // 折叠导航栏
-    collapse: function () {
+    collapse: function() {
       this.collapsed = !this.collapsed
     },
-    showMenu (i, status) {
-      this.$refs.menuCollapsed.getElementsByClassName('submenu-hook-' + i)[0].style.display = status ? 'block' : 'none'
-    }
-  },
-  mounted () {
-    var user = sessionStorage.getItem('user')
-    if (user) {
-      user = JSON.parse(user)
-      this.sysUserName = user.name || ''
-      this.sysUserAvatar = user.avatar || ''
+    showMenu(i, status) {
+      this.$refs.menuCollapsed
+        .getElementsByClassName('submenu-hook-' + i)[0]
+        .style.display = status ? 'block' : 'none'
     }
   }
 }
@@ -144,7 +164,7 @@ export default {
 		.header {
 			height: 60px;
 			line-height: 60px;
-			background: #00a6ff;
+			background: rgba(0, 0, 0, 0.11);
 			color:#fff;
 			.userinfo {
 				text-align: right;
@@ -168,13 +188,13 @@ export default {
 				font-size: 22px;
 				padding-left:20px;
 				padding-right:20px;
-				border-color: rgba(238,241,146,0.3);
+				border-color: rgb(0, 166, 255);
 				border-right-width: 1px;
 				border-right-style: solid;
 				img {
 					width: 40px;
 					float: left;
-					margin: 10px 10px 10px 18px;
+					margin:5px;
 				}
 				.txt {
 					color:#fff;
@@ -246,7 +266,7 @@ export default {
 				// bottom: 0px;
 				// left: 230px;
 				overflow-y: scroll;
-				padding: 20px;
+				padding: 10px 0 10px 10px;
 				.breadcrumb-container {
 					//margin-bottom: 15px;
 					.title {

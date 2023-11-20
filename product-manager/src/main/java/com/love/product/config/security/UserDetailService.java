@@ -28,6 +28,8 @@ public class UserDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+
         //这个地方可以通过username从数据库获取正确的用户信息，包括密码和权限等。
         // 从user获取正确的用户信息，包括密码和权限等。
 

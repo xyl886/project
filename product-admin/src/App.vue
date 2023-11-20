@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <router-view></router-view>
-<!--    <Player/>-->
+    <router-view/>
+    <!--    <Player/>-->
     <el-tooltip placement="top" content="回到顶部">
       <BackToTop :custom-style="myBackToTopStyle" :visibility-height="300" :back-position="0" transition-name="fade" />
     </el-tooltip>
@@ -18,7 +18,7 @@ export default {
     BackToTop,
     Player
   },
-  data () {
+  data() {
     return {
       myBackToTopStyle: {
         right: '50px',
@@ -32,15 +32,15 @@ export default {
       loadingIndex: true
     }
   },
+  computed: {},
   watch: {},
-  created () {
-    let that = this // 加载延时loading
-    setTimeout(function () {
+  created() {
+    const that = this // 加载延时loading
+    setTimeout(function() {
       that.loadingIndex = false
     }, 500)
   },
-  methods: {},
-  computed: {}
+  methods: {}
 }
 </script>
 <style>

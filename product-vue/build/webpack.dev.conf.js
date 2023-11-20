@@ -22,7 +22,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
 
   // these devServer options should be customized in /config/chat.js
   devServer: {
-    useLocalIp:true,
+    // useLocalIp:true,
     clientLogLevel: 'warning',
     historyApiFallback: {
       rewrites: [
@@ -85,8 +85,8 @@ module.exports = new Promise((resolve, reject) => {
         compilationSuccessInfo: {
           messages: [
             `Your application is running here:`,
-            `Local: http://localhost:${port}`,
-            `Network: http://${devWebpackConfig.devServer.host}:${port}`
+            `Local: http://${devWebpackConfig.devServer.host}:${port}`,
+            // `Network: http://${devWebpackConfig.devServer.host}:${port}`
         ],
         },
         onErrors: config.dev.notifyOnErrors

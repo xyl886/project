@@ -54,4 +54,8 @@ public interface CommonConstant {
     String SIMPLE_BROKER = "/topic";
     String DESTINATION_PREFIXES = "/ClientToServer";
 
+     String ak = "f94be500c45148bc185be24a38c04ad3";
+
+     String sk = "27563ca627d5db0d57e831ca4de0f75f";
+
 }

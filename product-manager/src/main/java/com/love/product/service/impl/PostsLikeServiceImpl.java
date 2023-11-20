@@ -2,17 +2,19 @@ package com.love.product.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.love.product.config.rabbitmq.RabbitMQConfig;
 import com.love.product.entity.Posts;
 import com.love.product.entity.PostsLike;
 import com.love.product.entity.base.Result;
+import com.love.product.entity.base.ResultPage;
+import com.love.product.entity.req.HistoryPageReq;
+import com.love.product.entity.vo.HistoryVO;
+import com.love.product.entity.vo.PostsDetailVO;
 import com.love.product.enumerate.LikeStatus;
 import com.love.product.enumerate.YesOrNo;
 import com.love.product.mapper.PostsLikeMapper;
-import com.love.product.service.PostsLikeService;
-import com.love.product.service.PostsService;
-import com.love.product.service.RedisService;
+import com.love.product.service.*;
 import com.love.product.util.RedisKeyUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,9 +23,11 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Administrator
@@ -40,9 +44,12 @@ public class PostsLikeServiceImpl extends ServiceImpl<PostsLikeMapper, PostsLike
     @Resource
     private RedisService redisService;
     @Resource
+    private CategoryService categoryService;
+    @Resource
     private RabbitTemplate rabbitTemplate;
 
-
+    @Resource
+    private FileUploadService fileUploadService;
 
 
     @Override
@@ -118,5 +125,40 @@ public class PostsLikeServiceImpl extends ServiceImpl<PostsLikeMapper, PostsLike
             postsLikeHashMap.put(item.getPostsId(), item);
         });
         return postsLikeHashMap;
+    }
+
+    @Override
+    public ResultPage<HistoryVO> getPage(Long userId, HistoryPageReq pageQuery) {
+            Page<HistoryVO> Page = baseMapper.selectPageList(
+                    new Page<>(pageQuery.getCurrentPage(), pageQuery.getPageSize()), pageQuery,userId);
+            List<HistoryVO> list=new ArrayList<>();
+        List<Long> postsIds = new ArrayList<>();
+            if (Page.getTotal() > 0) {
+                list = Page.getRecords().stream().peek(historyVO ->
+                        postsIds.add(historyVO.getPostsId())
+                        ).collect(Collectors.toList());
+            }
+        // 获取帖子信息
+        getHVOPosts(list, postsIds, postsService, categoryService);
+        return ResultPage.OK(Page.getTotal(), Page.getCurrent(), Page.getSize(), list);
+    }
+
+    static void getHVOPosts(List<HistoryVO> list, List<Long> postsIds, PostsService postsService, CategoryService categoryService) {
+        Map<Long, PostsDetailVO> postsHashMap;
+        if (!postsIds.isEmpty()) {
+            postsHashMap = postsService.listByIds(postsIds);
+            for (HistoryVO historyVO : list) {
+                PostsDetailVO postsDetailVO = postsHashMap.get(historyVO.getPostsId());
+                // 设置帖子标题和封面路径
+                if (postsDetailVO != null) {
+                    historyVO.setPostTitle(postsDetailVO.getTitle());
+                    historyVO.setPostCoverPath(postsDetailVO.getCoverPath());
+                    historyVO.setPostType(postsDetailVO.getPostsType());
+                    historyVO.setPosts(postsDetailVO);
+                    historyVO.setSchoolName(
+                            categoryService.getCategoryById(Long.valueOf(postsDetailVO.school)));
+                }
+            }
+        }
     }
 }

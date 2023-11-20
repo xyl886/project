@@ -13,7 +13,13 @@ export const addCollect = (postsIds, deleted) => {
     }
   })
 }
-
+export const deleteCollectBatch = (data) => {
+  return request({
+    url: '/api/collect/deleteBatch',
+    method: 'post',
+    data
+  })
+}
 /**
  * 分页
  */

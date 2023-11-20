@@ -1,13 +1,20 @@
 import request from '@/utils/request'
 
+export const listAllTags = () => {
+  return request({
+    url: '/api/home/listAllTags',
+    method: 'get'
+  })
+}
 /**
  * 查询所有分类
  * @returns {*}
  */
-export const listAllCategory = () => {
+export const listAllCategory = (data) => {
   return request({
     url: '/api/category/listAll',
-    method: 'get'
+    method: 'post',
+    data
   })
 }
 export const listHot = () => {
@@ -20,7 +27,6 @@ export const listHot = () => {
  * 帖子分页
  */
 export const getPage = (data) => {
-  // console.log('getpage.data' + JSON.stringify(data))
   return request({
     url: '/api/posts/getPage',
     method: 'post',
@@ -69,18 +75,38 @@ export const browse = (userId, id) => {
  * 帖子修改
  */
 export const updateMyPost = (data) => {
-  console.log('帖子修改' + JSON.stringify(data))
   return request({
     url: '/api/posts/update',
     method: 'post',
     data
   })
 }
+// 彻底删除
+export const del = (id, userId) => {
+  return request({
+    url: '/api/posts/delete',
+    method: 'delete',
+    params: {
+      id: id,
+      userId: userId
+    }
+  })
+}
+// 还原
+export const restore = (id, userId) => {
+  return request({
+    url: '/api/posts/restore',
+    method: 'post',
+    params: {
+      id: id,
+      userId: userId
+    }
+  })
+}
 /**
  * 帖子删除
  */
 export const delMyPost = (id, userId) => {
-  // console.log(id, userId)
   return request({
     url: '/api/posts/del',
     method: 'delete',

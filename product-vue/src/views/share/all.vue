@@ -1,9 +1,9 @@
 <template>
   <div style="font-size: 14px;overflow:auto" @scroll="handleScroll">
     <div class="search">
-      <el-input style="line-height: 50px;padding:5px 30px 5px 0;width: 70%" v-model="page.title" name="search" placeholder="请输入帖子标题"></el-input>
-        <el-button type="primary" icon="el-icon-search" size="small" @click="handleFind">查找</el-button>
-        <el-button style="margin-left: 30px;" icon="el-icon-refresh" size="small" @click="resetQuery">重置</el-button>
+      <el-input style="line-height: 50px;padding:5px 30px 5px 0;width: 60%" size="small" v-model="page.title" name="search" placeholder="请输入帖子标题"></el-input>
+        <el-button type="primary" size="small" icon="el-icon-search" @click="handleFind">查找</el-button>
+        <el-button style="margin-left: 30px;" size="small" icon="el-icon-refresh" @click="resetQuery">重置</el-button>
     </div>
     <div  v-for="(item,index) in posts"
           :key="item.id"  class="share-item">
@@ -14,7 +14,7 @@
               <el-popover
                 placement="top-start"
                 width="300"
-                trigger="click">
+                trigger="hover">
                 <el-image fit="cover" style="height: 80px;width: 300px" :src="item.userInfo?item.userInfo.avatar:''"></el-image>
                 <el-row>
                   <el-col :span="6">
@@ -31,7 +31,8 @@
                       <span>11 获赞 </span></div>
                     <div style="padding: 10px 0;font-size: 12px" v-show="item.userInfo.remark">{{item.userInfo.remark}}</div>
                     <div style="padding: 10px 0;font-size: 12px" v-if="userInfo.id!==item.userId">
-                      <el-button size="mini" type="primary">+ 关注</el-button>
+                      <el-button size="mini" v-if="!item.follow" type="primary" @click="addFollowFun(item,'0')">+ 关注</el-button>
+                      <el-button size="mini" v-if="item.follow" type="info" @click="addFollowFun(item,'1')">已关注</el-button>
                       <el-button size="mini">发消息</el-button>
                     </div>
                   </el-col>
@@ -42,8 +43,8 @@
             <el-col :span="21">
               <div style="font-size: 16px;line-height: 40px;">
                 <span>{{item.userInfo.nickname}}</span>
-                <el-button v-if="!posts.follow && item.userInfo.id!==item.userId" type="primary" size="mini" @click="addFollowFun('0')"><i class="el-icon-star-off"></i> +关注 {{item.userInfo.followNum}}</el-button>
-                <el-button v-if="posts.follow && item.userInfo.id!==item.userId" type="info" plain size="mini" @click="addFollowFun('1')"><i class="el-icon-star-on"></i> 已关注 {{item.userInfo.followNum}}</el-button>
+<!--                <el-button v-if="!item.follow && userInfo.id!==item.userId" type="primary" size="mini" @click="addFollowFun(item,'0')"><i class="el-icon-star-off"></i> +关注 </el-button>-->
+<!--                <el-button v-if="item.follow && false && userInfo.id!==item.userId" type="info" plain size="mini" @click="addFollowFun(item,'1')"><i class="el-icon-star-on"></i> 已关注</el-button>-->
                 <el-tag type="success">{{item.userInfo.role}}</el-tag>
                 <div style="float: right;margin-top: 5px;">
                   <el-dropdown>
@@ -64,10 +65,10 @@
         <el-row>
           <el-col :span="16" style="padding: 0 10px">
             <div class="share-item-content" style="margin-bottom: 16px"  @click="detailFun(item)">
-              <el-input style="height: auto" type="textarea" resize="none" :autosize="true" :readonly="true" v-model="item.title"></el-input>
+              <span style="height: auto;cursor: pointer">{{item.title}}</span>
             </div>
             <div class="share-item-content" style="margin-bottom: 16px"  @click="detailFun(item)">
-              <span style="color: rgba(0,0,0,.45);">{{item.description}}</span>
+              <span style="color: rgba(0,0,0,.45);cursor: pointer">{{item.description}}</span>
             </div>
           </el-col>
           <el-col :span="8">
@@ -75,7 +76,15 @@
           </el-col>
         </el-row>
         <div style="color: rgb(168, 176, 183);font-size: 12px;padding: 0 20px;">
-          <el-tag size="small">{{item.schoolName}}</el-tag>
+          <el-tag size="small">{{item.categoryName}}</el-tag>
+          <el-tag
+              type="info"
+              size="small"
+              v-for="(item2,index) in item.tags"
+              :key="index"
+              style="margin:5px">
+            {{ item2 }}
+          </el-tag>
         </div>
 
         <div style="display: flex;margin-top: 20px;">
@@ -135,11 +144,11 @@
                     <i>♂</i>
                     <el-tag size="small" type="success">{{item2.userInfo.role}}</el-tag></div>
                   <div style="padding: 5px 0"><span>{{item2.userInfo.followNum}}关注 </span> <span>{{item2.userInfo.fansNum}} 粉丝 </span><span>11 获赞 </span></div>
-                  <div style="padding: 10px 0 5px 0">个人简介</div>
+                  <div style="padding: 10px 0 5px 0">{{item2.userInfo.remark}}</div>
                   <div style="padding: 10px 0" v-if="userInfo.id!==item2.userId">
-                    <el-button v-if="!posts.follow && userInfo.id!==item2.userId" type="primary" size="mini" @click="addFollowFun('0')"><i class="el-icon-star-off"></i> +关注 {{item2.followNum}}</el-button>
-                    <el-button v-if="posts.follow && userInfo.id!==item2.userId" type="info" plain size="mini" @click="addFollowFun('1')"><i class="el-icon-star-on"></i> 已关注 {{item2.followNum}}</el-button>
-                    <el-button size="mini">发消息</el-button>
+                    <el-button v-if="!item.follow" type="primary" size="mini" @click="addFollowFun(item,'0')"><i class="el-icon-star-off"></i> +关注 {{item2.followNum}}</el-button>
+                    <el-button v-if="item.follow" type="info" plain size="mini" @click="addFollowFun(item,'1')"><i class="el-icon-star-on"></i> 已关注 {{item2.followNum}}</el-button>
+                    <el-button size="mini" @click.native="chat(userInfo.id)">发消息</el-button>
                   </div>
                 </el-col>
               </el-row>
@@ -153,7 +162,7 @@
                   <el-col :span="12">
                     <div style="font-size: 16px;color: #2c3e50;display: flex;padding:0 10px">
                       <span style="padding-right: 5px">{{item2.userInfo.nickname}}</span>
-                      <el-tag style="margin-right: 5px;" size="small">标签一</el-tag>
+<!--                      <el-tag style="margin-right: 5px;" size="small">标签一</el-tag>-->
                       <el-tag type="success" size="small">{{item.userInfo.role}}</el-tag>
                     </div>
                   </el-col>
@@ -246,14 +255,15 @@ export default {
         pageSize: 10,
         currentPage: 1,
         postsType: 2,
-        school: 0,
-        title: ''
+        categoryId: 0,
+        title: '',
+        status: 3
       },
       form: {
         id: '',
         title: '',
         content: '',
-        school: '',
+        categoryId: '',
         files: []
       }
     }
@@ -271,22 +281,26 @@ export default {
     window.addEventListener('scroll', this.handleScroll)
   },
   methods: {
+    chat () {
+      this.$router.push({path: '/chat'})
+    },
     selImg (url) {
       this.bigImgPath = url
     },
     handlerShowEmoji () {
       this.showEmojiCom = false
     },
-    init (school) {
+    init (categoryId) {
       this.page = {
         pageTotal: 0,
         total: 0,
         pageSize: 10,
         currentPage: 0,
         postsType: 2,
-        school: 0
+        categoryId: 0,
+        status: 3
       }
-      this.page.school = school
+      this.page.categoryId = categoryId
       this.posts = []
       this.getPageFun()
     },
@@ -340,7 +354,7 @@ export default {
       console.log(this.page.currentPage)
       getPage(this.page).then(res => {
         if (res.code === 200) {
-          console.log(res.data)
+          console.log(res)
           if (this.page.currentPage === 1) {
             this.posts = []
           }
@@ -349,6 +363,7 @@ export default {
             ele['comments'] = []
             this.posts.push(ele)
           })
+          console.log(this.posts)
           this.page.total = res.dataTotal
           this.page.pageTotal = res.pageTotal
           this.loading = false
@@ -399,6 +414,7 @@ export default {
             item.like = true
             item.likeNum = parseInt(item.likeNum) + 1
           }
+          this.$message.success(res.msg)
         }
       })
     },
@@ -454,7 +470,9 @@ export default {
     },
     likeCommentFun (item) {
       let deleted = 0
-      if (item.like) { deleted = 1 }
+      if (item.like) {
+        deleted = 1
+      }
       console.log(item.id)
       addCommentLike(item.id, deleted).then(res => {
         if (res.code === 200) {
@@ -465,16 +483,17 @@ export default {
             item.like = true
             item.likeNum = parseInt(item.likeNum) + 1
           }
+          this.$message.success(res.msg)
         }
       })
     },
-    addFollowFun (deleted) {
-      addFollow(this.posts.userInfo.id, deleted).then(res => {
+    addFollowFun (item, deleted) {
+      addFollow(item.userId, deleted).then(res => {
         if (res.code === 200) {
           if (deleted === '0') {
-            this.posts.follow = true
+            item.follow = true
           } else {
-            this.posts.follow = false
+            item.follow = false
           }
           this.$message.success(res.msg)
         }

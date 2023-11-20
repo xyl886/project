@@ -1,9 +1,9 @@
 <template>
-  <div style="font-size: 14px;margin: 20px 150px;" v-loading="loading">
+  <div v-loading="loading" style="font-size: 14px;margin: 20px 150px;">
     <div>
-      <el-carousel height="500px" :autoplay="true" :interval="3000">
+      <el-carousel :autoplay="true" :interval="3000" height="500px">
         <el-carousel-item v-for="(item,index) in banners" :key="index">
-         <el-image :src="item.imgPath" style="width: 100%;height: 500px;"></el-image>
+          <el-image :src="item.imgPath" style="width: 100%;height: 500px;"/>
         </el-carousel-item>
       </el-carousel>
     </div>
@@ -11,39 +11,39 @@
     <div style="margin: 20px 0;">
       <el-row>
         <el-col :span="16"><div class="grid-content bg-purple">
-          <h2 style="display: inline-block">闲置帖子</h2></div></el-col>
+        <h2 style="display: inline-block">闲置帖子</h2></div></el-col>
         <el-col :span="8"><div class="grid-content bg-purple-light">
           <!-- 搜索框 -->
-          <div style="display:inline-block;margin-top: 12px;" v-if="$route.path==='/index'">
-            <el-input placeholder="请输入内容"  v-model="searchText" class="input-with-select">
-<!--              <el-select style="width:100px" v-model="select" slot="prepend" placeholder="请选择" value="1">-->
-<!--                <el-option label="1" value="1"></el-option>-->
-<!--                <el-option label="2" value="2"></el-option>-->
-<!--                <el-option label="3" value="3"></el-option>-->
-<!--              </el-select>-->
-              <el-button slot="append" icon="el-icon-search" @click="getPageFun()"></el-button>
+          <div v-if="$route.path==='/index'" style="display:inline-block;margin-top: 12px;">
+            <el-input v-model="searchText" placeholder="请输入内容" class="input-with-select">
+              <!--              <el-select style="width:100px" v-model="select" slot="prepend" placeholder="请选择" value="1">-->
+              <!--                <el-option label="1" value="1"></el-option>-->
+              <!--                <el-option label="2" value="2"></el-option>-->
+              <!--                <el-option label="3" value="3"></el-option>-->
+              <!--              </el-select>-->
+              <el-button slot="append" icon="el-icon-search" @click="getPageFun()"/>
             </el-input>
-          </div></div></el-col>
+        </div></div></el-col>
       </el-row>
     </div>
-    <div class="posts-box" v-for="(item,index) in posts" :key="index">
-      <div class="posts-item" v-for="(item2,index2) in item" :key="item2.id" @click="detailFun(item2)">
+    <div v-for="(item,index) in posts" :key="index" class="posts-box">
+      <div v-for="(item2,index2) in item" :key="item2.id" class="posts-item" @click="detailFun(item2)">
         <div style="padding: 5px;">
           <div style="text-align: center;">
-            <el-image :src="item2.coverPath" style="width: 100%;height: 170px;"></el-image>
+            <el-image :src="item2.coverPath" style="width: 100%;height: 170px;"/>
           </div>
           <div style="height: 30px;padding: 5px 10px;overflow: hidden;margin-top: 20px;">
             <div style="overflow: hidden;text-overflow: ellipsis;font-size: 15px;color: #18191c;">
-              {{item2.title}}
+              {{ item2.title }}
             </div>
           </div>
           <div style="display: flex;margin-top: 15px;">
             <div class="posts-item-price">
-              ¥{{item2.price}}
+              ¥{{ item2.price }}
             </div>
             <div class="posts-item-des">
-              <el-tag size="small">{{item2.schoolName}}</el-tag>
-              <i class="el-icon-view" style="margin-left: 5px;"/>{{item2.browseNum}}
+              <el-tag size="small">{{ item2.schoolName }}</el-tag>
+              <i class="el-icon-view" style="margin-left: 5px;"/>{{ item2.browseNum }}
             </div>
           </div>
         </div>
@@ -52,19 +52,19 @@
 
     <div style="text-align: right;margin-top: 10px;">
       <el-pagination
-        background
         :current-page.sync="page.currentPage"
         :page-sizes="[10, 20, 40, 80]"
         :page-size="page.pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
         :total="page.total"
+        background
+        layout="total, sizes, prev, pager, next, jumper"
         @size-change="sizeChange"
         @current-change="currentChange"
       />
     </div>
 
     <div v-if="posts.length === 0">
-      <el-empty description="暂无数据"></el-empty>
+      <el-empty description="暂无数据"/>
     </div>
 
   </div>
@@ -72,12 +72,11 @@
 </template>
 
 <script>
-import {listAll} from '@/api/banner'
-import {getPage} from '@/api/posts'
-import {setStore} from '@/utils/store'
-import {config} from 'shelljs'
+import { listAll } from '@/api/banner'
+import { getPage } from '@/api/posts'
+import { setStore } from '@/utils/store'
 export default {
-  data () {
+  data() {
     return {
       searchText: '',
       select: '',
@@ -93,12 +92,12 @@ export default {
       }
     }
   },
-  mounted () {
+  mounted() {
     this.listAllFun()
     this.getPageFun()
   },
   methods: {
-    listAllFun () {
+    listAllFun() {
       this.banners = []
       listAll().then(res => {
         if (res.code === 200) {
@@ -107,15 +106,15 @@ export default {
         }
       })
     },
-    sizeChange (pageSize) { // 页数
+    sizeChange(pageSize) { // 页数
       this.page.pageSize = pageSize
       this.getPageFun()
     },
-    currentChange (currentPage) { // 当前页
+    currentChange(currentPage) { // 当前页
       this.page.currentPage = currentPage
       this.getPageFun()
     },
-    getPageFun () {
+    getPageFun() {
       this.loading = true
       this.posts = []
       this.page.title = this.searchText ? this.searchText : ''
@@ -145,9 +144,9 @@ export default {
         this.loading = false
       })
     },
-    detailFun (posts) {
-      setStore({name: 'posts', content: posts})
-      this.$router.push({path: '/detail'})
+    detailFun(posts) {
+      setStore({ name: 'posts', content: posts })
+      this.$router.push({ path: '/detail' })
     }
   }
 }

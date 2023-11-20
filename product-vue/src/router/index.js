@@ -21,6 +21,7 @@ export const constantRoutes = [
   },
   {
     path: '/share',
+    name: '校园分享',
     component: Index,
     children: [{
       path: '',
@@ -36,6 +37,16 @@ export const constantRoutes = [
       path: '',
       name: '留言板',
       component: () => import('../views/message_borad/Index')
+    }]
+  },
+  {
+    path: '/hot',
+    name: '热搜',
+    component: Index,
+    children: [{
+      path: '',
+      name: '热搜',
+      component: () => import('../views/Hot/Index')
     }]
   },
   {
