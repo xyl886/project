@@ -27,6 +27,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
 
+import static com.love.product.constant.RedisConstant.REFRESH_TOKEN;
+import static com.love.product.constant.RedisConstant.USER_USERINFO;
+
 /**
  * OAuth2异常拦截类
  * <p>
@@ -108,7 +111,7 @@ public class OauthInterceptor extends OAuth2AuthenticationEntryPoint {
                 Long userId = (Long) userMap.get("userId");
 
                 //根据用户名称，从数据库获取用户的刷新令牌 todo redis
-                String refresh_token = (String) redisService.get("refresh_token:" + userId);
+                String refresh_token = (String) redisService.get(REFRESH_TOKEN + userId);
                 if (refresh_token != null) {
                     //获取当前用户信息
                     UserInfoVO userInfoVO = userInfoService.getByEmail(email);
@@ -132,7 +135,7 @@ public class OauthInterceptor extends OAuth2AuthenticationEntryPoint {
                         if (mapResult != null) {
                             // 如果刷新成功 跳转到原来需要访问的页面
                             //写入用户信息到redis，写入信息到SecurityContext中
-                            redisService.set("user:userinfo:" + userInfoVO.getId(), userInfoVO);
+                            redisService.set(USER_USERINFO + userInfoVO.getId(), userInfoVO);
                             List<GrantedAuthority> grantedAuthorityList = new ArrayList<>();
                             UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
                                     userInfoVO.getEmail(), userInfoVO.getOriginalPassword(), grantedAuthorityList);

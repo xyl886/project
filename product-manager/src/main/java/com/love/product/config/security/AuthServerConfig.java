@@ -28,6 +28,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.love.product.constant.RedisConstant.USER_USERINFO;
+
 /**
  * @author Administrator
  * @date 2022-10-31 15:35
@@ -146,7 +148,7 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
                 if (userInfoVO == null) {
                     throw new BizException(403, "请重新登录");
                 }
-                userInfoVO = (UserInfoVO) redisService.get("user:userinfo:" + userInfoVO.getId());
+                userInfoVO = (UserInfoVO) redisService.get(USER_USERINFO + userInfoVO.getId());
                 Collection<SimpleGrantedAuthority> authority = new ArrayList<>();
                 // 得到用户名，去处理数据库可以拿到当前用户的信息和角色信息（需要传递到服务中用到的信息）
                 final Map<String, Object> additionalInformation = new HashMap<>();

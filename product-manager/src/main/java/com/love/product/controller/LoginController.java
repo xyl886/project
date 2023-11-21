@@ -2,10 +2,7 @@ package com.love.product.controller;
 
 import com.love.product.annotation.AccessLimit;
 import com.love.product.entity.base.Result;
-import com.love.product.entity.vo.Captcha;
-import com.love.product.entity.vo.LoginVO;
-import com.love.product.entity.vo.RegisterVO;
-import com.love.product.entity.vo.UserInfoVO;
+import com.love.product.entity.vo.*;
 import com.love.product.service.RedisService;
 import com.love.product.service.UserInfoService;
 import com.love.product.util.JwtUtil;
@@ -22,6 +19,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import static com.love.product.constant.RedisConstant.REFRESH_TOKEN;
+import static com.love.product.constant.RedisConstant.USER_USERINFO;
 
 /**
  * @author Administrator
@@ -55,7 +55,7 @@ public class LoginController {
 
     @ApiOperation(value = "账密登录", notes = "账密登录")
     @GetMapping("/userLogin")
-    public Result<UserInfoVO> login(
+    public Result<UserVO> login(
             @Validated LoginVO loginVO,
             HttpServletRequest request, HttpServletResponse response
     ) {
@@ -80,8 +80,8 @@ public class LoginController {
         if (authentication != null) {//清除认证
             new SecurityContextLogoutHandler().logout(request, response, authentication);
         }
-        redisService.del("refresh_token:" + JwtUtil.getUserId());
-        redisService.del("user:userinfo:" + JwtUtil.getUserId());
+        redisService.del(REFRESH_TOKEN + JwtUtil.getUserId());
+        redisService.del(USER_USERINFO + JwtUtil.getUserId());
         return Result.OK();
     }
 }

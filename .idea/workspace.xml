@@ -4,13 +4,32 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e1b936f1-3a55-4243-9951-38c3374c995f" name="更改" comment="改了个瀑布流">
+    <list default="true" id="e1b936f1-3a55-4243-9951-38c3374c995f" name="更改" comment="">
+      <change afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/consumer/PostsActionMessageConsumer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/consumer/message/PostsActionMessage.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/enumerate/ActionType.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/logs/spring.log" beforeDir="false" afterPath="$PROJECT_DIR$/logs/spring.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/config/rabbitmq/RabbitMQConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/config/rabbitmq/RabbitMQConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/config/security/AuthServerConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/config/security/AuthServerConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/config/security/OauthInterceptor.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/config/security/OauthInterceptor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/constant/RabbitMQConstant.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/constant/RabbitMQConstant.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/constant/RedisConstant.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/constant/RedisConstant.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/consumer/CommentNoticeConsumer.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/consumer/CommentNoticeConsumer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/controller/LoginController.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/controller/LoginController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/controller/PostsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/controller/PostsController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/entity/vo/UserVO.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/entity/vo/UserVO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/service/PostsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/service/PostsService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/service/RedisService.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/service/RedisService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/service/UserInfoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/service/UserInfoService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/service/impl/PostsServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/service/impl/PostsServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/service/impl/RedisServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/service/impl/RedisServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/service/impl/SysLoginServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/service/impl/SysLoginServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/service/impl/UserInfoServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/service/impl/UserInfoServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/util/EmailUtil.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-manager/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/product-manager/src/main/resources/application.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/product-vue/src/views/personal/MyPost.vue" beforeDir="false" afterPath="$PROJECT_DIR$/product-vue/src/views/personal/MyPost.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/product-vue/src/views/personal/collect.vue" beforeDir="false" afterPath="$PROJECT_DIR$/product-vue/src/views/personal/collect.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/product-vue/src/views/posts/detail.vue" beforeDir="false" afterPath="$PROJECT_DIR$/product-vue/src/views/posts/detail.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -138,8 +157,8 @@
       <list>
         <item itemvalue="Spring Boot.ProductApplication" />
         <item itemvalue="npm.dev" />
-        <item itemvalue="npm.dev (2)" />
         <item itemvalue="npm.dev (1)" />
+        <item itemvalue="npm.dev (2)" />
       </list>
     </recent_temporary>
   </component>
@@ -214,7 +233,9 @@
       <workItem from="1700401170459" duration="662000" />
       <workItem from="1700498520933" duration="1612000" />
       <workItem from="1700500421793" duration="13833000" />
-      <workItem from="1700514469133" duration="1112000" />
+      <workItem from="1700514469133" duration="1859000" />
+      <workItem from="1700516520347" duration="766000" />
+      <workItem from="1700566344939" duration="16254000" />
     </task>
     <task id="LOCAL-00001" summary="改了个瀑布流">
       <option name="closed" value="true" />
@@ -224,7 +245,15 @@
       <option name="project" value="LOCAL" />
       <updated>1700514133058</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="改了个瀑布流">
+      <option name="closed" value="true" />
+      <created>1700515783637</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1700515783637</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

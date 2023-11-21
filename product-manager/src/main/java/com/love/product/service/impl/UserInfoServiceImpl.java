@@ -36,6 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -57,6 +58,7 @@ import java.util.stream.Collectors;
 import static com.love.product.constant.CommonConstant.CAPTCHA;
 import static com.love.product.constant.CommonConstant.EXPIRE_TIME;
 import static com.love.product.constant.RabbitMQConstant.EMAIL_EXCHANGE;
+import static com.love.product.constant.RedisConstant.*;
 import static com.love.product.entity.base.ResultCode.*;
 import static com.love.product.util.CommonUtil.getRandomCode;
 
@@ -144,7 +146,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
                 EMAIL_EXCHANGE,
                 "*",
                 new Message(JSON.toJSONBytes(emailDTO), new MessageProperties()));
-        redisService.set("code:" + email, code, 5 * 60);
+        redisService.set(CODE + email, code, 5 * 60);
         return Result.OKMsg("验证码已发送，请查收！");
     }
 
@@ -154,7 +156,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
      * @return Result<UserInfo>
      */
     @Override
-    public Result<UserInfoVO> login(LoginVO loginVO) {
+    public Result<UserVO> login(LoginVO loginVO) {
         UserInfoVO userInfoVO = getByEmail(loginVO.email);
         if (userInfoVO == null) {
             return Result.failMsg("账号不存在!");
@@ -175,9 +177,9 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             }
         }
         // 缓存用户信息到Redis，设置过期时间为7天，并删除验证码
-        redisService.set("user:userinfo:" + userInfoVO.getId(), userInfoVO);
-        redisService.expire("user:userinfo:" + userInfoVO.getId(), 7, TimeUnit.DAYS);
-        redisService.del("code:" + loginVO.email);
+        redisService.set(USER_USERINFO + userInfoVO.getId(), userInfoVO);
+        redisService.expire(USER_USERINFO + userInfoVO.getId(), 7, TimeUnit.DAYS);
+        redisService.del(CODE + loginVO.email);
 
         String accessToken = getOAuthToken(userInfoVO);
         if (accessToken == null) {
@@ -185,7 +187,9 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         }
         userInfoVO.setAccessToken(accessToken);
         userInfoVO.setEmail(loginVO.email);
-        return Result.OK(userInfoVO);
+        UserVO userVO=new UserVO();
+        BeanUtils.copyProperties(userInfoVO,userVO);
+        return Result.OK(userVO);
     }
 
     /**
@@ -355,7 +359,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     @Override
     public void setRefreshToken(Long userId, String refreshToken) {
         if (refreshToken != null) {
-            redisService.set("refresh_token:" + userId, refreshToken);
+            redisService.set(REFRESH_TOKEN + userId, refreshToken);
         }
     }
 
@@ -553,7 +557,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
      * @param code
      **/
     public void saveImageCode(String key, String code) {
-        redisService.set("imageCode:" + key, Long.parseLong(code), 15L, TimeUnit.MINUTES);
+        redisService.set(IMAGE_CODE + key, Long.parseLong(code), 15L, TimeUnit.MINUTES);
     }
 
     /**
@@ -564,7 +568,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
      * @return boolean
      **/
     public String checkImageCode(String imageKey, String imageCode) {
-        String text = (String) redisService.get("imageCode:" + imageKey);
+        String text = (String) redisService.get(IMAGE_CODE + imageKey);
         if (org.apache.commons.lang3.StringUtils.isBlank(text)) {
             return "验证码已失效";
         }

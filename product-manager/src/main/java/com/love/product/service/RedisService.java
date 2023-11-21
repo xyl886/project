@@ -170,6 +170,22 @@ public interface RedisService {
     Long decr(String key, long delta);
 
     /**
+     * 将成员和分数添加到Redis中的有序集合中。
+     * @param key 有序集合的键。
+     * @param value 要添加的成员的值。
+     * @param score 成员的分数。
+     */
+    void zSetAdd(String key, String value, double score);
+    /**
+     * 从 Redis 中的排序集中获取一系列成员
+     * @param key 排序集的键
+     * @param start 范围的起始索引
+     * @param end 范围的结束索引
+     * @return Set<Long>
+     */
+    Set<Long> zSetRange(String key, long start, long end);
+
+    /**
      * 获取哈希表中指定字段的值
 
      *
@@ -285,6 +301,8 @@ public interface RedisService {
 
      */
     Long hIncr(String key, String hashKey, Long delta);
+
+
 
     /**
      * 对哈希表中的字段进行减少操作

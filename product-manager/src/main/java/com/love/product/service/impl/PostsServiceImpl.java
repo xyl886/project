@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.toolkit.Assert;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.love.product.consumer.PostsActionMessageConsumer;
 import com.love.product.entity.History;
 import com.love.product.entity.Posts;
 import com.love.product.entity.PostsLike;
@@ -106,6 +107,8 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
     private ElasticsearchRestTemplate elasticsearchRestTemplate;
     @Resource
     private SearchStrategyContext searchStrategyContext;
+    @Resource
+    private PostsActionMessageConsumer postsActionMessageConsumer;
 
     private final List<String> sensitiveWords = new ArrayList<>();
 
@@ -717,17 +720,20 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
         // 执行更新操作
         update(post, updateWrapper);
     }
-
     @Override
-    public Result<List<Posts>> listHot() {
-        QueryWrapper<Posts> queryWrapper= new QueryWrapper<>();
-        queryWrapper.eq("posts_type", 2)
-                .eq("status", 3)
-                .orderByDesc("(browse_num * 0.4 + collect_num * 0.2 + like_num * 0.3 + comment_num * 0.1)")
-                .last("limit 10");
-         List<Posts> posts= postsMapper.selectList(queryWrapper);
-        return Result.OK(posts);
+    public Result<List<Map<Long, String>>> listHot() {
+        return Result.OK(postsActionMessageConsumer.getHotPosts(10));
     }
+//    @Override
+//    public Result<List<Posts>> listHot() {
+//        QueryWrapper<Posts> queryWrapper= new QueryWrapper<>();
+//        queryWrapper.eq("posts_type", 2)
+//                .eq("status", 3)
+//                .orderByDesc("(browse_num * 0.4 + collect_num * 0.2 + like_num * 0.3 + comment_num * 0.1)")
+//                .last("limit 10");
+//         List<Posts> posts= postsMapper.selectList(queryWrapper);
+//        return Result.OK(posts);
+//    }
 
     @Override
     public Result audit(PostsDTO postsDTO) {

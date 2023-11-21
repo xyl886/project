@@ -67,7 +67,7 @@
 <!--        </div>-->
 <!--      </template>-->
 <!--    </Waterfall>-->
-    <Waterfall :list="WaterfallPosts" :row-key="options.rowKey" :gutter="options.gutter"
+    <Waterfall :list="posts" :row-key="options.rowKey" :gutter="options.gutter"
                :has-around-gutter="options.hasAroundGutter" :width="options.width" :breakpoints="options.breakpoints"
                :img-selector="options.imgSelector" :background-color="options.backgroundColor"
                :animation-effect="options.animationEffect" :animation-duration="options.animationDuration"
@@ -75,8 +75,8 @@
       <template #item="{ item, url, index }">
         <div class="bg-gray-900 rounded-lg shadow-md overflow-hidden transition-all duration-300 ease-linear hover:shadow-lg hover:shadow-gray-600 group">
           <div class="overflow-hidden">
-            <el-image :src="item.coverPath" style="width: 200px;" class="cursor-pointer transition-all duration-300 ease-linear group-hover:scale-105"/>
-<!--            <LazyImg :url="url" class="cursor-pointer transition-all duration-300 ease-linear group-hover:scale-105" />-->
+<!--            <el-image :src="item.coverPath" style="width: 200px;" class="cursor-pointer transition-all duration-300 ease-linear group-hover:scale-105"/>-->
+            <LazyImg :url="url" class="cursor-pointer transition-all duration-300 ease-linear group-hover:scale-105" />
           </div>
 
           <div class="collect-box-title" @click="detailFun(item)">{{item.title}}
@@ -179,7 +179,6 @@ import {addFollow} from '../../api/follow'
 import {del, delMyPost, getPage, listAllCategory, restore} from '../../api/posts'
 import {MessageBox} from 'element-ui'
 import {setStore} from '../../utils/store'
-import {formatDate} from '../../utils/date'
 import { LazyImg, Waterfall } from 'vue-waterfall-plugin'
 import 'vue-waterfall-plugin/dist/style.css'
 import loading from '../../../static/assets/loading.png'
@@ -247,7 +246,6 @@ export default {
       InputFocused: false,
       categoryId: '',
       posts: [],
-      WaterfallPosts: [],
       loading: false,
       page: {
         categoryId: -1,
@@ -331,14 +329,13 @@ export default {
     },
     getPageFun () {
       this.loading = true
-      // this.posts = []
-      this.WaterfallPosts = []
+      this.posts = []
       getPage(this.page).then(res => {
         if (res.code === 200) {
           // let count = 0
           // let arr = []
-          this.WaterfallPosts.push(...res.data)
-          console.log(this.WaterfallPosts)
+          this.posts.push(...res.data)
+          console.log(this.posts)
           // for (let i = 0; i < res.data.length; i++) {
           //   res.data[i].createTime = formatDate(res.data[i].createTime)
           //   res.data[i].updateTime = formatDate(res.data[i].updateTime)

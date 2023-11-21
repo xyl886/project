@@ -18,9 +18,9 @@ logging:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: 
-    password: 
-    url: 
+    username: root
+    password: root
+    url: jdbc:mysql://localhost:3306/school?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowMultiQueries=true&useAffectedRows=true&allowPublicKeyRetrieval=true
   redis:
     database: 1
     host: 127.0.0.1
@@ -28,7 +28,7 @@ spring:
     max-idle: 0
     max-wait: 1
     min-idle: 0
-    password: 
+    password: root
     port: 6379
     timeout: 2000
   servlet:
@@ -39,8 +39,8 @@ spring:
   rabbitmq:
     host: 127.0.0.1
     port: 5672
-    username:
-    password: 
+    username: guest
+    password: guest
     listener:
       simple:
         retry:
@@ -48,9 +48,9 @@ spring:
           max-attempts: 3
           initial-interval: 3000
   mail:
-    host:
-    username: 
-    password: 
+    host: smtp.qq.com
+    username: 1803466516@qq.com
+    password: hjnvjyvlptlleihc
     default-encoding: UTF-8
     protocol: smtp
     port: 465
@@ -68,7 +68,7 @@ spring:
             required: true
   elasticsearch:
     rest:
-      uris:
+      uris: 127.0.0.1:9200
 
 token:
   config:
@@ -88,9 +88,9 @@ search:
 # 本地存储图片上传地址
 file-upload-config:
   #图片存储路径
-  image-real-path: 
+  image-real-path: D:\school\image\
   #图片的映射路径
-  image-mapper-path: 
+  image-mapper-path: /image/
   #后端地址
   host-ip: http://127.0.0.1:8089
   #默认头像
@@ -101,8 +101,8 @@ file-upload-config:
 #阿里云 OSS存储
 aliyun:
   oss:
-    endpoint:
-    accessKeyId:
-    accessKeySecret:
+    endpoint: oss-cn-hangzhou.aliyuncs.com
+    accessKeyId: LTAI5tGJNawrKddsDfHy4Wh7
+    accessKeySecret: 9UK615Nd0YMQgIgguAxCaFJnKt6j7O
     bucketName: 18066
 

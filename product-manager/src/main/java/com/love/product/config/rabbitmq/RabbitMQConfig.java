@@ -26,6 +26,11 @@ public class RabbitMQConfig {
         return BindingBuilder.bind(articleQueue()).to(maxWellExchange());
     }
 
+    /**
+     * 邮箱验证码
+     * @return
+     */
+
     @Bean
     public Queue emailQueue() {
         return new Queue(EMAIL_QUEUE, true);
@@ -41,6 +46,29 @@ public class RabbitMQConfig {
         return BindingBuilder.bind(emailQueue()).to(emailExchange());
     }
 
+    /**
+     * 帖子排行榜
+     * @return
+     */
+    @Bean
+    public Queue postsActionQueue() {
+        return new Queue(POSTS_ACTION_QUEUE);
+    }
+
+    @Bean
+    public DirectExchange postsActionExchange() {
+        return new DirectExchange(POSTS_ACTION_EXCHANGE);
+    }
+
+    @Bean
+    public Binding bindingPostsActionDirect() {
+        return BindingBuilder.bind(postsActionQueue()).to(postsActionExchange()).with(POSTS_ACTION_ROUTING_KEY);
+    }
+
+//    @Bean
+//    public Binding bindingPostsActionDirect(Queue queue,DirectExchange directExchange) {
+//        return BindingBuilder.bind(queue).to(directExchange).with(POSTS_ACTION_ROUTING_KEY);
+//    }
     @Bean
     public Queue subscribeQueue() {
         return new Queue(SUBSCRIBE_QUEUE, true);

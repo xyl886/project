@@ -45,6 +45,9 @@ public class UserVO {
     @ApiModelProperty(value = "简介")
     public String remark;
 
+    @ApiModelProperty(value = "登录token")
+    public String accessToken;
+
     @ApiModelProperty(value = "关注数量")
     public Integer followNum;
 

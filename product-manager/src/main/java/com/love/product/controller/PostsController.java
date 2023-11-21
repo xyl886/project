@@ -1,6 +1,7 @@
 package com.love.product.controller;
 
 import com.love.product.annotation.AccessLimit;
+import com.love.product.consumer.message.PostsActionMessage;
 import com.love.product.entity.Posts;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
@@ -16,13 +17,19 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+
+import static com.love.product.constant.RabbitMQConstant.*;
+import static com.love.product.enumerate.ActionType.BROWSE;
 
 /**
  * @author Administrator
@@ -38,13 +45,15 @@ public class PostsController {
     @Resource
     private PostsService postsService;
 
+    @Resource
+    private RabbitTemplate rabbitTemplate;
     @PostMapping("/add")
     @ApiOperation(value = "添加", notes = "添加")
     public Result<Posts> add(PostsVO postsVO){
         return postsService.add(JwtUtil.getUserId(), postsVO);
     }
     @GetMapping("/listHot")
-    public  Result<List<Posts>> listHot(){
+    public  Result<List<Map<Long, String>>> listHot(){
         return postsService.listHot();
     }
     @ApiOperation("分页")
@@ -67,6 +76,11 @@ public class PostsController {
     })
     @GetMapping("/browse")
     public Result<?> browse(@RequestParam(value = "userId",required = false) Long userId,@RequestParam("id") Long id) {
+        // 创建浏览操作的消息对象
+        PostsActionMessage message = new PostsActionMessage(userId, null, BROWSE, LocalDateTime.now());
+
+        // 将消息发送到消息队列
+        rabbitTemplate.convertAndSend(POSTS_ACTION_EXCHANGE, POSTS_ACTION_ROUTING_KEY, message);
         return postsService.browse(userId,id);
     }
 
@@ -100,7 +114,7 @@ public class PostsController {
     public Result<?> delete(Long userId,Long id) {
         return postsService.delete(userId, id);
     }
-    @ApiOperation("彻底删除")
+    @ApiOperation("还原")
     @PostMapping ("/restore")
     public Result<?> restore(Long userId,Long id) {
         return postsService.restore(userId, id);

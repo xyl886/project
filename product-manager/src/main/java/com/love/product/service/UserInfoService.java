@@ -21,7 +21,7 @@ public interface UserInfoService extends IService<UserInfo> {
     /**
      * 用户登录
      */
-    Result<UserInfoVO> login(LoginVO loginVO);
+    Result<UserVO> login(LoginVO loginVO);
 
     UserInfoVO getByEmail(String email);
 
