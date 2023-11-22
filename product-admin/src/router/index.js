@@ -66,6 +66,17 @@ export const constantRoutes = [
       { icon: 'el-icon-comment', path: '/index/comment', name: '评论管理', component: () => import('../sysviews/message/comment.vue') },
       { icon: 'el-icon-comment', path: '/index/feedback', name: '反馈管理', component: () => import('../sysviews/message/feedback.vue') }
     ]
+  },
+  {
+    path: '/index',
+    component: Home,
+    name: '定时任务',
+    icon: 'el-icon-message',
+    children: [
+      { icon: 'el-icon-comment', path: '/index/quartz/index', name: '定时任务', component: () => import('../views/quartz/index.vue') },
+      { icon: 'el-icon-comment', path: '/index/quartz/log', name: '任务日志', component: () => import('../sysviews/quartz/log.vue') }
+
+    ]
   }
   // {
   //   path: '*',

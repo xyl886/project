@@ -13,7 +13,49 @@ public interface CommonConstant {
     int TRUE = 1;
 
     int BLOGGER_ID = 1;
+    /**
+     * 资源映射路径 前缀
+     */
+    String RESOURCE_PREFIX = "/profile";
 
+    /**
+     * RMI 远程方法调用
+     */
+    String LOOKUP_RMI = "rmi:";
+
+    /**
+     * LDAP 远程方法调用
+     */
+    String LOOKUP_LDAP = "ldap:";
+
+    /**
+     * LDAPS 远程方法调用
+     */
+    String LOOKUP_LDAPS = "ldaps:";
+    /**
+     * 定时任务违规的字符
+     */
+    String[] JOB_ERROR_STR = { "java.net.URL", "javax.naming.InitialContext", "org.yaml.snakeyaml",
+            "org.springframework", "org.apache", "com.ruoyi.common.utils.file", "com.ruoyi.common.config" };
+
+    /**
+     * 自动识别json对象白名单配置（仅允许解析的包名，范围越小越安全）
+     */
+    public static final String[] JSON_WHITELIST_STR = { "org.springframework", "com.ruoyi" };
+
+    /**
+     * 定时任务白名单配置（仅允许访问的包名，如其他需要可以自行添加）
+     */
+    public static final String[] JOB_WHITELIST_STR = { "com.ruoyi" };
+    /**
+     * http请求
+     */
+    String HTTP = "http://";
+
+    /**
+     * https请求
+     */
+     String HTTPS = "https://";
     int DEFAULT_CONFIG_ID = 1;
 
     int DEFAULT_ABOUT_ID = 1;
