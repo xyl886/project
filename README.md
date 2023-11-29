@@ -4,6 +4,8 @@ typora-root-url: img
 
 # project
 
+http://122.51.112.183:8088/
+
 
 
 ![image-20231130001925212](/C:/Users/18034/AppData/Roaming/Typora/typora-user-images/image-20231130001925212.png)
