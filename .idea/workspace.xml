@@ -5,41 +5,44 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e1b936f1-3a55-4243-9951-38c3374c995f" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/logs/spring.log.2023-11-21.0.gz" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-admin/src/api/quartz.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-admin/src/api/quartzLog.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-admin/src/sysviews/quartz/index.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-admin/src/sysviews/quartz/log.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/constant/ScheduleConstants.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/mapper/SysJobLogMapper.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/mapper/SysJobMapper.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/quartz/config/ScheduleConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/quartz/controller/SysJobController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/quartz/controller/SysJobLogController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/quartz/domain/SysJob.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/quartz/domain/SysJobLog.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/quartz/exception/TaskException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/quartz/service/SysJobLogService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/quartz/service/SysJobService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/quartz/service/impl/SysJobLogServiceImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/quartz/service/impl/SysJobServiceImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/quartz/task/RyTask.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/quartz/util/AbstractQuartzJob.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/quartz/util/CronUtils.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/quartz/util/JobInvokeUtil.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/quartz/util/QuartzDisallowConcurrentExecution.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/quartz/util/QuartzJobExecution.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/quartz/util/ScheduleUtils.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/util/Convert.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/util/SpringUtils.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/util/StrFormatter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/util/StringUtils.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-manager/src/main/resources/mapper/JobLogMapper.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/product-manager/src/main/resources/mapper/JobMapper.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/logs/spring.log.2023-11-22.0.gz" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/logs/spring.log.2023-11-29.0.gz" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/logs/spring.log.2023-11-29.1.gz" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/util/Main.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/product-manager/src/main/resources/application-dev.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/product-manager/src/main/resources/spy.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/_2023_11_21_5_43____.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/在进行更新之前于_2023_11_21_5_43_取消提交了更改_[更改]/shelved.patch" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/logs/spring.log" beforeDir="false" afterPath="$PROJECT_DIR$/logs/spring.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/spring.log.2023-11-21.0.gz" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/config/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/product-admin/config/index.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/product-admin/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/product-admin/src/router/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/constant/CommonConstant.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/constant/CommonConstant.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/sysviews/quartz/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/product-admin/src/sysviews/quartz/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-admin/src/sysviews/quartz/log.vue" beforeDir="false" afterPath="$PROJECT_DIR$/product-admin/src/sysviews/quartz/log.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-manager/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/product-manager/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/config/security/OauthInterceptor.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/config/security/OauthInterceptor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/consumer/message/PostsActionMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/consumer/message/PostsActionMessage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/controller/PostsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/controller/PostsController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/entity/req/PostsPageReq.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/entity/req/PostsPageReq.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/service/PostsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/service/PostsService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/service/impl/CollectServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/service/impl/CollectServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/service/impl/PostsServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/service/impl/PostsServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/service/impl/UserInfoServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/service/impl/UserInfoServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/util/HttpUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/product-manager/src/main/java/com/love/product/util/HttpUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-manager/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/product-manager/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-manager/src/main/resources/mapper/JobMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/product-manager/src/main/resources/mapper/JobMapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-vue/config/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/product-vue/config/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-vue/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/product-vue/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-vue/src/page/login/login.vue" beforeDir="false" afterPath="$PROJECT_DIR$/product-vue/src/page/login/login.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-vue/src/views/chat/Chat.vue" beforeDir="false" afterPath="$PROJECT_DIR$/product-vue/src/views/chat/Chat.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-vue/src/views/home/PersonalPage.vue" beforeDir="false" afterPath="$PROJECT_DIR$/product-vue/src/views/home/PersonalPage.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-vue/src/views/home/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/product-vue/src/views/home/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-vue/src/views/personal/Header.vue" beforeDir="false" afterPath="$PROJECT_DIR$/product-vue/src/views/personal/Header.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-vue/src/views/personal/MyPost.vue" beforeDir="false" afterPath="$PROJECT_DIR$/product-vue/src/views/personal/MyPost.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-vue/src/views/personal/collect.vue" beforeDir="false" afterPath="$PROJECT_DIR$/product-vue/src/views/personal/collect.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-vue/src/views/share/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/product-vue/src/views/share/index.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -79,39 +82,46 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "master",
-    "ignore_missing_gitignore": "true",
-    "last_opened_file_path": "D:/Project/product/product-manager/src/main/resources/mapper",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "项目",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "reference.projectsettings.compiler.javacompiler",
-    "spring.configuration.checksum": "f5bf48aa40cad7891eb709fcf1fde128",
-    "ts.external.directory.path": "D:\\soft\\IntelliJ IDEA 2023.1.3\\plugins\\javascript-impl\\jsLanguageServicesImpl\\external",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;ignore_missing_gitignore&quot;: &quot;true&quot;,
+    &quot;javascript.nodejs.core.library.configured.version&quot;: &quot;16.20.1&quot;,
+    &quot;javascript.nodejs.core.library.typings.version&quot;: &quot;16.18.65&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/selfWork/work/demo&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;项目&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.github.copilot.settings.ApplicationConfigurable&quot;,
+    &quot;spring.configuration.checksum&quot;: &quot;f5bf48aa40cad7891eb709fcf1fde128&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;D:\\soft\\IntelliJ IDEA 2023.1.3\\plugins\\javascript-impl\\jsLanguageServicesImpl\\external&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;mysql&quot;
+    ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Project\product\product-vue\static" />
       <recent name="D:\Project\product\product-manager\src\main\resources\mapper" />
       <recent name="D:\Project\product\product-admin\src\api" />
       <recent name="D:\Project\product\product-admin\src\sysviews" />
       <recent name="D:\Project\product\product-manager\src\main\java\com\love\product" />
-      <recent name="D:\Project\product\product-vue\static" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="com.love.product.util" />
@@ -121,7 +131,20 @@
       <recent name="com.love.product.entity.dto" />
     </key>
   </component>
-  <component name="RunManager" selected="npm.dev (1)">
+  <component name="RunManager" selected="npm.dev">
+    <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.love.product.util.Main" />
+      <module name="product" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.love.product.util.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="ProductApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
       <module name="product" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.love.product.ProductApplication" />
@@ -135,18 +158,18 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="dev (1)" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
-      <package-json value="$PROJECT_DIR$/product-admin/package.json" />
+    <configuration name="build" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/product-vue/package.json" />
       <command value="run" />
       <scripts>
-        <script value="dev" />
+        <script value="build" />
       </scripts>
       <node-interpreter value="project" />
       <envs />
       <method v="2" />
     </configuration>
-    <configuration name="dev (2)" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
-      <package-json value="$PROJECT_DIR$/vue-waterfall-plugin/package.json" />
+    <configuration name="dev (1)" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/product-admin/package.json" />
       <command value="run" />
       <scripts>
         <script value="dev" />
@@ -166,17 +189,18 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="npm.dev (2)" />
+      <item itemvalue="npm.build" />
       <item itemvalue="npm.dev" />
       <item itemvalue="npm.dev (1)" />
       <item itemvalue="Spring Boot.ProductApplication" />
+      <item itemvalue="应用程序.Main" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="npm.build" />
+        <item itemvalue="npm.dev" />
         <item itemvalue="Spring Boot.ProductApplication" />
         <item itemvalue="npm.dev (1)" />
-        <item itemvalue="npm.dev" />
-        <item itemvalue="npm.dev (2)" />
       </list>
     </recent_temporary>
   </component>
@@ -254,7 +278,39 @@
       <workItem from="1700514469133" duration="1859000" />
       <workItem from="1700516520347" duration="766000" />
       <workItem from="1700566344939" duration="16617000" />
-      <workItem from="1700641879926" duration="11886000" />
+      <workItem from="1700641879926" duration="12210000" />
+      <workItem from="1700673477943" duration="24647000" />
+      <workItem from="1700735760318" duration="9000" />
+      <workItem from="1700735826946" duration="25000" />
+      <workItem from="1700740611254" duration="3281000" />
+      <workItem from="1700747991710" duration="271000" />
+      <workItem from="1700754373252" duration="4325000" />
+      <workItem from="1700759052890" duration="60000" />
+      <workItem from="1700759625733" duration="837000" />
+      <workItem from="1700760539055" duration="146000" />
+      <workItem from="1700797456617" duration="330000" />
+      <workItem from="1700808050479" duration="5950000" />
+      <workItem from="1700817272326" duration="656000" />
+      <workItem from="1700818367216" duration="600000" />
+      <workItem from="1700849097783" duration="13000" />
+      <workItem from="1700891858307" duration="835000" />
+      <workItem from="1700894765273" duration="5628000" />
+      <workItem from="1700914463834" duration="3575000" />
+      <workItem from="1700983744569" duration="135000" />
+      <workItem from="1700985249450" duration="579000" />
+      <workItem from="1700996298602" duration="2213000" />
+      <workItem from="1701031118791" duration="15000" />
+      <workItem from="1701031481542" duration="5307000" />
+      <workItem from="1701042141709" duration="3073000" />
+      <workItem from="1701053108828" duration="3788000" />
+      <workItem from="1701083048533" duration="40000" />
+      <workItem from="1701093528690" duration="6977000" />
+      <workItem from="1701175133737" duration="18000" />
+      <workItem from="1701184925674" duration="2129000" />
+      <workItem from="1701197598489" duration="7165000" />
+      <workItem from="1701247608844" duration="3357000" />
+      <workItem from="1701262950357" duration="2460000" />
+      <workItem from="1701265812890" duration="3093000" />
     </task>
     <task id="LOCAL-00001" summary="改了个瀑布流">
       <option name="closed" value="true" />
@@ -280,16 +336,40 @@
       <option name="project" value="LOCAL" />
       <updated>1700587333850</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="后台整合了定时任务，待完善">
+      <option name="closed" value="true" />
+      <created>1700662287830</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1700662287830</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="改了个瀑布流" />
     <MESSAGE value="改排行榜" />
-    <option name="LAST_COMMIT_MESSAGE" value="改排行榜" />
+    <MESSAGE value="后台整合了定时任务，待完善" />
+    <option name="LAST_COMMIT_MESSAGE" value="后台整合了定时任务，待完善" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>

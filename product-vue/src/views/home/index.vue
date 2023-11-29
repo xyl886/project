@@ -3,26 +3,34 @@
     <div>
       <el-carousel height="500px" :autoplay="true" :interval="3000">
         <el-carousel-item v-for="(item,index) in banners" :key="index">
-         <el-image :src="item.imgPath" style="width: 100%;height: 500px;"></el-image>
+          <el-image :src="item.imgPath" style="width: 100%;height: 500px;"></el-image>
         </el-carousel-item>
       </el-carousel>
     </div>
 
     <div style="margin: 20px 0;">
       <el-row>
-        <el-col :span="16"><div class="grid-content bg-purple">
-          <h2 style="display: inline-block">闲置帖子</h2></div></el-col>
-        <el-col :span="8"><div class="grid-content bg-purple-light">
-          <!-- 搜索框 -->
-          <div style="display:inline-block;margin-top: 12px;" v-if="$route.path==='/index'">
-            <el-input  clearable style="width: 70%" placeholder="请输入内容"  v-model="page.tltle" class="input-with-select">
-              <el-select style="min-width:80px;max-width: 200px" v-model="page.categoryId" slot="prepend" placeholder="" value="1">
-                <el-option v-for="tabs in tabs" :key="tabs.id" :label="tabs.categoryName" :value="tabs.id"></el-option>
-              </el-select>
-              <el-button slot="append" icon="el-icon-search" @click="getPageFun()"></el-button>
-            </el-input>
-            <el-button icon="el-icon-refresh" style="padding: 10px!important;" @click="resetQuery">重置</el-button>
-          </div></div></el-col>
+        <el-col :span="16">
+          <div class="grid-content bg-purple">
+            <h2 style="display: inline-block">闲置帖子</h2></div>
+        </el-col>
+        <el-col :span="8">
+          <div class="grid-content bg-purple-light">
+            <!-- 搜索框 -->
+            <div style="display:inline-block;margin-top: 12px;" v-if="$route.path==='/index'">
+              <el-input clearable style="width: 70%" placeholder="请输入内容" v-model="page.tltle"
+                        class="input-with-select">
+                <el-select style="min-width:80px;max-width: 200px" v-model="page.categoryId" slot="prepend"
+                           placeholder="" value="1">
+                  <el-option v-for="tabs in tabs" :key="tabs.id" :label="tabs.categoryName"
+                             :value="tabs.id"></el-option>
+                </el-select>
+                <el-button slot="append" icon="el-icon-search" @click="getPageFun()"></el-button>
+              </el-input>
+              <el-button icon="el-icon-refresh" style="padding: 10px!important;" @click="resetQuery">重置</el-button>
+            </div>
+          </div>
+        </el-col>
       </el-row>
     </div>
     <div class="posts-box" v-for="(item,index) in posts" :key="index">
@@ -33,15 +41,15 @@
           </div>
           <div style="height: 30px;padding: 5px 10px;overflow: hidden;margin-top: 20px;">
             <div style="overflow: hidden;text-overflow: ellipsis;font-size: 15px;color: #18191c;">
-              {{item2.title}}
+              {{ item2.title }}
             </div>
           </div>
           <div style="display: flex;margin-top: 15px;">
             <div class="posts-item-price">
-              ¥{{item2.price}}
+              ¥{{ item2.price }}
             </div>
             <div class="posts-item-des">
-              <el-tag size="small">{{item2.categoryName}}</el-tag>
+              <el-tag size="small">{{ item2.categoryName }}</el-tag>
               <el-tag
                   size="small"
                   v-for="(item2,index) in item.tags"
@@ -49,7 +57,7 @@
                   style="margin:5px">
                 {{ item2 }}
               </el-tag>
-              <i class="el-icon-view" style="margin-left: 5px;"/>{{item2.browseNum}}
+              <i class="el-icon-view" style="margin-left: 5px;"/>{{ item2.browseNum }}
             </div>
           </div>
         </div>
@@ -58,14 +66,14 @@
 
     <div style="text-align: right;margin-top: 10px;">
       <el-pagination
-        background
-        :current-page.sync="page.currentPage"
-        :page-sizes="[10, 20, 40, 80]"
-        :page-size="page.pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="page.total"
-        @size-change="sizeChange"
-        @current-change="currentChange"
+          background
+          :current-page.sync="page.currentPage"
+          :page-sizes="[10, 20, 40, 80]"
+          :page-size="page.pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="page.total"
+          @size-change="sizeChange"
+          @current-change="currentChange"
       />
     </div>
 
@@ -82,6 +90,7 @@ import {listAll} from '@/api/banner'
 import {getPage} from '@/api/posts'
 import {setStore} from '@/utils/store'
 import {listAllCategory} from '../../api/posts'
+
 export default {
   data () {
     return {
@@ -181,35 +190,41 @@ export default {
 </script>
 
 <style scoped>
-  .el-select__input {
+.el-select__input {
   width: auto !important;
-  }
-  .posts-box{
-    display: flex;
-  }
-  .posts-item{
-    width: calc(20% - 10px);
-    height: 300px;
-    margin: 5px;
-    background-color: #ffffff;
-    cursor: pointer;
-    transition: .2s;
-    box-shadow: 1px 1px 10px rgba(0,0,0, 0.08);
-  }
-  .posts-item:hover{
-    box-shadow: 1px 1px 10px rgba(0,0,0, 0.2);
-  }
-  .posts-item:hover img{
-    transform: translate(0px, 0px) scale(1.01) rotate(0deg);
-  }
-  .posts-item-price{
-    color: #f30;
-    font-size: 16px;
-  }
-  .posts-item-des{
-    color: #666;
-    font-size: 12px;
-    flex: 1;
-    text-align: right;
-  }
+}
+
+.posts-box {
+  display: flex;
+}
+
+.posts-item {
+  width: calc(20% - 10px);
+  height: 300px;
+  margin: 5px;
+  background-color: #ffffff;
+  cursor: pointer;
+  transition: .2s;
+  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.08);
+}
+
+.posts-item:hover {
+  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
+}
+
+.posts-item:hover img {
+  transform: translate(0px, 0px) scale(1.01) rotate(0deg);
+}
+
+.posts-item-price {
+  color: #f30;
+  font-size: 16px;
+}
+
+.posts-item-des {
+  color: #666;
+  font-size: 12px;
+  flex: 1;
+  text-align: right;
+}
 </style>

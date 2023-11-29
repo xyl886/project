@@ -77,8 +77,8 @@
         <template #item="{ item, url, index }">
           <div class="bg-gray-900 rounded-lg shadow-md overflow-hidden transition-all duration-300 ease-linear hover:shadow-lg hover:shadow-gray-600 group">
             <div class="overflow-hidden">
-              <el-image :src="url" style="width: 200px;" class="cursor-pointer transition-all duration-300 ease-linear group-hover:scale-105"/>
-              <!--            <LazyImg :url="url" class="cursor-pointer transition-all duration-300 ease-linear group-hover:scale-105" />-->
+<!--              <el-image :src="url" style="width: 200px;" class="cursor-pointer transition-all duration-300 ease-linear group-hover:scale-105"/>-->
+                          <LazyImg :url="url" class="cursor-pointer transition-all duration-300 ease-linear group-hover:scale-105" />
             </div>
 
             <div class="collect-box-title" @click="detailFun(item)">{{item.posts.title}}
@@ -170,11 +170,11 @@ import {setStore} from '@/utils/store'
 import {MessageBox} from 'element-ui'
 import {listAllCategory} from '../../api/posts'
 import {deleteCollectBatch} from '../../api/collect'
-import {Waterfall} from 'vue-waterfall-plugin'
+import {Waterfall, LazyImg} from 'vue-waterfall-plugin'
 import loading from '../../../static/assets/loading.png'
 import error from '../../../static/assets/error.png'
 export default {
-  components: {Waterfall},
+  components: {Waterfall, LazyImg},
   data () {
     return {
       options: {

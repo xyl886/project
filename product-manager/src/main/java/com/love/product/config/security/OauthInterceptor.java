@@ -44,6 +44,8 @@ public class OauthInterceptor extends OAuth2AuthenticationEntryPoint {
     @Value("${server.port}")
     private String port;
 
+//    @Value("${server.servlet.context-path}")
+//    private String context_path;
     @Resource
     private TokenConfig tokenConfig;
 
@@ -130,7 +132,7 @@ public class OauthInterceptor extends OAuth2AuthenticationEntryPoint {
                         @SuppressWarnings("unchecked")
                         Map<String, String> mapResult = restTemplate
                                 .getForObject(
-                                        "http://localhost:" + port + "/oauth/token?username={email}&password={password}&client_id={client_id}&client_secret={client_secret}&grant_type={grant_type}&refresh_token={refresh_token}",
+                                        "http://122.51.112.183:" + port +"/api/oauth/token?username={email}&password={password}&client_id={client_id}&client_secret={client_secret}&grant_type={grant_type}&refresh_token={refresh_token}",
                                         Map.class, mapParam);
                         if (mapResult != null) {
                             // 如果刷新成功 跳转到原来需要访问的页面

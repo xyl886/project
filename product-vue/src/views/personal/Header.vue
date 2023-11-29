@@ -13,12 +13,12 @@ export default {
     return {
       startX: 0,
       images: [
-        require('../../../public/img/banner.png')
-        // require('../../../public/img/userheader2.png'),
-        // require('../../../public/img/userheader3.png'),
-        // require('../../../public/img/userheader4.png'),
-        // require('../../../public/img/userheader5.png'),
-        // require('../../../public/img/userheader6.png')
+        require('../../../public/img/userheader1.png'),
+        require('../../../public/img/userheader2.png'),
+        require('../../../public/img/userheader3.png'),
+        require('../../../public/img/userheader4.png'),
+        require('../../../public/img/userheader5.png'),
+        require('../../../public/img/userheader6.png')
       ]
     }
   },

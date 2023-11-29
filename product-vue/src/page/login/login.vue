@@ -129,8 +129,8 @@ export default {
       passwordType: 'password',
       lastOperationTime: parseInt(localStorage.getItem('lastOperationTime')) || 0, // 上一次记住密码的时间
       loginForm: {
-        email: '1803466516@qq.com',
-        password: 'xyl010203',
+        email: '',
+        password: '',
         confirmPassword: '',
         emailCode: '',
         rememberPwd: false

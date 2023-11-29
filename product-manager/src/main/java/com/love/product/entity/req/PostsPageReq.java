@@ -1,17 +1,11 @@
 package com.love.product.entity.req;
 
-import cn.hutool.core.util.ObjectUtil;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.love.product.entity.base.PageQuery;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
-import lombok.extern.slf4j.Slf4j;
-
-import java.io.Serializable;
 
 /**
  * @author Administrator

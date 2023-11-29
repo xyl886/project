@@ -1,15 +1,16 @@
 <template>
   <div class="body">
     <div style="font-size: 14px;margin: 0 100px;padding: 20px 0;" v-infinite-scroll="loadFun">
-        <el-row>
-          <el-col :span="18">
-            <div class="share-tab" style="width: 960px; display: inline-block;padding: 0 10px">
-          <el-tabs style="min-height: 800px;"   tab-position="left" v-model="activeName" @tab-click="handleClick">
-         <el-tab-pane  v-for="tab in Tabs" @tab-click="handleClick" :label="tab.categoryName" :name="tab.id" :key="tab.id">
-           <All :ref="tab.id"></All>
-         </el-tab-pane>
-          </el-tabs>
-            </div>
+      <el-row>
+        <el-col :span="18">
+          <div class="share-tab" style="width: 960px; display: inline-block;padding: 0 10px">
+            <el-tabs style="min-height: 800px;" tab-position="left" v-model="activeName" @tab-click="handleClick">
+              <el-tab-pane v-for="tab in Tabs" @tab-click="handleClick" :label="tab.categoryName" :name="tab.id"
+                           :key="tab.id">
+                <All :ref="tab.id"></All>
+              </el-tab-pane>
+            </el-tabs>
+          </div>
         </el-col>
         <el-col :span="6" style="position: relative;" class="right-search">
           <div class="recommendation" :class="{ 'fixed': isFixed }">
@@ -22,8 +23,8 @@
             </div>
           </div>
         </el-col>
-        </el-row>
-      </div>
+      </el-row>
+    </div>
   </div>
 </template>
 
@@ -31,7 +32,7 @@
 import All from './all.vue'
 import BackToTop from '../../page/top/BackToTop.vue'
 import {getToken} from '../../utils/auth'
-import {listAllCategory, listHot} from '../../api/posts'
+import {getDetail, listAllCategory, listHot} from '../../api/posts'
 import {setStore} from '../../utils/store'
 
 export default {
@@ -44,16 +45,15 @@ export default {
       isFixed: false,
       activeName: '0',
       tabs: [
-        { categoryName: '全部', id: '0' },
-        { categoryName: '关注', id: '1', requiresLogin: true }
+        {categoryName: '全部', id: '0'},
+        {categoryName: '关注', id: '1', requiresLogin: true}
       ],
       title: '向你推荐',
       recommendationItems: [],
       categoryId: null
     }
   },
-  watch: {
-  },
+  watch: {},
   computed: {
     Tabs () {
       if (getToken()) {
@@ -112,6 +112,14 @@ export default {
       this.$refs[this.activeName][0].load()
     },
     detailFun (posts) {
+      // getDetail(posts.id).then(res => {
+      //   if (res.code === 200) {
+      //     setStore({name: 'posts', content: res.data})
+      //     this.$router.push({path: '/detail'})
+      //   } else {
+      //     this.$message.error(res.msg)
+      //   }
+      // })
       setStore({name: 'posts', content: posts})
       this.$router.push({path: '/detail'})
     }
@@ -120,54 +128,63 @@ export default {
 </script>
 
 <style>
-  .share-tab .el-tabs__header{
-    background-color: #ffffff!important;
-    height: 400px!important;
-    position: fixed;
-  }
-  .share-tab .el-tabs__content{
-    max-width: 800px;
-    left: 150px;
-  }
-  .share-tab .el-tabs__nav{
-    width: 100px!important;
-    line-height: 60px!important;
-  }
-  .share-tab .el-tabs__nav-prev{
-    display: none!important;
-  }
-  .el-tabs--left .el-tabs__nav-wrap.is-left.is-scrollable{
-    padding: 0!important;
-  }
-  .share-tab .el-tabs__active-bar{
-    display: none!important;
-  }
-  .share-tab .el-tabs__item{
-    text-align: center!important;
-  }
+.share-tab .el-tabs__header {
+  background-color: #ffffff !important;
+  height: 400px !important;
+  position: fixed;
+}
+
+.share-tab .el-tabs__content {
+  max-width: 800px;
+  left: 150px;
+}
+
+.share-tab .el-tabs__nav {
+  width: 100px !important;
+  line-height: 60px !important;
+}
+
+.share-tab .el-tabs__nav-prev {
+  display: none !important;
+}
+
+.el-tabs--left .el-tabs__nav-wrap.is-left.is-scrollable {
+  padding: 0 !important;
+}
+
+.share-tab .el-tabs__active-bar {
+  display: none !important;
+}
+
+.share-tab .el-tabs__item {
+  text-align: center !important;
+}
 </style>
 <style scoped>
-.body{
+.body {
   margin: 0;
   width: 100%;
-  height: calc(100%- 120px);
+  height: calc(100% - 120px);
   background-image: url("../../../public/img/back-ground.png");
   background-size: cover;
   background-attachment: fixed;
 }
+
 @media screen and (max-width: 1500px) {
   .right-search {
-    display: none!important;
+    display: none !important;
   }
 }
-.search{
+
+.search {
   display: inline-block;
-  background-color: #ffffff!important;
+  background-color: #ffffff !important;
   position: relative;
   width: 380px;
   height: 60px;
 }
-.input-with-select{
+
+.input-with-select {
   width: 200px;
   height: 60px;
   margin-left: -110px;
@@ -175,6 +192,7 @@ export default {
   line-height: 60px;
   margin-top: auto;
 }
+
 .recommendation {
   width: 360px;
   height: 440px;
@@ -184,17 +202,21 @@ export default {
   padding: 10px;
   margin-top: 5px;
 }
-.fixed{
+
+.fixed {
   position: fixed;
   top: 70px;
 }
-.title-header{
+
+.title-header {
   font-size: 20px;
 }
-.title{
-  cursor:pointer;
+
+.title {
+  cursor: pointer;
 }
-.title,.title-header{
+
+.title, .title-header {
   padding: 0 10px;
   height: 40px;
   line-height: 40px;

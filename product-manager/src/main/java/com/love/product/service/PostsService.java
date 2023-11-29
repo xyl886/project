@@ -42,8 +42,8 @@ public interface PostsService extends IService<Posts> {
     List<PostsSearchDTO> listPostsBySearch(ConditionVO condition);
 
     void updatePostsCollectNum(Long postsId,Integer collectNum);
-    Result<List<Map<Long, String>>> listHot();
-//    Result<List<Posts>> listHot();
+//    Result<List<Map<Long, String>>> listHot();
+    Result<List<Posts>> listHot();
 
     Result audit(PostsDTO postsDTO);
 

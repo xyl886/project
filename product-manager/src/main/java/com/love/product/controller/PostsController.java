@@ -1,6 +1,5 @@
 package com.love.product.controller;
 
-import com.love.product.annotation.AccessLimit;
 import com.love.product.consumer.message.PostsActionMessage;
 import com.love.product.entity.Posts;
 import com.love.product.entity.base.Result;
@@ -20,15 +19,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
-import static com.love.product.constant.RabbitMQConstant.*;
+import static com.love.product.constant.RabbitMQConstant.POSTS_ACTION_EXCHANGE;
+import static com.love.product.constant.RabbitMQConstant.POSTS_ACTION_ROUTING_KEY;
 import static com.love.product.enumerate.ActionType.BROWSE;
 
 /**
@@ -47,26 +45,29 @@ public class PostsController {
 
     @Resource
     private RabbitTemplate rabbitTemplate;
+
     @PostMapping("/add")
     @ApiOperation(value = "添加", notes = "添加")
-    public Result<Posts> add(PostsVO postsVO){
+    public Result<Posts> add(PostsVO postsVO) {
         return postsService.add(JwtUtil.getUserId(), postsVO);
     }
+
     @GetMapping("/listHot")
-    public  Result<List<Map<Long, String>>> listHot(){
+    public Result<List<Posts>> listHot() {
         return postsService.listHot();
     }
+
     @ApiOperation("分页")
     @PostMapping("/getPage")
     public ResultPage<PostsDetailVO> getPage(@RequestBody PostsPageReq postsPageReq) {
-        return postsService.getPage(JwtUtil.getUserId(),postsPageReq);
+        return postsService.getPage(JwtUtil.getUserId(), postsPageReq);
     }
 
     @ApiOperation("详情")
     @GetMapping("/getDetail")
     @ApiImplicitParam(name = "id", value = "帖子主键", required = true, dataType = "String", paramType = "query")
     public Result<PostsDetailVO> getDetail(@RequestParam("id") Long id) {
-        return postsService.getDetail(JwtUtil.getUserId(),id);
+        return postsService.getDetail(JwtUtil.getUserId(), id);
     }
 
     @ApiOperation("浏览")
@@ -75,13 +76,13 @@ public class PostsController {
             @ApiImplicitParam(name = "id", value = "帖子主键", required = true, dataType = "String", paramType = "query"),
     })
     @GetMapping("/browse")
-    public Result<?> browse(@RequestParam(value = "userId",required = false) Long userId,@RequestParam("id") Long id) {
+    public Result<?> browse(@RequestParam(value = "userId", required = false) Long userId, @RequestParam("id") Long id) {
         // 创建浏览操作的消息对象
         PostsActionMessage message = new PostsActionMessage(userId, null, BROWSE, LocalDateTime.now());
 
         // 将消息发送到消息队列
         rabbitTemplate.convertAndSend(POSTS_ACTION_EXCHANGE, POSTS_ACTION_ROUTING_KEY, message);
-        return postsService.browse(userId,id);
+        return postsService.browse(userId, id);
     }
 
     @PostMapping("/update")
@@ -97,26 +98,30 @@ public class PostsController {
             @ApiImplicitParam(name = "oldFiles", value = "图片列表", required = false, dataType = "String", paramType = "query")
     })
     public Result<?> update(@Validated PostsVO postsVO) {
-              return postsService.update(postsVO);
+        return postsService.update(postsVO);
     }
+
     @ApiOperation(value = "搜索文章")
     @GetMapping("/articles/search")
     public Result<List<PostsSearchDTO>> listPostsBySearch(ConditionVO condition) {
         return Result.OK(postsService.listPostsBySearch(condition));
     }
+
     @ApiOperation("删除")
-    @DeleteMapping ("/del")
-    public Result<?> del(Long userId,Long id) {
+    @DeleteMapping("/del")
+    public Result<?> del(Long userId, Long id) {
         return postsService.del(userId, id);
     }
+
     @ApiOperation("彻底删除")
-    @DeleteMapping ("/delete")
-    public Result<?> delete(Long userId,Long id) {
+    @DeleteMapping("/delete")
+    public Result<?> delete(Long userId, Long id) {
         return postsService.delete(userId, id);
     }
+
     @ApiOperation("还原")
-    @PostMapping ("/restore")
-    public Result<?> restore(Long userId,Long id) {
+    @PostMapping("/restore")
+    public Result<?> restore(Long userId, Long id) {
         return postsService.restore(userId, id);
     }
 }

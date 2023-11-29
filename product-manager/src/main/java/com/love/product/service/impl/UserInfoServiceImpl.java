@@ -74,6 +74,8 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
     @Value("${server.port}")
     private String port;
+//    @Value("${server.servlet.context-path}")
+//    private String context_path;
     @Resource
     private RestTemplate restTemplate;
     @Resource
@@ -94,6 +96,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     private RedisService redisService;
     @Resource
     private PostsMapper postsMapper;
+
 
     public void checkEmail(String email) {
         boolean matches = Pattern.compile("\\w+@{1}\\w+\\.{1}\\w+").matcher(email).matches();
@@ -312,6 +315,8 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             BeanUtil.copyProperties(userInfo, userInfoVO);
             Gender gender = Gender.valueOf(userInfoVO.getGender());
             userInfoVO.setGenderText(gender.getText());
+            userInfoVO.setFansNum(followService.getFansNumByUserId(userInfo.id));
+            userInfoVO.setFollowNum(followService.getFollowNumByUserId(userInfo.id));
 //            userInfoVO.setAvatar(fileUploadService.getImgPath(userInfoVO.getAvatar()));
         }
         return userInfoVO;
@@ -337,7 +342,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             @SuppressWarnings("unchecked")
             Map<String, String> mapResult = restTemplate
                     .getForObject(
-                            "http://localhost:" + port + "/oauth/token?username={email}&password={password}&client_id={client_id}&client_secret={client_secret}&grant_type={grant_type}",
+                            "http://122.51.112.183:" + port + "/api/oauth/token?username={email}&password={password}&client_id={client_id}&client_secret={client_secret}&grant_type={grant_type}",
                             Map.class, mapParam);
             if (mapResult != null) {
                 try {

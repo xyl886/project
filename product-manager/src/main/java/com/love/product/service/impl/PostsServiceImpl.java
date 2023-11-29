@@ -720,20 +720,32 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
         // 执行更新操作
         update(post, updateWrapper);
     }
-    @Override
-    public Result<List<Map<Long, String>>> listHot() {
-        return Result.OK(postsActionMessageConsumer.getHotPosts(10));
-    }
 //    @Override
-//    public Result<List<Posts>> listHot() {
-//        QueryWrapper<Posts> queryWrapper= new QueryWrapper<>();
+//    public Result<List<Map<Long, String>>> listHot() {
+//        QueryWrapper<Posts> queryWrapper = new QueryWrapper<>();
 //        queryWrapper.eq("posts_type", 2)
 //                .eq("status", 3)
 //                .orderByDesc("(browse_num * 0.4 + collect_num * 0.2 + like_num * 0.3 + comment_num * 0.1)")
 //                .last("limit 10");
-//         List<Posts> posts= postsMapper.selectList(queryWrapper);
-//        return Result.OK(posts);
+//        List<Posts> posts = postsMapper.selectList(queryWrapper);
+//        List<Map<Long, String>> resultList = new ArrayList<>();
+//        for (Posts post : posts) {
+//            Map<Long, String> map = new HashMap<>();
+//            map.put(post.getId(), post.getTitle());
+//            resultList.add(map);
+//        }
+//        return Result.OK(resultList);
 //    }
+    @Override
+    public Result<List<Posts>> listHot() {
+        QueryWrapper<Posts> queryWrapper= new QueryWrapper<>();
+        queryWrapper.eq("posts_type", 2)
+                .eq("status", 3)
+                .orderByDesc("(browse_num * 0.4 + collect_num * 0.2 + like_num * 0.3 + comment_num * 0.1)")
+                .last("limit 10");
+         List<Posts> posts= postsMapper.selectList(queryWrapper);
+        return Result.OK(posts);
+    }
 
     @Override
     public Result audit(PostsDTO postsDTO) {

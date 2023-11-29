@@ -142,7 +142,7 @@ public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> impl
                     postsDetailVO.setPostStatus(PostStatus.valueOf(postsDetailVO.status).getText());
                     item.setPosts(postsDetailVO);
                 }else {
-                    item.setPosts(null);
+                    item.setPosts(new PostsDetailVO());
                 }
             });
         }

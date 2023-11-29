@@ -335,7 +335,6 @@ export default {
           // let count = 0
           // let arr = []
           this.posts.push(...res.data)
-          console.log(this.posts)
           // for (let i = 0; i < res.data.length; i++) {
           //   res.data[i].createTime = formatDate(res.data[i].createTime)
           //   res.data[i].updateTime = formatDate(res.data[i].updateTime)

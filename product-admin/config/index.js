@@ -35,7 +35,7 @@ module.exports = {
     proxyTable: {
       '/api': {
         // 本地服务接口地址
-        target: 'http://localhost:8089',
+        target: 'http://122.51.112.183:3306:8089',
         // 远程演示服务地址,可用于直接启动项目
         // target: 'https://xxx.vip/api',
         changeOrigin: true,

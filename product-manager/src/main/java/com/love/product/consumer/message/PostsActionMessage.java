@@ -6,12 +6,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PostsActionMessage {
+public class PostsActionMessage implements Serializable {
 
     private Long postsId;
 
@@ -20,6 +21,4 @@ public class PostsActionMessage {
     private ActionType actionType;
 
     private LocalDateTime actionTime;
-
-    // 构造函数、getter和setter方法省略
 }

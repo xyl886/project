@@ -2,22 +2,23 @@
   <div style="background-color: #d9ecff;">
     <div class="container" style="min-height: 660px">
       <div class="left" style="max-width: 300px;">
-<!--        <div style="margin-top: 5px;margin-bottom: 10px">-->
-<!--          <el-input placeholder="请输入内容" v-model="input3" class="input-with-select">-->
-<!--            <el-button slot="append" icon="el-icon-search"></el-button>-->
-<!--          </el-input>-->
-<!--        </div>-->
+        <!--        <div style="margin-top: 5px;margin-bottom: 10px">-->
+        <!--          <el-input placeholder="请输入内容" v-model="input3" class="input-with-select">-->
+        <!--            <el-button slot="append" icon="el-icon-search"></el-button>-->
+        <!--          </el-input>-->
+        <!--        </div>-->
         <el-menu>
           <el-menu-item
-            v-for="user in userList"
-            :key="user.id"
-            :class="{ selected: user.selected }"
-            title="点击选择用户聊天">
+              v-for="user in userList"
+              :key="user.id"
+              :class="{ selected: user.selected }"
+              title="点击选择用户聊天">
             <div class="user-info" @click="selectUser(user)">
-              <el-image :src="user.userInfo?user.userInfo.avatar:''" style="width: 50px;height: 50px;border-radius:50%;margin-bottom: 5px"></el-image>
+              <el-image :src="user.userInfo?user.userInfo.avatar:''"
+                        style="width: 50px;height: 50px;border-radius:50%;margin-bottom: 5px"></el-image>
               <div class="list-right">
-                <p class="name">{{user.userInfo.nickname}}</p><span class="time">昨天 11:11</span>
-                <p class="lastMsg">{{user.userInfo.remark}}</p>
+                <p class="name">{{ user.userInfo.nickname }}</p><span class="time">昨天 11:11</span>
+                <p class="lastMsg">{{ user.userInfo.remark }}</p>
               </div>
               <i class="el-icon-delete delete-btn" @click.stop="handleDelete(user)"/>
             </div>
@@ -37,47 +38,48 @@
                         </span>
               </div>
               <el-dropdown-menu
-                slot="dropdown">
+                  slot="dropdown">
                 <el-dropdown-item size="small" type="danger" @click="deleteAllMsgs">删除所有消息</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </div>
         </div>
         <el-divider style=""></el-divider>
-<!--        <div v-if="selectedUser">-->
-          <div v-if="selectedUser" class="chat-message" style="height: 400px;overflow: scroll;">
-            <div style="margin: 5px;padding: 5px 0;line-height: 40px;"
-              v-for="message in messageList[this.userInfo.id + selectedUser.beFollowedUserId]"
-              :key="message.id">
-              <div class="time"><span>{{formatDate(message.sentTime)}}</span></div>
+        <!--        <div v-if="selectedUser">-->
+        <div v-if="selectedUser" class="chat-message" style="height: 400px;overflow: scroll;">
+          <div style="margin: 5px;padding: 5px 0;line-height: 40px;"
+               v-for="message in messageList[this.userInfo.id + selectedUser.beFollowedUserId]"
+               :key="message.id">
+            <div class="time"><span>{{ formatDate(message.sentTime) }}</span></div>
             <div :class="message.sentByMe?'message-right':'message-left'">
               <el-image class="message-avatar" :src="message?message.fromIdAvatar:''"></el-image>
               <div class="content">
-                <div class="text" style="border-radius: 10px;">{{message.message}}</div>
+                <div class="text" style="border-radius: 10px;">{{ message.message }}</div>
               </div>
             </div>
-            </div>
           </div>
-<!--        </div>-->
+        </div>
+        <!--        </div>-->
         <el-divider style="margin: 10px 0"></el-divider>
         <div v-if="selectedUser" style="">
           <el-row :gutter="20">
-<!--            <el-col :span="2"> <el-button circle><i class="el-icon-picture"></i></el-button></el-col>-->
+            <!--            <el-col :span="2"> <el-button circle><i class="el-icon-picture"></i></el-button></el-col>-->
             <el-col :span="2">
               <el-popover placement="top" trigger="click" class="popover" style="margin: 20px;">
-              <custom-emoji v-if="showEmojiCom" class="emoji-component" @addemoji="addEmoji"/>
-              <el-button slot="reference" circle @click.stop="showEmojiCom = !showEmojiCom">
-                😃
-              </el-button>
-            </el-popover>
+                <custom-emoji v-if="showEmojiCom" class="emoji-component" @addemoji="addEmoji"/>
+                <el-button slot="reference" circle @click.stop="showEmojiCom = !showEmojiCom">
+                  😃
+                </el-button>
+              </el-popover>
             </el-col>
           </el-row>
           <div class="message-input">
             <textarea class="textarea" @keyup.enter="sendMsg" v-model="selectedUserMessage.message"></textarea>
           </div>
           <div class="button-container">
-          <el-button type="primary" size="mini" style="margin-bottom: 5px;margin-right: 10px" @click="sendMsg">发送</el-button>
-        </div>
+            <el-button type="primary" size="mini" style="margin-bottom: 5px;margin-right: 10px" @click="sendMsg">发送
+            </el-button>
+          </div>
         </div>
       </div>
     </div>
@@ -328,34 +330,42 @@ export default {
 .delete-btn {
   visibility: hidden;
 }
+
 .user-info:hover .delete-btn {
   visibility: visible;
 }
+
 .emoji-component {
   position: absolute;
   bottom: 0;
   right: 0;
 }
-.el-popover{
+
+.el-popover {
   padding: 0 !important;
 }
-.el-divider{
-  margin:10px 0!important;
+
+.el-divider {
+  margin: 10px 0 !important;
 }
-.el-menu-item{
-  padding: 5px 10px!important;
-  height: 70px!important;
+
+.el-menu-item {
+  padding: 5px 10px !important;
+  height: 70px !important;
 }
-.el-menu-item.is-active{
+
+.el-menu-item.is-active {
   color: #000;
 }
-.el-menu-item.selected{
+
+.el-menu-item.selected {
   background-color: #cfe8fd;
 }
+
 .container {
   display: flex;
   justify-content: space-between;
-  margin:0 200px ;
+  margin: 0 200px;
   padding: 20px 0;
   min-height: calc(100% - 100px);
 }
@@ -413,52 +423,62 @@ li {
 .button-container {
   margin-left: auto;
 }
-.message-left,.message-right{
+
+.message-left, .message-right {
   flex: 0.5;
   background-color: #f4f5f7;
 }
-.message-right > .content > .text{
+
+.message-right > .content > .text {
   background-color: #409EFF;
 }
-.message-right > .message-avatar{
+
+.message-right > .message-avatar {
   float: right;
 }
-.message-avatar{
-  float:left;
+
+.message-avatar {
+  float: left;
   width: 40px;
   height: 40px;
-  border-radius:50%;
+  border-radius: 50%;
   margin-left: 5px;
 }
-.content >.text{
+
+.content > .text {
   min-height: 40px;
   min-width: 40px;
   max-width: 500px;
-  display:inline-block;
+  display: inline-block;
   background-color: #fff;
   margin-left: 10px;
   margin-right: 5px;
   padding: 0 10px;
 }
-.message-left{
+
+.message-left {
   text-align: left;
 }
+
 .message-right {
   text-align: right;
   flex: 2;
 }
-.time{
+
+.time {
   width: 100%;
   line-height: 12px;
   font-size: 12px;
   margin: 7px auto;
   text-align: center;
 }
-.time > span{
+
+.time > span {
   line-height: 10px;
   display: inline-block;
   border-radius: 3px;
 }
+
 .list-right {
   position: relative;
   flex: 1;
@@ -477,7 +497,7 @@ li {
   vertical-align: top;
 }
 
-.list-right>.time {
+.list-right > .time {
   margin: 0;
   padding: 0;
   width: 50px;
@@ -502,14 +522,15 @@ li {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-.textarea{
+
+.textarea {
   box-sizing: border-box;
   padding: 10px;
   height: 110px;
   width: 100%;
   border: none;
   outline: none;
-  font-family: "Micrsofot Yahei",sans-serif;
+  font-family: "Micrsofot Yahei", sans-serif;
   background-color: #f4f5f7;
   resize: none;
 }
