@@ -7,6 +7,8 @@ mybatis-plus:
 server:
   # 应用服务 WEB 访问端口
   port: 8089
+#  servlet:
+#    context-path: /api
 logging:
   level:
     root: info
@@ -15,20 +17,27 @@ logging:
     path: logs
       # 如果不想把日志存放在logging.file.path目录下，可以采用name来重新定义存储的位置和日志文件的名称
 
+#decorator:
+#  datasource:
+#    p6spy:
+#      logging: slf4j
 spring:
+  profiles:
+    active: dev
   datasource:
+#    driver-class-name: com.p6spy.engine.spy.P6SpyDriver
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: root
+    username:
+    password:
     url: jdbc:mysql://localhost:3306/school?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowMultiQueries=true&useAffectedRows=true&allowPublicKeyRetrieval=true
   redis:
     database: 1
-    host: 127.0.0.1
+    host:
     max-active: 20
     max-idle: 0
     max-wait: 1
     min-idle: 0
-    password: root
+    password:
     port: 6379
     timeout: 2000
   servlet:
@@ -39,8 +48,8 @@ spring:
   rabbitmq:
     host: 127.0.0.1
     port: 5672
-    username: guest
-    password: guest
+    username:
+    password:
     listener:
       simple:
         retry:
@@ -48,9 +57,9 @@ spring:
           max-attempts: 3
           initial-interval: 3000
   mail:
-    host: smtp.qq.com
-    username: 1803466516@qq.com
-    password: hjnvjyvlptlleihc
+    host:
+    username:
+    password:
     default-encoding: UTF-8
     protocol: smtp
     port: 465
@@ -68,7 +77,7 @@ spring:
             required: true
   elasticsearch:
     rest:
-      uris: 127.0.0.1:9200
+      uris:
 
 token:
   config:
@@ -88,21 +97,21 @@ search:
 # 本地存储图片上传地址
 file-upload-config:
   #图片存储路径
-  image-real-path: D:\school\image\
+  image-real-path:
   #图片的映射路径
-  image-mapper-path: /image/
+  image-mapper-path:
   #后端地址
-  host-ip: http://127.0.0.1:8089
+  host-ip:
   #默认头像
-  default-avatar: /image/default-avatar.png
+  default-avatar:
   #默认昵称
-  default-nickname: 菜鸟学霸
+  default-nickname:
 
 #阿里云 OSS存储
 aliyun:
   oss:
-    endpoint: oss-cn-hangzhou.aliyuncs.com
-    accessKeyId: LTAI5tGJNawrKddsDfHy4Wh7
-    accessKeySecret: 9UK615Nd0YMQgIgguAxCaFJnKt6j7O
-    bucketName: 18066
+    endpoint:
+    accessKeyId:
+    accessKeySecret:
+    bucketName:
 
