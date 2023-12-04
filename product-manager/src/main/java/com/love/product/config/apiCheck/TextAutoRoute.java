@@ -22,8 +22,8 @@ public class TextAutoRoute {
               获取RAM用户AccessKey ID：System.getProperty("ALIBABA_CLOUD_ACCESS_KEY_ID");
               获取RAM用户AccessKey Secret：System.getProperty("ALIBABA_CLOUD_ACCESS_KEY_SECRET");
          */
-        config.setAccessKeyId("LTAI5tGJNawrKddsDfHy4Wh7");
-        config.setAccessKeySecret("9UK615Nd0YMQgIgguAxCaFJnKt6j7O");
+        config.setAccessKeyId("");
+        config.setAccessKeySecret("");
         //接入区域和地址请根据实际情况修改
         config.setRegionId("oss-cn-hangzhou");
         config.setEndpoint("green-cip.oss-cn-hangzhou.aliyuncs.com");
