@@ -1,17 +1,15 @@
----
-typora-root-url: img
----
+
 
 # project
 
 http://122.51.112.183:8088/
 
-![image-20231130002821925](/../assets/image-20231130002821925.png)
+<img src="assets/image-20231130002821925.png" alt="" />
 
-![image-20231130002835037](/../assets/image-20231130002835037.png)
+<img src="assets/image-20231130002835037.png" alt="" />
 
-![image-20231130002847211](/../assets/image-20231130002847211.png)
+<img src="assets/image-20231130002847211.png" alt="" />
 
-![image-20231130002904240](/../assets/image-20231130002904240.png)
+<img src="assets/image-20231130002904240.png" alt="" />
 
-![image-20231130002925569](/../assets/image-20231130002925569.png)
+<img src="assets/image-20231130002925569.png" alt="" />
