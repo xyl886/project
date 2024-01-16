@@ -9,9 +9,7 @@ import org.springframework.data.geo.GeoResults;
 import org.springframework.data.geo.Point;
 import org.springframework.data.redis.connection.BitFieldSubCommands;
 import org.springframework.data.redis.connection.RedisGeoCommands;
-import org.springframework.data.redis.core.RedisCallback;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ZSetOperations;
+import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -94,10 +92,12 @@ public class RedisServiceImpl implements RedisService {
     public Long decr(String key, long delta) {
         return redisTemplate.opsForValue().increment(key, -delta);
     }
+
     @Override
     public void zSetAdd(String key, String value, double score) {
         redisTemplate.opsForZSet().add(key, value, score);
     }
+
     @Override
     public Set<Long> zSetRange(String key, long start, long end) {
         Set<Object> set = redisTemplate.opsForZSet().reverseRange(key, start, end);
@@ -107,6 +107,7 @@ public class RedisServiceImpl implements RedisService {
         }
         return longSet;
     }
+
     @Override
     public Object hGet(String key, String hashKey) {
         return redisTemplate.opsForHash().get(key, hashKey);
@@ -152,6 +153,16 @@ public class RedisServiceImpl implements RedisService {
     @Override
     public Long hIncr(String key, String hashKey, Long delta) {
         return redisTemplate.opsForHash().increment(key, hashKey, delta);
+    }
+
+    @Override
+    public Long hIncr(String key, Long hashkey, int i) {
+        return redisTemplate.opsForHash().increment(key, hashkey, i);
+    }
+
+    @Override
+    public Cursor<Map.Entry<Object, Object>> scan(String key, ScanOptions none) {
+        return redisTemplate.opsForHash().scan(key, none);
     }
 
     @Override
@@ -341,4 +352,6 @@ public class RedisServiceImpl implements RedisService {
         return redisTemplate.opsForGeo()
                 .hash(key, place);
     }
+
+
 }

@@ -5,7 +5,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.love.product.constant.ScheduleConstants;
+import com.love.product.constant.ScheduleConstant;
 import com.love.product.quartz.domain.SysJob;
 import com.love.product.quartz.exception.TaskException;
 import com.love.product.mapper.SysJobMapper;
@@ -82,7 +82,7 @@ public class SysJobServiceImpl extends ServiceImpl<SysJobMapper, SysJob> impleme
     {
         Long jobId = job.getJobId();
         String jobGroup = job.getJobGroup();
-        job.setStatus(ScheduleConstants.Status.PAUSE.getValue());
+        job.setStatus(ScheduleConstant.Status.PAUSE.getValue());
         int rows = jobMapper.updateJob(job);
         if (rows > 0)
         {
@@ -102,7 +102,7 @@ public class SysJobServiceImpl extends ServiceImpl<SysJobMapper, SysJob> impleme
     {
         Long jobId = job.getJobId();
         String jobGroup = job.getJobGroup();
-        job.setStatus(ScheduleConstants.Status.NORMAL.getValue());
+        job.setStatus(ScheduleConstant.Status.NORMAL.getValue());
         int rows = jobMapper.updateJob(job);
         if (rows > 0)
         {
@@ -158,11 +158,11 @@ public class SysJobServiceImpl extends ServiceImpl<SysJobMapper, SysJob> impleme
     {
         int rows = 0;
         String status = job.getStatus();
-        if (ScheduleConstants.Status.NORMAL.getValue().equals(status))
+        if (ScheduleConstant.Status.NORMAL.getValue().equals(status))
         {
             rows = resumeJob(job);
         }
-        else if (ScheduleConstants.Status.PAUSE.getValue().equals(status))
+        else if (ScheduleConstant.Status.PAUSE.getValue().equals(status))
         {
             rows = pauseJob(job);
         }
@@ -183,7 +183,7 @@ public class SysJobServiceImpl extends ServiceImpl<SysJobMapper, SysJob> impleme
         SysJob properties = selectJobById(job.getJobId());
         // 参数
         JobDataMap dataMap = new JobDataMap();
-        dataMap.put(ScheduleConstants.TASK_PROPERTIES, properties);
+        dataMap.put(ScheduleConstant.TASK_PROPERTIES, properties);
         JobKey jobKey = ScheduleUtils.getJobKey(jobId, jobGroup);
         if (scheduler.checkExists(jobKey)) {
             result = true;
@@ -201,7 +201,7 @@ public class SysJobServiceImpl extends ServiceImpl<SysJobMapper, SysJob> impleme
     @Transactional(rollbackFor = Exception.class)
     public int insertJob(SysJob job) throws SchedulerException, TaskException
     {
-        job.setStatus(ScheduleConstants.Status.PAUSE.getValue());
+        job.setStatus(ScheduleConstant.Status.PAUSE.getValue());
         int rows = jobMapper.insertJob(job);
         if (rows > 0)
         {

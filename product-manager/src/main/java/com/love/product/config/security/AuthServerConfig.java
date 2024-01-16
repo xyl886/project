@@ -28,7 +28,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.love.product.constant.RedisConstant.USER_USERINFO;
+import static com.love.product.constant.RedisKeyConstant.USER_USERINFO;
 
 /**
  * @author Administrator

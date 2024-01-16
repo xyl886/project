@@ -1,7 +1,7 @@
 package com.love.product.config.security;
 
 import com.love.product.entity.UserInfo;
-import com.love.product.enumerate.YesOrNo;
+import com.love.product.enums.YesOrNo;
 import com.love.product.service.UserInfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

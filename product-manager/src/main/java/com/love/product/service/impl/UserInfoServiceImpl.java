@@ -4,14 +4,12 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.love.product.config.fileupload.FileUploadConfig;
 import com.love.product.config.security.TokenConfig;
-import com.love.product.entity.Category;
 import com.love.product.entity.Posts;
 import com.love.product.entity.UserAuth;
 import com.love.product.entity.UserInfo;
@@ -20,10 +18,10 @@ import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.dto.EmailDTO;
 import com.love.product.entity.req.UserPageReq;
 import com.love.product.entity.vo.*;
-import com.love.product.enumerate.CodeType;
-import com.love.product.enumerate.Gender;
-import com.love.product.enumerate.Role;
-import com.love.product.enumerate.YesOrNo;
+import com.love.product.enums.CodeType;
+import com.love.product.enums.Gender;
+import com.love.product.enums.Role;
+import com.love.product.enums.YesOrNo;
 import com.love.product.mapper.PostsMapper;
 import com.love.product.mapper.RoleMapper;
 import com.love.product.mapper.UserInfoMapper;
@@ -37,13 +35,10 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -58,7 +53,7 @@ import java.util.stream.Collectors;
 import static com.love.product.constant.CommonConstant.CAPTCHA;
 import static com.love.product.constant.CommonConstant.EXPIRE_TIME;
 import static com.love.product.constant.RabbitMQConstant.EMAIL_EXCHANGE;
-import static com.love.product.constant.RedisConstant.*;
+import static com.love.product.constant.RedisKeyConstant.*;
 import static com.love.product.entity.base.ResultCode.*;
 import static com.love.product.util.CommonUtil.getRandomCode;
 
@@ -72,18 +67,12 @@ import static com.love.product.util.CommonUtil.getRandomCode;
 @Service
 public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> implements UserInfoService {
 
-    @Value("${server.port}")
-    private String port;
-//    @Value("${server.servlet.context-path}")
-//    private String context_path;
     @Resource
     private RestTemplate restTemplate;
     @Resource
     private TokenConfig tokenConfig;
     @Resource
     private FileUploadConfig fileUploadConfig;
-    @Resource
-    private FileUploadService fileUploadService;
     @Resource
     private OssService ossService;
     @Resource
@@ -342,7 +331,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             @SuppressWarnings("unchecked")
             Map<String, String> mapResult = restTemplate
                     .getForObject(
-                            "http://122.51.112.183:" + port + "/api/oauth/token?username={email}&password={password}&client_id={client_id}&client_secret={client_secret}&grant_type={grant_type}",
+                            fileUploadConfig.getHostIp() + "/oauth/token?username={email}&password={password}&client_id={client_id}&client_secret={client_secret}&grant_type={grant_type}",
                             Map.class, mapParam);
             if (mapResult != null) {
                 try {

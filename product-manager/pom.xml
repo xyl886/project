@@ -17,6 +17,12 @@
     </properties>
 
     <dependencies>
+        <!--       登录验证码-->
+        <dependency>
+            <groupId>com.github.penggle</groupId>
+            <artifactId>kaptcha</artifactId>
+            <version>2.3.2</version>
+        </dependency>
         <!--打印数据库SQL语句-->
         <dependency>
             <groupId>p6spy</groupId>
@@ -84,7 +90,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-<!--        百度云api-->
+        <!--        百度云api-->
         <dependency>
             <groupId>com.baidu.aip</groupId>
             <artifactId>java-sdk</artifactId>
@@ -123,11 +129,11 @@
             <artifactId>lombok</artifactId>
         </dependency>
         <!-- Logback Classic -->
-<!--        <dependency>-->
-<!--            <groupId>ch.qos.logback</groupId>-->
-<!--            <artifactId>logback-classic</artifactId>-->
-<!--            <version>1.2.6</version>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>ch.qos.logback</groupId>-->
+        <!--            <artifactId>logback-classic</artifactId>-->
+        <!--            <version>1.2.6</version>-->
+        <!--        </dependency>-->
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-quartz -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

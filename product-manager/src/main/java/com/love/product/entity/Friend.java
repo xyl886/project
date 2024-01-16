@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.love.product.entity.base.BaseEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
-import lombok.experimental.Accessors;
 
 /**
  * @PackageName: com.love.product.entity
@@ -30,7 +29,7 @@ public class Friend extends BaseEntity {
     public Long friendId;
 
     /**
-     * {@link com.love.product.enumerate.YesOrNo}
+     * {@link com.love.product.enums.YesOrNo}
      */
     @ApiModelProperty(value = "好友昵称")
     public Integer friendNickname;

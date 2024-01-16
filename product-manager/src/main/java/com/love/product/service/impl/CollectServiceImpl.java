@@ -2,22 +2,17 @@ package com.love.product.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
-import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.love.product.entity.Collect;
-import com.love.product.entity.History;
 import com.love.product.entity.Posts;
-import com.love.product.entity.base.PageQuery;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.req.CollectPageReq;
-import com.love.product.enumerate.PostStatus;
-import com.love.product.enumerate.Role;
-import com.love.product.enumerate.YesOrNo;
+import com.love.product.enums.PostStatus;
+import com.love.product.enums.Role;
+import com.love.product.enums.YesOrNo;
 import com.love.product.mapper.CollectMapper;
 import com.love.product.entity.vo.CollectVO;
 import com.love.product.entity.vo.PostsDetailVO;
@@ -33,13 +28,11 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.love.product.enumerate.PostStatus.ALL;
-import static com.love.product.enumerate.PostStatus.PUBLISHED;
+import static com.love.product.enums.PostStatus.ALL;
 
 /**
  * @author Administrator

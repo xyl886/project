@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import com.love.product.entity.base.BaseEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
@@ -39,7 +38,7 @@ public class Tags implements Serializable {
     public String tagName;
 
     /**
-     * {@link com.love.product.enumerate.YesOrNo}
+     * {@link com.love.product.enums.YesOrNo}
      */
     @ApiModelProperty(name = "deleted", value = "逻辑删除标记 是否已删除: 0否  1是")
     @TableLogic

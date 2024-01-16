@@ -1,4 +1,4 @@
-package com.love.product.enumerate;
+package com.love.product.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -6,17 +6,18 @@ import lombok.Getter;
 /**
  * @author Administrator
  * @date 2022-10-19 10:35
- * @describe 帖子类型 1闲置帖 2校园帖
+ * @describe 性别
  */
 @Getter
 @AllArgsConstructor
-public enum PostsType {
+public enum Gender {
 
     /**
      *
      */
-    LEAVE(1, "闲置帖"),
-    SCHOOL(2, "校园帖"),
+    DUNNO(0, "保密"),
+    MAN(1, "男"),
+    WOMAN(2, "女"),
     ;
 
     /**
@@ -29,10 +30,9 @@ public enum PostsType {
      */
     private final String text;
 
-
-    public static PostsType valueOf(Integer value) {
+    public static Gender valueOf(Integer value) {
         if (value != null) {
-            for (PostsType item : PostsType.values()) {
+            for (Gender item : Gender.values()) {
                 if (value == item.value) {
                     return item;
                 }

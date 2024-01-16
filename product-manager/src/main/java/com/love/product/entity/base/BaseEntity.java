@@ -11,7 +11,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -34,7 +33,7 @@ public class BaseEntity implements Serializable {
     public Long id;
 
     /**
-     * {@link com.love.product.enumerate.YesOrNo}
+     * {@link com.love.product.enums.YesOrNo}
      */
     @ApiModelProperty(name = "deleted", value = "逻辑删除标记 是否已删除: 0否  1是")
     @TableLogic

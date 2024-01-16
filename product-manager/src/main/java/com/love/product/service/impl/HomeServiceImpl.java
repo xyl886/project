@@ -12,8 +12,8 @@ import com.love.product.entity.dto.CategoryPostCountDTO;
 import com.love.product.entity.vo.ContributeVO;
 import com.love.product.entity.vo.HomeVO;
 import com.love.product.entity.vo.TagVO;
-import com.love.product.enumerate.PostStatus;
-import com.love.product.enumerate.Role;
+import com.love.product.enums.PostStatus;
+import com.love.product.enums.Role;
 import com.love.product.mapper.*;
 import com.love.product.service.HomeService;
 import com.love.product.service.RedisService;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 
 import static com.love.product.constant.CommonConstant.ak;
 import static com.love.product.constant.CommonConstant.sk;
-import static com.love.product.enumerate.PostStatus.PUBLISHED;
+import static com.love.product.enums.PostStatus.PUBLISHED;
 
 /**
  * @PackageName: com.love.product.service.impl

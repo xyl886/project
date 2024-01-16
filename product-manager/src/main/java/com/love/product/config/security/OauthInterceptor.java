@@ -1,12 +1,11 @@
 package com.love.product.config.security;
 
+import com.love.product.config.fileupload.FileUploadConfig;
 import com.love.product.entity.vo.UserInfoVO;
-import com.love.product.mapper.UserInfoMapper;
 import com.love.product.service.RedisService;
 import com.love.product.service.UserInfoService;
 import com.love.product.util.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,14 +20,12 @@ import org.springframework.security.oauth2.provider.error.WebResponseExceptionTr
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.*;
 
-import static com.love.product.constant.RedisConstant.REFRESH_TOKEN;
-import static com.love.product.constant.RedisConstant.USER_USERINFO;
+import static com.love.product.constant.RedisKeyConstant.REFRESH_TOKEN;
+import static com.love.product.constant.RedisKeyConstant.USER_USERINFO;
 
 /**
  * OAuth2异常拦截类
@@ -41,11 +38,6 @@ import static com.love.product.constant.RedisConstant.USER_USERINFO;
 @Slf4j
 public class OauthInterceptor extends OAuth2AuthenticationEntryPoint {
 
-    @Value("${server.port}")
-    private String port;
-
-//    @Value("${server.servlet.context-path}")
-//    private String context_path;
     @Resource
     private TokenConfig tokenConfig;
 
@@ -57,7 +49,7 @@ public class OauthInterceptor extends OAuth2AuthenticationEntryPoint {
     @Resource
     private RedisService redisService;
     @Resource
-    private UserInfoMapper userInfoMapper;
+    private FileUploadConfig fileUploadConfig;
 
     @Resource
     private UserInfoService userInfoService;
@@ -68,7 +60,7 @@ public class OauthInterceptor extends OAuth2AuthenticationEntryPoint {
     private final WebResponseExceptionTranslator<OAuth2Exception> exceptionTranslator = new DefaultWebResponseExceptionTranslator();
 
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) {
         try {
             ResponseEntity<?> result = exceptionTranslator.translate(authException);
             String resultString = Objects.requireNonNull(result.getBody()).toString();
@@ -112,7 +104,7 @@ public class OauthInterceptor extends OAuth2AuthenticationEntryPoint {
                 String email = (String) userMap.get("email");
                 Long userId = (Long) userMap.get("userId");
 
-                //根据用户名称，从数据库获取用户的刷新令牌 todo redis
+                //根据用户id，从redis获取用户的刷新令牌
                 String refresh_token = (String) redisService.get(REFRESH_TOKEN + userId);
                 if (refresh_token != null) {
                     //获取当前用户信息
@@ -132,7 +124,7 @@ public class OauthInterceptor extends OAuth2AuthenticationEntryPoint {
                         @SuppressWarnings("unchecked")
                         Map<String, String> mapResult = restTemplate
                                 .getForObject(
-                                        "http://122.51.112.183:" + port +"/api/oauth/token?username={email}&password={password}&client_id={client_id}&client_secret={client_secret}&grant_type={grant_type}&refresh_token={refresh_token}",
+                                        fileUploadConfig.getHostIp() + "/oauth/token?username={email}&password={password}&client_id={client_id}&client_secret={client_secret}&grant_type={grant_type}&refresh_token={refresh_token}",
                                         Map.class, mapParam);
                         if (mapResult != null) {
                             // 如果刷新成功 跳转到原来需要访问的页面
@@ -146,8 +138,7 @@ public class OauthInterceptor extends OAuth2AuthenticationEntryPoint {
                             SecurityContextHolder.getContext().setAuthentication(
                                     authentications);
 
-                            response.setHeader("access_token",
-                                    mapResult.get("access_token"));
+                            response.setHeader("access_token", mapResult.get("access_token"));
 //                          response.setHeader("refresh_token",
 //                            mapResult.get("refresh_token"));
 

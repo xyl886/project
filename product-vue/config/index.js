@@ -30,14 +30,15 @@ module.exports = {
   dev: {
     // Paths
     // useLocalIp: true,
+
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
       '/api': {
         //本地服务接口地址
-        // target: 'http://127.0.0.1:8089',
+        target: 'http://127.0.0.1:8089',
         //远程演示服务地址,可用于直接启动项目
-        target: 'https://122.51.112.183:8089',
+        // target: 'https://122.51.112.183:8089',
         changeOrigin: true,
         pathRewrite: {
           '^/api': '/'
@@ -47,8 +48,8 @@ module.exports = {
 
     // Various Dev Server settings
     // host: getNetworkIp(), // can be overwritten by process.env.HOST
-    // host: '127.0.0.1',
-    host:'122.51.112.183',
+    host: '127.0.0.1',
+    // host:'122.51.112.183',
     port: 8088, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     autoOpenBrowser: true,
     errorOverlay: true,

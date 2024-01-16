@@ -32,7 +32,20 @@ public class PostsLikeController {
     public Result<?> add(@RequestParam("postsId") Long postsId, @RequestParam("deleted") Integer deleted) {
         return postsLikeService.add(JwtUtil.getUserId(),postsId,deleted);
     }
-
+    @ApiOperation("点赞")
+    @PostMapping("like")
+    public Result<?> like(
+            @RequestParam("postsId") Long postsId,
+            Long userId){
+        return postsLikeService.like(postsId, userId);
+    }
+    @ApiOperation("取消点赞")
+    @PostMapping("dislike")
+    public Result<?> dislike(
+            @RequestParam("postsId") Long postsId,
+            Long userId){
+        return postsLikeService.dislike(postsId, userId);
+    }
     @ApiOperation("分页")
     @PostMapping("/getPage")
     public ResultPage<HistoryVO> getPage(@RequestBody HistoryPageReq pageQuery) {

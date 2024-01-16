@@ -23,11 +23,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 import static com.love.product.constant.RabbitMQConstant.POSTS_ACTION_EXCHANGE;
 import static com.love.product.constant.RabbitMQConstant.POSTS_ACTION_ROUTING_KEY;
-import static com.love.product.enumerate.ActionType.BROWSE;
+import static com.love.product.enums.ActionType.BROWSE;
 
 /**
  * @author Administrator

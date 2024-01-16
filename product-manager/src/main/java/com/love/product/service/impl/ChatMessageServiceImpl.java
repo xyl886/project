@@ -1,9 +1,7 @@
 package com.love.product.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.love.product.config.Exception.BizException;
 import com.love.product.entity.ChatMessage;
@@ -14,11 +12,7 @@ import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.dto.ChatMessageDTO;
 import com.love.product.entity.req.FriendPageReq;
-import com.love.product.entity.vo.FollowVO;
-import com.love.product.entity.vo.UserBasicInfoVO;
-import com.love.product.entity.vo.UserInfoVO;
-import com.love.product.enumerate.Role;
-import com.love.product.enumerate.YesOrNo;
+import com.love.product.enums.YesOrNo;
 import com.love.product.mapper.ChatMessageMapper;
 import com.love.product.mapper.FriendMapper;
 import com.love.product.service.ChatMessageService;
@@ -31,11 +25,8 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * @PackageName: com.love.product.service.impl

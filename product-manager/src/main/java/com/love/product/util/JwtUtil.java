@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class JwtUtil {
 
-    private static TokenConfig getTokenConfig(){
+    private static TokenConfig getTokenConfig() {
         return SpringUtil.getBean("tokenConfig", TokenConfig.class);
     }
 
@@ -26,15 +26,15 @@ public class JwtUtil {
      *
      * @return 用户ID
      */
-    public static Long getUserId(){
-        ServletRequestAttributes servletRequestAttributes =  (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        if(servletRequestAttributes != null) {
+    public static Long getUserId() {
+        ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (servletRequestAttributes != null) {
             HttpServletRequest request = servletRequestAttributes.getRequest();
             String localUser = JwtToken.parseToken(request.getHeader("Authorization"), getTokenConfig().getSigningKey());
-            if(localUser != null){
+            if (localUser != null) {
                 Map<String, Object> userMap = (Map<String, Object>) JsonUtil.json2Map(localUser);
-                if(userMap != null){
-                    return (Long)userMap.get("userId");
+                if (userMap != null) {
+                    return (Long) userMap.get("userId");
                 }
             }
         }

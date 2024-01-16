@@ -34,7 +34,7 @@ public class HistoryVO extends History {
     @ApiModelProperty(value = "头像")
     public String avatar;
     /**
-     * {@link com.love.product.enumerate.PostsType}
+     * {@link com.love.product.enums.PostsType}
      */
     @ApiModelProperty(value = "帖子类型 1闲置帖 2校园帖")
     public Integer postType;

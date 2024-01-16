@@ -1,6 +1,6 @@
 package com.love.product.consumer.message;
 
-import com.love.product.enumerate.ActionType;
+import com.love.product.enums.ActionType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

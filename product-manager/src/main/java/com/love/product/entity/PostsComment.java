@@ -46,7 +46,7 @@ public class PostsComment extends BaseEntity {
     @ApiModelProperty(value = "点赞数量")
     public Integer likeNum;
     /**
-     * {@link com.love.product.enumerate.YesOrNo}
+     * {@link com.love.product.enums.YesOrNo}
      */
     @ApiModelProperty(value = "消息已读状态")
     public Integer status;

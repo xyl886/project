@@ -12,7 +12,7 @@ import javax.annotation.Resource;
 import java.util.*;
 
 import static com.love.product.constant.RabbitMQConstant.POSTS_ACTION_QUEUE;
-import static com.love.product.constant.RedisConstant.*;
+import static com.love.product.constant.RedisKeyConstant.*;
 
 @Component
 public class PostsActionMessageConsumer {

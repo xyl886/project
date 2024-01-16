@@ -1,4 +1,4 @@
-package com.love.product.enumerate;
+package com.love.product.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

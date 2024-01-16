@@ -20,8 +20,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static com.love.product.constant.RedisConstant.REFRESH_TOKEN;
-import static com.love.product.constant.RedisConstant.USER_USERINFO;
+import static com.love.product.constant.RedisKeyConstant.REFRESH_TOKEN;
+import static com.love.product.constant.RedisKeyConstant.USER_USERINFO;
 
 /**
  * @author Administrator

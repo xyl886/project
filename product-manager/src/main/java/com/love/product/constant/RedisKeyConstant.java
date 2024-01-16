@@ -8,7 +8,7 @@ import java.io.Serializable;
  * @describe redis key 常量
  */
 
-public class RedisConstant implements Serializable {
+public class RedisKeyConstant implements Serializable {
 
     public static final String POSTS = "posts:";
     public static final String HOTLIST = "hotList";
@@ -33,10 +33,25 @@ public class RedisConstant implements Serializable {
     /**
      * 用户粉丝数量
      */
-    public static final String FANS_NUM = RedisConstant.FOLLOW + "fans_num:";
+    public static final String FANS_NUM = RedisKeyConstant.FOLLOW + "fans_num:";
 
     /**
      * 用户关注数量
      */
-    public static final String FOLLOW_NUM = RedisConstant.FOLLOW + "follow_num:";
+    public static final String FOLLOW_NUM = RedisKeyConstant.FOLLOW + "follow_num:";
+
+    //保存用户点赞数据的key
+    public static final String MAP_KEY_USER_LIKED = "MAP_USER_LIKED";
+
+    //保存用户被点赞数量的key
+    public static final String MAP_KEY_USER_LIKED_COUNT = "MAP_USER_LIKED_COUNT";
+
+    /**
+     * 拼接被点赞的用户id和点赞的人的id作为key。格式 222222::333333
+     * @param UserId 被点赞的人id
+     * @param PostId 点赞的人的id
+     * @return
+     */public static String getLikedKey(Long UserId, Long PostId){
+        return UserId + "::" + PostId;
+    }
 }

@@ -2,7 +2,7 @@ package com.love.product.quartz.util;
 
 import java.util.Date;
 
-import com.love.product.constant.ScheduleConstants;
+import com.love.product.constant.ScheduleConstant;
 import com.love.product.quartz.domain.SysJob;
 import com.love.product.quartz.domain.SysJobLog;
 import com.love.product.quartz.service.SysJobLogService;
@@ -32,7 +32,7 @@ public abstract class AbstractQuartzJob implements Job {
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SysJob sysJob = new SysJob();
-        BeanUtils.copyProperties(sysJob, context.getMergedJobDataMap().get(ScheduleConstants.TASK_PROPERTIES));
+        BeanUtils.copyProperties(sysJob, context.getMergedJobDataMap().get(ScheduleConstant.TASK_PROPERTIES));
         try {
             before(context, sysJob);
             doExecute(context, sysJob);

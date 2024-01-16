@@ -1,4 +1,4 @@
-package com.love.product.enumerate;
+package com.love.product.enums;
 
 public enum ActionType {
     BROWSE,

@@ -45,7 +45,7 @@ public interface PostsService extends IService<Posts> {
 //    Result<List<Map<Long, String>>> listHot();
     Result<List<Posts>> listHot();
 
-    Result audit(PostsDTO postsDTO);
+    Result<?> audit(PostsDTO postsDTO);
 
     Result<?> restore(Long userId, Long id);
 }

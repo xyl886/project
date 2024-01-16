@@ -4,7 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.love.product.constant.RedisConstant;
+import com.love.product.constant.RedisKeyConstant;
 import com.love.product.entity.Follow;
 import com.love.product.entity.UserInfo;
 import com.love.product.entity.base.Result;
@@ -13,8 +13,8 @@ import com.love.product.entity.req.FollowPageReq;
 import com.love.product.entity.vo.FollowVO;
 import com.love.product.entity.vo.UserBasicInfoVO;
 import com.love.product.entity.vo.UserInfoVO;
-import com.love.product.enumerate.Role;
-import com.love.product.enumerate.YesOrNo;
+import com.love.product.enums.Role;
+import com.love.product.enums.YesOrNo;
 import com.love.product.mapper.FollowMapper;
 import com.love.product.service.FollowService;
 import com.love.product.service.RedisService;
@@ -60,8 +60,8 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
             follow.setUpdateTime(now);
             followMapper.add(follow);
             //清除redis缓存
-            redisService.del(RedisConstant.FOLLOW_NUM + userId);
-            redisService.del(RedisConstant.FANS_NUM + beFollowedUserId);
+            redisService.del(RedisKeyConstant.FOLLOW_NUM + userId);
+            redisService.del(RedisKeyConstant.FANS_NUM + beFollowedUserId);
             if(yesOrNo.equals(YesOrNo.YES)){
                 return Result.OKMsg("已取消关注");
             }else{
@@ -83,26 +83,26 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
 
     @Override
     public int getFansNumByUserId(Long userId){
-        Integer num = (Integer) redisService.get(RedisConstant.FANS_NUM + userId);
+        Integer num = (Integer) redisService.get(RedisKeyConstant.FANS_NUM + userId);
         if(num == null){
             LambdaQueryWrapper<Follow> queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.eq(Follow::getBeFollowedUserId,userId);
             long fansNum = count(queryWrapper);
             num = Integer.parseInt(String.valueOf(fansNum));
-            redisService.set(RedisConstant.FANS_NUM + userId, num, 7L, TimeUnit.DAYS);
+            redisService.set(RedisKeyConstant.FANS_NUM + userId, num, 7L, TimeUnit.DAYS);
         }
         return num;
     }
 
     @Override
     public int getFollowNumByUserId(Long userId){
-        Integer num = (Integer) redisService.get(RedisConstant.FOLLOW_NUM + userId);
+        Integer num = (Integer) redisService.get(RedisKeyConstant.FOLLOW_NUM + userId);
         if(num == null){
             LambdaQueryWrapper<Follow> queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.eq(Follow::getUserId,userId);
             long followNum = count(queryWrapper);
             num = Integer.parseInt(String.valueOf(followNum));
-            redisService.set(RedisConstant.FOLLOW_NUM + userId, num, 7L, TimeUnit.DAYS);
+            redisService.set(RedisKeyConstant.FOLLOW_NUM + userId, num, 7L, TimeUnit.DAYS);
         }
         return num;
     }

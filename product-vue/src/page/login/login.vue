@@ -315,11 +315,13 @@ export default {
               this.$refs.loginForm.resetFields()
             }
           }).catch(err => {
+            this.$message.error(err)
             // this.$refs.sliderVerify.verifyFailEvent()
-          }
-          ).finally(() =>
+          }).finally(() =>
             loading.close()
           )
+        } else {
+          this.$message.error('请检查邮箱和密码！')
         }
       })
     },

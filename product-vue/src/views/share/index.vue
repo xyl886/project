@@ -32,7 +32,7 @@
 import All from './all.vue'
 import BackToTop from '../../page/top/BackToTop.vue'
 import {getToken} from '../../utils/auth'
-import {getDetail, listAllCategory, listHot} from '../../api/posts'
+import {listAllCategory, listHot} from '../../api/posts'
 import {setStore} from '../../utils/store'
 
 export default {

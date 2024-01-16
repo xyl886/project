@@ -5,6 +5,8 @@ import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.GeoResults;
 import org.springframework.data.geo.Point;
 import org.springframework.data.redis.connection.RedisGeoCommands;
+import org.springframework.data.redis.core.Cursor;
+import org.springframework.data.redis.core.ScanOptions;
 
 import java.util.List;
 import java.util.Map;
@@ -739,6 +741,10 @@ public interface RedisService {
 
      */
     List<String> geoGetHash(String key, String... place);
+
+    Long hIncr(String key, Long hashkey, int i);
+
+    Cursor<Map.Entry<Object, Object>> scan(String key, ScanOptions none);
 
 }
 

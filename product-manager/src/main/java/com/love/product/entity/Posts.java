@@ -9,7 +9,6 @@ import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
 import java.math.BigDecimal;
 
 /**
@@ -22,7 +21,7 @@ import java.math.BigDecimal;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName(value ="s_posts")
+@TableName(value ="s_posts_copy")
 public class Posts extends BaseEntity {
 
     @ApiModelProperty(value = "帖子所属用户主键")
@@ -30,7 +29,7 @@ public class Posts extends BaseEntity {
     public Long userId;
 
     /**
-     * {@link com.love.product.enumerate.PostsType}
+     * {@link com.love.product.enums.PostsType}
      */
     @ApiModelProperty(value = "帖子类型 1闲置帖 2校园帖")
     public Integer postsType;

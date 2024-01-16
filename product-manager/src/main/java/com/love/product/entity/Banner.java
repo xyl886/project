@@ -28,7 +28,7 @@ public class Banner extends BaseEntity {
     public String remark;
 
     /**
-     * {@link com.love.product.enumerate.YesOrNo}
+     * {@link com.love.product.enums.YesOrNo}
      */
     @ApiModelProperty(value = "状态")
     public Integer status;

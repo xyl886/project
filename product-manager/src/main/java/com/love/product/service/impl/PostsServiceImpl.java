@@ -21,9 +21,9 @@ import com.love.product.entity.dto.PostsDTO;
 import com.love.product.entity.dto.PostsSearchDTO;
 import com.love.product.entity.req.PostsPageReq;
 import com.love.product.entity.vo.*;
-import com.love.product.enumerate.PostStatus;
-import com.love.product.enumerate.PostsType;
-import com.love.product.enumerate.Role;
+import com.love.product.enums.PostStatus;
+import com.love.product.enums.PostsType;
+import com.love.product.enums.Role;
 import com.love.product.mapper.PostsMapper;
 import com.love.product.mapper.TagsMapper;
 import com.love.product.service.*;
@@ -538,13 +538,13 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
      * 拼接图片获取绝对路径
      */
     private void initImgPath(PostsDetailVO postsDetailVO){
-        postsDetailVO.setCoverPath(ossService.getOssImgPath(postsDetailVO.coverPath));//todo OSS存储
+        postsDetailVO.setCoverPath(ossService.getOssImgPath(postsDetailVO.coverPath));
         if(StringUtils.isNotEmpty(postsDetailVO.imgPath)){
             String[] arr = postsDetailVO.imgPath.split(",");
             List<String> list = Arrays.asList(arr);
             List<String> imgPathList = new ArrayList<>();
             list.forEach(item-> {
-                imgPathList.add(ossService.getOssImgPath(item));//todo OSS存储
+                imgPathList.add(ossService.getOssImgPath(item));
             });
             postsDetailVO.setImgPath(imgPathList.stream().map(String::valueOf).collect(Collectors.joining(",")));
         }
@@ -561,7 +561,7 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
         List<Posts> postsList = list(queryWrapper);
         postsList.forEach(item -> {
             PostsDetailVO postsDetailVO = BeanUtil.copyProperties(item, PostsDetailVO.class);
-            initImgPath(postsDetailVO);
+            this.initImgPath(postsDetailVO);
             postsHashMap.put(postsDetailVO.getId(), postsDetailVO);
         });
         return postsHashMap;
@@ -590,8 +590,8 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
             posts.setTitle(postsVO.getTitle());
             posts.setSchool(postsVO.getSchool());
             //dfa过滤
-            postsVO.setContent(HTMLUtils.deleteTag(postsVO.content));
-            postsVO.setDescription(HTMLUtils.deleteTag(postsVO.description));
+//            postsVO.setContent(HTMLUtils.deleteTag(postsVO.content));
+//            postsVO.setDescription(HTMLUtils.deleteTag(postsVO.description));
 
             List<String> imgPathList = new ArrayList<>();
             Collections.addAll(imgPathList, postsService.getImgPathById(postsVO.getId()).split(","));
@@ -602,7 +602,7 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
                     return Result.fail("最多可上传9张图片");
                 }
                 for (MultipartFile file : postsVO.getFiles()) {
-                    String imgPath;// todo oss存储
+                    String imgPath;
                     try {
                         imgPath = ossService.uploadFile(file);
                     } catch (IOException e) {

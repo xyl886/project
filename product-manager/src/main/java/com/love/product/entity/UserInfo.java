@@ -34,13 +34,13 @@ public class UserInfo extends BaseEntity {
     public String avatar;
 
     /**
-     * {@link com.love.product.enumerate.Gender}
+     * {@link com.love.product.enums.Gender}
      */
     @ApiModelProperty(value = "性别")
     public Integer gender;
 
     /**
-     * {@link com.love.product.enumerate.YesOrNo}
+     * {@link com.love.product.enums.YesOrNo}
      */
     @ApiModelProperty(value = "状态")
     public Integer status;
