@@ -3,7 +3,7 @@ package com.love.product.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.love.product.config.Exception.BizException;
+import com.love.product.config.exception.BizException;
 import com.love.product.entity.ChatMessage;
 import com.love.product.entity.Follow;
 import com.love.product.entity.Friend;

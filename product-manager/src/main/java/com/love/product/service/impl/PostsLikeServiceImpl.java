@@ -27,6 +27,7 @@ import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -58,7 +59,7 @@ public class PostsLikeServiceImpl extends ServiceImpl<PostsLikeMapper, PostsLike
     private FileUploadService fileUploadService;
 
     public Integer getLikeStatus(Long postId, Long likeUserId) {
-        if (redisService.hHasKey(MAP_KEY_USER_LIKED, getLikedKey(postId, likeUserId))){
+        if (redisService.hHasKey(MAP_KEY_USER_LIKED, getLikedKey(postId, likeUserId))) {
             String hashKey = getLikedKey(likeUserId, postId);
             return (Integer) redisService.hGet(MAP_KEY_USER_LIKED, hashKey);
         }
@@ -68,7 +69,7 @@ public class PostsLikeServiceImpl extends ServiceImpl<PostsLikeMapper, PostsLike
     @Override
     public void saveLikeToRedis(Long likedUserId, Long likedPostId) {
         String hashKey = getLikedKey(likedUserId, likedPostId);
-        redisService.hSet(MAP_KEY_USER_LIKED, hashKey,LikeStatus.LIKE.setHashValue());
+        redisService.hSet(MAP_KEY_USER_LIKED, hashKey, LikeStatus.LIKE.setHashValue());
     }
 
     @Override
@@ -85,43 +86,53 @@ public class PostsLikeServiceImpl extends ServiceImpl<PostsLikeMapper, PostsLike
 
     @Override
     public void incrementLikeCount(Long likedPostId) {
-        redisService.hIncr(MAP_KEY_USER_LIKED_COUNT, likedPostId, 1);
+        redisService.hIncr(MAP_KEY_USER_LIKED_COUNT, likedPostId.toString(), 1L);
     }
 
     @Override
     public void decrementLikeCount(Long likedPostId) {
-        redisService.hIncr(MAP_KEY_USER_LIKED_COUNT, likedPostId, -1);
+        redisService.hIncr(MAP_KEY_USER_LIKED_COUNT, likedPostId.toString(), -1L);
     }
 
     @Override
     public List<PostsLike> getLikeDataFromRedis() {
-        Cursor<Map.Entry<Object, Object>> cursor = redisService.scan(MAP_KEY_USER_LIKED, ScanOptions.NONE);
-        List<PostsLike> list = new ArrayList<>();
-        while (cursor.hasNext()) {
-            Map.Entry<Object, Object> entry = cursor.next();
-            String key = (String) entry.getKey();
-            String[] split = key.split("::");
-            Long likedUserId = Long.valueOf(split[0]);
-            Long likedPostId = Long.valueOf(split[1]);
-            HashMap<String, Object> map = (HashMap<String, Object>) entry.getValue();
-            Integer status = (Integer) map.get("status");
-            PostsLike postsLike = new PostsLike(likedUserId, likedPostId,null, status);
-            list.add(postsLike);
-            redisService.hDel(MAP_KEY_USER_LIKED, key);
+        List<PostsLike> list;
+        try (Cursor<Map.Entry<Object, Object>> cursor = redisService.scan(MAP_KEY_USER_LIKED, ScanOptions.NONE)) {
+            list = new ArrayList<>();
+            while (cursor.hasNext()) {
+                Map.Entry<Object, Object> entry = cursor.next();
+                String key = (String) entry.getKey();
+                String[] split = key.split("::");
+                Long likedUserId = Long.valueOf(split[0]);
+                Long likedPostId = Long.valueOf(split[1]);
+                HashMap<String, Object> map = (HashMap<String, Object>) entry.getValue();
+                Integer status = (Integer) map.get("status");
+                Long postsUserId = postsService.getById(likedPostId).userId;
+                PostsLike postsLike = new PostsLike(likedUserId, likedPostId, postsUserId, status);
+                list.add(postsLike);
+                redisService.hDel(MAP_KEY_USER_LIKED, key);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         return list;
     }
 
     @Override
     public List<LikeCountDTO> getLikeCountFromRedis() {
-        Cursor<Map.Entry<Object, Object>> cursor = redisService.scan(MAP_KEY_USER_LIKED_COUNT, ScanOptions.NONE);
-        List<LikeCountDTO> list = new ArrayList<>();
-        while (cursor.hasNext()) {
-            Map.Entry<Object, Object> map = cursor.next();
-            Long key = (Long) map.getKey();
-            LikeCountDTO dto = new LikeCountDTO(key, (Integer) map.getValue());
-            list.add(dto);
-            redisService.hDel(MAP_KEY_USER_LIKED_COUNT, key);
+        List<LikeCountDTO> list;
+        try (Cursor<Map.Entry<Object, Object>> cursor = redisService.scan(MAP_KEY_USER_LIKED_COUNT, ScanOptions.NONE)) {
+            list = new ArrayList<>();
+            while (cursor.hasNext()) {
+                Map.Entry<Object, Object> map = cursor.next();
+                String key = (String) map.getKey();
+                Long postId = Long.parseLong((key));
+                LikeCountDTO dto = new LikeCountDTO(postId, (Integer) map.getValue());
+                list.add(dto);
+                redisService.hDel(MAP_KEY_USER_LIKED_COUNT, key);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         return list;
     }
@@ -195,9 +206,7 @@ public class PostsLikeServiceImpl extends ServiceImpl<PostsLikeMapper, PostsLike
         queryWrapper.eq(PostsLike::getUserId, userId);
         queryWrapper.in(PostsLike::getPostsId, postsIds);
         List<PostsLike> likes = list(queryWrapper);
-        likes.forEach(item -> {
-            postsLikeHashMap.put(item.getPostsId(), item);
-        });
+        likes.forEach(item -> postsLikeHashMap.put(item.getPostsId(), item));
         return postsLikeHashMap;
     }
 
@@ -213,26 +222,26 @@ public class PostsLikeServiceImpl extends ServiceImpl<PostsLikeMapper, PostsLike
             ).collect(Collectors.toList());
         }
         // 获取帖子信息
-        getHVOPosts(list, postsIds, postsService, categoryService);
+        getHVOPosts(list, postsIds);
         return ResultPage.OK(Page.getTotal(), Page.getCurrent(), Page.getSize(), list);
     }
 
     @Override
     public Result<?> like(Long postId, Long userId) {
-            // 查询Redis是否已经存储为喜欢
-            Integer status = this.getLikeStatus(postId, userId);
-            if (Objects.equals(status, LikeStatus.LIKE.getCode())){// 已经存在喜欢
-                return Result.failMsg("已经点赞该内容啦，请勿重复点赞！");
-            }
-            // 不存在或者之前是取消喜欢
-            try {
-                this.saveLikeToRedis(postId, userId);
-                this.incrementLikeCount(postId);
-                return Result.OK("点赞成功！");
-            }catch (Exception e){
-                e.printStackTrace();
-                return Result.failMsg("点赞失败，请稍后重试！");
-            }
+        // 查询Redis是否已经存储为喜欢
+        Integer status = this.getLikeStatus(postId, userId);
+        if (Objects.equals(status, LikeStatus.LIKE.getCode())) {// 已经存在喜欢
+            return Result.failMsg("已经点赞该内容啦，请勿重复点赞！");
+        }
+        // 不存在或者之前是取消喜欢
+        try {
+            this.saveLikeToRedis(userId, postId);
+            this.incrementLikeCount(postId);
+            return Result.OKMsg("点赞成功！");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.failMsg("点赞失败，请稍后重试！");
+        }
 
     }
 
@@ -240,66 +249,59 @@ public class PostsLikeServiceImpl extends ServiceImpl<PostsLikeMapper, PostsLike
     public Result<?> dislike(Long postId, Long userId) {
         // 查询Redis是否已经存储为取消喜欢
         Integer status = getLikeStatus(postId, userId);
-        if (Objects.equals(status, LikeStatus.UNLIKE.getCode())){// 已经存在取消喜欢
+        if (Objects.equals(status, LikeStatus.UNLIKE.getCode())) {// 已经存在取消喜欢
             return Result.failMsg("已经取消点赞该内容啦，请勿重复取消点赞！");
-        }
-        else if (Objects.equals(status, LikeStatus.NOT_EXIST.getCode())) {// 不存在取消喜欢，修改状态，增加0条
-            unlikeFromRedis(postId, userId);
+        } else if (Objects.equals(status, LikeStatus.NOT_EXIST.getCode())) {// 不存在取消喜欢，修改状态，增加0条
+            unlikeFromRedis(userId, postId);
             this.decrementLikeCount(postId);
-            return Result.OK("取消点赞成功！");
-        }
-        else{// 之前已经喜欢，则修改状态,并喜欢数-1
+            return Result.OKMsg("取消点赞成功！");
+        } else {// 之前已经喜欢，则修改状态,并喜欢数-1
             try {
-                unlikeFromRedis(postId, userId);
+                unlikeFromRedis(userId, postId);
                 this.decrementLikeCount(postId);
-                return Result.OK("取消点赞成功！");
-            }catch (Exception e){
+                return Result.OKMsg("取消点赞成功！");
+            } catch (Exception e) {
                 e.printStackTrace();
                 return Result.failMsg("取消点赞失败，请稍后重试！");
             }
         }
     }
 
-    public PostsLike getByInfoIdAndLikeUserId (Long postId, Long likeUserId) {
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("postsId",postId);
-        map.put("userId",likeUserId);
-        try{
-            PostsLike postsLike = baseMapper.selectByMap(map).get(0);
-            log.info("通过被点赞人和点赞人id查询是否存在点赞记录");
-            return postsLike;
-        }catch (Exception e){
-            log.info("当前查询的被点赞人和点赞人id不存在点赞记录");
-            return null;
-        }
-    }
     public Boolean update(PostsLike postsLike) {
         UpdateWrapper<PostsLike> updateWrapper = new UpdateWrapper<>();
         updateWrapper.set("status", postsLike.getStatus());
-        updateWrapper.set("update_time",postsLike.getUpdateTime());
-        updateWrapper.eq("id",postsLike.getId());
+        updateWrapper.set("update_time", postsLike.getUpdateTime());
+        updateWrapper.eq("id", postsLike.getId());
 
-        int rows = postsLikeMapper.update(postsLike,updateWrapper);
+        int rows = postsLikeMapper.update(postsLike, updateWrapper);
         return rows > 0;
     }
+
+    public void initLikeFromMysqlToRedis() {
+
+    }
+
+    @Override
     public void transLikeFromRedisToMysql() {
         // 批量获取缓存中的点赞数据
         List<PostsLike> list = this.getLikeDataFromRedis();
+        log.info(list.toString());
         if (CollectionUtils.isEmpty(list))// 为空，不写入
             return;
-        for (PostsLike item: list){
-            PostsLike postsLike = this.getByInfoIdAndLikeUserId(item.getPostsId(), item.getUserId());// 在数据库中查询
+        for (PostsLike item : list) {
+//            log.info(String.valueOf(item));
+            PostsLike postsLike = this.getDetail(item.userId, item.postsId);// 在数据库中查询
             if (postsLike == null) {// 无记录，新增
-                if(!save(item)){
-                    log.info("新增点赞数据失败！");
+                boolean b = save(item);
+                if (b) {
                     return;
                 }
-            }else {// 有记录，更新
+            } else {// 有记录，更新
                 // 判断数据库中点赞状态与缓存中点赞状态一致性
-                if (Objects.equals(postsLike.getStatus(), item.getStatus())){// 一致，无需持久化，点赞数量-1
+                if (Objects.equals(postsLike.getStatus(), item.getStatus())) {// 一致，无需持久化，点赞数量-1
                     incrementLikeCount(item.getPostsId());
-                }else{// 不一致
-                    if (Objects.equals(postsLike.getStatus(), LikeStatus.LIKE.getCode())){// 在数据库中已经是点赞，则取消点赞，同时记得redis中的count-1
+                } else {// 不一致
+                    if (Objects.equals(postsLike.getStatus(), LikeStatus.LIKE.getCode())) {// 在数据库中已经是点赞，则取消点赞，同时记得redis中的count-1
                         // 之前是点赞，现在改为取消点赞 1.设置更改status 2. redis中的count要-1（消除在数据库中自己的记录）
                         postsLike.setStatus(LikeStatus.UNLIKE.getCode());
                         this.decrementLikeCount(item.getPostsId());
@@ -308,7 +310,7 @@ public class PostsLikeServiceImpl extends ServiceImpl<PostsLikeMapper, PostsLike
                         this.incrementLikeCount(item.getPostsId());
                     }
                     postsLike.setUpdateTime(LocalDateTime.now());
-                    if(!update(postsLike)){// 更新点赞数据
+                    if (!update(postsLike)) {// 更新点赞数据
                         log.info("更新点赞数据失败！");
                         return;
                         // System.out.println("缓存记录更新数据库失败！请重试");
@@ -318,31 +320,34 @@ public class PostsLikeServiceImpl extends ServiceImpl<PostsLikeMapper, PostsLike
         }
     }
 
+    @Override
     public void transLikeCountFromRedisToMysql() {
-// 获取缓存中内容的点赞数列表
+        // 获取缓存中内容的点赞数列表
         List<LikeCountDTO> list = this.getLikeCountFromRedis();
+        log.info(list.toString());
         if (CollectionUtils.isEmpty(list))// 为空，不写入
             return;
-        for (LikeCountDTO item: list){
-            Posts posts = postsMapper.selectById(item.getPostId());
+        for (LikeCountDTO item : list) {
+            Posts posts = postsMapper.selectById(item.postId);
             if (posts != null) {// 新增点赞数
-                Integer likeCount = posts.getLikeNum() + item.getCount();
-                System.out.println("内容id不为空，更新内容点赞数量");
+                Integer likeCount = posts.likeNum + item.count;
+                log.info("开始更新点赞数至posts，postId为" + posts.id);
                 posts.setLikeNum(likeCount);
-
                 UpdateWrapper<Posts> updateWrapper = new UpdateWrapper<>();
-                updateWrapper.set("like_count", posts.getLikeNum());
-                updateWrapper.eq("id", posts.getId());
+                updateWrapper.set("like_num", posts.likeNum);
+                updateWrapper.eq("id", posts.id);
                 int rows = postsMapper.update(posts, updateWrapper);
                 if (rows > 0) {
-                    System.out.println("成功更新内容点赞数！");
+                    log.info("成功更新点赞数至posts，postId为" + posts.id);
                     return;
                 }
             }
-            System.out.println("内容id不存在，无法将缓存数据持久化！");
+            log.info("内容id不存在，无法将缓存数据持久化！");
         }
     }
-    static void getHVOPosts(List<HistoryVO> list, List<Long> postsIds, PostsService postsService, CategoryService categoryService) {
+
+    @Override
+    public void getHVOPosts(List<HistoryVO> list, List<Long> postsIds) {
         Map<Long, PostsDetailVO> postsHashMap;
         if (!postsIds.isEmpty()) {
             postsHashMap = postsService.listByIds(postsIds);

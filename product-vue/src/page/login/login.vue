@@ -1,109 +1,115 @@
 <template>
-  <el-dialog class="custom-dialog" :visible.sync="dialogVisible"  :width="'450px'">
+  <el-dialog class="custom-dialog" :visible.sync="dialogVisible" :width="'450px'">
 
-        <div class="login-modal">
-          <div class="title">
-            {{formType === 'login'?'登录':(formType==='forget'?'重置密码':'注册')}}
-          </div>
-          <el-form class="login-form"
-                   :rules="currentLoginRules"
-                   ref="loginForm"
-                   :model="loginForm"
-                   label-width="0">
+    <div class="login-modal">
+      <div class="title">
+        {{ formType === 'login' ? '登录' : (formType === 'forget' ? '重置密码' : '注册') }}
+      </div>
+      <el-form class="login-form"
+               :rules="currentLoginRules"
+               ref="loginForm"
+               :model="loginForm"
+               label-width="0">
 
-            <el-form-item prop="email">
-              <el-input
-                placeholder="请输入邮箱"
-                prefix-icon="el-icon-user"
-                v-model="loginForm.email"
-                clearable>
-              </el-input>
-            </el-form-item>
-            <el-form-item prop="password" v-if="loginType === 'emailCode'||formType!=='login'">
-              <el-col :span="16">
-                <el-input
-                  :type="passwordType"
-                  placeholder="请输入验证码"
-                  prefix-icon="el-icon-lock"
-                  v-model="loginForm.emailCode"
-                  clearable>
-                </el-input>
-              </el-col>
-              <el-col :span="8">
-                <el-button
-                  style="float: right;width: 100px"
-                  :type="'primary'"
-                  :disabled="isSending"
-                  @click="sendEmailCode">
-                  {{ buttonText }}</el-button>
-              </el-col>
-            </el-form-item>
-            <el-form-item prop="password" v-if="loginType === 'password'||formType==='register'">
-              <el-input
+        <el-form-item prop="email">
+          <el-input
+              placeholder="请输入邮箱"
+              prefix-icon="el-icon-user"
+              v-model="loginForm.email"
+              clearable>
+          </el-input>
+        </el-form-item>
+        <el-form-item prop="password" v-if="loginType === 'emailCode'||formType!=='login'">
+          <el-col :span="16">
+            <el-input
                 :type="passwordType"
-                :placeholder="formType==='forget'?'请输入新密码':'请输入密码'"
+                placeholder="请输入验证码"
                 prefix-icon="el-icon-lock"
-                v-model="loginForm.password"
-                show-password
+                v-model="loginForm.emailCode"
                 clearable>
-              </el-input>
-            </el-form-item>
-            <el-form-item prop="confirmPassword" v-if="formType !== 'login'">
-              <el-input
-                :type="passwordType"
-                placeholder="请再次输入密码"
-                prefix-icon="el-icon-lock"
-                v-model="loginForm.confirmPassword"
-                clearable>
-              </el-input>
-            </el-form-item>
-
-            <el-form-item v-if="formType==='login'">
-              <el-row :span="24">
-<!--                <el-col :span="12">-->
-<!--                  <el-checkbox v-model="loginForm.rememberPwd"  @change="handleChange">记住密码</el-checkbox>-->
-<!--                  <el-popover-->
-<!--                    placement="top-start"-->
-<!--                    title=""-->
-<!--                    width="200"-->
-<!--                    trigger="hover"-->
-<!--                    content="忘记密码请联系系统管理员">-->
-<!--                    <span style="cursor: pointer;color: #1890ff;float: left;" @click="changeModalType('forget')">忘记密码</span>-->
-<!--                  </el-popover>-->
-<!--                </el-col>-->
-                <el-col :span="12" style="float: right">
-                  <div v-if="formType === 'login'&&loginType ==='emailCode'" style="font-size: 14px;">
-                    <span style="cursor: pointer;color: #1890ff;float: right;" @click="changeLoginType('password')">{{ loginTypeText }}</span>
-                  </div>
-                  <div v-if="formType === 'login'&&loginType ==='password'" style="font-size: 14px;">
-                    <span style="cursor: pointer;color: #1890ff;float: right;" @click="changeLoginType('emailCode')">{{ loginTypeText }}</span>
-                  </div>
-                </el-col>
-              </el-row>
-            </el-form-item>
-            <!-- 滑块验证 -->
-            <el-dialog title="请拖动滑块完成拼图" width="360px" :visible.sync="isShowSliderVerify"
-                       :close-on-click-modal="false" @closed="refresh" append-to-body>
-              <slider-verify ref="sliderVerify" @success="onSuccess" @fail="onFail" @again="onAgain" />
-            </el-dialog>
-            <el-form-item>
-              <el-button :type="formType === 'login'?'primary':'danger'"
-                         style="width: 100%;"
-                         @click.native.prevent="handleLogin"
-                         class="login-submit">
-                {{formType === 'login'?'登录':(formType==='forget'?'重置密码':'注册')}}
-              </el-button>
-            </el-form-item>
-            <el-col :span="24">
-            <div v-if="formType === 'login'" style="text-align: center;font-size: 14px;">
-              没有账号？<span style="cursor: pointer;color: #df1f20;" @click="changeModalType('register')">免费注册</span>
-            </div>
-            <div v-if="formType !== 'login'" style="text-align: center;font-size: 14px;">
-              已有账号？<span style="cursor: pointer;color: #df1f20;" @click="changeModalType('login')">返回登录</span>
-            </div>
+            </el-input>
+          </el-col>
+          <el-col :span="8">
+            <el-button
+                style="float: right;width: 100px"
+                :type="'primary'"
+                :disabled="isSending"
+                @click="sendEmailCode">
+              {{ buttonText }}
+            </el-button>
+          </el-col>
+        </el-form-item>
+        <el-form-item prop="password" v-if="loginType === 'password'||formType==='register'">
+          <el-input
+              :type="passwordType"
+              :placeholder="formType==='forget'?'请输入新密码':'请输入密码'"
+              prefix-icon="el-icon-lock"
+              v-model="loginForm.password"
+              show-password
+              clearable>
+          </el-input>
+        </el-form-item>
+        <el-form-item prop="confirmPassword" v-if="formType !== 'login'">
+          <el-input
+              :type="passwordType"
+              placeholder="请再次输入密码"
+              prefix-icon="el-icon-lock"
+              v-model="loginForm.confirmPassword"
+              clearable>
+          </el-input>
+        </el-form-item>
+        <el-form-item prop="verCode">
+          <el-col :span="12"><el-input v-model="loginForm.verCode" placeholder="请输入验证码"></el-input></el-col>
+          <el-col :span="12"><el-image style="padding: 0 15px" :src="captchaImage" placeholder="刷新验证码" @click="refreshCaptcha" fit="contain" alt="验证码"></el-image></el-col>
+        </el-form-item>
+        <el-form-item v-if="formType==='login'">
+          <el-row :span="24">
+            <!--                <el-col :span="12">-->
+            <!--                  <el-checkbox v-model="loginForm.rememberPwd"  @change="handleChange">记住密码</el-checkbox>-->
+            <!--                  <el-popover-->
+            <!--                    placement="top-start"-->
+            <!--                    title=""-->
+            <!--                    width="200"-->
+            <!--                    trigger="hover"-->
+            <!--                    content="忘记密码请联系系统管理员">-->
+            <!--                    <span style="cursor: pointer;color: #1890ff;float: left;" @click="changeModalType('forget')">忘记密码</span>-->
+            <!--                  </el-popover>-->
+            <!--                </el-col>-->
+            <el-col :span="12" style="float: right">
+              <div v-if="formType === 'login'&&loginType ==='emailCode'" style="font-size: 14px;">
+                <span style="cursor: pointer;color: #1890ff;float: right;"
+                      @click="changeLoginType('password')">{{ loginTypeText }}</span>
+              </div>
+              <div v-if="formType === 'login'&&loginType ==='password'" style="font-size: 14px;">
+                <span style="cursor: pointer;color: #1890ff;float: right;"
+                      @click="changeLoginType('emailCode')">{{ loginTypeText }}</span>
+              </div>
             </el-col>
-          </el-form>
-        </div>
+          </el-row>
+        </el-form-item>
+        <!-- 滑块验证 -->
+        <el-dialog title="请拖动滑块完成拼图" width="360px" :visible.sync="isShowSliderVerify"
+                   :close-on-click-modal="false" @closed="refresh" append-to-body>
+          <slider-verify ref="sliderVerify" @success="onSuccess" @fail="onFail" @again="onAgain"/>
+        </el-dialog>
+        <el-form-item>
+          <el-button :type="formType === 'login'?'primary':'danger'"
+                     style="width: 100%;"
+                     @click.native.prevent="handleLogin"
+                     class="login-submit">
+            {{ formType === 'login' ? '登录' : (formType === 'forget' ? '重置密码' : '注册') }}
+          </el-button>
+        </el-form-item>
+        <el-col :span="24">
+          <div v-if="formType === 'login'" style="text-align: center;font-size: 14px;">
+            没有账号？<span style="cursor: pointer;color: #df1f20;" @click="changeModalType('register')">免费注册</span>
+          </div>
+          <div v-if="formType !== 'login'" style="text-align: center;font-size: 14px;">
+            已有账号？<span style="cursor: pointer;color: #df1f20;" @click="changeModalType('login')">返回登录</span>
+          </div>
+        </el-col>
+      </el-form>
+    </div>
   </el-dialog>
 </template>
 
@@ -111,15 +117,17 @@
 import {userRegister} from '@/api/login'
 import {mapGetters} from 'vuex'
 import Vue from 'vue'
-import {sendEmailCode} from '../../api/login'
+import {captcha, sendEmailCode} from '../../api/login'
 import {userReset} from '../../api/user_info'
 import SliderVerify from './components/SlideVerify.vue'
 
 export default {
   name: 'index',
   components: {SliderVerify},
-  data () {
+  data() {
     return {
+      captcha: '',
+      captchaImage: '',
       isShowSliderVerify: false,
       isSending: false, // 是否正在发送验证码
       remainingTime: 60, // 剩余时间，单位为秒
@@ -133,16 +141,25 @@ export default {
         password: '',
         confirmPassword: '',
         emailCode: '',
-        rememberPwd: false
+        rememberPwd: false,
+        verCode: '',
+        verkey: ''
       },
       loginRules: {
         email: [
-          { required: true, message: '请输入邮箱', trigger: ['blur', 'change'] },
-          { pattern: /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/, message: '邮箱格式错误', trigger: ['blur', 'change'] }
+          {required: true, message: '请输入邮箱', trigger: ['blur', 'change']},
+          {
+            pattern: /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/,
+            message: '邮箱格式错误',
+            trigger: ['blur', 'change']
+          }
         ],
         emailCode: [
-          { required: true, message: '请输入验证码', trigger: ['blur', 'change'] },
-          { len: 6, message: '验证码长度必须是6位', trigger: 'blur' }
+          {required: true, message: '请输入验证码', trigger: ['blur', 'change']},
+          {len: 6, message: '验证码长度必须是6位', trigger: 'blur'}
+        ],
+        verCode: [
+          {required: true, message: '请输入图形验证码', trigger: ['blur', 'change']},
         ],
         password: [
           {required: true, message: '请输入密码', trigger: 'change'},
@@ -157,26 +174,29 @@ export default {
   },
   computed: {
     ...mapGetters(['userInfo']),
-    loginTypeText () {
+    loginTypeText() {
       return this.loginType === 'emailCode' ? '密码登录' : '验证码登录'
     },
-    buttonText () {
+    buttonText() {
       return this.isSending ? `${this.remainingTime}` : '获取验证码'
     },
-    currentLoginRules () {
+    currentLoginRules() {
       if (this.loginType === 'password') {
         return {
           email: this.loginRules.email,
-          password: this.loginRules.password
+          password: this.loginRules.password,
+          verCode: this.loginRules.verCode,
         }
       } else if (this.loginType === 'emailCode') {
         return {
           email: this.loginRules.email,
+          verCode: this.loginRules.verCode,
           emailCode: this.loginRules.emailCode
         }
       } else {
         return {
           email: this.loginRules.email,
+          verCode: this.loginRules.verCode,
           emailCode: this.loginRules.emailCode,
           password: this.loginRules.password,
           confirmPassword: this.loginRules.confirmPassword
@@ -184,7 +204,8 @@ export default {
       }
     }
   },
-  mounted () {
+  mounted() {
+    this.refreshCaptcha();
     Vue.prototype.$bus.$on('showLoginDialog', () => {
       this.dialogVisible = true
       this.isSending = false
@@ -199,6 +220,12 @@ export default {
     // }
   },
   watch: {
+    dialogVisible(newValue) {
+      console.log(newValue)
+      if (newValue) {
+        this.refreshCaptcha();
+      }
+    }
   },
   methods: {
     // rememberPwd (login) {
@@ -213,7 +240,7 @@ export default {
     //   this.lastOperationTime = currentTime
     //   localStorage.setItem('lastOperationTime', this.lastOperationTime.toString())
     // },
-    sendEmailCode () {
+    sendEmailCode() {
       if (this.isSending) {
         return
       }
@@ -242,7 +269,7 @@ export default {
         this.$message.warning('请输入你的邮箱！')
       }
     },
-    showDialog () {
+    showDialog() {
       this.dialogVisible = true
       this.formType = 'login'
       this.loginType = 'password'
@@ -250,16 +277,16 @@ export default {
         this.$refs.loginForm.resetFields()
       })
     },
-    backFun () {
+    backFun() {
       this.$router.push({path: '/'})
     },
-    homePage () {
+    homePage() {
       this.$router.push({path: '/index'})
     },
     // showPassword () {
     //   this.passwordType === '' ? (this.passwordType = 'password') : (this.passwordType = '')
     // },
-    changeLoginType (type) {
+    changeLoginType(type) {
       this.loginType = type
       console.log(this.loginType)
       this.$refs.loginForm.resetFields()
@@ -267,7 +294,7 @@ export default {
       this.loginForm.emailCode = ''
       this.loginForm.confirmPassword = ''
     },
-    changeModalType (type) {
+    changeModalType(type) {
       this.formType = type
       this.isSending = false
       console.log(this.formType)
@@ -286,7 +313,16 @@ export default {
         this.loginRules['confirmPassword'][0]['required'] = false
       }
     },
-    handleLogin () {
+    refreshCaptcha() {
+      captcha().then(res => {
+        this.loginForm.verKey = res.data.key;
+        this.captchaImage = res.data.image;
+      })
+          .catch(error => {
+            console.error(error);
+          });
+    },
+    handleLogin() {
       if (this.formType === 'login') {
         this.login()
       } else if (this.formType === 'register') {
@@ -295,7 +331,7 @@ export default {
         this.forget()
       }
     },
-    login () { // 登录
+    login() { // 登录
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           const loading = this.$loading({
@@ -316,16 +352,16 @@ export default {
             }
           }).catch(err => {
             this.$message.error(err)
-            // this.$refs.sliderVerify.verifyFailEvent()
+            this.refreshCaptcha()
           }).finally(() =>
-            loading.close()
+              loading.close()
           )
         } else {
-          this.$message.error('请检查邮箱和密码！')
+          this.$message.error('请检查！')
         }
       })
     },
-    register () { // 注册
+    register() { // 注册
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           const loading = this.$loading({
@@ -343,13 +379,14 @@ export default {
               })
               this.dialogVisible = false
             }
+            this.refreshCaptcha()
           }).finally(() =>
-            loading.close()
+              loading.close()
           )
         }
       })
     },
-    forget () {
+    forget() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           const loading = this.$loading({
@@ -367,34 +404,35 @@ export default {
               })
               this.dialogVisible = false
             }
+            this.refreshCaptcha()
           }).finally(() =>
-            loading.close()
+              loading.close()
           )
         }
       })
     },
     /* 滑动验证成功 */
-    onSuccess (captcha) {
+    onSuccess(captcha) {
       Object.assign(this.loginForm, captcha)
       this.loginForm.nonceStr = captcha.nonceStr
       this.loginForm.value = captcha.value
       this.login()
     },
     /* 滑动验证失败 */
-    onFail (msg) {
+    onFail(msg) {
       console.log(msg)
       // this.message('error', msg || '验证失败，请控制拼图对齐缺口');
     },
     /* 滑动验证异常 */
-    onAgain () {
+    onAgain() {
       this.$message.error('滑动操作异常，请重试')
     },
     /* 刷新验证码 */
-    refresh () {
+    refresh() {
       this.$refs.sliderVerify.refresh()
     },
     /* 提示弹框 */
-    message (type, message) {
+    message(type, message) {
       this.$message({
         showClose: true,
         type: type,
@@ -407,42 +445,45 @@ export default {
 </script>
 
 <style scoped>
-  /*#body{*/
-  /*  margin: 0;*/
-  /*  padding: 0;*/
-  /*  width: 100%;*/
-  /*  height: 100%;*/
-  /*  background-size: 100% 100%;*/
-  /*  background-image: linear-gradient(to top, rgba(255, 95, 45, 0.27), rgba(211, 155, 5, 0.2)), url("../../../public/img/login-bg.png");*/
-  /*  background-repeat: no-repeat;*/
-  /*}*/
-  /*.name{*/
-  /*  line-height: 50px;*/
-  /*  font-size: 30px;*/
-  /*  font-weight: 700;*/
-  /*  color: #FFFFFF;*/
-  /*  margin-left: 10px;*/
-  /*}*/
-  .login-modal{
-    position: relative;
-    /*width: 420px;*/
-    /*height: 450px;*/
-    top: 50%;
-    /*margin: -225px auto 0;*/
-    background-color: #FFFFFF;
-    border-radius: 5px;
-  }
-  .title{
-   padding: 20px;
-    /*line-height: 100px;*/
-    font-weight: 600;
-    text-align: center;
-    font-size: 25px;
-  }
-  .login-form{
-    margin: 20px 40px;
-  }
-  .custom-dialog .el-dialog__wrapper .el-dialog__body {
-    padding:20px 20px; /* 根据需要设置新的 padding 值 */
-  }
+/*#body{*/
+/*  margin: 0;*/
+/*  padding: 0;*/
+/*  width: 100%;*/
+/*  height: 100%;*/
+/*  background-size: 100% 100%;*/
+/*  background-image: linear-gradient(to top, rgba(255, 95, 45, 0.27), rgba(211, 155, 5, 0.2)), url("../../../public/img/login-bg.png");*/
+/*  background-repeat: no-repeat;*/
+/*}*/
+/*.name{*/
+/*  line-height: 50px;*/
+/*  font-size: 30px;*/
+/*  font-weight: 700;*/
+/*  color: #FFFFFF;*/
+/*  margin-left: 10px;*/
+/*}*/
+.login-modal {
+  position: relative;
+  /*width: 420px;*/
+  /*height: 450px;*/
+  top: 50%;
+  /*margin: -225px auto 0;*/
+  background-color: #FFFFFF;
+  border-radius: 5px;
+}
+
+.title {
+  padding: 20px;
+  /*line-height: 100px;*/
+  font-weight: 600;
+  text-align: center;
+  font-size: 25px;
+}
+
+.login-form {
+  margin: 20px 40px;
+}
+
+.custom-dialog .el-dialog__wrapper .el-dialog__body {
+  padding: 20px 20px; /* 根据需要设置新的 padding 值 */
+}
 </style>

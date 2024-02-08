@@ -1,4 +1,4 @@
-package com.love.product.config.Exception;
+package com.love.product.config.exception;
 
 /**
  * @author Administrator

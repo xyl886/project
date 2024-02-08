@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.love.product.config.exception.BizException;
 import com.love.product.config.fileupload.FileUploadConfig;
 import com.love.product.config.security.TokenConfig;
 import com.love.product.entity.Posts;
@@ -50,8 +51,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static com.love.product.constant.CommonConstant.CAPTCHA;
-import static com.love.product.constant.CommonConstant.EXPIRE_TIME;
+import static com.love.product.constant.CommonConstant.*;
 import static com.love.product.constant.RabbitMQConstant.EMAIL_EXCHANGE;
 import static com.love.product.constant.RedisKeyConstant.*;
 import static com.love.product.entity.base.ResultCode.*;
@@ -89,28 +89,29 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
     public void checkEmail(String email) {
         boolean matches = Pattern.compile("\\w+@{1}\\w+\\.{1}\\w+").matcher(email).matches();
-        Assert.isTrue(matches, EMAIL_ERROR.getMsg());
+        try {
+            Assert.isTrue(matches, EMAIL_ERROR.getMsg());
+        }catch(IllegalArgumentException e) {
+            throw new BizException(EMAIL_ERROR);
+        }
     }
 
     private void checkCode(String key, String emailCode) {
         Object code = redisService.get(key);
-        Assert.isTrue(code != null && code.equals(emailCode), ERROR_EXCEPTION_MOBILE_CODE.getMsg());
-    }
-
-    private void codeLimit(String email) {
-        // 从缓存中查询邮箱最近一次发送验证码的时间戳
-        Object lastSendTimestampObj = redisService.get(email);
-        long lastSendTimestamp = 0L;
-        if (lastSendTimestampObj != null) {
-            lastSendTimestamp = Long.parseLong(lastSendTimestampObj.toString());
+        try {
+            Assert.isTrue(code != null && code.equals(emailCode), ERROR_EXCEPTION_MOBILE_CODE.getMsg());
+        } catch (IllegalArgumentException e) {
+             throw new BizException(ERROR_EXCEPTION_MOBILE_CODE);
         }
-        long currentTime = System.currentTimeMillis() / 1000; // 当前时间戳，单位为秒
-        Assert.isTrue(
-                currentTime - lastSendTimestamp > 60L,
-                "发送验证码过于频繁，请稍后再试!");
-        redisService.set(email, currentTime, EXPIRE_TIME, TimeUnit.SECONDS);
     }
-
+    private void isValidType(String type) {
+        try {
+            CodeType emailCodeType = CodeType.valueOf(type.toUpperCase());
+            log.info("邮箱验证码类型为：" + emailCodeType);
+        } catch (IllegalArgumentException e) {
+            throw new BizException(PARAMS_ILLEGAL);
+        }
+    }
     /**
      * 发送邮箱验证码
      *
@@ -120,7 +121,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
      */
     @Override
     public Result<?> sendCode(String email, String type) {
-        codeLimit(email);
+        isValidType(type);
         checkEmail(email);
         String code = getRandomCode();
         Map<String, Object> map = new HashMap<>();
@@ -160,7 +161,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             return Result.failMsg("登录失败，账号已禁用，请联系客服人员");
         }
         if (!loginVO.emailCode.isEmpty() && loginVO.password.isEmpty()) {
-            checkCode("code:" + loginVO.email, loginVO.emailCode);
+            checkCode(CODE + loginVO.email, loginVO.emailCode);
         } else {
             PasswordEncoder encoder = new BCryptPasswordEncoder();
             boolean matches = encoder.matches(loginVO.password, userInfoVO.password);
@@ -202,8 +203,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         if (registerVO.password.isEmpty()) {
             return Result.failMsg("请设置密码！");
         }
-        checkCode("code:" + registerVO.email, registerVO.emailCode);
-
+        checkCode(CODE + registerVO.email, registerVO.emailCode);
         if (!registerVO.password.equals(registerVO.confirmPassword)) {
             return Result.failMsg("两次输入密码不一致，请重新输入！");
         }
@@ -302,11 +302,10 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         if (userInfo != null) {
             userInfoVO = new UserInfoVO();
             BeanUtil.copyProperties(userInfo, userInfoVO);
-            Gender gender = Gender.valueOf(userInfoVO.getGender());
-            userInfoVO.setGenderText(gender.getText());
+            userInfoVO.setGenderText(Gender.valueOf(userInfoVO.gender).getText());
             userInfoVO.setFansNum(followService.getFansNumByUserId(userInfo.id));
             userInfoVO.setFollowNum(followService.getFollowNumByUserId(userInfo.id));
-//            userInfoVO.setAvatar(fileUploadService.getImgPath(userInfoVO.getAvatar()));
+//            userInfoVO.setRoleName(Role.valueOf(userInfo.role).getText());
         }
         return userInfoVO;
     }

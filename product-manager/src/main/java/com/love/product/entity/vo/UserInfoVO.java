@@ -20,13 +20,14 @@ public class UserInfoVO extends UserInfo {
 
     @ApiModelProperty(value = "登录token")
     public String accessToken;
-
     @ApiModelProperty(value = "性别名称")
     public String genderText;
-
     @ApiModelProperty(value = "关注数量")
     public Integer followNum;
-
     @ApiModelProperty(value = "粉丝数量")
     public Integer fansNum;
+//    @ApiModelProperty(value = "发布帖子数量")
+//    public Integer postNum;
+//    @ApiModelProperty(value = "角色名称")
+//    public String roleName;
 }

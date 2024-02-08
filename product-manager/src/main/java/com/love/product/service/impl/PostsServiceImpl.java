@@ -15,10 +15,7 @@ import com.love.product.entity.PostsLike;
 import com.love.product.entity.Tags;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
-import com.love.product.entity.dto.PostEsDTO;
-import com.love.product.entity.dto.PostEsHighlightData;
-import com.love.product.entity.dto.PostsDTO;
-import com.love.product.entity.dto.PostsSearchDTO;
+import com.love.product.entity.dto.*;
 import com.love.product.entity.req.PostsPageReq;
 import com.love.product.entity.vo.*;
 import com.love.product.enums.PostStatus;
@@ -62,7 +59,6 @@ import java.util.stream.Collectors;
 import static com.love.product.constant.CommonConstant.ALIYUNOSS_PREFIX;
 
 
-
 /**
  * @author Administrator
  * @date 2022-10-19 10:26
@@ -72,7 +68,7 @@ import static com.love.product.constant.CommonConstant.ALIYUNOSS_PREFIX;
 public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements PostsService {
 
     @Resource
-    private  PostsMapper postsMapper;
+    private PostsMapper postsMapper;
     @Resource
     private TagsService tagsService;
     @Resource
@@ -101,7 +97,7 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
     @Resource
     private PostsService postsService;
     @Resource
-    private  CategoryService categoryService;
+    private CategoryService categoryService;
 
     @Resource
     private ElasticsearchRestTemplate elasticsearchRestTemplate;
@@ -127,8 +123,10 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
             e.printStackTrace();
         }
     }
+
     private static final int THREAD_POOL_SIZE = 10;
     private static final ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+
     // 2. 在帖子创建或修改时进行自动审核
     public void createOrUpdatePost(Posts post) {
         boolean containsSensitiveWords = post.getTitle() != null && containsSensitiveWords(post.getTitle());
@@ -148,7 +146,7 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
 
     // 判断文本中是否包含敏感词
     private boolean containsSensitiveWords(String text) {
-            loadSensitiveWords();
+        loadSensitiveWords();
         for (String word : sensitiveWords) {
             if (text.contains(word)) {
                 return true;
@@ -159,7 +157,7 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
 
 
     // 3. 编写定时任务或异步任务进行审核
-    @Scheduled(fixedDelay = 10000) // 每60秒执行一次
+//    @Scheduled(fixedDelay = 10000) // 每60秒执行一次
     public void autoReviewPosts() {
         // 查询所有状态为 "待审核" 的帖子
         QueryWrapper<Posts> queryWrapper = new QueryWrapper<>();
@@ -171,11 +169,11 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
             if (containsSensitiveWords(post.getTitle()) || containsSensitiveWords(post.getContent())) {
                 // 如果帖子仍然包含敏感词，则将其状态设置为 "审核不通过"
                 post.setStatus(PostStatus.REJECTED.getValue());
-                log.info("自动审核不通过:"+post.getId());
+                log.info("自动审核不通过:" + post.getId());
             } else {
                 // 否则将其状态设置为 "已发布"
                 post.setStatus(PostStatus.PUBLISHED.getValue());
-                log.info("自动审核通过:"+post.getId());
+                log.info("自动审核通过:" + post.getId());
             }
             // 更新帖子状态到数据库中
             postsMapper.updateById(post);
@@ -187,7 +185,7 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
      */
     @SneakyThrows
     @Override
-    public Result<Posts> add(Long userId, PostsVO postsVO) {
+    public Result<Posts> add(PostsVO postsVO) {
         PostsType postsType = PostsType.valueOf(postsVO.getPostsType());
         //dfa过滤
         postsVO.setTitle(HTMLUtils.deleteTag(postsVO.title));
@@ -195,31 +193,31 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
         postsVO.setDescription(HTMLUtils.deleteTag(postsVO.description));
         postsVO.setTags(HTMLUtils.deleteTag(postsVO.getTags()));
         List<String> imgPathList = new ArrayList<>();
-        if(postsType.equals(PostsType.LEAVE)){//闲置帖
-            if(postsVO.getPrice() == null || postsVO.getPrice().doubleValue() <= 0){
+        if (postsType.equals(PostsType.LEAVE)) {//闲置帖
+            if (postsVO.getPrice() == null || postsVO.getPrice().doubleValue() <= 0) {
                 return Result.failMsg("请正确输入价格");
             }
-            if(postsVO.getFiles() == null || postsVO.getFiles().length == 0){
+            if (postsVO.getFiles() == null || postsVO.getFiles().length == 0) {
                 return Result.failMsg("请至少上传一张图片");
             }
         }
-        if(postsVO.getFiles() != null){
-            if(postsVO.getFiles().length > 9){
+        if (postsVO.getFiles() != null) {
+            if (postsVO.getFiles().length > 9) {
                 return Result.failMsg("最多可上传9张图片");
             }
             //上传图片
-            for(MultipartFile multipartFile : postsVO.getFiles()){
+            for (MultipartFile multipartFile : postsVO.getFiles()) {
 //              String imgPath = fileUploadService.uploadImage(multipartFile);      //本地存储
-                String imgPath =  ossService.uploadFile(multipartFile);        //oss对象存储
+                String imgPath = ossService.uploadFile(multipartFile);        //oss对象存储
                 imgPathList.add(imgPath);
             }
         }
 
         LocalDateTime now = LocalDateTime.now();
         Posts posts = new Posts();
-        BeanUtil.copyProperties(postsVO,posts);
+        BeanUtil.copyProperties(postsVO, posts);
         posts.setId(IdWorker.getId());
-        posts.setUserId(userId);
+        posts.setUserId(JwtUtil.getUserId());
         posts.setCreateTime(now);
         posts.setUpdateTime(now);
         //审核内容
@@ -229,7 +227,7 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
 //            posts.setStatus(PostStatus.PENDING.getValue());
 //        }
         posts.setStatus(PostStatus.PENDING.getValue());
-        if(imgPathList.size() > 0){
+        if (imgPathList.size() > 0) {
             posts.setCoverPath(imgPathList.get(0));
             posts.setImgPath(imgPathList.stream().map(String::valueOf).collect(Collectors.joining(",")));
         }
@@ -238,23 +236,25 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
         boolean flag = save(posts);
         log.info(tagIdList.toString());
         if (flag) {
-            tagsMapper.savePostsTags(posts.id,tagIdList);
-            return Result.OK("已提交，等待管理员审核！",posts);
+            tagsMapper.savePostsTags(posts.id, tagIdList);
+            return Result.OK("已提交，等待管理员审核！", posts);
         }
         return Result.failMsg("发布失败，请重试");
     }
+
     /**
      * 将数据库不存在的标签新增
+     *
      * @param postsVO
      * @return
      */
     private List<Long> getTagsList(PostsVO postsVO) {
         List<Long> tagIdList = new ArrayList<>();
         log.info(postsVO.getTags());
-        List<String> tag =new ArrayList<>(Arrays.asList(postsVO.getTags().split(",")));
-        tag.forEach(item ->{
+        List<String> tag = new ArrayList<>(Arrays.asList(postsVO.getTags().split(",")));
+        tag.forEach(item -> {
             Tags tags = tagsMapper.selectOne(new QueryWrapper<Tags>().eq("tag_name", item));
-            if (tags == null){
+            if (tags == null) {
                 tags = Tags.builder().id(IdWorker.getId()).tagName(item).build();
                 tagsMapper.insert(tags);
             }
@@ -263,36 +263,34 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
         });
         return tagIdList;
     }
+
     /**
      * 分页
-     * @param userId
+     *
      * @param postsPageReq
      * @return
      */
     @Override
-    public ResultPage<PostsDetailVO> getPage(Long userId, PostsPageReq postsPageReq) {
-        log.info("当前用户id,"+ userId);
+    public ResultPage<PostsDetailVO> getPage(PostsPageReq postsPageReq) {
+        Long userId = JwtUtil.getUserId();
         List<Long> followedUserIds = followService.getFollowedUserIdsByUserId(userId);
-        log.info("已关注的用户id:"+followedUserIds);
-        if (Objects.equals(postsPageReq.getCategoryId(),1) && followedUserIds.isEmpty()) {
+        if (Objects.equals(postsPageReq.getCategoryId(), 1) && followedUserIds.isEmpty()) {
             return ResultPage.OK(0, 1, 10, (Collection<PostsDetailVO>) null);
         }
-
-        log.info(String.valueOf(postsPageReq));
         LambdaQueryWrapper<Posts> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(postsPageReq.getPostsType()!=null,Posts::getPostsType, postsPageReq.getPostsType())//帖子类型不为空，则加入一个等于帖子类型的条件
-                .eq(postsPageReq.getCategoryId()!=null&&postsPageReq.getCategoryId()!=1&&postsPageReq.getCategoryId()!=-1,
+        queryWrapper.eq(postsPageReq.getPostsType() != null, Posts::getPostsType, postsPageReq.getPostsType())//帖子类型不为空，则加入一个等于帖子类型的条件
+                .eq(postsPageReq.getCategoryId() != null && postsPageReq.getCategoryId() != 1 && postsPageReq.getCategoryId() != -1,
                         Posts::getSchool, postsPageReq.getCategoryId()) //非关注
-                .inSql(postsPageReq.getTagId()!=null,Posts::getId,
+                .inSql(postsPageReq.getTagId() != null, Posts::getId,
                         "SELECT pt.posts_id FROM s_posts_tag pt " +
                                 "WHERE pt.tag_id IN (SELECT id FROM s_tags WHERE deleted = 0 AND id = "
-                        +postsPageReq.getTagId()+")")
-                .eq(Objects.equals(postsPageReq.getCategoryId(),-1),Posts::getUserId, userId) //我的帖子
-                .like(StringUtils.isNotBlank(postsPageReq.getTitle()),Posts::getTitle, postsPageReq.getTitle())//标题模糊查询
+                                + postsPageReq.getTagId() + ")")
+                .eq(Objects.equals(postsPageReq.getCategoryId(), -1), Posts::getUserId, userId) //我的帖子
+                .like(StringUtils.isNotBlank(postsPageReq.getTitle()), Posts::getTitle, postsPageReq.getTitle())//标题模糊查询
                 .in(Objects.equals(postsPageReq.getCategoryId(), 1), Posts::getUserId, followedUserIds)  //关注帖
-                .eq(postsPageReq.getStatus()!=null,Posts::getStatus, postsPageReq.getStatus())  //正常贴
+                .eq(postsPageReq.getStatus() != null, Posts::getStatus, postsPageReq.getStatus())  //正常贴
                 .orderByDesc(Posts::getCreateTime)
-                .or().like(StringUtils.isNotBlank(postsPageReq.getTitle()),Posts::getDescription, postsPageReq.getTitle());
+                .or().like(StringUtils.isNotBlank(postsPageReq.getTitle()), Posts::getDescription, postsPageReq.getTitle());
         log.info(String.valueOf(postsPageReq));
         Page<Posts> page = page(postsPageReq.build(), queryWrapper);
 
@@ -301,6 +299,7 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
         List<Long> postsIds = new ArrayList<>();
         if (page.getTotal() > 0) {
             list = page.getRecords().stream().map(posts -> {
+                setCommentAndLike(posts);
                 PostsDetailVO postsDetailVO = BeanUtil.copyProperties(posts, PostsDetailVO.class);
                 postsDetailVO.setCategoryName(categoryService.getCategoryById(Long.valueOf(postsDetailVO.school)));
                 postsDetailVO.setTags(tagsMapper.selectByPostId(posts.id));
@@ -314,29 +313,46 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
         }
         Map<Long, UserInfoVO> userInfoVOMap;
         Map<Long, PostsLike> postsLikeHashMap;
-        if(list.size() > 0){
+        if (list.size() > 0) {
             userInfoVOMap = userInfoService.listByIds(userIds);
-            postsLikeHashMap = postsLikeService.listByUserId(userId,postsIds);
+            postsLikeHashMap = postsLikeService.listByUserId(userId, postsIds);
             Map<Long, UserInfoVO> finalUserInfoVOMap = userInfoVOMap;
             Map<Long, PostsLike> finalPostsLikeHashMap = postsLikeHashMap;
             list.forEach(item -> {
                 UserInfoVO userInfoVO = finalUserInfoVOMap.get(item.userId);
-                UserBasicInfoVO userBasicInfoVO=new UserBasicInfoVO();
+                UserBasicInfoVO userBasicInfoVO = new UserBasicInfoVO();
                 BeanUtil.copyProperties(userInfoVO, userBasicInfoVO);
                 userBasicInfoVO.setRole(Role.valueOf(userInfoVO.role).getText());
                 item.setUserInfo(userBasicInfoVO);
                 item.setFollow(false);
-                if(followService.getDetail(userId, finalUserInfoVOMap.get(item.userId).getId()) != null){
-                 item.setFollow(true);
+                if (followService.getDetail(userId, finalUserInfoVOMap.get(item.userId).getId()) != null) {
+                    item.setFollow(true);
                 }
                 item.setLike(false);
                 PostsLike postsLike = finalPostsLikeHashMap.get(item.id);
-                if(postsLike != null){
+                if (postsLike != null) {
                     item.setLike(true);
                 }
             });
         }
         return ResultPage.OK(page.getTotal(), page.getCurrent(), page.getSize(), list);
+    }
+
+    private void setCommentAndLike(Posts item) {
+//        List<Tags> list = tagsMapper.selectTagByPostId(item.getId());
+//        Integer commentCount = PostCommentMapper.selectCount(new LambdaQueryWrapper<Comment>()
+//                .eq(Comment::getArticleId, item.getId()));
+        //获取点赞数量
+        List<LikeCountDTO> list = postsLikeService.getLikeCountFromRedis();
+        if (list != null && list.size() > 0) {
+            Optional<LikeCountDTO> optionalLikeCount = list.stream()
+                    .filter(likeCount -> likeCount.getPostId().equals(item.getId()))
+                    .findFirst();
+            optionalLikeCount.ifPresent(likeCount -> item.setLikeNum(likeCount.getCount()));
+
+        }
+//        item.setTagList(list);
+//        item.setCommentCount(commentCount);
     }
 
     @Override
@@ -386,7 +402,8 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
         // 搜索关键词高亮
         HighlightBuilder highlightBuilder = new HighlightBuilder();
         highlightBuilder.field("*").preTags("<font color='#eea6b7'>")
-                .postTags("</font>");; //所有的字段都高亮
+                .postTags("</font>");
+        ; //所有的字段都高亮
         highlightBuilder.requireFieldMatch(false);//如果要多个字段高亮,这项要为false
 
         // 排序
@@ -402,7 +419,7 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
                 .withSort(sortBuilder)
                 .build();
         SearchHits<PostEsDTO> searchHits = elasticsearchRestTemplate.search(searchQuery, PostEsDTO.class);
-             log.info(searchHits.toString());
+        log.info(searchHits.toString());
         Page<PostsDetailVO> page = new Page<>();
         page.setTotal(searchHits.getTotalHits());
         List<PostsDetailVO> resourceList = new ArrayList<>();
@@ -413,20 +430,20 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
             List<SearchHit<PostEsDTO>> searchHitList = searchHits.getSearchHits();
             // 搜索关键词高亮
             Map<Long, PostEsHighlightData> highlightDataMap = new HashMap<>();
-            for (SearchHit hit: searchHits.getSearchHits()) {
+            for (SearchHit hit : searchHits.getSearchHits()) {
                 PostEsHighlightData data = new PostEsHighlightData();
                 data.setId(Long.valueOf(Objects.requireNonNull(hit.getId())));
-                if (hit.getHighlightFields().get("title") != null){
+                if (hit.getHighlightFields().get("title") != null) {
                     String highlightTitle = String.valueOf(hit.getHighlightFields().get("title"));
-                    data.setTitle(highlightTitle.substring(1,highlightTitle.length()-1));
+                    data.setTitle(highlightTitle.substring(1, highlightTitle.length() - 1));
                     System.out.println(data.getTitle());
                 }
-                if (hit.getHighlightFields().get("content") != null){
+                if (hit.getHighlightFields().get("content") != null) {
                     String highlightContent = String.valueOf(hit.getHighlightFields().get("content"));
-                    data.setContent(highlightContent.substring(1,highlightContent.length()-1));
+                    data.setContent(highlightContent.substring(1, highlightContent.length() - 1));
                     System.out.println(data.getContent());
                 }
-                highlightDataMap.put(data.getId(),data);
+                highlightDataMap.put(data.getId(), data);
             }
             // id列表
             List<Long> postIdList = searchHitList.stream().map(searchHit -> searchHit.getContent().getId())
@@ -441,10 +458,10 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
                         Posts post = idPostMap.get(postId).get(0);
                         String hl_title = highlightDataMap.get(postId).getTitle();
                         String hl_content = highlightDataMap.get(postId).getContent();
-                        if( hl_title != null && !hl_title.trim().equals("")){
+                        if (hl_title != null && !hl_title.trim().equals("")) {
                             post.setTitle(hl_title);
                         }
-                        if (hl_content != null && !hl_content.trim().equals("")){
+                        if (hl_content != null && !hl_content.trim().equals("")) {
                             post.setContent(hl_content);
                         }
                         resourceList.add((PostsDetailVO) post);
@@ -457,7 +474,7 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
             }
         }
         page.setRecords(resourceList);
-        List<PostsDetailVO> list=new ArrayList<>();
+        List<PostsDetailVO> list = new ArrayList<>();
         if (page.getTotal() > 0) {
             list = page.getRecords();
         }
@@ -466,19 +483,20 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
 
     /**
      * 获取帖子详情
-     * @param userId 用户id
-     * @param id  帖子id
+     *
+     * @param id 帖子id
      * @return Result<PostsDetailVO>
      */
     @Override
-    public Result<PostsDetailVO> getDetail(Long userId, Long id) {
+    public Result<PostsDetailVO> getDetail(Long id) {
+        Long userId = JwtUtil.getUserId();
         Posts posts = getById(id);
-        if(posts == null){
+        if (posts == null) {
             return Result.failMsg("帖子不存在或已下架");
         }
         PostsDetailVO postsDetailVO = BeanUtil.copyProperties(posts, PostsDetailVO.class);
         UserInfoVO userInfoVO = userInfoService.getUserInfoById(posts.getUserId());
-        UserBasicInfoVO userBasicInfoVO=new UserBasicInfoVO();
+        UserBasicInfoVO userBasicInfoVO = new UserBasicInfoVO();
         BeanUtil.copyProperties(userInfoVO, userBasicInfoVO);
         userBasicInfoVO.setRole(Role.valueOf(userInfoVO.getRole()).getText());
         postsDetailVO.setUserInfo(userBasicInfoVO);
@@ -487,10 +505,10 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
         postsDetailVO.setCategoryName(categoryService.getCategoryById(Long.valueOf(postsDetailVO.school)));
         postsDetailVO.setCollect(false);
         postsDetailVO.setFollow(false);
-        if(userId != null && collectService.getDetail(userId,posts.getId()) != null){
+        if (userId != null && collectService.getDetail(userId, posts.getId()) != null) {
             postsDetailVO.setCollect(true);
         }
-        if(userId != null && followService.getDetail(userId,posts.getUserId()) != null){
+        if (userId != null && followService.getDetail(userId, posts.getUserId()) != null) {
             postsDetailVO.setFollow(true);
         }
         log.info(String.valueOf(postsDetailVO));
@@ -501,9 +519,9 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
      * 更新浏览次数
      */
     @Override
-    public Result<?> browse(Long userId,Long id) {
+    public Result<?> browse(Long userId, Long id) {
         Posts posts = getById(id);
-        if(posts == null) {
+        if (posts == null) {
             return Result.OK();
         }
         LocalDateTime now = LocalDateTime.now();
@@ -537,13 +555,13 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
     /**
      * 拼接图片获取绝对路径
      */
-    private void initImgPath(PostsDetailVO postsDetailVO){
+    private void initImgPath(PostsDetailVO postsDetailVO) {
         postsDetailVO.setCoverPath(ossService.getOssImgPath(postsDetailVO.coverPath));
-        if(StringUtils.isNotEmpty(postsDetailVO.imgPath)){
+        if (StringUtils.isNotEmpty(postsDetailVO.imgPath)) {
             String[] arr = postsDetailVO.imgPath.split(",");
             List<String> list = Arrays.asList(arr);
             List<String> imgPathList = new ArrayList<>();
-            list.forEach(item-> {
+            list.forEach(item -> {
                 imgPathList.add(ossService.getOssImgPath(item));
             });
             postsDetailVO.setImgPath(imgPathList.stream().map(String::valueOf).collect(Collectors.joining(",")));
@@ -554,10 +572,10 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
      * 批量获取
      */
     @Override
-    public Map<Long, PostsDetailVO> listByIds(List<Long> postsIds){
+    public Map<Long, PostsDetailVO> listByIds(List<Long> postsIds) {
         Map<Long, PostsDetailVO> postsHashMap = new HashMap<>();
         LambdaQueryWrapper<Posts> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.in(Posts::getId,postsIds);
+        queryWrapper.in(Posts::getId, postsIds);
         List<Posts> postsList = list(queryWrapper);
         postsList.forEach(item -> {
             PostsDetailVO postsDetailVO = BeanUtil.copyProperties(item, PostsDetailVO.class);
@@ -566,79 +584,81 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
         });
         return postsHashMap;
     }
+
     /**
      * 帖子修改
      */
     @Override
-    public Result<?> update(PostsVO postsVO){
-        if(!Objects.equals(JwtUtil.getUserId(), postsVO.getUserId())){
+    public Result<?> update(PostsVO postsVO) {
+        if (!Objects.equals(JwtUtil.getUserId(), postsVO.getUserId())) {
             return Result.fail("您无权操作!");
         }
-        log.info("帖子id:"+ postsVO.getId());
-        log.info("修改前Posts:"+getById(postsVO.getId()));
-        if(postsVO.getId() == null){
+        log.info("帖子id:" + postsVO.getId());
+        log.info("修改前Posts:" + getById(postsVO.getId()));
+        if (postsVO.getId() == null) {
             return Result.fail("修改失败，请重试!!!!");
         }
-        if(StringUtils.isEmpty(postsVO.getTitle())){
-                return Result.fail("请输入标题");
-            }
-            if(StringUtils.isEmpty(postsVO.getContent())){
-                return Result.fail("请输入内容");
-            }
-            Posts posts = new Posts();
-            BeanUtil.copyProperties(postsVO,posts);
-            posts.setTitle(postsVO.getTitle());
-            posts.setSchool(postsVO.getSchool());
-            //dfa过滤
+        if (StringUtils.isEmpty(postsVO.getTitle())) {
+            return Result.fail("请输入标题");
+        }
+        if (StringUtils.isEmpty(postsVO.getContent())) {
+            return Result.fail("请输入内容");
+        }
+        Posts posts = new Posts();
+        BeanUtil.copyProperties(postsVO, posts);
+        posts.setTitle(postsVO.getTitle());
+        posts.setSchool(postsVO.getSchool());
+        //dfa过滤
 //            postsVO.setContent(HTMLUtils.deleteTag(postsVO.content));
 //            postsVO.setDescription(HTMLUtils.deleteTag(postsVO.description));
 
-            List<String> imgPathList = new ArrayList<>();
-            Collections.addAll(imgPathList, postsService.getImgPathById(postsVO.getId()).split(","));
-            log.info("修改前imgPathList:" + imgPathList);
+        List<String> imgPathList = new ArrayList<>();
+        Collections.addAll(imgPathList, postsService.getImgPathById(postsVO.getId()).split(","));
+        log.info("修改前imgPathList:" + imgPathList);
 
-            if(postsVO.getFiles() != null) {//上传新加的图片
-                if ((postsVO.getFiles().length) > 9) {
-                    return Result.fail("最多可上传9张图片");
-                }
-                for (MultipartFile file : postsVO.getFiles()) {
-                    String imgPath;
-                    try {
-                        imgPath = ossService.uploadFile(file);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                    imgPathList.add(imgPath);
-                }
+        if (postsVO.getFiles() != null) {//上传新加的图片
+            if ((postsVO.getFiles().length) > 9) {
+                return Result.fail("最多可上传9张图片");
             }
-                String removeImgPath = postsVO.getRemoveFiles();
-                if (removeImgPath != null) {
-                    List<String> removeUrls = new ArrayList<>(Arrays.asList(removeImgPath.split(",")));
-                    imgPathList.removeAll(removeUrls);
-                    removeUrls.replaceAll(url -> url.replace(ALIYUNOSS_PREFIX, ""));//把前缀删掉
-                    log.info(removeUrls.toString());
-                    for (String url : removeUrls) {
-                        ossService.delFile(url);
-                    }
-                    log.info("移除了" + removeUrls);
-                    log.info("移除完后的imgPathList:" + imgPathList);
-
+            for (MultipartFile file : postsVO.getFiles()) {
+                String imgPath;
+                try {
+                    imgPath = ossService.uploadFile(file);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
-                log.info("修改后最终的imgpath:" + imgPathList);
-                if (imgPathList.size() > 0) {
-                    posts.setCoverPath(imgPathList.get(0));
-                    posts.setImgPath(imgPathList.stream().map(String::valueOf).collect(Collectors.joining(",")));
-                } else {
-                    return Result.failMsg("请至少上传一张图片!");
-                }
+                imgPathList.add(imgPath);
+            }
+        }
+        String removeImgPath = postsVO.getRemoveFiles();
+        if (removeImgPath != null) {
+            List<String> removeUrls = new ArrayList<>(Arrays.asList(removeImgPath.split(",")));
+            imgPathList.removeAll(removeUrls);
+            removeUrls.replaceAll(url -> url.replace(ALIYUNOSS_PREFIX, ""));//把前缀删掉
+            log.info(removeUrls.toString());
+            for (String url : removeUrls) {
+                ossService.delFile(url);
+            }
+            log.info("移除了" + removeUrls);
+            log.info("移除完后的imgPathList:" + imgPathList);
 
-            saveOrUpdate(posts);
-            BeanUtil.copyProperties(postsVO,getById(postsVO.getId()));
-            return Result.OK("修改成功",getById(postsVO.getId()));
+        }
+        log.info("修改后最终的imgpath:" + imgPathList);
+        if (imgPathList.size() > 0) {
+            posts.setCoverPath(imgPathList.get(0));
+            posts.setImgPath(imgPathList.stream().map(String::valueOf).collect(Collectors.joining(",")));
+        } else {
+            return Result.failMsg("请至少上传一张图片!");
+        }
+
+        saveOrUpdate(posts);
+        BeanUtil.copyProperties(postsVO, getById(postsVO.getId()));
+        return Result.OK("修改成功", getById(postsVO.getId()));
     }
 
     /**
      * 帖子搜索
+     *
      * @param condition 条件
      * @return List<PostsSearchDTO>
      */
@@ -649,14 +669,15 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
 
     /**
      * 帖子删除
+     *
      * @param userId 帖子所属用户id
-     * @param id 帖子id
+     * @param id     帖子id
      * @return
      */
     @Override
-    public Result<?> del(Long userId,Long id) {
+    public Result<?> del(Long userId, Long id) {
         Posts post = getById(id);
-        Assert.notNull(post,"帖子不存在或已删除");
+        Assert.notNull(post, "帖子不存在或已删除");
         if (post.getUserId().equals(userId)) {
             post.setStatus(PostStatus.TRASHED.getValue());
             UpdateWrapper<Posts> updateWrapper = new UpdateWrapper<>();
@@ -668,10 +689,11 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
             return Result.fail("抱歉，您无权操作");
         }
     }
+
     @Override
-    public Result<?> delete(Long userId,Long id) {
+    public Result<?> delete(Long userId, Long id) {
         Posts post = getById(id);
-        Assert.notNull(post,"帖子不存在或已删除");
+        Assert.notNull(post, "帖子不存在或已删除");
         if (post.getUserId().equals(userId)) {
             baseMapper.deleteById(id);
             //更新帖子
@@ -680,10 +702,11 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
             return Result.fail("抱歉，您无权操作");
         }
     }
+
     @Override
-    public Result<?> restore(Long userId,Long id) {
+    public Result<?> restore(Long userId, Long id) {
         Posts post = getById(id);
-        Assert.notNull(post,"帖子不存在或已删除");
+        Assert.notNull(post, "帖子不存在或已删除");
         if (post.getUserId().equals(userId)) {
             post.setStatus(PostStatus.PUBLISHED.getValue());
             UpdateWrapper<Posts> updateWrapper = new UpdateWrapper<>();
@@ -695,8 +718,10 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
             return Result.fail("抱歉，您无权操作");
         }
     }
+
     /**
      * 根据帖子id获取img_path
+     *
      * @param id 帖子id
      * @return String
      */
@@ -707,10 +732,11 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
 
     /**
      * 根据postId更新点赞数
-     * @param postId 帖子ID
+     *
+     * @param postId     帖子ID
      * @param collectNum 点赞数
      */
-    public void updatePostsCollectNum(Long postId, Integer collectNum){
+    public void updatePostsCollectNum(Long postId, Integer collectNum) {
         // 创建更新条件
         UpdateWrapper<Posts> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", postId);
@@ -720,7 +746,8 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
         // 执行更新操作
         update(post, updateWrapper);
     }
-//    @Override
+
+    //    @Override
 //    public Result<List<Map<Long, String>>> listHot() {
 //        QueryWrapper<Posts> queryWrapper = new QueryWrapper<>();
 //        queryWrapper.eq("posts_type", 2)
@@ -738,21 +765,21 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
 //    }
     @Override
     public Result<List<Posts>> listHot() {
-        QueryWrapper<Posts> queryWrapper= new QueryWrapper<>();
+        QueryWrapper<Posts> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("posts_type", 2)
                 .eq("status", 3)
                 .orderByDesc("(browse_num * 0.4 + collect_num * 0.2 + like_num * 0.3 + comment_num * 0.1)")
                 .last("limit 10");
-         List<Posts> posts= postsMapper.selectList(queryWrapper);
+        List<Posts> posts = postsMapper.selectList(queryWrapper);
         return Result.OK(posts);
     }
 
     @Override
     public Result audit(PostsDTO postsDTO) {
-     Posts posts=getById(postsDTO.id);
-     Assert.isTrue(posts!=null,"帖子不存在！");
-     postsMapper.audit(postsDTO);
-     return Result.OK(posts);
+        Posts posts = getById(postsDTO.id);
+        Assert.isTrue(posts != null, "帖子不存在！");
+        postsMapper.audit(postsDTO);
+        return Result.OK(posts);
     }
 //    public void sendEmail(PostsDTO postsDTO){
 //        Map<String, Object> map = new HashMap<>();

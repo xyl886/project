@@ -3,13 +3,10 @@ package com.love.product.entity.base;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.Accessors;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.http.HttpStatus;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,14 +27,14 @@ public class Result<T> implements Serializable {
     @ApiModelProperty(value = "返回数据")
     protected T data;
 
-    @ApiModelProperty(value = "是否重新获取token")
-    protected Boolean refreshTokenFlag;
-
-    @ApiModelProperty(value = "登录刷新token")
-    public String refreshToken;
+//    @ApiModelProperty(value = "是否重新获取token")
+//    protected Boolean refreshTokenFlag;
+//
+//    @ApiModelProperty(value = "登录刷新token")
+//    public String refreshToken;
 
     public Result(){
-        checkRefreshToken(this);
+//        checkRefreshToken(this);
     }
 
     /**
@@ -45,24 +42,24 @@ public class Result<T> implements Serializable {
      *
      * @return true/false
      */
-    public static void checkRefreshToken(Result result){
-        ServletRequestAttributes servletRequestAttributes =  (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        if(servletRequestAttributes != null){
-            HttpServletResponse response = servletRequestAttributes.getResponse();
-            if(response == null){
-                return;
-            }
-            boolean isRefresh = false;
-            String refreshToken = null;
-            String isRefreshToken = response.getHeader("isRefreshToken");
-            if(isRefreshToken != null && isRefreshToken.equals("yes")){
-                isRefresh = true;
-                refreshToken = response.getHeader("access_token");
-            }
-            result.setRefreshTokenFlag(isRefresh);
-            result.setRefreshToken(refreshToken);
-        }
-    }
+//    public static void checkRefreshToken(Result result){
+//        ServletRequestAttributes servletRequestAttributes =  (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+//        if(servletRequestAttributes != null){
+//            HttpServletResponse response = servletRequestAttributes.getResponse();
+//            if(response == null){
+//                return;
+//            }
+//            boolean isRefresh = false;
+//            String refreshToken = null;
+//            String isRefreshToken = response.getHeader("isRefreshToken");
+//            if(isRefreshToken != null && isRefreshToken.equals("yes")){
+//                isRefresh = true;
+//                refreshToken = response.getHeader("access_token");
+//            }
+//            result.setRefreshTokenFlag(isRefresh);
+//            result.setRefreshToken(refreshToken);
+//        }
+//    }
 
     public static <T> Result<T> OK() {
         Result<T> result = new Result<>();
@@ -118,16 +115,12 @@ public class Result<T> implements Serializable {
 
     /**
      * 返回单参数（比如String、Long等）时，如不确定后续会不会增加参数，则尽量使用该方法
-     * @param key 返回单参数的key
-     * @param data 返回单参数的值
+     * @param dataMap 返回的map
      */
-    public static <T> Result<Map<String, T>> OKMap(String key, T data) {
-        Map<String, T> map = new HashMap<>();
-        map.put(key, data);
-
+    public static <T> Result<Map<String, T>> OKMap(Map<String, T> dataMap) {
         Result<Map<String, T>> result = new Result<>();
         result.setCode(ResultCode.SUCCESS.getCode());
-        result.setData(map);
+        result.setData(dataMap);
         return result;
     }
 
@@ -137,7 +130,18 @@ public class Result<T> implements Serializable {
         result.setMsg(ResultCode.FAILED.getMsg());
         return result;
     }
-
+    public static <T> Result<T> failMsg(ResultCode resultCode) {
+        Result<T> result = new Result<>();
+        result.setCode(resultCode.getCode());
+        result.setMsg(resultCode.getMsg());
+        return result;
+    }
+    public static <T> Result<T> failMsg(HttpStatus resultCode) {
+        Result<T> result = new Result<>();
+        result.setCode(resultCode.value());
+        result.setMsg(resultCode.getReasonPhrase());
+        return result;
+    }
     public static <T> Result<T> fail(String msg, T data) {
         Result<T> result = new Result<>();
         result.setCode(ResultCode.FAILED.getCode());

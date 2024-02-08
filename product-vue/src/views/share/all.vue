@@ -1,51 +1,59 @@
 <template>
   <div style="font-size: 14px;overflow:auto" @scroll="handleScroll">
     <div class="search">
-      <el-input style="line-height: 50px;padding:5px 30px 5px 0;width: 60%" size="small" v-model="page.title" name="search" placeholder="请输入帖子标题"></el-input>
-        <el-button type="primary" size="small" icon="el-icon-search" @click="handleFind">查找</el-button>
-        <el-button style="margin-left: 30px;" size="small" icon="el-icon-refresh" @click="resetQuery">重置</el-button>
+      <el-input style="line-height: 50px;padding:5px 30px 5px 0;width: 60%" size="small" v-model="page.title"
+                name="search" placeholder="请输入帖子标题"></el-input>
+      <el-button type="primary" size="small" icon="el-icon-search" @click="handleFind">查找</el-button>
+      <el-button style="margin-left: 30px;" size="small" icon="el-icon-refresh" @click="resetQuery">重置</el-button>
     </div>
-    <div  v-for="(item,index) in posts"
-          :key="item.id"  class="share-item">
+    <div v-for="(item,index) in posts"
+         :key="item.id" class="share-item">
       <div style="flex: 1;">
         <div style="height: 80px;">
           <el-row style="padding: 10px 0">
             <el-col :span="3">
               <el-popover
-                placement="top-start"
-                width="300"
-                trigger="hover">
-                <el-image fit="cover" style="height: 80px;width: 300px" :src="item.userInfo?item.userInfo.avatar:''"></el-image>
+                  placement="top-start"
+                  width="300"
+                  trigger="hover">
+                <el-image fit="cover" style="height: 80px;width: 300px"
+                          :src="item.userInfo?item.userInfo.avatar:''"></el-image>
                 <el-row>
                   <el-col :span="6">
-                    <el-image :src="item.userInfo?item.userInfo.avatar:''" style="width: 60px;height: 60px;border-radius:50%;margin-left: 5px;"></el-image>
+                    <el-image :src="item.userInfo?item.userInfo.avatar:''"
+                              style="width: 60px;height: 60px;border-radius:50%;margin-left: 5px;"></el-image>
                   </el-col>
                   <el-col :span="18">
-                    <div style="padding: 10px 0;font-size: 12px">{{item.userInfo.nickname}}
+                    <div style="padding: 10px 0;font-size: 12px">{{ item.userInfo.nickname }}
                       <i>♂</i>
-                      <el-tag size="mini" type="success">{{item.userInfo.role}}</el-tag>
+                      <el-tag size="mini" type="success">{{ item.userInfo.role }}</el-tag>
                     </div>
                     <div style="padding: 10px 0;font-size: 12px">
-                      <span>{{item.userInfo.followNum}} 关注 </span>
-                      <span>{{item.userInfo.fansNum}} 粉丝 </span>
+                      <span>{{ item.userInfo.followNum }} 关注 </span>
+                      <span>{{ item.userInfo.fansNum }} 粉丝 </span>
                       <span>11 获赞 </span></div>
-                    <div style="padding: 10px 0;font-size: 12px" v-show="item.userInfo.remark">{{item.userInfo.remark}}</div>
+                    <div style="padding: 10px 0;font-size: 12px" v-show="item.userInfo.remark">
+                      {{ item.userInfo.remark }}
+                    </div>
                     <div style="padding: 10px 0;font-size: 12px" v-if="userInfo.id!==item.userId">
-                      <el-button size="mini" v-if="!item.follow" type="primary" @click="addFollowFun(item,'0')">+ 关注</el-button>
-                      <el-button size="mini" v-if="item.follow" type="info" @click="addFollowFun(item,'1')">已关注</el-button>
+                      <el-button size="mini" v-if="!item.follow" type="primary" @click="addFollowFun(item,'0')">+ 关注
+                      </el-button>
+                      <el-button size="mini" v-if="item.follow" type="info" @click="addFollowFun(item,'1')">已关注
+                      </el-button>
                       <el-button size="mini">发消息</el-button>
                     </div>
                   </el-col>
                 </el-row>
-                <el-image slot="reference" :src="item.userInfo?item.userInfo.avatar:''" style="width: 60px;height: 60px;border-radius:50%;margin-left: 20px;"></el-image>
+                <el-image slot="reference" :src="item.userInfo?item.userInfo.avatar:''"
+                          style="width: 60px;height: 60px;border-radius:50%;margin-left: 20px;"></el-image>
               </el-popover>
             </el-col>
             <el-col :span="21">
               <div style="font-size: 16px;line-height: 40px;">
-                <span>{{item.userInfo.nickname}}</span>
-<!--                <el-button v-if="!item.follow && userInfo.id!==item.userId" type="primary" size="mini" @click="addFollowFun(item,'0')"><i class="el-icon-star-off"></i> +关注 </el-button>-->
-<!--                <el-button v-if="item.follow && false && userInfo.id!==item.userId" type="info" plain size="mini" @click="addFollowFun(item,'1')"><i class="el-icon-star-on"></i> 已关注</el-button>-->
-                <el-tag type="success">{{item.userInfo.role}}</el-tag>
+                <span>{{ item.userInfo.nickname }}</span>
+                <!--                <el-button v-if="!item.follow && userInfo.id!==item.userId" type="primary" size="mini" @click="addFollowFun(item,'0')"><i class="el-icon-star-off"></i> +关注 </el-button>-->
+                <!--                <el-button v-if="item.follow && false && userInfo.id!==item.userId" type="info" plain size="mini" @click="addFollowFun(item,'1')"><i class="el-icon-star-on"></i> 已关注</el-button>-->
+                <el-tag type="success">{{ item.userInfo.role }}</el-tag>
                 <div style="float: right;margin-top: 5px;">
                   <el-dropdown>
                     <div style="display: flex;">
@@ -54,21 +62,25 @@
                         </span>
                     </div>
                     <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item style="color:red;" v-if="item.userId === userInfo.id" @click.native="delMyPost(item)">删除</el-dropdown-item>
-                      <el-dropdown-item v-else style="color:red;" @click.native="reportPost(item)">举报</el-dropdown-item>
+                      <el-dropdown-item style="color:red;" v-if="item.userId === userInfo.id"
+                                        @click.native="delMyPost(item)">删除
+                      </el-dropdown-item>
+                      <el-dropdown-item v-else style="color:red;" @click.native="reportPost(item)">举报
+                      </el-dropdown-item>
                     </el-dropdown-menu>
-                  </el-dropdown></div>
+                  </el-dropdown>
+                </div>
               </div>
             </el-col>
           </el-row>
         </div>
         <el-row>
           <el-col :span="16" style="padding: 0 10px">
-            <div class="share-item-content" style="margin-bottom: 16px"  @click="detailFun(item)">
-              <span style="height: auto;cursor: pointer">{{item.title}}</span>
+            <div class="share-item-content" style="margin-bottom: 16px" @click="detailFun(item)">
+              <span style="height: auto;cursor: pointer">{{ item.title }}</span>
             </div>
-            <div class="share-item-content" style="margin-bottom: 16px"  @click="detailFun(item)">
-              <span style="color: rgba(0,0,0,.45);cursor: pointer">{{item.description}}</span>
+            <div class="share-item-content" style="margin-bottom: 16px" @click="detailFun(item)">
+              <span style="color: rgba(0,0,0,.45);cursor: pointer">{{ item.description }}</span>
             </div>
           </el-col>
           <el-col :span="8">
@@ -76,7 +88,7 @@
           </el-col>
         </el-row>
         <div style="color: rgb(168, 176, 183);font-size: 12px;padding: 0 20px;">
-          <el-tag size="small">{{item.categoryName}}</el-tag>
+          <el-tag size="small">{{ item.categoryName }}</el-tag>
           <el-tag
               type="info"
               size="small"
@@ -91,68 +103,88 @@
           <div style="display: flex;cursor: pointer;" @click="likeFun(item)">
             <span v-if="!item.like"><i class="iconfont icon-icon" style="font-size:20px;"></i></span>
             <span v-if="item.like"><i class="iconfont icon-icon" style="font-size:20px;color: #409EFF;"></i></span>
-            <span style="color: rgb(153, 162, 170);width: 40px">{{item.likeNum>0?item.likeNum:'点赞'}}</span>
+            <span style="color: rgb(153, 162, 170);width: 40px">{{ item.likeNum > 0 ? item.likeNum : '点赞' }}</span>
           </div>
           <div style="display: flex;margin-left: 10px;cursor: pointer;" @click="showComment(item)">
             <span v-if="!item.comment"><i class="iconfont icon-comment" style="font-size:20px;"></i></span>
-            <span v-if="item.comment"><i class="iconfont icon-comment" style="font-size:20px;color: #409EFF;"></i></span>
+            <span v-if="item.comment"><i class="iconfont icon-comment"
+                                         style="font-size:20px;color: #409EFF;"></i></span>
             <span style="color: rgb(153, 162, 170);">
-                {{item.comment ? "收起" : (item.commentNum > 0 ? item.commentNum : "评论")}}
+                {{ item.comment ? "收起" : (item.commentNum > 0 ? item.commentNum : "评论") }}
               </span>
           </div>
           <div style="color: rgb(168, 176, 183);font-size: 12px;margin-left: 50px;line-height: 20px">
-            {{item.createTime}}
+            {{ item.createTime }}
           </div>
         </div>
         <div v-show="item.comment" style="border-top: 1px solid rgb(229, 233, 239);padding: 20px 0;margin-top: 20px;">
           <div style="line-height: 20px;padding: 0 0 20px 0;">
             <span style="margin-right:5px">评论数</span>
-            <span style="margin-right:5px;color: #ccc;">{{item.commentNum}}</span>
-            <el-button class="new" style="border: none" size="small" :class="{ active: sortType === 'new' }" @click="sortByLatest(item)" >最新</el-button>|
-            <el-button class="hot" style="margin-left:0;border: none" size="small" :class="{ active: sortType === 'hot' }" @click="sortByHot(item)">最热</el-button>
+            <span style="margin-right:5px;color: #ccc;">{{ item.commentNum }}</span>
+            <el-button class="new" style="border: none" size="small" :class="{ active: sortType === 'new' }"
+                       @click="sortByLatest(item)">最新
+            </el-button>
+            |
+            <el-button class="hot" style="margin-left:0;border: none" size="small"
+                       :class="{ active: sortType === 'hot' }" @click="sortByHot(item)">最热
+            </el-button>
           </div>
-          <el-row >
+          <el-row>
             <el-col :span="18">
-              <el-input type="textarea" :rows="1" resize="none" ref="textarea" v-model="commentContent" placeholder="请输入内容"></el-input>
+              <el-input type="textarea" :rows="1" resize="none" ref="textarea" v-model="commentContent"
+                        placeholder="请输入内容"></el-input>
             </el-col>
             <el-col :span="3">
               <el-popover placement="top" trigger="click" class="popover" style="margin: 20px;">
                 <custom-emoji v-if="showEmojiCom" class="emoji-component" @addemoji="addEmoji"/>
-                <el-button slot="reference" @click.stop="showEmojiCom = !showEmojiCom" style="line-height:1px;height: 33px;">
+                <el-button slot="reference" @click.stop="showEmojiCom = !showEmojiCom"
+                           style="line-height:1px;height: 33px;">
                   😃
                 </el-button>
               </el-popover>
             </el-col>
             <el-col :span="3">
-              <el-button type="primary" style="float:right;width: 100px;line-height:1px;height:33px;margin-left: 10px;" @click="addCommentFun(item)">发布</el-button>
+              <el-button type="primary" style="float:right;width: 100px;line-height:1px;height:33px;margin-left: 10px;"
+                         @click="addCommentFun(item)">发布
+              </el-button>
             </el-col>
           </el-row>
         </div>
-        <div v-show="item.comment" v-for="(item2,index3) in item.comments" :key="item2.id" style="border-bottom: 1px solid rgb(229, 233, 239);display: flex;padding-top: 20px;">
+        <div v-show="item.comment" v-for="(item2,index3) in item.comments" :key="item2.id"
+             style="border-bottom: 1px solid rgb(229, 233, 239);display: flex;padding-top: 20px;">
           <div style="width: 50px;">
             <el-popover
-              placement="top-start"
-              width="300"
-              trigger="hover">
-              <el-image fit="cover" style="transition:.2s;height: 80px;width: 300px" :src="item2.userInfo?item2.userInfo.avatar:''"></el-image>
+                placement="top-start"
+                width="300"
+                trigger="hover">
+              <el-image fit="cover" style="transition:.2s;height: 80px;width: 300px"
+                        :src="item2.userInfo?item2.userInfo.avatar:''"></el-image>
               <el-row>
                 <el-col :span="6">
-                  <el-image :src="item2.userInfo?item2.userInfo.avatar:''" style="width: 60px;height: 60px;border-radius:50%;margin-left: 5px;"></el-image>
+                  <el-image :src="item2.userInfo?item2.userInfo.avatar:''"
+                            style="width: 60px;height: 60px;border-radius:50%;margin-left: 5px;"></el-image>
                 </el-col>
                 <el-col :span="18">
-                  <div style="padding: 15px 0;">{{item2.userInfo.nickname}}
+                  <div style="padding: 15px 0;">{{ item2.userInfo.nickname }}
                     <i>♂</i>
-                    <el-tag size="small" type="success">{{item2.userInfo.role}}</el-tag></div>
-                  <div style="padding: 5px 0"><span>{{item2.userInfo.followNum}}关注 </span> <span>{{item2.userInfo.fansNum}} 粉丝 </span><span>11 获赞 </span></div>
-                  <div style="padding: 10px 0 5px 0">{{item2.userInfo.remark}}</div>
+                    <el-tag size="small" type="success">{{ item2.userInfo.role }}</el-tag>
+                  </div>
+                  <div style="padding: 5px 0"><span>{{ item2.userInfo.followNum }}关注 </span>
+                    <span>{{ item2.userInfo.fansNum }} 粉丝 </span><span>11 获赞 </span></div>
+                  <div style="padding: 10px 0 5px 0">{{ item2.userInfo.remark }}</div>
                   <div style="padding: 10px 0" v-if="userInfo.id!==item2.userId">
-                    <el-button v-if="!item.follow" type="primary" size="mini" @click="addFollowFun(item,'0')"><i class="el-icon-star-off"></i> +关注 {{item2.followNum}}</el-button>
-                    <el-button v-if="item.follow" type="info" plain size="mini" @click="addFollowFun(item,'1')"><i class="el-icon-star-on"></i> 已关注 {{item2.followNum}}</el-button>
+                    <el-button v-if="!item.follow" type="primary" size="mini" @click="addFollowFun(item,'0')"><i
+                        class="el-icon-star-off"></i> +关注 {{ item2.followNum }}
+                    </el-button>
+                    <el-button v-if="item.follow" type="info" plain size="mini" @click="addFollowFun(item,'1')"><i
+                        class="el-icon-star-on"></i> 已关注 {{ item2.followNum }}
+                    </el-button>
                     <el-button size="mini" @click.native="chat(userInfo.id)">发消息</el-button>
                   </div>
                 </el-col>
               </el-row>
-              <el-image slot="reference" :src="item2.userInfo?item2.userInfo.avatar:''" style="width: 40px;height: 40px;border-radius:50%;"></el-image>
+              <el-image slot="reference" :src="item2.userInfo?item2.userInfo.avatar:''"
+                        style="width: 40px;height: 40px;border-radius:50%;"></el-image>
             </el-popover>
           </div>
           <div style="flex: 1;">
@@ -161,9 +193,9 @@
                 <el-row>
                   <el-col :span="12">
                     <div style="font-size: 16px;color: #2c3e50;display: flex;padding:0 10px">
-                      <span style="padding-right: 5px">{{item2.userInfo.nickname}}</span>
-<!--                      <el-tag style="margin-right: 5px;" size="small">标签一</el-tag>-->
-                      <el-tag type="success" size="small">{{item.userInfo.role}}</el-tag>
+                      <span style="padding-right: 5px">{{ item2.userInfo.nickname }}</span>
+                      <!--                      <el-tag style="margin-right: 5px;" size="small">标签一</el-tag>-->
+                      <el-tag type="success" size="small">{{ item.userInfo.role }}</el-tag>
                     </div>
                   </el-col>
                   <el-col :span="12">
@@ -176,14 +208,14 @@
                         </div>
                         <el-dropdown-menu slot="dropdown">
                           <el-dropdown-item
-                            v-if="item2.userId == userInfo.id"
-                            @click.native="delFun(item,item2)"
-                            style="color:red;">删除
+                              v-if="item2.userId == userInfo.id"
+                              @click.native="delFun(item,item2)"
+                              style="color:red;">删除
                           </el-dropdown-item>
                           <el-dropdown-item
-                            v-else-if="item2.userId!==userInfo.id"
-                            @click.native="reportPost(item2)"
-                            style="color:red;">举报
+                              v-else-if="item2.userId!==userInfo.id"
+                              @click.native="reportPost(item2)"
+                              style="color:red;">举报
                           </el-dropdown-item>
                         </el-dropdown-menu>
                       </el-dropdown>
@@ -193,13 +225,16 @@
               </div>
             </div>
             <div class="share-item-content">
-              <el-input type="textarea" resize="none" :autosize="true" :readonly="true" v-model="item2.content"></el-input>
+              <el-input type="textarea" resize="none" :autosize="true" :readonly="true"
+                        v-model="item2.content"></el-input>
             </div>
             <div style="color: rgb(168, 176, 183);font-size: 12px;line-height: 20px;">
-              {{item2.createTime}}
-              <span v-if="!item2.like" @click="likeCommentFun(item2)"><i class="iconfont icon-icon" style="font-size:14px;"></i></span>
-              <span v-if="item2.like" @click="likeCommentFun(item2)"><i class="iconfont icon-icon" style="font-size:14px;color: #409EFF;"></i></span>
-              <span style="color: rgb(153, 162, 170);">{{item2.likeNum>0?item2.likeNum:'点赞'}}</span>
+              {{ item2.createTime }}
+              <span v-if="!item2.like" @click="likeCommentFun(item2)"><i class="iconfont icon-icon"
+                                                                         style="font-size:14px;"></i></span>
+              <span v-if="item2.like" @click="likeCommentFun(item2)"><i class="iconfont icon-icon"
+                                                                        style="font-size:14px;color: #409EFF;"></i></span>
+              <span style="color: rgb(153, 162, 170);">{{ item2.likeNum > 0 ? item2.likeNum : '点赞' }}</span>
             </div>
           </div>
         </div>
@@ -218,7 +253,6 @@
 
 <script>
 import {delMyPost, getPage} from '../../api/posts'
-import {addLike} from '@/api/posts_like'
 import {addComment, del, listByPostsId} from '@/api/posts_comment'
 import {mapGetters} from 'vuex'
 import customEmoji from '../../components/emoji/index.vue'
@@ -226,6 +260,7 @@ import {setStore} from '../../utils/store'
 import Report from '../../components/Report.vue'
 import {addFollow} from '../../api/follow'
 import {addCommentLike} from '../../api/posts_comment'
+import {like, unLike} from "../../api/posts_like";
 
 export default {
   props: {
@@ -238,7 +273,7 @@ export default {
     Report,
     customEmoji
   },
-  data () {
+  data() {
     return {
       // dialogVisible: false,
       loading: false,
@@ -272,25 +307,25 @@ export default {
     ...mapGetters([
       'userInfo'
     ]),
-    noMore () {
+    noMore() {
       return this.page.currentPage >= this.page.pageTotal
     }
   },
-  mounted () {
+  mounted() {
     // 监听滚动事件
     window.addEventListener('scroll', this.handleScroll)
   },
   methods: {
-    chat () {
+    chat() {
       this.$router.push({path: '/chat'})
     },
-    selImg (url) {
+    selImg(url) {
       this.bigImgPath = url
     },
-    handlerShowEmoji () {
+    handlerShowEmoji() {
       this.showEmojiCom = false
     },
-    init (categoryId) {
+    init(categoryId) {
       this.page = {
         pageTotal: 0,
         total: 0,
@@ -304,7 +339,7 @@ export default {
       this.posts = []
       this.getPageFun()
     },
-    load () {
+    load() {
       if (this.loading) {
         return
       }
@@ -313,20 +348,20 @@ export default {
         this.getPageFun()
       }
     },
-    sizeChange (pageSize) { // 页数
+    sizeChange(pageSize) { // 页数
       this.page.pageSize = pageSize
       this.getPageFun()
     },
-    currentChange (currentPage) { // 当前页
+    currentChange(currentPage) { // 当前页
       this.page.currentPage = currentPage
       this.getPageFun()
     },
-    addEmoji (emoji = '') {
+    addEmoji(emoji = '') {
       console.log(emoji)
       console.log(this.commentContent)
       this.commentContent += emoji
     },
-    handleScroll (e) {
+    handleScroll(e) {
       // 判断是否正在加载数据
       if (this.loading) return
       // 判断是否到达底部
@@ -339,17 +374,17 @@ export default {
         this.getPageFun()
       }
     },
-    resetQuery () {
+    resetQuery() {
       this.page.title = null
       this.posts = []
       this.getPageFun()
     },
-    handleFind () {
+    handleFind() {
       this.page.currentPage = 1
       this.posts = []
       this.getPageFun()
     },
-    getPageFun () {
+    getPageFun() {
       this.loading = true
       console.log(this.page.currentPage)
       getPage(this.page).then(res => {
@@ -376,49 +411,68 @@ export default {
         this.loading = false
       })
     },
-    delMyPost (item) {
+    delMyPost(item) {
       this.$confirm('确定要删除该帖子吗?', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
-        .then(() => {
-          delMyPost(item.id, item.userInfo.id).then(res => {
-            if (res.code === 200) {
-              this.$message.success(res.msg)
-              this.getPageFun()
-              this.load()
-              this.init()
-            }
+          .then(() => {
+            delMyPost(item.id, item.userInfo.id).then(res => {
+              if (res.code === 200) {
+                this.$message.success(res.msg)
+                this.getPageFun()
+                this.load()
+                this.init()
+              }
+            })
           })
-        })
     },
-    reportPost (item) {
+    reportPost(item) {
       this.$refs.reportDialog.showDialog()
     },
-    detailFun (posts) {
+    detailFun(posts) {
       setStore({name: 'posts', content: posts})
       this.$router.push({path: '/detail'})
     },
-    likeFun (item) {
+    likeFun(item) {
       let deleted = 0
       if (item.like) {
-        deleted = 1
-      }
-      addLike(item.id, deleted).then(res => {
-        if (res.code === 200) {
-          if (item.like) {
-            item.likeNum = parseInt(item.likeNum) - 1
-            item.like = false
-          } else {
-            item.like = true
-            item.likeNum = parseInt(item.likeNum) + 1
+        console.log("取消点赞："+item.id)
+        unLike(item.id) .then(res => {
+          if (res.code === 200) {
+            if (item.like) {
+              item.likeNum = parseInt(item.likeNum) - 1
+              item.like = false
+            } else {
+              item.like = true
+              item.likeNum = parseInt(item.likeNum) + 1
+            }
+            this.$message.success(res.msg)
+          }else {
+            this.$message.error(res.msg)
           }
-          this.$message.success(res.msg)
-        }
-      })
+        })
+        deleted = 1
+      }else {
+        console.log("点赞："+item.id)
+        like(item.id).then(res => {
+          if (res.code === 200) {
+            if (item.like) {
+              item.likeNum = parseInt(item.likeNum) - 1
+              item.like = false
+            } else {
+              item.like = true
+              item.likeNum = parseInt(item.likeNum) + 1
+            }
+            this.$message.success(res.msg)
+          }else {
+            this.$message.error(res.msg)
+          }
+        })
+      }
     },
-    showComment (item) {
+    showComment(item) {
       if (!item.comment) {
         item.comment = true
         this.getComment(item)
@@ -428,15 +482,15 @@ export default {
       console.log(item.comments)
       this.comments = item.comments
     },
-    sortByLatest (item) {
+    sortByLatest(item) {
       this.sortType = 'new'
       this.getComment(item)
     },
-    sortByHot (item) {
+    sortByHot(item) {
       this.sortType = 'hot'
       this.getComment(item)
     },
-    addCommentFun (item) {
+    addCommentFun(item) {
       this.commentContent = this.commentContent.replace(/\s+/g, '') // 处理评论内容，去除空白字符
       if (!this.commentContent) {
         this.$message.warning('内容为空！')
@@ -452,7 +506,7 @@ export default {
         this.commentContent = ''
       }
     },
-    getComment (item) {
+    getComment(item) {
       listByPostsId(item.id).then(res => {
         if (res.code === 200) {
           if (this.sortType === 'new') {
@@ -468,7 +522,7 @@ export default {
         }
       })
     },
-    likeCommentFun (item) {
+    likeCommentFun(item) {
       let deleted = 0
       if (item.like) {
         deleted = 1
@@ -487,7 +541,7 @@ export default {
         }
       })
     },
-    addFollowFun (item, deleted) {
+    addFollowFun(item, deleted) {
       addFollow(item.userId, deleted).then(res => {
         if (res.code === 200) {
           if (deleted === '0') {
@@ -499,28 +553,28 @@ export default {
         }
       })
     },
-    delFun (item1, item2) {
+    delFun(item1, item2) {
       this.$confirm('确定要删除该评论吗?', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
-        .then(() => {
-          del(item2.id).then(res => {
-            if (res.code === 200) {
-              item1.commentNum = parseInt(item1.commentNum) - 1
-              this.$message.success(res.msg)
-              this.getComment(item1)
-            }
+          .then(() => {
+            del(item2.id).then(res => {
+              if (res.code === 200) {
+                item1.commentNum = parseInt(item1.commentNum) - 1
+                this.$message.success(res.msg)
+                this.getComment(item1)
+              }
+            })
           })
-        })
     }
   },
-  created () {
+  created() {
     // console.log('chatArea created')
     document.addEventListener('click', this.handlerShowEmoji)
   },
-  beforeDestroy () {
+  beforeDestroy() {
     // console.log('chatArea BeforeDestroy')
     document.removeEventListener('click', this.handlerShowEmoji)
     // 移除滚动事件监听器
@@ -531,20 +585,23 @@ export default {
 
 <style>
 @import '../../../static/iconfont/iconfont.css';
-.share-item{
+
+.share-item {
   display: flex;
   background-color: #ffffff;
   border-radius: 10px;
   padding: 20px 20px;
   margin: 10px 0;
 }
-.share-item-content .el-textarea__inner{
-  border: none!important;
-  font-size: 16px!important;
-  font-weight: 700!important;
+
+.share-item-content .el-textarea__inner {
+  border: none !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
   color: #444444 !important;
-  font-family: "微软雅黑 Light",sans-serif;
+  font-family: "微软雅黑 Light", sans-serif;
 }
+
 .avatar-uploader .el-upload {
   border: 1px dashed #d9d9d9;
   border-radius: 6px;
@@ -552,29 +609,35 @@ export default {
   position: relative;
   overflow: hidden;
 }
+
 .avatar-uploader .el-upload:hover {
   border-color: #409EFF;
 }
-.new,.hot{
+
+.new, .hot {
   background-color: transparent;
-  border:none;
-  margin-right:5px;
+  border: none;
+  margin-right: 5px;
   cursor: pointer;
   color: #ccc;
 }
-.new.active,.hot.active {
+
+.new.active, .hot.active {
   color: #000000;
 }
+
 .express-btn .icon {
   width: 24px;
   height: 24px;
 }
+
 .emoji-component {
   position: absolute;
   bottom: 0;
   right: 0;
 }
-.el-popover{
+
+.el-popover {
   padding: 0 !important;
 }
 </style>

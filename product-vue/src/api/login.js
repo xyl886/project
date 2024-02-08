@@ -1,5 +1,11 @@
 import request from '@/utils/request'
-
+export const captcha = (params) => {
+  return request({
+    url: '/api/login//captcha',
+    method: 'get',
+    params: params
+  })
+}
 export const sendEmailCode = (email, type) => {
   return request({
     url: '/api/login/code',

@@ -1,34 +1,24 @@
 package com.love.product.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.love.product.config.Exception.BizException;
-import com.love.product.constant.CommonConstant;
-import com.love.product.entity.Category;
-import com.love.product.entity.Report;
-import com.love.product.entity.Tags;
+import com.love.product.config.exception.BizException;
 import com.love.product.entity.UserAuth;
-import com.love.product.entity.base.PageQuery;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.req.RolePageReq;
-import com.love.product.entity.vo.HistoryVO;
 import com.love.product.mapper.RoleMapper;
 import com.love.product.service.RoleService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static com.love.product.entity.base.ResultCode.CATEGORY_IS_EXIST;
 import static com.love.product.entity.base.ResultCode.ROLE_IS_EXIST;
 
 /**

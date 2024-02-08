@@ -76,7 +76,7 @@ public class SysLoginServiceImpl implements LoginService {
                        "无权限！");
 
             //一定要在获取token前缓存redis，否则可能报错,并且要删除验证码
-            redisService.set(USER_USERINFO + userInfoVO.getId(),userInfoVO);
+            redisService.set(USER_USERINFO + userInfoVO.getId(), userInfoVO);
             redisService.expire(USER_USERINFO + userInfoVO.getId(), 1, TimeUnit.DAYS);
             String accessToken = userInfoService.getOAuthToken(userInfoVO);
             if(accessToken == null){

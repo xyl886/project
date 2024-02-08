@@ -39,19 +39,23 @@ public class PageQuery implements Serializable {
     /**
      * 每页显示记录数 默认值 默认查全部
      */
-    public static final int DEFAULT_PAGE_SIZE = Integer.MAX_VALUE;
+    private static final int DEFAULT_PAGE_SIZE = 10;
+    /**
+     * 最大每页条目数
+     */
+    private static final int MAX_PAGE_SIZE = 100;
+
 
     public <T> Page<T> build() {
         Integer pageNum = ObjectUtil.defaultIfNull(getCurrentPage(), DEFAULT_PAGE_NUM);
         Integer pageSize = ObjectUtil.defaultIfNull(getPageSize(), DEFAULT_PAGE_SIZE);
-        if (pageNum <= 0) {
-            pageNum = DEFAULT_PAGE_NUM;
-        }
+        pageNum = Math.max(pageNum, DEFAULT_PAGE_NUM);
+        pageSize = Math.min(pageSize, MAX_PAGE_SIZE);
         return new Page<>(pageNum, pageSize);
     }
 
     @ApiModelProperty(hidden = true)
     public int getEsFrom() {
-        return  2 <= currentPage ? (currentPage - 1) * pageSize : 0;
+        return 2 <= currentPage ? (currentPage - 1) * pageSize : 0;
     }
 }

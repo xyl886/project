@@ -3,6 +3,7 @@ package com.love.product.service.impl;
 
 import com.love.product.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.GeoResults;
@@ -10,6 +11,8 @@ import org.springframework.data.geo.Point;
 import org.springframework.data.redis.connection.BitFieldSubCommands;
 import org.springframework.data.redis.connection.RedisGeoCommands;
 import org.springframework.data.redis.core.*;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
+import org.springframework.scripting.support.ResourceScriptSource;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -24,6 +27,13 @@ public class RedisServiceImpl implements RedisService {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
+    @Override
+    public Long executeLuaScript(String source, List<String> keys, Object... args) {
+        DefaultRedisScript<Long> redisScript = new DefaultRedisScript<>();
+        redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("lua/"+ source)));
+        redisScript.setResultType(Long.class);
+        return redisTemplate.execute(redisScript, keys, args);
+    }
     @Override
     public void set(String key, long num, Long i, TimeUnit timeUnit) {
         redisTemplate.opsForValue().set(key, num, 7, TimeUnit.DAYS);
@@ -153,11 +163,6 @@ public class RedisServiceImpl implements RedisService {
     @Override
     public Long hIncr(String key, String hashKey, Long delta) {
         return redisTemplate.opsForHash().increment(key, hashKey, delta);
-    }
-
-    @Override
-    public Long hIncr(String key, Long hashkey, int i) {
-        return redisTemplate.opsForHash().increment(key, hashkey, i);
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.love.product.service.impl;
 
 import cn.hutool.core.util.NumberUtil;
-import com.love.product.config.Exception.BizException;
+import com.love.product.config.exception.BizException;
 import com.love.product.config.fileupload.FileUploadConfig;
 import com.love.product.service.FileUploadService;
 import lombok.extern.slf4j.Slf4j;

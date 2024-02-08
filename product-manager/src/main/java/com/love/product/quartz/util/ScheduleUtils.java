@@ -26,8 +26,7 @@ import static com.love.product.constant.CommonConstant.JOB_WHITELIST_STR;
  * @author ruoyi
  *
  */
-public class ScheduleUtils
-{
+public class ScheduleUtils {
     /**
      * 得到quartz任务类
      *

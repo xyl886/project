@@ -11,7 +11,7 @@ import cn.hutool.core.util.NumberUtil;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.model.ObjectMetadata;
-import com.love.product.config.Exception.BizException;
+import com.love.product.config.exception.BizException;
 import com.love.product.config.fileupload.AliYunOSSConfig;
 import com.love.product.entity.base.Result;
 import com.love.product.service.OssService;

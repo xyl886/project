@@ -1,5 +1,6 @@
 package com.love.product.controller;
 
+import com.love.product.annotation.AccessLimit;
 import com.love.product.consumer.message.PostsActionMessage;
 import com.love.product.entity.Posts;
 import com.love.product.entity.base.Result;
@@ -48,7 +49,7 @@ public class PostsController {
     @PostMapping("/add")
     @ApiOperation(value = "添加", notes = "添加")
     public Result<Posts> add(PostsVO postsVO) {
-        return postsService.add(JwtUtil.getUserId(), postsVO);
+        return postsService.add(postsVO);
     }
 
     @GetMapping("/listHot")
@@ -58,15 +59,16 @@ public class PostsController {
 
     @ApiOperation("分页")
     @PostMapping("/getPage")
+    @AccessLimit(prefix = "limit",key = "post_query", name = "帖子查询接口")
     public ResultPage<PostsDetailVO> getPage(@RequestBody PostsPageReq postsPageReq) {
-        return postsService.getPage(JwtUtil.getUserId(), postsPageReq);
+        return postsService.getPage(postsPageReq);
     }
 
     @ApiOperation("详情")
     @GetMapping("/getDetail")
     @ApiImplicitParam(name = "id", value = "帖子主键", required = true, dataType = "String", paramType = "query")
     public Result<PostsDetailVO> getDetail(@RequestParam("id") Long id) {
-        return postsService.getDetail(JwtUtil.getUserId(), id);
+        return postsService.getDetail(id);
     }
 
     @ApiOperation("浏览")

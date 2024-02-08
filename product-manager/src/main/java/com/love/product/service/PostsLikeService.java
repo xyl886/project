@@ -80,4 +80,10 @@ public interface PostsLikeService extends IService<PostsLike> {
     Result<?> like(Long postsId, Long userId);
 
     Result<?> dislike(Long infoId, Long userId);
+
+    void transLikeFromRedisToMysql();
+
+    void transLikeCountFromRedisToMysql();
+
+    void getHVOPosts(List<HistoryVO> list, List<Long> postsIds);
 }

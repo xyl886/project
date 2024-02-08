@@ -30,27 +30,24 @@ public class PostsLikeController {
     @ApiOperation("新增点赞")
     @GetMapping("/add")
     public Result<?> add(@RequestParam("postsId") Long postsId, @RequestParam("deleted") Integer deleted) {
-        return postsLikeService.add(JwtUtil.getUserId(),postsId,deleted);
+        return postsLikeService.add(JwtUtil.getUserId(), postsId, deleted);
     }
+
     @ApiOperation("点赞")
-    @PostMapping("like")
-    public Result<?> like(
-            @RequestParam("postsId") Long postsId,
-            Long userId){
-        return postsLikeService.like(postsId, userId);
+    @GetMapping("like")
+    public Result<?> like(@RequestParam("postsId") Long postsId) {
+        return postsLikeService.like(postsId, JwtUtil.getUserId());
     }
+
     @ApiOperation("取消点赞")
-    @PostMapping("dislike")
-    public Result<?> dislike(
-            @RequestParam("postsId") Long postsId,
-            Long userId){
-        return postsLikeService.dislike(postsId, userId);
+    @GetMapping("dislike")
+    public Result<?> dislike(@RequestParam("postsId") Long postsId) {
+        return postsLikeService.dislike(postsId, JwtUtil.getUserId());
     }
+
     @ApiOperation("分页")
     @PostMapping("/getPage")
     public ResultPage<HistoryVO> getPage(@RequestBody HistoryPageReq pageQuery) {
-        return postsLikeService.getPage(JwtUtil.getUserId(),pageQuery);
+        return postsLikeService.getPage(JwtUtil.getUserId(), pageQuery);
     }
-
-
 }

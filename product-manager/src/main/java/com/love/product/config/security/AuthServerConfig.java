@@ -1,10 +1,11 @@
 package com.love.product.config.security;
 
 import com.alibaba.fastjson2.JSON;
-import com.love.product.config.Exception.BizException;
+import com.love.product.config.exception.BizException;
 import com.love.product.entity.vo.UserInfoVO;
 import com.love.product.service.RedisService;
 import com.love.product.service.UserInfoService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -40,6 +41,7 @@ import static com.love.product.constant.RedisKeyConstant.USER_USERINFO;
  */
 @Configuration
 @EnableAuthorizationServer
+@Slf4j
 public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
 
     @Resource
@@ -103,11 +105,11 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
      */
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-        endpoints.accessTokenConverter(accessTokenConverter());
-        endpoints.authenticationManager(authenticationManager);
-        endpoints.allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST);
-        endpoints.userDetailsService(userDetailService);//支持refresh_token机制
-        endpoints.reuseRefreshTokens(tokenConfig.isRefreshToken());//和配置文件对应的 具体看application.yml最后一项
+        endpoints.accessTokenConverter(accessTokenConverter())
+                .authenticationManager(authenticationManager)
+                .allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST)
+                .userDetailsService(userDetailService)//支持refresh_token机制
+                .reuseRefreshTokens(tokenConfig.isRefreshToken());//和配置文件对应的 具体看application.yml最后一项
     }
 
     /**
@@ -148,6 +150,7 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
                 if (userInfoVO == null) {
                     throw new BizException(403, "请重新登录");
                 }
+                log.info(String.valueOf(userInfoVO));
                 userInfoVO = (UserInfoVO) redisService.get(USER_USERINFO + userInfoVO.getId());
                 Collection<SimpleGrantedAuthority> authority = new ArrayList<>();
                 // 得到用户名，去处理数据库可以拿到当前用户的信息和角色信息（需要传递到服务中用到的信息）

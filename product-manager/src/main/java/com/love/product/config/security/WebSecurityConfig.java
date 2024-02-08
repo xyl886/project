@@ -39,6 +39,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/webSocket/**",
                         "/category/listAll",
                         "/login/code",
+                        "/login/captcha",
                         "/login/userLogin",
                         "/login/userRegister",
                         "/user/reset",

@@ -10,6 +10,7 @@ public enum ResultCode {
      *
      */
     SUCCESS(200, "操作成功"),
+
     FAILED(500, "操作失败，请重试"),
     PARAM_ERROR(400, "参数错误"),
     AUTH_ERROR(401, "认证错误"),

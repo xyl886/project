@@ -22,12 +22,12 @@ import java.util.Map;
  */
 public interface PostsService extends IService<Posts> {
 
-    Result<Posts> add(Long userId, PostsVO postsVO);
+    Result<Posts> add(PostsVO postsVO);
 
-    ResultPage<PostsDetailVO> getPage(Long userId, PostsPageReq postsPageReq);
+    ResultPage<PostsDetailVO> getPage(PostsPageReq postsPageReq);
     ResultPage<PostsDetailVO> getPageByEs(PostsPageReq postsPageReq);
 
-    Result<PostsDetailVO> getDetail(Long userId, Long id);
+    Result<PostsDetailVO> getDetail(Long id);
 
     Result<?> browse(Long userId,Long id);
 

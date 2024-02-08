@@ -40,6 +40,7 @@ public class ResourceConfiguration extends ResourceServerConfigurerAdapter {
                         "/parseToken",
                         "/login/code",
                         "/category/listAll",
+                        "/login/captcha",
                         "/login/userLogin",
                         "/login/userRegister",
                         "/user/reset",

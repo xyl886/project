@@ -1,6 +1,5 @@
 package com.love.product.config.filter;
 
-import com.love.product.interceptor.AccessLimitInterceptor;
 import com.love.product.interceptor.PaginationInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -21,8 +20,6 @@ public class CorsConfig implements WebMvcConfigurer {
     @Resource
     private PaginationInterceptor paginationInterceptor;
 
-    @Resource
-    private AccessLimitInterceptor accessLimitInterceptor;
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
@@ -35,6 +32,5 @@ public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(paginationInterceptor);
-        registry.addInterceptor(accessLimitInterceptor);
     }
 }

@@ -1,4 +1,6 @@
-package com.love.product.config.Exception;
+package com.love.product.config.exception;
+
+import com.love.product.entity.base.ResultCode;
 
 /**
  * @author Administrator
@@ -44,7 +46,11 @@ public class BizException extends RuntimeException {
         this.errorCode = errorCode;
         this.errorMsg = errorMsg;
     }
-
+    public BizException(ResultCode resultCode) {
+        super(String.valueOf(resultCode));
+        this.errorCode = resultCode.getCode();
+        this.errorMsg = resultCode.getMsg();
+    }
     public BizException(Integer errorCode, String errorMsg, Throwable cause) {
         super(String.valueOf(errorCode), cause);
         this.errorCode = errorCode;

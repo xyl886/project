@@ -119,9 +119,7 @@ export default {
   beforeCreate () {
     const data = {total: 0, pageSize: 10, currentPage: 1, categoryName: null}
     listAllCategory(data).then(res => {
-      console.log(res.data)
       this.tabs = res.data
-      console.log(this.tabs)
     })
   },
   mounted () {
@@ -140,7 +138,6 @@ export default {
       listAll().then(res => {
         if (res.code === 200) {
           this.banners = res.data
-          console.log(this.banners)
         }
       })
     },
@@ -155,13 +152,11 @@ export default {
     getPageFun () {
       this.loading = true
       this.posts = []
-      console.log(this.page)
       getPage(this.page).then(res => {
         this.loading = false
         if (res.code === 200) {
           let count = 0
           let arr = []
-          console.log(res.data.length)
           for (let i = 0; i < res.data.length; i++) {
             count++
             if (count <= 5) {
@@ -169,7 +164,6 @@ export default {
             }
             if (count === 5 || i === (res.data.length - 1)) {
               this.posts.push(arr)
-              console.log(this.posts)
               arr = []
               count = 0
             }
@@ -177,7 +171,6 @@ export default {
           this.page.total = res.dataTotal
         }
       }, error => {
-        console.log(error)
         this.loading = false
       })
     },

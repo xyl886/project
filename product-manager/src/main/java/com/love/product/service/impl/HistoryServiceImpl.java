@@ -6,25 +6,20 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.love.product.entity.History;
-import com.love.product.entity.Posts;
-import com.love.product.entity.base.PageQuery;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.req.HistoryPageReq;
 import com.love.product.entity.vo.HistoryVO;
-import com.love.product.entity.vo.PostsDetailVO;
 import com.love.product.entity.vo.UserInfoVO;
 import com.love.product.mapper.HistoryMapper;
-import com.love.product.service.CategoryService;
-import com.love.product.service.HistoryService;
-import com.love.product.service.PostsService;
-import com.love.product.service.UserInfoService;
+import com.love.product.service.*;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -38,6 +33,9 @@ import java.util.stream.Collectors;
 public class HistoryServiceImpl extends ServiceImpl<HistoryMapper, History> implements HistoryService {
     @Resource
     private PostsService postsService;
+    @Resource
+    private PostsLikeService postsLikeService;
+
     @Resource
     private UserInfoService userInfoService;
     @Resource
@@ -97,7 +95,7 @@ public class HistoryServiceImpl extends ServiceImpl<HistoryMapper, History> impl
             }).collect(Collectors.toList());
         }
         // 获取帖子信息
-        PostsLikeServiceImpl.getHVOPosts(list, postsIds, postsService, categoryService);
+        postsLikeService.getHVOPosts(list, postsIds);
         // 获取用户nickname
         for (HistoryVO historyVO : list) {
             UserInfoVO userInfoVO = userInfoService.getUserInfoById(historyVO.getUserId());

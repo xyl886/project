@@ -51,7 +51,8 @@ public class RedisKeyConstant implements Serializable {
      * @param UserId 被点赞的人id
      * @param PostId 点赞的人的id
      * @return
-     */public static String getLikedKey(Long UserId, Long PostId){
+     */
+    public static String getLikedKey(Long UserId, Long PostId){
         return UserId + "::" + PostId;
     }
 }

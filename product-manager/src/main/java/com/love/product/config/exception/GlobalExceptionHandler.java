@@ -1,16 +1,14 @@
-package com.love.product.config.Exception;
+package com.love.product.config.exception;
 
 import com.love.product.entity.base.Result;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Administrator
@@ -48,11 +46,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public Result ExceptionHandler(Exception e) {
-        log.error( " msg : " + e.getMessage(), e);
-        if(StringUtils.isBlank(e.getLocalizedMessage())){
-            return Result.failMsg(-1, "操作异常");
-        }
-        return Result.failMsg(e.getMessage());
+        log.error(" msg : " + e.getMessage(), e);
+        return Result.failMsg(500, "操作异常");
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("访问被拒绝");
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
