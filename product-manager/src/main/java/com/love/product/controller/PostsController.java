@@ -1,13 +1,12 @@
 package com.love.product.controller;
 
 import com.love.product.annotation.AccessLimit;
-import com.love.product.consumer.message.PostsActionMessage;
 import com.love.product.entity.Posts;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
-import com.love.product.entity.dto.PostsSearchDTO;
 import com.love.product.entity.req.PostsPageReq;
 import com.love.product.entity.vo.ConditionVO;
+import com.love.product.entity.vo.PostsDetailVO;
 import com.love.product.entity.vo.PostsDetailVO;
 import com.love.product.entity.vo.PostsVO;
 import com.love.product.service.PostsService;
@@ -17,17 +16,12 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.time.LocalDateTime;
 import java.util.List;
-
-import static com.love.product.constant.RabbitMQConstant.POSTS_ACTION_EXCHANGE;
-import static com.love.product.constant.RabbitMQConstant.POSTS_ACTION_ROUTING_KEY;
-import static com.love.product.enums.ActionType.BROWSE;
 
 /**
  * @author Administrator
@@ -43,17 +37,18 @@ public class PostsController {
     @Resource
     private PostsService postsService;
 
-    @Resource
-    private RabbitTemplate rabbitTemplate;
-
     @PostMapping("/add")
     @ApiOperation(value = "添加", notes = "添加")
-    public Result<Posts> add(PostsVO postsVO) {
+    public Result<Posts> add(PostsVO postsVO,
+                             @RequestParam(value = "files", required = false) MultipartFile[] files) {
+        if (files != null && files.length > 0) {
+            postsVO.setFiles(files);
+        }
         return postsService.add(postsVO);
     }
 
     @GetMapping("/listHot")
-    public Result<List<Posts>> listHot() {
+    public Result<List<PostsDetailVO>> listHot() {
         return postsService.listHot();
     }
 
@@ -78,11 +73,6 @@ public class PostsController {
     })
     @GetMapping("/browse")
     public Result<?> browse(@RequestParam(value = "userId", required = false) Long userId, @RequestParam("id") Long id) {
-        // 创建浏览操作的消息对象
-        PostsActionMessage message = new PostsActionMessage(userId, null, BROWSE, LocalDateTime.now());
-
-        // 将消息发送到消息队列
-        rabbitTemplate.convertAndSend(POSTS_ACTION_EXCHANGE, POSTS_ACTION_ROUTING_KEY, message);
         return postsService.browse(userId, id);
     }
 
@@ -92,7 +82,7 @@ public class PostsController {
             @ApiImplicitParam(name = "id", value = "主键", required = true, dataType = "Long", paramType = "query"),
             @ApiImplicitParam(name = "userId", value = "用户主键", required = true, dataType = "Long", paramType = "query"),
             @ApiImplicitParam(name = "title", value = "标题", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "school", value = "校区", required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "categoryId", value = "分类ID", required = true, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "content", value = "内容", required = true, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "Files", value = "新上传图片列表", required = false, dataType = "MultipartFile[]", paramType = "query"),
             @ApiImplicitParam(name = "removeFiles", value = "移除的图片列表", required = false, dataType = "String", paramType = "query"),
@@ -104,7 +94,7 @@ public class PostsController {
 
     @ApiOperation(value = "搜索文章")
     @GetMapping("/articles/search")
-    public Result<List<PostsSearchDTO>> listPostsBySearch(ConditionVO condition) {
+    public Result<List<Posts>> listPostsBySearch(ConditionVO condition) {
         return Result.OK(postsService.listPostsBySearch(condition));
     }
 

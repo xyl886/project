@@ -1,6 +1,5 @@
 package com.love.product.controller;
 
-import com.love.product.entity.Message;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.dto.MessageDTO;
 import com.love.product.service.MessageService;

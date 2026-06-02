@@ -1,0 +1,38 @@
+# Logs
+logs/
+*.log
+
+# IDE
+.idea/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+product-admin/node_modules/
+
+# Build output
+dist/
+target/
+
+# Environment files
+.env
+.env.local
+
+# Profile-specific application files (sensitive data)
+application-dev.yml
+application-prod.yml
+
+# Sensitive files
+账密.txt
+**/账密.txt
+
+# Spring Boot
+product-manager/target/
+product-manager/*.log
+
+# Maven wrapper (downloads)
+.mvn/wrapper/maven-wrapper.jar

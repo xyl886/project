@@ -3,7 +3,7 @@
 <mapper namespace="com.love.product.mapper.MessageMapper">
 
     <update id="passBatch">
-        update s_message  where id in
+        update s_message set deleted = 0 where id in
         <foreach collection="ids" item="id" open="(" separator="," close=")">
             #{id}
         </foreach>

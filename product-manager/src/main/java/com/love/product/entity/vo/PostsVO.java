@@ -53,8 +53,8 @@ public class PostsVO{
     public String content;
 
     @NotNull(message = "请选择分类")
-    @ApiModelProperty(value = "校区")
-    public Integer school;
+    @ApiModelProperty(value = "分类ID")
+    public Integer categoryId;
 
     @ApiModelProperty(value = "标签")
     private String tags;
@@ -63,7 +63,7 @@ public class PostsVO{
     public BigDecimal price;
 
     @ApiModelProperty(value = "新上传文件")
-    private MultipartFile[] Files;
+    private MultipartFile[] files;
 
     @ApiModelProperty(value = "已上传文件")
     private String oldFiles;

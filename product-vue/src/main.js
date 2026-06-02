@@ -1,36 +1,15 @@
-// The Vue build version to load with the `import` command
-// (runtime-only or standalone) has been set in webpack.base.conf with an alias.
-import Vue from 'vue'
-import App from './App'
+import { createApp } from 'vue'
+import ElementPlus from 'element-plus'
+import 'element-plus/dist/index.css'
+import * as ElIcons from '@element-plus/icons-vue'
+import App from './App.vue'
 import router from './router'
-import Element from 'element-ui'
-import store from './store'
+import { createPinia } from 'pinia'
+import './assets/style.css'
 
-import VueQuillEditor from 'vue-quill-editor'
-// require styles 引入样式
-import 'quill/dist/quill.core.css'
-import 'quill/dist/quill.snow.css'
-import 'quill/dist/quill.bubble.css'
-import 'mavon-editor/dist/css/index.css'
-import MavonEditor from 'mavon-editor'
-import { vueBaberrage } from 'vue-baberrage'
-import '@/permission' // permission control
-// import 'default-passive-events'
-
-Vue.use(Element)
-Vue.use(MavonEditor)
-Vue.use(vueBaberrage)
-Vue.use(VueQuillEditor)
-Vue.config.productionTip = false
-
-// Vue.config.errorHandler = (err) => {
-//   console.log(err)
-// }
-/* eslint-disable no-new */
-new Vue({
-  el: '#app',
-  router,
-  store,
-  components: { App },
-  template: '<App/>'
-})
+const app = createApp(App)
+app.use(ElementPlus, { size: 'default' })
+app.use(createPinia())
+app.use(router)
+for (const [key, icon] of Object.entries(ElIcons)) app.component(key, icon)
+app.mount('#app')

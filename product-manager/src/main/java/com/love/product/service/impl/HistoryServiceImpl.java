@@ -42,17 +42,12 @@ public class HistoryServiceImpl extends ServiceImpl<HistoryMapper, History> impl
     private CategoryService categoryService;
     @Override
     public History findHistory(Long userId, Long id) {
-        LambdaQueryWrapper<History> queryWrapper=new LambdaQueryWrapper<>();
+        LambdaQueryWrapper<History> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(History::getUserId, userId)
                 .eq(History::getPostsId, id)
                 .orderByDesc(History::getUpdateTime)
                 .last("LIMIT 1");
-        History  history= getOne(queryWrapper);
-          if (getOne(queryWrapper)!=null){
-              log.info("之前浏览过"+history);
-              return history;
-          }
-        return null;
+        return getOne(queryWrapper);
     }
 
     @Override
@@ -70,20 +65,22 @@ public class HistoryServiceImpl extends ServiceImpl<HistoryMapper, History> impl
     @Override
     public ResultPage<HistoryVO> getPage(Long userId, HistoryPageReq pageQuery) {
         log.info(String.valueOf(pageQuery));
-        String sqlQuery = "SELECT id FROM s_posts WHERE ";
-        boolean isPostsTypeEmpty = pageQuery.postsType == null;
-        boolean isTitleEmpty = pageQuery.getTitle() == null || pageQuery.getTitle().isEmpty();
-        if (!isPostsTypeEmpty) {sqlQuery += "posts_type = " + pageQuery.postsType;}
-        if (!isPostsTypeEmpty && !isTitleEmpty) {sqlQuery += " AND ";}
-        if (!isTitleEmpty) {sqlQuery += "title LIKE '%" + pageQuery.getTitle() + "%'";}
         LambdaQueryWrapper<History> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(History::getUserId, userId)
                 .orderByDesc(History::getUpdateTime)
                 .between(pageQuery.getStartTime()!=null&&pageQuery.getEndTime()!=null, History::getUpdateTime,
                         pageQuery.getStartTime(), pageQuery.getEndTime())
-                .inSql(pageQuery.postsType!=null||pageQuery.getTitle()!=null, History::getPostsId,
-                        sqlQuery)
                 .orderByDesc(History::getCreateTime);
+        if (pageQuery.postsType != null && pageQuery.getTitle() != null && !pageQuery.getTitle().isEmpty()) {
+            queryWrapper.apply("posts_id IN (SELECT id FROM s_posts WHERE posts_type = {0} AND title LIKE {1})",
+                    pageQuery.postsType, "%" + pageQuery.getTitle() + "%");
+        } else if (pageQuery.postsType != null) {
+            queryWrapper.apply("posts_id IN (SELECT id FROM s_posts WHERE posts_type = {0})",
+                    pageQuery.postsType);
+        } else if (pageQuery.getTitle() != null && !pageQuery.getTitle().isEmpty()) {
+            queryWrapper.apply("posts_id IN (SELECT id FROM s_posts WHERE title LIKE {0})",
+                    "%" + pageQuery.getTitle() + "%");
+        }
         Page<History> page = page(pageQuery.build(), queryWrapper);
         List<HistoryVO> list = new ArrayList<>();
         List<Long> postsIds = new ArrayList<>();

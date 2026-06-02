@@ -43,7 +43,7 @@
             u.nickname,
             u.avatar,
             p.posts_type AS postType,
-            p.school AS schoolName
+            p.category_id AS categoryId
 
         FROM
         s_posts_like h

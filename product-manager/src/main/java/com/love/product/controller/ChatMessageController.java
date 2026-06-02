@@ -2,7 +2,6 @@ package com.love.product.controller;
 
 import com.love.product.entity.ChatMessage;
 import com.love.product.entity.base.Result;
-import com.love.product.entity.req.FollowPageReq;
 import com.love.product.entity.req.FriendPageReq;
 import com.love.product.service.ChatMessageService;
 import com.love.product.util.JwtUtil;
@@ -38,19 +37,21 @@ public class ChatMessageController {
         return  chatmessageService.addFriend(friendUserId);
 
     }
-    @GetMapping("/getFriendList")
+    @PostMapping("/getFriendList")
     public Result getFriendList(@RequestBody FriendPageReq friendPageReq){
         return chatmessageService.getFriendList(JwtUtil.getUserId(),friendPageReq);
     }
     @DeleteMapping("/deleteFriend")
-    public void deleteFriend(@RequestParam("friendUserId") Long friendUserId){
+    public Result deleteFriend(@RequestParam("friendUserId") Long friendUserId){
         chatmessageService.deleteFriend(friendUserId);
+        return Result.OK();
     }
 
 
     @PostMapping("/saveOneMsg")
-    public void saveOneMsg(@RequestBody ChatMessage ChatMessage) {
+    public Result saveOneMsg(@RequestBody ChatMessage ChatMessage) {
         chatmessageService.save(ChatMessage);
+        return Result.OK();
     }
 
     /**
@@ -78,18 +79,5 @@ public class ChatMessageController {
             @RequestParam("toId") Long toId) {
         return chatmessageService.remove(Id,fromId,toId);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }

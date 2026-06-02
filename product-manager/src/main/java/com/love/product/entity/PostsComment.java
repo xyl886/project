@@ -24,10 +24,6 @@ public class PostsComment extends BaseEntity {
     @JsonSerialize(using = ToStringSerializer.class)
     public Long parentId;
 
-    @ApiModelProperty(value = "上级评论用户主键")
-    @JsonSerialize(using = ToStringSerializer.class)
-    public Long parentUserId;
-
     @ApiModelProperty(value = "用户主键")
     @JsonSerialize(using = ToStringSerializer.class)
     public Long userId;
@@ -36,18 +32,9 @@ public class PostsComment extends BaseEntity {
     @JsonSerialize(using = ToStringSerializer.class)
     public Long postsId;
 
-    @ApiModelProperty(value = "帖子所属用户主键")
-    @JsonSerialize(using = ToStringSerializer.class)
-    public Long postsUserId;
-
     @ApiModelProperty(value = "评论内容")
     public String content;
 
     @ApiModelProperty(value = "点赞数量")
     public Integer likeNum;
-    /**
-     * {@link com.love.product.enums.YesOrNo}
-     */
-    @ApiModelProperty(value = "消息已读状态")
-    public Integer status;
 }

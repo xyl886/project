@@ -15,7 +15,6 @@ import com.love.product.entity.vo.CategoryVO;
 import com.love.product.entity.vo.CommentVO;
 import com.love.product.entity.vo.ReportVO;
 import com.love.product.mapper.ReportMapper;
-import com.love.product.service.FileUploadService;
 import com.love.product.service.ReportService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -34,8 +33,6 @@ import java.util.stream.Collectors;
  */
 @Service
 public class ReportServiceImpl extends ServiceImpl<ReportMapper, Report> implements ReportService {
-    @Resource
-    private FileUploadService fileUploadService;
     public void validate(Report report){
         Report entity = baseMapper.selectOne(
                 new LambdaQueryWrapper<Report>().eq(Report::getPostId,report.getPostId())

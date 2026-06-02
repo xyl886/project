@@ -1,25 +1,14 @@
 package com.love.product.util;
 
-import cn.hutool.extra.spring.SpringUtil;
-import com.love.product.config.security.JwtToken;
-import com.love.product.config.security.TokenConfig;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
+import cn.dev33.satoken.stp.StpUtil;
 
 /**
  * @author Administrator
  * @date 2022-11-03 16:51
- * @describe
+ * @describe 基于 Sa-Token 的鉴权工具类
  */
 
 public class JwtUtil {
-
-    private static TokenConfig getTokenConfig() {
-        return SpringUtil.getBean("tokenConfig", TokenConfig.class);
-    }
 
     /**
      * 获取当前登录用户ID
@@ -27,18 +16,11 @@ public class JwtUtil {
      * @return 用户ID
      */
     public static Long getUserId() {
-        ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        if (servletRequestAttributes != null) {
-            HttpServletRequest request = servletRequestAttributes.getRequest();
-            String localUser = JwtToken.parseToken(request.getHeader("Authorization"), getTokenConfig().getSigningKey());
-            if (localUser != null) {
-                Map<String, Object> userMap = (Map<String, Object>) JsonUtil.json2Map(localUser);
-                if (userMap != null) {
-                    return (Long) userMap.get("userId");
-                }
-            }
+        try {
+            return Long.parseLong(StpUtil.getLoginId().toString());
+        } catch (Exception e) {
+            return null;
         }
-        return null;
     }
 
 }

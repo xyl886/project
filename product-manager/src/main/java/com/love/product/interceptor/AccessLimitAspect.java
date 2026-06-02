@@ -1,6 +1,5 @@
 package com.love.product.interceptor;
 
-import com.google.common.collect.ImmutableList;
 import com.love.product.annotation.AccessLimit;
 import com.love.product.entity.base.Result;
 import com.love.product.service.RedisService;
@@ -19,6 +18,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Objects;
 
 @Slf4j
@@ -52,7 +52,7 @@ public class AccessLimitAspect {
         //过期次数
         int limitCount = annotation.count();
 
-        ImmutableList<String> keys = ImmutableList.of(StringUtils.join(annotation.prefix() + "_", key + "_", ip));
+        List<String> keys = List.of(StringUtils.join(annotation.prefix() + "_", key + "_", ip));
         String source = "limit.lua";
         Long count = redisService.executeLuaScript(source, keys, limitCount, limitPeriod);
         log.info("IP:{} 第 {} 次访问key为 {}，描述为 [{}] 的接口", ip, count, keys, name);

@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import com.love.product.entity.base.BaseEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
@@ -32,7 +31,6 @@ public class UserAuth implements Serializable {
 
     @JsonSerialize(using = ToStringSerializer.class)
     @TableId(type = IdType.AUTO)
-    @TableField(fill = FieldFill.INSERT)
     @ApiModelProperty(name = "id", value = "表主键")
     public Long id;
 

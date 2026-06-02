@@ -5,14 +5,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import lombok.extern.slf4j.Slf4j;
+
 
 import java.io.Serializable;
 
 /**
  * 分页查询实体类
  */
-@Slf4j
 @Data
 @Accessors(chain = true)
 public class PageQuery implements Serializable {
@@ -54,8 +53,4 @@ public class PageQuery implements Serializable {
         return new Page<>(pageNum, pageSize);
     }
 
-    @ApiModelProperty(hidden = true)
-    public int getEsFrom() {
-        return 2 <= currentPage ? (currentPage - 1) * pageSize : 0;
-    }
 }

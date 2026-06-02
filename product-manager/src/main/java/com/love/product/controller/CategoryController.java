@@ -10,7 +10,6 @@ import com.love.product.entity.vo.CategoryVO;
 import com.love.product.service.CategoryService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.models.auth.In;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -36,10 +35,10 @@ public class CategoryController {
         return categoryService.listAll(categoryPageReq);
     }
 
-    @RequestMapping(value = "/info",method = RequestMethod.GET)
+    @GetMapping("/info")
     @ApiOperation(value = "分类详情", httpMethod = "GET", response = Result.class, notes = "分类详情")
-    public String getCategoryById(@RequestParam() Long id){
-        return categoryService.getCategoryById(id);
+    public Result getCategoryById(@RequestParam() Long id){
+        return Result.OK(categoryService.getCategoryById(id));
     }
 
     @RequestMapping(value = "/add",method = RequestMethod.POST)

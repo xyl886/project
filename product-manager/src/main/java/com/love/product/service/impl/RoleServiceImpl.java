@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.love.product.config.exception.BizException;
+import com.love.product.config.BizException;
 import com.love.product.entity.UserAuth;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;

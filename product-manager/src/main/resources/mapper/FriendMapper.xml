@@ -29,20 +29,4 @@
 
 
     </insert>
-    <select id="selectFriendList" resultType="com.love.product.entity.Friend">
-        SELECT
-            r.id,
-            r.content,
-            r.create_time,
-            u.email,
-            u.nickname,
-            u.avatar,
-            p.title
-
-        FROM s_report r
-
-                 LEFT JOIN s_user_info u ON r.report_user_id = u.id
-
-                 LEFT JOIN s_posts p ON r.post_id = p.id
-    </select>
 </mapper>

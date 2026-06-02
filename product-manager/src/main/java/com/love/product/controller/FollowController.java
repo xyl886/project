@@ -28,7 +28,7 @@ public class FollowController {
     private FollowService followService;
 
     @ApiOperation("新增关注")
-    @GetMapping("/add")
+    @PostMapping("/add")
     public Result<?> add(
             @RequestParam("beFollowedUserId") Long beFollowedUserId,
             @RequestParam("deleted") Integer deleted) {

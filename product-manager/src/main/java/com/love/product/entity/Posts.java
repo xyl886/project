@@ -21,7 +21,7 @@ import java.math.BigDecimal;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName(value ="s_posts_copy")
+@TableName(value ="s_posts")
 public class Posts extends BaseEntity {
 
     @ApiModelProperty(value = "帖子所属用户主键")
@@ -46,8 +46,8 @@ public class Posts extends BaseEntity {
     public String content;
 
     @NotNull(message = "请选择分类")
-    @ApiModelProperty(value = "校区")
-    public Integer school;
+    @ApiModelProperty(value = "分类ID")
+    public Integer categoryId;
 
     @ApiModelProperty(value = "单价")
     public BigDecimal price;
@@ -69,9 +69,6 @@ public class Posts extends BaseEntity {
 
     @ApiModelProperty(value = "评论数量")
     public Integer commentNum;
-
-    @ApiModelProperty(value = "版本号")
-    public Integer version;
 
     @ApiModelProperty(value = "状态")
     public Integer status;

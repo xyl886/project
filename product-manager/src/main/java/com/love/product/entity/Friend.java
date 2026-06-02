@@ -28,11 +28,12 @@ public class Friend extends BaseEntity {
     @JsonSerialize(using = ToStringSerializer.class)
     public Long friendId;
 
+    @ApiModelProperty(value = "好友昵称")
+    public String friendNickname;
+
     /**
      * {@link com.love.product.enums.YesOrNo}
      */
-    @ApiModelProperty(value = "好友昵称")
-    public Integer friendNickname;
-    @ApiModelProperty(value = "好友昵称")
+    @ApiModelProperty(value = "状态")
     public Integer status;
 }

@@ -2,6 +2,7 @@ package com.love.product.util;
 
 
 import com.love.product.entity.vo.Captcha;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomUtils;
 
 import javax.imageio.ImageIO;
@@ -15,6 +16,7 @@ import java.util.Base64;
 import java.util.Objects;
 import java.util.Random;
 
+@Slf4j
 public class CaptchaUtils {
     /**
      * 网络图片地址
@@ -84,7 +86,7 @@ public class CaptchaUtils {
                 return ImageIO.read(file);
             }
         } catch (Exception e) {
-            System.out.println("获取拼图资源失败");
+            log.error("获取拼图资源失败");
             //异常处理
             return null;
         }
@@ -218,7 +220,7 @@ public class CaptchaUtils {
             String base64 = Base64.getEncoder().encodeToString(byteArrayOutputStream.toByteArray());
             return String.format("data:image/%s;base64,%s", type, base64);
         } catch (IOException e) {
-            System.out.println("图片资源转换BASE64失败");
+            log.error("图片资源转换BASE64失败");
             //异常处理
             return null;
         }

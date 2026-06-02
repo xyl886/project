@@ -22,11 +22,11 @@ import com.love.product.mapper.CommentLikeMapper;
 import com.love.product.mapper.PostsCommentMapper;
 import com.love.product.mapper.PostsMapper;
 import com.love.product.mapper.UserInfoMapper;
-import com.love.product.service.FileUploadService;
 import com.love.product.service.PostsCommentService;
 import com.love.product.service.PostsService;
 import com.love.product.service.UserInfoService;
 import com.love.product.util.JwtUtil;
+import com.love.product.util.XssUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -52,21 +52,24 @@ public class PostsCommentServiceImpl extends ServiceImpl<PostsCommentMapper, Pos
     @Resource
     private UserInfoMapper userInfoMapper;
     @Resource
-    private FileUploadService fileUploadService;
-    @Resource
     private UserInfoService userInfoService;
     @Resource
     private CommentLikeMapper commentLikeMapper;
     @Override
-    public Result<?> add(Long userId, Long postsId, String content) {
+    public Result<?> add(Long userId, Long postsId, String content, Long parentCommentId) {
         log.info(content);
         Posts posts = postsService.getById(postsId);
         if(posts != null && !posts.getStatus().equals(YesOrNo.YES.getValue())){
             PostsComment comment = new PostsComment();
             comment.setUserId(userId);
             comment.setPostsId(posts.getId());
-            comment.setPostsUserId(posts.getUserId());
-            comment.setContent(content);
+            comment.setContent(XssUtils.filter(content));
+            if (parentCommentId != null) {
+                comment.setParentId(parentCommentId);
+                PostsComment parent = getById(parentCommentId);
+                if (parent != null) {
+                }
+            }
             save(comment);
             int commentNum = posts.getCommentNum();
             commentNum = commentNum + 1;

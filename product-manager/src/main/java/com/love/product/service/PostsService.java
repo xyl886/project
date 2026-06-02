@@ -8,7 +8,6 @@ import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.dto.PostsDTO;
 import com.love.product.entity.req.PostsPageReq;
 import com.love.product.entity.vo.PostsVO;
-import com.love.product.entity.dto.PostsSearchDTO;
 import com.love.product.entity.vo.ConditionVO;
 import com.love.product.entity.vo.PostsDetailVO;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,7 +24,6 @@ public interface PostsService extends IService<Posts> {
     Result<Posts> add(PostsVO postsVO);
 
     ResultPage<PostsDetailVO> getPage(PostsPageReq postsPageReq);
-    ResultPage<PostsDetailVO> getPageByEs(PostsPageReq postsPageReq);
 
     Result<PostsDetailVO> getDetail(Long id);
 
@@ -39,11 +37,11 @@ public interface PostsService extends IService<Posts> {
      Result<?> delete(Long userId,Long id);
     String getImgPathById(Long id);
 
-    List<PostsSearchDTO> listPostsBySearch(ConditionVO condition);
+    List<Posts> listPostsBySearch(ConditionVO condition);
 
     void updatePostsCollectNum(Long postsId,Integer collectNum);
-//    Result<List<Map<Long, String>>> listHot();
-    Result<List<Posts>> listHot();
+
+    Result<List<PostsDetailVO>> listHot();
 
     Result<?> audit(PostsDTO postsDTO);
 

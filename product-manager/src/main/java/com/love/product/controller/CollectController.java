@@ -1,6 +1,5 @@
 package com.love.product.controller;
 
-import com.love.product.entity.base.PageQuery;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.req.CollectPageReq;
@@ -29,8 +28,17 @@ public class CollectController {
     @Resource
     private CollectService collectService;
 
+    @ApiOperation("查询收藏状态")
+    @GetMapping("/status")
+    public Result<?> status(@RequestParam("postsId") Long postsId) {
+        Long userId = JwtUtil.getUserId();
+        if (userId == null) return Result.OK(false);
+        com.love.product.entity.Collect collect = collectService.getDetail(userId, postsId);
+        return Result.OK(collect != null && collect.getDeleted().equals(0));
+    }
+
     @ApiOperation("新增收藏")
-    @GetMapping("/add")
+    @PostMapping("/add")
     public Result<?> add(@RequestParam("postsIds")Long[] postsIds,@RequestParam("deleted") Integer deleted) {
         return collectService.add(JwtUtil.getUserId(), deleted, postsIds);
     }

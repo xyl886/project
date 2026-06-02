@@ -6,7 +6,6 @@ import com.love.product.entity.dto.PostsDTO;
 import com.love.product.entity.vo.ContributeVO;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -14,7 +13,6 @@ import java.util.List;
  * @date 2022-10-19 10:26
  */
 public interface PostsMapper extends BaseMapper<Posts> {
-    List<Posts> listPostWithDelete(Date minUpdateTime);
     String getImgPathById(Long id);
 
     Posts getPostsById(Long postsId);
@@ -29,4 +27,6 @@ public interface PostsMapper extends BaseMapper<Posts> {
     List<ContributeVO> contribute(@Param("lastTime") String lastTime, @Param("nowTime") String nowTime);
 
     void audit(@Param("postsDTO") PostsDTO postsDTO);
+
+    void updateLikeNum(@Param("id") Long id, @Param("likeNum") Integer likeNum);
 }

@@ -29,17 +29,4 @@ public class Follow extends BaseEntity {
     @ApiModelProperty(value = "被关注用户主键")
     @JsonSerialize(using = ToStringSerializer.class)
     public Long beFollowedUserId;
-
-    /**
-     * {@link com.love.product.enums.YesOrNo}
-     */
-    @ApiModelProperty(value = "消息已读状态")
-    public Integer status;
-
-//    /**
-//     * {@link com.love.product.enumerate.YesOrNo}
-//     */
-//    @ApiModelProperty(value = "是否取关")
-//    public Integer deleted;
-
 }

@@ -6,21 +6,16 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.love.product.entity.Category;
 import com.love.product.entity.Message;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.dto.MessageDTO;
 import com.love.product.entity.req.MessagePageReq;
-import com.love.product.entity.vo.CategoryVO;
 import com.love.product.entity.vo.UserInfoVO;
 import com.love.product.mapper.MessageMapper;
 import com.love.product.service.MessageService;
 import com.love.product.service.UserInfoService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -29,7 +24,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.love.product.entity.base.ResultCode.PARAMS_ILLEGAL;
 
@@ -41,10 +35,10 @@ import static com.love.product.entity.base.ResultCode.PARAMS_ILLEGAL;
  */
 @Service
 @Slf4j
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> implements MessageService {
 
-    private final HttpServletRequest request;
+    @Resource
+    private HttpServletRequest request;
     @Resource
     private UserInfoService userInfoService;
     /**
@@ -57,11 +51,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
         LambdaQueryWrapper<Message> lambdaQueryWrapper = new QueryWrapper<Message>().lambda()
                 .orderByDesc(Message::getCreateTime);
         Page<Message> page=page(messagePageReq.build(),lambdaQueryWrapper);
-        List<Message> list=new ArrayList<>();
-        if (page.getTotal() > 0) {
-            list = page.getRecords().stream().map(message -> new Message())
-                    .collect(Collectors.toList());
-        }
+        List<Message> list = page.getTotal() > 0 ? page.getRecords() : new ArrayList<>();
         return ResultPage.OK(page.getTotal(), page.getCurrent(), page.getSize(), list);
     }
 

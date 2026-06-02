@@ -1,0 +1,7 @@
+export * from './dashboard'
+export * from './posts'
+export * from './user'
+export * from './category'
+export * from './comment'
+export * from './auth'
+export * from './tags'

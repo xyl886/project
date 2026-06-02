@@ -20,8 +20,6 @@ import com.love.product.mapper.PostsMapper;
 import com.love.product.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Service;
@@ -52,15 +50,10 @@ public class PostsLikeServiceImpl extends ServiceImpl<PostsLikeMapper, PostsLike
     private RedisService redisService;
     @Resource
     private CategoryService categoryService;
-    @Resource
-    private RabbitTemplate rabbitTemplate;
-
-    @Resource
-    private FileUploadService fileUploadService;
 
     public Integer getLikeStatus(Long postId, Long likeUserId) {
-        if (redisService.hHasKey(MAP_KEY_USER_LIKED, getLikedKey(postId, likeUserId))) {
-            String hashKey = getLikedKey(likeUserId, postId);
+        String hashKey = getLikedKey(likeUserId, postId);
+        if (redisService.hHasKey(MAP_KEY_USER_LIKED, hashKey)) {
             return (Integer) redisService.hGet(MAP_KEY_USER_LIKED, hashKey);
         }
         return LikeStatus.NOT_EXIST.getCode();
@@ -107,8 +100,7 @@ public class PostsLikeServiceImpl extends ServiceImpl<PostsLikeMapper, PostsLike
                 Long likedPostId = Long.valueOf(split[1]);
                 HashMap<String, Object> map = (HashMap<String, Object>) entry.getValue();
                 Integer status = (Integer) map.get("status");
-                Long postsUserId = postsService.getById(likedPostId).userId;
-                PostsLike postsLike = new PostsLike(likedUserId, likedPostId, postsUserId, status);
+                PostsLike postsLike = new PostsLike();
                 list.add(postsLike);
                 redisService.hDel(MAP_KEY_USER_LIKED, key);
             }
@@ -139,7 +131,7 @@ public class PostsLikeServiceImpl extends ServiceImpl<PostsLikeMapper, PostsLike
 
     @Override
     public Result<?> add(Long userId, Long postsId, Integer deleted) {
-        Posts posts = postsService.getById(postsId);
+        Posts posts = postsMapper.selectById(postsId);
         YesOrNo yesOrNo = YesOrNo.valueOf(deleted);
         if (yesOrNo == null) {
             yesOrNo = YesOrNo.NO;
@@ -147,41 +139,35 @@ public class PostsLikeServiceImpl extends ServiceImpl<PostsLikeMapper, PostsLike
         if (posts != null && !posts.getStatus().equals(YesOrNo.YES.getValue())) {
             LocalDateTime now = LocalDateTime.now();
 
+            // 更新 Redis 缓存
             String key = getLikedKey(userId, postsId);
-            redisService.hSet(MAP_KEY_USER_LIKED, key, LikeStatus.LIKE.getCode());
+            boolean isLike = !yesOrNo.equals(YesOrNo.YES);
+            redisService.hSet(MAP_KEY_USER_LIKED, key, isLike ? LikeStatus.LIKE.getCode() : LikeStatus.UNLIKE.getCode());
 
-            // 发送点赞消息到RabbitMQ
-            Map<String, Object> Rmsg = new HashMap<>();
-            Rmsg.put("userId", userId);
-            Rmsg.put("postsId", postsId);
-            Rmsg.put("deleted", deleted);
-            rabbitTemplate.convertAndSend("posts_like", Rmsg);
+            // 更新 Redis 点赞计数
+            if (isLike) {
+                incrementLikeCount(postsId);
+            } else {
+                decrementLikeCount(postsId);
+            }
 
+            // 直接写点赞记录到DB
             PostsLike postsLike = new PostsLike();
             postsLike.setId(IdWorker.getId());
             postsLike.setUserId(userId);
             postsLike.setPostsId(posts.getId());
-            postsLike.setPostsUserId(posts.getUserId());
             postsLike.setDeleted(yesOrNo.getValue());
             postsLike.setCreateTime(now);
             postsLike.setUpdateTime(now);
             postsLikeMapper.add(postsLike);
-            String msg = "点赞成功";
+
+            // 只更新点赞数字段，避免加载整个帖子对象
             int likeNum = posts.getLikeNum();
-            if (yesOrNo.equals(YesOrNo.YES)) {
-                likeNum = likeNum - 1;
-                postsService.saveOrUpdate(posts);
-                msg = "已取消点赞";
-            } else {
-                likeNum = likeNum + 1;
-            }
-            if (likeNum < 0) {
-                likeNum = 0;
-            }
-            posts.setLikeNum(likeNum);
-            //更新点赞数
-            postsService.saveOrUpdate(posts);
-            return Result.OKMsg(msg);
+            likeNum = isLike ? likeNum + 1 : likeNum - 1;
+            if (likeNum < 0) likeNum = 0;
+            postsMapper.updateLikeNum(postsId, likeNum);
+
+            return Result.OKMsg(isLike ? "点赞成功" : "已取消点赞");
         } else {
             return Result.failMsg("帖子不存在或已下架");
         }
@@ -239,7 +225,7 @@ public class PostsLikeServiceImpl extends ServiceImpl<PostsLikeMapper, PostsLike
             this.incrementLikeCount(postId);
             return Result.OKMsg("点赞成功！");
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("点赞失败", e);
             return Result.failMsg("点赞失败，请稍后重试！");
         }
 
@@ -261,61 +247,31 @@ public class PostsLikeServiceImpl extends ServiceImpl<PostsLikeMapper, PostsLike
                 this.decrementLikeCount(postId);
                 return Result.OKMsg("取消点赞成功！");
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("取消点赞失败", e);
                 return Result.failMsg("取消点赞失败，请稍后重试！");
             }
         }
     }
 
-    public Boolean update(PostsLike postsLike) {
-        UpdateWrapper<PostsLike> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.set("status", postsLike.getStatus());
-        updateWrapper.set("update_time", postsLike.getUpdateTime());
-        updateWrapper.eq("id", postsLike.getId());
-
-        int rows = postsLikeMapper.update(postsLike, updateWrapper);
-        return rows > 0;
-    }
-
     public void initLikeFromMysqlToRedis() {
-
+        log.info("initLikeFromMysqlToRedis 方法暂未实现");
     }
 
     @Override
     public void transLikeFromRedisToMysql() {
-        // 批量获取缓存中的点赞数据
+        // 批量获取缓存中的点赞数据并持久化到MySQL
         List<PostsLike> list = this.getLikeDataFromRedis();
-        log.info(list.toString());
-        if (CollectionUtils.isEmpty(list))// 为空，不写入
+        if (list == null || list.isEmpty())
             return;
         for (PostsLike item : list) {
-//            log.info(String.valueOf(item));
-            PostsLike postsLike = this.getDetail(item.userId, item.postsId);// 在数据库中查询
-            if (postsLike == null) {// 无记录，新增
-                boolean b = save(item);
-                if (b) {
-                    return;
-                }
-            } else {// 有记录，更新
-                // 判断数据库中点赞状态与缓存中点赞状态一致性
-                if (Objects.equals(postsLike.getStatus(), item.getStatus())) {// 一致，无需持久化，点赞数量-1
-                    incrementLikeCount(item.getPostsId());
-                } else {// 不一致
-                    if (Objects.equals(postsLike.getStatus(), LikeStatus.LIKE.getCode())) {// 在数据库中已经是点赞，则取消点赞，同时记得redis中的count-1
-                        // 之前是点赞，现在改为取消点赞 1.设置更改status 2. redis中的count要-1（消除在数据库中自己的记录）
-                        postsLike.setStatus(LikeStatus.UNLIKE.getCode());
-                        this.decrementLikeCount(item.getPostsId());
-                    } else if (Objects.equals(postsLike.getStatus(), LikeStatus.UNLIKE.getCode())) {// 未点赞，则点赞，修改点赞状态和点赞数据+1
-                        postsLike.setStatus(LikeStatus.LIKE.getCode());
-                        this.incrementLikeCount(item.getPostsId());
-                    }
-                    postsLike.setUpdateTime(LocalDateTime.now());
-                    if (!update(postsLike)) {// 更新点赞数据
-                        log.info("更新点赞数据失败！");
-                        return;
-                        // System.out.println("缓存记录更新数据库失败！请重试");
-                    }
-                }
+            PostsLike postsLike = this.getDetail(item.userId, item.postsId);
+            if (postsLike == null) {
+                save(item);
+            } else {
+                // 更新点赞记录（deleted 字段表示点赞状态）
+                postsLike.setDeleted(item.getDeleted());
+                postsLike.setUpdateTime(LocalDateTime.now());
+                updateById(postsLike);
             }
         }
     }
@@ -325,7 +281,7 @@ public class PostsLikeServiceImpl extends ServiceImpl<PostsLikeMapper, PostsLike
         // 获取缓存中内容的点赞数列表
         List<LikeCountDTO> list = this.getLikeCountFromRedis();
         log.info(list.toString());
-        if (CollectionUtils.isEmpty(list))// 为空，不写入
+        if (list == null || list.isEmpty())// 为空，不写入
             return;
         for (LikeCountDTO item : list) {
             Posts posts = postsMapper.selectById(item.postId);
@@ -339,7 +295,7 @@ public class PostsLikeServiceImpl extends ServiceImpl<PostsLikeMapper, PostsLike
                 int rows = postsMapper.update(posts, updateWrapper);
                 if (rows > 0) {
                     log.info("成功更新点赞数至posts，postId为" + posts.id);
-                    return;
+                    continue;
                 }
             }
             log.info("内容id不存在，无法将缓存数据持久化！");
@@ -360,7 +316,7 @@ public class PostsLikeServiceImpl extends ServiceImpl<PostsLikeMapper, PostsLike
                     historyVO.setPostType(postsDetailVO.getPostsType());
                     historyVO.setPosts(postsDetailVO);
                     historyVO.setSchoolName(
-                            categoryService.getCategoryById(Long.valueOf(postsDetailVO.school)));
+                            categoryService.getCategoryById(Long.valueOf(postsDetailVO.categoryId)));
                 }
             }
         }

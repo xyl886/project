@@ -22,5 +22,4 @@ public interface CategoryMapper extends BaseMapper<Category> {
     Page<CategoryVO> getCategoryList(@Param("page") Page<Object> objectPage,
                                      @Param("categoryName") String categoryName);
 
-    Integer getPostCountById(@Param("id") Integer id);
 }

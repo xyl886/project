@@ -27,14 +27,4 @@ public class Collect extends BaseEntity {
     @ApiModelProperty(value = "帖子主键")
     @JsonSerialize(using = ToStringSerializer.class)
     public Long postsId;
-
-    @ApiModelProperty(value = "帖子所属用户主键")
-    @JsonSerialize(using = ToStringSerializer.class)
-    public Long postsUserId;
-
-    /**
-     * {@link com.love.product.enums.YesOrNo}
-     */
-    @ApiModelProperty(value = "消息已读状态")
-    public Integer status;
 }

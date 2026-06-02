@@ -11,11 +11,11 @@ import cn.hutool.core.util.NumberUtil;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.model.ObjectMetadata;
-import com.love.product.config.exception.BizException;
-import com.love.product.config.fileupload.AliYunOSSConfig;
+import com.love.product.config.BizException;
+import com.love.product.config.AliYunOSSConfig;
 import com.love.product.entity.base.Result;
 import com.love.product.service.OssService;
-import org.apache.commons.lang3.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,6 +27,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class OssServiceImpl implements OssService {
 
     @Override
@@ -64,18 +65,20 @@ public class OssServiceImpl implements OssService {
             meta.setContentType("image/jpg");
             ossClient.putObject(bucketName, newFileName, inputStream, meta);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("图片上传错误", e);
             throw new BizException("图片上传错误");
         }
         //拼接访问URL
         url = "https://" + bucketName + "." + endpoint + "/" + newFileName;
         //关闭OSSClient
         ossClient.shutdown();
+        log.info("图片上传成功: " + url);
         return url;
     }
 
     /**
      * 删除oss存储图片
+     *
      * @param filePath 图片名，无前缀
      * @return Result<?>
      */
@@ -93,21 +96,23 @@ public class OssServiceImpl implements OssService {
         ossClient.shutdown();
         return Result.OK("图片删除成功！");
     }
+
     /**
      * 传进 .jpg  类似的格式 判断是否时图片格式
+     *
      * @param suffixName 图片格式后缀
      * @return
      */
     public static boolean isImage(String suffixName) {
-        List<String> strings = Arrays.asList(".webp", ".png", ".jpg", ".jif", ".jpeg");
+        List<String> strings = Arrays.asList(".webp", ".png", ".jpg", ".gif", ".jpeg");
         return strings.contains(suffixName);
     }
+
     /**
-     *oss对象存储获取URL
+     * oss对象存储获取URL
      */
     @Override
-    public String getOssImgPath(String imgPath){
-        StringUtils.isEmpty(imgPath);
+    public String getOssImgPath(String imgPath) {
         return imgPath;
     }
 }

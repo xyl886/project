@@ -1,151 +1,54 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-import Index from '@/page/index/index'
+import { createRouter, createWebHistory } from 'vue-router'
 
-Vue.use(Router)
+const routes = [
+  { path: '/', redirect: '/home' },
+  { path: '/login', name: 'Login', component: () => import('../views/login/index.vue'), meta: { noAuth: true, title: '登录' } },
+  { path: '/register', name: 'Register', component: () => import('../views/register/index.vue'), meta: { noAuth: true, title: '注册' } },
+  { path: '/home', name: 'Home', component: () => import('../views/home/index.vue'), meta: { noAuth: true, title: '首页' } },
+  { path: '/post/:id', name: 'PostDetail', component: () => import('../views/postDetail/index.vue'), meta: { noAuth: true, title: '帖子详情' } },
+  { path: '/user', name: 'User', component: () => import('../views/user/index.vue'), meta: { title: '个人中心' } },
+  { path: '/search', name: 'Search', component: () => import('../views/search/index.vue'), meta: { noAuth: true, title: '搜索' } },
+  { path: '/create', name: 'Create', component: () => import('../views/create/index.vue'), meta: { title: '发布帖子' } },
 
-export const constantRoutes = [
+  // Admin routes
+  { path: '/admin/login', name: 'AdminLogin', component: () => import('@/views/admin/login/index.vue'), meta: { noAuth: true, title: '管理登录' } },
   {
-    path: '/',
-    name: '主页',
-    redirect: '/index'
+    path: '/admin',
+    component: () => import('@/layouts/AdminLayout.vue'),
+    meta: { requiresAdmin: true },
+    children: [
+      { path: 'dashboard', name: 'AdminDashboard', component: () => import('@/views/admin/dashboard/index.vue'), meta: { title: '控制台' } },
+      { path: 'posts', name: 'AdminPosts', component: () => import('@/views/admin/posts/index.vue'), meta: { title: '帖子管理' } },
+      { path: 'users', name: 'AdminUsers', component: () => import('@/views/admin/users/index.vue'), meta: { title: '用户管理' } },
+      { path: 'categories', name: 'AdminCategories', component: () => import('@/views/admin/categories/index.vue'), meta: { title: '分类管理' } },
+      { path: 'comments', name: 'AdminComments', component: () => import('@/views/admin/comments/index.vue'), meta: { title: '评论管理' } },
+      { path: 'tags', name: 'AdminTags', component: () => import('@/views/admin/tags/index.vue'), meta: { title: '标签管理' } },
+    ]
   },
-  {
-    path: '/index',
-    component: Index,
-    children: [{
-      path: '',
-      name: '主页',
-      component: () => import('@/views/home/index')
-    }]
-  },
-  {
-    path: '/share',
-    name: '校园分享',
-    component: Index,
-    children: [{
-      path: '',
-      name: '校园分享',
-      component: () => import('@/views/share/index')
-    }]
-  },
-  {
-    path: '/messageBoard',
-    name: '留言板',
-    component: Index,
-    children: [{
-      path: '',
-      name: '留言板',
-      component: () => import('../views/message_borad/Index')
-    }]
-  },
-  {
-    path: '/hot',
-    name: '热搜',
-    component: Index,
-    children: [{
-      path: '',
-      name: '热搜',
-      component: () => import('../views/Hot/Index')
-    }]
-  },
-  {
-    path: '/publish',
-    name: '发布帖子',
-    component: Index,
-    children: [{
-      path: '',
-      name: '发布帖子',
-      component: () => import('@/views/publish/index')
-    }]
-  },
-  {
-    path: '/detail',
-    name: '帖子详情',
-    component: () => import('@/views/posts/detail')
-  },
-  {
-    path: '/Article',
-    name: '帖子详情',
-    component: () => import('@/views/posts/Article')
-  },
-  {
-    path: '/chat',
-    name: '私聊',
-    component: Index,
-    children: [{
-      path: '',
-      name: '私聊',
-      component: () => import('@/views/chat/Chat')
-    }]
-  },
-  {
-    path: '/about-us',
-    component: Index,
-    children: [{
-      path: '',
-      name: '关于我们',
-      component: () => import('@/views/about_us/index')
-    }]
-  },
-  {
-    path: '/personal',
-    component: Index,
-    redirect: '/personal/user_info',
-    children: [{
-      path: 'user_info',
-      name: '个人中心',
-      component: () => import('@/views/personal/index'),
-      redirect: '/personal/user_info',
-      children: [
-        {
-          path: '/personal/my_post',
-          name: '我的帖子',
-          component: () => import('@/views/personal/myPost/Index.vue')
-        },
-        {
-          path: '/personal/user_info',
-          name: '个人资料',
-          component: () => import('@/views/personal/user_info.vue')
-        },
-        {
-          path: '/personal/collect',
-          name: '我的收藏',
-          component: () => import('@/views/personal/collect.vue')
-        },
-        {
-          path: '/personal/follow',
-          name: '我的关注',
-          component: () => import('@/views/personal/follow.vue')
-        },
-        {
-          path: '/personal/fans',
-          name: '我的粉丝',
-          component: () => import('@/views/personal/fans.vue')
-        },
-        {
-          path: '/personal/history',
-          name: '浏览记录',
-          component: () => import('@/views/personal/history.vue')
-        }
-      ]
-    }]
-  }
 
+  // 404
+  { path: '/:pathMatch(.*)*', name: 'NotFound', component: () => import('../views/NotFound.vue'), meta: { noAuth: true, title: '页面未找到' } }
 ]
 
-const createRouter = () => new Router({
-  // mode: 'history', // require service support
-  scrollBehavior: () => ({y: 0}),
-  routes: constantRoutes
+const router = createRouter({
+  history: createWebHistory(),
+  routes,
+  scrollBehavior: () => ({ top: 0 })
 })
 
-const router = createRouter()
+router.beforeEach((to, from, next) => {
+  // 更新页面标题
+  document.title = to.meta.title ? `${to.meta.title} - 校园墙` : '校园墙'
 
-// Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
-export function resetRouter () {
-  const newRouter = createRouter()
-  router.matcher = newRouter.matcher // reset router
-}
+  if (to.path.startsWith('/admin')) {
+    if (to.meta.noAuth) return next()
+    let info = null
+    try { info = JSON.parse(localStorage.getItem('adminInfo')) } catch {}
+    if (localStorage.getItem('token') && info?.role === 3) return next()
+    return next('/admin/login')
+  }
+  if (!to.meta.noAuth && !localStorage.getItem('token')) return next('/login')
+  next()
+})
 
 export default router

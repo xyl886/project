@@ -38,14 +38,14 @@ public class Report implements Serializable {
     public Long id;
 
     @JsonSerialize(using = ToStringSerializer.class)
-    @ApiModelProperty(name = "id", value = "表主键")
+    @ApiModelProperty(value = "举报用户id")
     private Long reportUserId;
 
     @JsonSerialize(using = ToStringSerializer.class)
-    @ApiModelProperty(name = "id", value = "表主键")
+    @ApiModelProperty(value = "帖子id")
     private Long postId;
 
-    @ApiModelProperty(name = "id", value = "举报内容")
+    @ApiModelProperty(value = "举报内容")
     private String content;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")

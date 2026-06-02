@@ -8,9 +8,7 @@ import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.love.product.config.exception.BizException;
-import com.love.product.config.fileupload.FileUploadConfig;
-import com.love.product.config.security.TokenConfig;
+import com.love.product.config.BizException;
 import com.love.product.entity.Posts;
 import com.love.product.entity.UserAuth;
 import com.love.product.entity.UserInfo;
@@ -30,6 +28,7 @@ import com.love.product.service.*;
 import com.love.product.util.CaptchaUtils;
 import com.love.product.util.CommonUtil;
 import com.love.product.util.JwtUtil;
+import cn.dev33.satoken.stp.StpUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
@@ -40,7 +39,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -51,7 +49,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static com.love.product.constant.CommonConstant.*;
 import static com.love.product.constant.RabbitMQConstant.EMAIL_EXCHANGE;
 import static com.love.product.constant.RedisKeyConstant.*;
 import static com.love.product.entity.base.ResultCode.*;
@@ -67,12 +64,6 @@ import static com.love.product.util.CommonUtil.getRandomCode;
 @Service
 public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> implements UserInfoService {
 
-    @Resource
-    private RestTemplate restTemplate;
-    @Resource
-    private TokenConfig tokenConfig;
-    @Resource
-    private FileUploadConfig fileUploadConfig;
     @Resource
     private OssService ossService;
     @Resource
@@ -131,7 +122,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
                 "</span><br><br>本验证码5分钟内有效，为了保证您账号的安全性，请及时输入。请不要告诉他人哦！");
         EmailDTO emailDTO = EmailDTO.builder()
                 .email(email)
-                .subject("校园墙" + CodeType.getType(type) + CAPTCHA)
+                .subject("校园墙" + CodeType.getType(type) + "验证码")
                 .template("common.html")
                 .commentMap(map)
                 .build();
@@ -160,7 +151,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         if (userInfoVO.getStatus().equals(YesOrNo.YES.getValue())) {
             return Result.failMsg("登录失败，账号已禁用，请联系客服人员");
         }
-        if (!loginVO.emailCode.isEmpty() && loginVO.password.isEmpty()) {
+        if (loginVO.emailCode != null && !loginVO.emailCode.isEmpty() && loginVO.password.isEmpty()) {
             checkCode(CODE + loginVO.email, loginVO.emailCode);
         } else {
             PasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -169,16 +160,14 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
                 return Result.failMsg("账号或密码错误");
             }
         }
+        // Sa-Token 登录
+        StpUtil.login(userInfoVO.getId());
         // 缓存用户信息到Redis，设置过期时间为7天，并删除验证码
         redisService.set(USER_USERINFO + userInfoVO.getId(), userInfoVO);
         redisService.expire(USER_USERINFO + userInfoVO.getId(), 7, TimeUnit.DAYS);
         redisService.del(CODE + loginVO.email);
 
-        String accessToken = getOAuthToken(userInfoVO);
-        if (accessToken == null) {
-            return Result.failMsg("登录失败，请重试");
-        }
-        userInfoVO.setAccessToken(accessToken);
+        userInfoVO.setAccessToken(StpUtil.getTokenValue());
         userInfoVO.setEmail(loginVO.email);
         UserVO userVO=new UserVO();
         BeanUtils.copyProperties(userInfoVO,userVO);
@@ -211,10 +200,9 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         userInfoVO = new UserInfoVO();
         userInfoVO.setId(IdWorker.getId());
         userInfoVO.setEmail(registerVO.email);
-        userInfoVO.setNickname(fileUploadConfig.getDefaultNickname());
-        userInfoVO.setOriginalPassword(registerVO.password);
+        userInfoVO.setNickname("用户");
         userInfoVO.setPassword(new BCryptPasswordEncoder().encode(registerVO.password));
-        userInfoVO.setAvatar(fileUploadConfig.getDefaultAvatar());
+        userInfoVO.setAvatar("");
         userInfoVO.setGender(Gender.DUNNO.getValue());
         userInfoVO.setStatus(YesOrNo.NO.getValue());
         userInfoVO.setRole(Role.VISITOR.getValue());
@@ -248,7 +236,6 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         if (!CommonUtil.isValidPassword(newPassword)) {
             return Result.failMsg("新密码不符合要求！");
         }
-        userInfo.setOriginalPassword(newPassword);
         userInfo.setPassword(new BCryptPasswordEncoder().encode(newPassword));
         saveOrUpdate(userInfo);
         return Result.OKMsg("修改成功！");
@@ -274,7 +261,6 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         if (!CommonUtil.isValidPassword(resetVO.password)) {
             return Result.failMsg("新密码不符合要求！");
         }
-        userInfo.setOriginalPassword(resetVO.password);
         userInfo.setPassword(new BCryptPasswordEncoder().encode(resetVO.password));
         saveOrUpdate(userInfo);
         return Result.OKMsg("重置成功！");
@@ -308,42 +294,6 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 //            userInfoVO.setRoleName(Role.valueOf(userInfo.role).getText());
         }
         return userInfoVO;
-    }
-
-    /**
-     * 调用OAuth2的获取令牌接口
-     *
-     * @description 1.将用户信息存入公共map中 2.获取访问令牌 3.写入"刷新令牌"到数据库
-     */
-    @Override
-    public String getOAuthToken(UserInfoVO userInfoVO) {
-        //获取OAuth2框架的配置信息，用于访问刷新令牌接口
-        Map<String, String> tokenMap = tokenConfig.getConfig();
-        Map<String, String> mapParam = new HashMap<>();
-        mapParam.put("email", userInfoVO.email);
-        mapParam.put("nickname", userInfoVO.nickname);
-        mapParam.put("password", userInfoVO.originalPassword);
-        mapParam.put("client_id", tokenMap.get("clientId"));
-        mapParam.put("client_secret", tokenMap.get("secret"));
-        mapParam.put("grant_type", tokenMap.get("grantTypes"));
-        try {
-            @SuppressWarnings("unchecked")
-            Map<String, String> mapResult = restTemplate
-                    .getForObject(
-                            fileUploadConfig.getHostIp() + "/oauth/token?username={email}&password={password}&client_id={client_id}&client_secret={client_secret}&grant_type={grant_type}",
-                            Map.class, mapParam);
-            if (mapResult != null) {
-                try {
-                    setRefreshToken(userInfoVO.getId(), mapResult.get("refresh_token"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return mapResult.get("access_token");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     /**
@@ -470,12 +420,22 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
     @Override
     public Result insertUser(UserInfo user) {
-        return null;
+        user.setId(IdWorker.getId());
+        user.setCreateTime(LocalDateTime.now());
+        user.setUpdateTime(LocalDateTime.now());
+        save(user);
+        return Result.OKMsg("新增成功");
     }
 
     @Override
     public Result getUserById(Integer id) {
-        return null;
+        UserInfo userInfo = getById(id);
+        if (userInfo == null) {
+            return Result.failMsg("用户不存在");
+        }
+        UserInfoVO userInfoVO = new UserInfoVO();
+        BeanUtil.copyProperties(userInfo, userInfoVO);
+        return Result.OK(userInfoVO);
     }
 
     @Override
@@ -487,22 +447,55 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
     @Override
     public Result deleteBatch(List<Integer> ids) {
-        return null;
+        if (ids == null || ids.isEmpty()) {
+            return Result.failMsg("请选择要删除的用户");
+        }
+        removeByIds(ids);
+        return Result.OK();
     }
 
     @Override
     public Result getCurrentUserInfo() {
-        return null;
+        Long userId = JwtUtil.getUserId();
+        if (userId == null) {
+            return Result.failMsg("用户未登录");
+        }
+        UserInfo userInfo = getById(userId);
+        if (userInfo == null) {
+            return Result.failMsg("用户不存在");
+        }
+        UserInfoVO userInfoVO = new UserInfoVO();
+        BeanUtil.copyProperties(userInfo, userInfoVO);
+        return Result.OK(userInfoVO);
     }
 
     @Override
     public Result getCurrentUserMenu() {
-        return null;
+        return Result.OK(new ArrayList<>());
     }
 
     @Override
     public Result updatePassword(Map<String, String> map) {
-        return null;
+        Long userId = JwtUtil.getUserId();
+        if (userId == null) {
+            return Result.failMsg("用户未登录");
+        }
+        String oldPwd = map.get("oldPassword");
+        String newPwd = map.get("newPassword");
+        if (oldPwd == null || newPwd == null) {
+            return Result.failMsg("参数不完整");
+        }
+        UserInfo userInfo = getById(userId);
+        if (userInfo == null) {
+            return Result.failMsg("用户不存在");
+        }
+        PasswordEncoder encoder = new BCryptPasswordEncoder();
+        if (!encoder.matches(oldPwd, userInfo.password)) {
+            return Result.failMsg("原密码不正确");
+        }
+        userInfo.setPassword(encoder.encode(newPwd));
+        saveOrUpdate(userInfo);
+        return Result.OKMsg("密码修改成功");
     }
 
     @Override

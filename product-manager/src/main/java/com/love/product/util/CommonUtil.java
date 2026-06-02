@@ -1,7 +1,5 @@
 package com.love.product.util;
 
-import org.springframework.util.Assert;
-
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

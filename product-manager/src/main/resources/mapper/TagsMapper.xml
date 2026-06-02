@@ -3,7 +3,7 @@
 <mapper namespace="com.love.product.mapper.TagsMapper">
     <resultMap id="tagResultMap" type="com.love.product.entity.vo.TagVO">
         <id column="id" property="id"/>
-        <result column="tag_name" property="tag_name"/>
+        <result column="tag_name" property="tagName"/>
     </resultMap>
 
     <insert id="savePostsTags">

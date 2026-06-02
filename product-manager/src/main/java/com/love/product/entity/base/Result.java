@@ -5,10 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.ToString;
 import lombok.experimental.Accessors;
-import org.springframework.http.HttpStatus;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
 
 @Data
@@ -27,39 +25,10 @@ public class Result<T> implements Serializable {
     @ApiModelProperty(value = "返回数据")
     protected T data;
 
-//    @ApiModelProperty(value = "是否重新获取token")
-//    protected Boolean refreshTokenFlag;
-//
-//    @ApiModelProperty(value = "登录刷新token")
-//    public String refreshToken;
-
     public Result(){
-//        checkRefreshToken(this);
     }
 
-    /**
-     * 是否需要重新获取token 并且返回新的token
-     *
-     * @return true/false
-     */
-//    public static void checkRefreshToken(Result result){
-//        ServletRequestAttributes servletRequestAttributes =  (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-//        if(servletRequestAttributes != null){
-//            HttpServletResponse response = servletRequestAttributes.getResponse();
-//            if(response == null){
-//                return;
-//            }
-//            boolean isRefresh = false;
-//            String refreshToken = null;
-//            String isRefreshToken = response.getHeader("isRefreshToken");
-//            if(isRefreshToken != null && isRefreshToken.equals("yes")){
-//                isRefresh = true;
-//                refreshToken = response.getHeader("access_token");
-//            }
-//            result.setRefreshTokenFlag(isRefresh);
-//            result.setRefreshToken(refreshToken);
-//        }
-//    }
+
 
     public static <T> Result<T> OK() {
         Result<T> result = new Result<>();
@@ -134,12 +103,6 @@ public class Result<T> implements Serializable {
         Result<T> result = new Result<>();
         result.setCode(resultCode.getCode());
         result.setMsg(resultCode.getMsg());
-        return result;
-    }
-    public static <T> Result<T> failMsg(HttpStatus resultCode) {
-        Result<T> result = new Result<>();
-        result.setCode(resultCode.value());
-        result.setMsg(resultCode.getReasonPhrase());
         return result;
     }
     public static <T> Result<T> fail(String msg, T data) {

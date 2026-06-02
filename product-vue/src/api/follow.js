@@ -1,26 +1,11 @@
 import request from '@/utils/request'
 
-/**
- * 关注
- */
-export const addFollow = (beFollowedUserId, deleted) => {
-  return request({
-    url: '/api/follow/add',
-    method: 'get',
-    params: {
-      beFollowedUserId: beFollowedUserId,
-      deleted: deleted
-    }
-  })
+// 切换关注状态
+export function toggleFollow(beFollowedUserId, deleted) {
+  return request.post('/follow/add', null, { params: { beFollowedUserId, deleted } })
 }
 
-/**
- * 分页
- */
-export const getPage = (data) => {
-  return request({
-    url: '/api/follow/getPage',
-    method: 'post',
-    data
-  })
+// 获取关注/粉丝列表  followType: 1=关注 2=粉丝
+export function getFollowPage(params) {
+  return request.post('/follow/getPage', params)
 }

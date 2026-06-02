@@ -2,10 +2,10 @@ package com.love.product.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.love.product.config.exception.BizException;
+import com.love.product.config.BizException;
 import com.love.product.entity.ChatMessage;
-import com.love.product.entity.Follow;
 import com.love.product.entity.Friend;
 import com.love.product.entity.UserInfo;
 import com.love.product.entity.base.Result;
@@ -16,11 +16,9 @@ import com.love.product.enums.YesOrNo;
 import com.love.product.mapper.ChatMessageMapper;
 import com.love.product.mapper.FriendMapper;
 import com.love.product.service.ChatMessageService;
-import com.love.product.service.FileUploadService;
 import com.love.product.service.UserInfoService;
 import com.love.product.util.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -38,25 +36,17 @@ import java.util.Objects;
 @Slf4j
 public class ChatMessageServiceImpl extends ServiceImpl<ChatMessageMapper, ChatMessage> implements ChatMessageService {
     @Resource
-    private SimpMessagingTemplate template;
-    @Resource
     private UserInfoService userInfoService;
     @Resource
     private ChatMessageMapper chatMessageMapper;
     @Resource
     private FriendMapper friendMapper;
     @Resource
-    private FileUploadService fileUploadService;
-    @Resource
     private ChatMessageService chatMessageService;
     /**
-     * 简单点对点聊天室
+     * 保存聊天消息
      */
     public void sendChatMessage(ChatMessage chatMessage) {
-        //可以看出template最大的灵活就是我们可以获取前端传来的参数来指定订阅地址
-        //前面参数是订阅地址，后面参数是消息信息
-        template.convertAndSend("/topic/ServerToClient.private." + chatMessage.getToId(), chatMessage);
-        // 消息存储到数据库
         boolean save = chatMessageService.saveOrUpdate(chatMessage);
         if(!save){
             throw new BizException();
@@ -88,69 +78,20 @@ public class ChatMessageServiceImpl extends ServiceImpl<ChatMessageMapper, ChatM
     @Override
     public ResultPage getFriendList(Long id, FriendPageReq friendPageReq) {
         LambdaQueryWrapper<Friend> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Objects.equals(friendPageReq.getFollowType(),1), Friend::getUserId, id);
-        queryWrapper.eq(Objects.equals(friendPageReq.getFollowType(),2), Friend::getFriendId, id);
-        queryWrapper.orderByDesc(Friend::getCreateTime);
-//        Page<Friend> page = friendMapper.selectFriendList(
-//                friendPageReq.getCurrentPage(),friendPageReq.getPageSize(),friendPageReq);
-//        List<FollowVO> list = new ArrayList<>();
-//        List<Long> userIds = new ArrayList<>();
-//        if (page.getTotal() > 0) {
-//            list = page.getRecords().stream().map(follow -> {
-//                FollowVO followVO = BeanUtil.copyProperties(follow, FollowVO.class);
-//                if(Objects.equals(friendPageReq.getFollowType(),1)){
-//                    userIds.add(followVO.getBeFollowedUserId());
-//                }else{
-//                    userIds.add(followVO.getUserId());
-//                }
-//                return followVO;
-//            }).collect(Collectors.toList());
-//        }
-//        Map<Long, UserInfoVO> userInfoVOMap;
-//        Map<Long, Follow> followMap = null;
-//        if(userIds.size() > 0){
-//            if(Objects.equals(friendPageReq.getFollowType(),1)){
-//                followMap = listFollowInUserId(userIds,userId);
-//            }else{
-//                followMap = listFollowInFansId(userId,userIds);
-//            }
-//        }
-//        if(userIds.size() > 0){
-//            userInfoVOMap = userInfoService.listByIds(userIds);
-//            Map<Long, UserInfoVO> finalUserInfoVOMap = userInfoVOMap;
-//            Map<Long, Follow> finalFollowMap = followMap;
-//            list.forEach(item -> {
-//                UserInfoVO userInfoVO;
-//                int followStatus;
-//                Follow follow;
-//                if(Objects.equals(friendPageReq.getFollowType(),1)){
-//                    follow = finalFollowMap.get(item.getBeFollowedUserId());
-//                    followStatus = 1;//我关注了Ta
-//                    userInfoVO = finalUserInfoVOMap.get(item.getBeFollowedUserId());
-//                }else{
-//                    follow = finalFollowMap.get(item.getUserId());
-//                    followStatus = 2;//Ta关注了我
-//                    userInfoVO = finalUserInfoVOMap.get(item.getUserId());
-//                }
-//                if(follow != null){
-//                    followStatus = 3;//互关
-//                }
-//                item.setFollowStatus(followStatus);
-//
-//                UserBasicInfoVO userBasicInfoVO=new UserBasicInfoVO();
-//                BeanUtil.copyProperties(userInfoVO, userBasicInfoVO);
-//                userBasicInfoVO.setRole(Role.valueOf(userInfoVO.getRole()).getText());
-//                item.setUserInfo(userBasicInfoVO);
-//            });
-//        }
-//        return ResultPage.OK(page.getTotal(), page.getCurrent(), page.getSize(), list);
-        return null;
+        queryWrapper.eq(Objects.equals(friendPageReq.getFollowType(), 1), Friend::getUserId, id);
+        queryWrapper.eq(Objects.equals(friendPageReq.getFollowType(), 2), Friend::getFriendId, id);
+        Page<Friend> page = friendMapper.selectPage(friendPageReq.build(), queryWrapper);
+        List<Friend> list = page.getRecords();
+        return ResultPage.OK(page.getTotal(), page.getCurrent(), page.getSize(), list);
     }
 
     @Override
     public Result deleteFriend(Long friendUserId) {
-
-        return null;
+        LambdaQueryWrapper<Friend> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Friend::getUserId, JwtUtil.getUserId())
+                .eq(Friend::getFriendId, friendUserId);
+        friendMapper.delete(queryWrapper);
+        return Result.OKMsg("删除好友成功");
     }
 
     @Override
@@ -175,8 +116,6 @@ public class ChatMessageServiceImpl extends ServiceImpl<ChatMessageMapper, ChatM
                         .eq(ChatMessage::getToId, fromId)
                         .eq(ChatMessage::getId,Id)
                 )));
-        Follow follow = Follow.builder().userId(fromId).beFollowedUserId(toId).build();
-        template.convertAndSend("/topic/ServerToClient.deleteMsg", follow);
         return Result.OK();
     }
 }

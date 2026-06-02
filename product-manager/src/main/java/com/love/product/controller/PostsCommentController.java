@@ -26,8 +26,10 @@ public class PostsCommentController {
 
     @ApiOperation("新增评论")
     @PostMapping("/add")
-    public Result<?> add(@RequestParam("postsId") Long postsId, @RequestParam("content") String content) {
-        return postsCommentService.add(JwtUtil.getUserId(),postsId,content);
+    public Result<?> add(@RequestParam("postsId") Long postsId,
+                         @RequestParam("content") String content,
+                         @RequestParam(value = "parentCommentId", required = false) Long parentCommentId) {
+        return postsCommentService.add(JwtUtil.getUserId(), postsId, content, parentCommentId);
     }
 
     @ApiOperation("评论列表")
@@ -36,12 +38,12 @@ public class PostsCommentController {
         return postsCommentService.listByPostsId(postsId);
     }
     @ApiOperation("新增评论点赞")
-    @GetMapping("/addCommentLike")
+    @PostMapping("/addCommentLike")
     public Result<?> add(@RequestParam("commentId") Long commentId, @RequestParam("deleted") Integer deleted) {
         return postsCommentService.addCommentLike(JwtUtil.getUserId(),commentId,deleted);
     }
     @ApiOperation("删除评论")
-    @GetMapping("/del")
+    @DeleteMapping("/del")
     public Result<?> del(@RequestParam("id") Long id) {
         return postsCommentService.del(JwtUtil.getUserId(),id);
     }

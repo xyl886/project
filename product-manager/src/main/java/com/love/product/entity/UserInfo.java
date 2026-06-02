@@ -24,11 +24,8 @@ public class UserInfo extends BaseEntity {
     @ApiModelProperty(value = "邮箱")
     public String email;
 
-    @ApiModelProperty(value = "登录密码 加密")
+    @ApiModelProperty(value = "登录密码 BCrypt加密")
     public String password;
-
-    @ApiModelProperty(value = "登录密码 明文密码")
-    public String originalPassword;
 
     @ApiModelProperty(value = "头像")
     public String avatar;

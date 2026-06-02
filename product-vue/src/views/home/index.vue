@@ -1,223 +1,511 @@
 <template>
-  <div style="font-size: 14px;margin: 20px 150px;" v-loading="loading">
-    <div>
-      <el-carousel height="500px" :autoplay="true" :interval="3000">
-        <el-carousel-item v-for="(item,index) in banners" :key="index">
-          <el-image :src="item.imgPath" style="width: 100%;height: 500px;"></el-image>
-        </el-carousel-item>
-      </el-carousel>
-    </div>
+  <div class="page-container">
+    <div class="main-content">
+      <div class="home-tabs">
+        <el-radio-group v-model="tab" @change="loadPosts" size="large">
+          <el-radio-button value="hot">热门</el-radio-button>
+          <el-radio-button value="latest">最新</el-radio-button>
+          <el-radio-button value="campus">校园</el-radio-button>
+          <el-radio-button value="idle">闲置</el-radio-button>
+        </el-radio-group>
+      </div>
+      <div class="category-bar" v-if="tab !== 'hot'">
+        <span class="cat-label">分类：</span>
+        <span class="cat-item" :class="{ active: !categoryId }" @click="categoryId = null; loadPosts()">全部</span>
+        <span v-for="c in categories" :key="c.id" class="cat-item" :class="{ active: categoryId === c.id }"
+              @click="categoryId = c.id; loadPosts()">{{ c.categoryName }}</span>
+      </div>
+      <div v-loading="loading" style="min-height:200px">
+        <div v-for="item in posts" :key="item.id" class="post-card" @click="goPost(item.id)">
+          <div class="post-header">
+            <el-avatar :size="32" :src="item.userInfo?.avatar">{{ (item.userInfo?.nickname || '?')[0] }}</el-avatar>
+            <div class="post-user">
+              <span class="post-nickname">{{ item.userInfo?.nickname || '匿名' }}</span>
+              <span class="post-time">{{ item.createTime }}</span>
+            </div>
+            <el-tag v-if="item.categoryName" size="small" effect="plain" round>{{ item.categoryName }}</el-tag>
+          </div>
 
-    <div style="margin: 20px 0;">
-      <el-row>
-        <el-col :span="16">
-          <div class="grid-content bg-purple">
-            <h2 style="display: inline-block">闲置帖子</h2></div>
-        </el-col>
-        <el-col :span="8">
-          <div class="grid-content bg-purple-light">
-            <!-- 搜索框 -->
-            <div style="display:inline-block;margin-top: 12px;" v-if="$route.path==='/index'">
-              <el-input clearable style="width: 70%" placeholder="请输入内容" v-model="page.tltle"
-                        class="input-with-select">
-                <el-select style="min-width:80px;max-width: 200px" v-model="page.categoryId" slot="prepend"
-                           placeholder="" value="1">
-                  <el-option v-for="tabs in tabs" :key="tabs.id" :label="tabs.categoryName"
-                             :value="tabs.id"></el-option>
-                </el-select>
-                <el-button slot="append" icon="el-icon-search" @click="getPageFun()"></el-button>
-              </el-input>
-              <el-button icon="el-icon-refresh" style="padding: 10px!important;" @click="resetQuery">重置</el-button>
-            </div>
+          <div v-if="item.coverPath" class="post-cover" @click.stop>
+            <el-image :src="item.coverPath" fit="cover" class="cover-img">
+              <template #error><div class="img-error">图片加载失败</div></template>
+            </el-image>
           </div>
-        </el-col>
-      </el-row>
-    </div>
-    <div class="posts-box" v-for="(item,index) in posts" :key="index">
-      <div class="posts-item" v-for="(item2,index2) in item" :key="item2.id" @click="detailFun(item2)">
-        <div style="padding: 5px;">
-          <div style="text-align: center;">
-            <el-image :src="item2.coverPath" style="width: 100%;height: 170px;"></el-image>
+
+          <div class="post-title">{{ item.title }}</div>
+          <div class="post-desc">{{ item.description || item.content }}</div>
+
+          <div v-if="item.tags && item.tags.length" class="post-tags">
+            <span v-for="t in item.tags" :key="t" class="tag-badge">{{ t }}</span>
           </div>
-          <div style="height: 30px;padding: 5px 10px;overflow: hidden;margin-top: 20px;">
-            <div style="overflow: hidden;text-overflow: ellipsis;font-size: 15px;color: #18191c;">
-              {{ item2.title }}
-            </div>
-          </div>
-          <div style="display: flex;margin-top: 15px;">
-            <div class="posts-item-price">
-              ¥{{ item2.price }}
-            </div>
-            <div class="posts-item-des">
-              <el-tag size="small">{{ item2.categoryName }}</el-tag>
-              <el-tag
-                  size="small"
-                  v-for="(item2,index) in item.tags"
-                  :key="index"
-                  style="margin:5px">
-                {{ item2 }}
-              </el-tag>
-              <i class="el-icon-view" style="margin-left: 5px;"/>{{ item2.browseNum }}
-            </div>
+
+          <div class="post-footer">
+            <span class="post-stat"><el-icon><View/></el-icon> {{ item.browseNum || 0 }}</span>
+            <span class="post-stat"><el-icon><ChatLineRound/></el-icon> {{ item.commentNum || 0 }}</span>
+            <span class="post-stat"><el-icon><Star/></el-icon> {{ item.likeNum || 0 }}</span>
           </div>
         </div>
+        <el-empty v-if="!loading && !posts.length" description="暂无帖子"/>
+        <div ref="sentinel" v-show="tab !== 'hot' && hasMore" style="height:1px"/>
+        <div v-if="loadingMore" style="text-align:center;padding:20px;color:#999;font-size:13px">加载中...</div>
+        <div v-if="!hasMore && posts.length > 0" style="text-align:center;padding:20px;color:#ccc;font-size:13px">— 没有更多了 —</div>
       </div>
     </div>
-
-    <div style="text-align: right;margin-top: 10px;">
-      <el-pagination
-          background
-          :current-page.sync="page.currentPage"
-          :page-sizes="[10, 20, 40, 80]"
-          :page-size="page.pageSize"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="page.total"
-          @size-change="sizeChange"
-          @current-change="currentChange"
-      />
-    </div>
-
-    <div v-if="posts.length === 0">
-      <el-empty description="暂无数据"></el-empty>
-    </div>
-
+    <aside class="sidebar">
+      <div v-if="!!userStore.token" class="sidebar-card user-info-card" style="cursor:pointer" @click="$router.push('/user')">
+        <div class="user-info-top">
+          <el-avatar :size="48" :src="userStore.userInfo?.avatar">{{ (userStore.userInfo?.nickname || 'U')[0] }}</el-avatar>
+          <div class="user-info-text">
+            <span class="user-info-name">{{ userStore.userInfo?.nickname || '用户' }}</span>
+            <span class="user-info-bio">{{ userStore.userInfo?.email || '' }}</span>
+          </div>
+        </div>
+        <div class="user-stats">
+          <div><strong>{{ userStore.userInfo?.postCount || 0 }}</strong><span>帖子</span></div>
+          <div><strong>{{ userStore.userInfo?.fansNum || 0 }}</strong><span>粉丝</span></div>
+          <div><strong>{{ userStore.userInfo?.followNum || 0 }}</strong><span>关注</span></div>
+        </div>
+      </div>
+      <div class="sidebar-card">
+        <h3>公告</h3>
+        <p class="notice-text">欢迎来到校园墙！在这里你可以发布校园动态、闲置物品交易、学习交流等内容。</p>
+      </div>
+      <div class="sidebar-card">
+        <h3>热门帖子</h3>
+        <div v-for="item in hotList" :key="item.id" class="hot-item" @click="goPost(item.id)">
+          <span class="hot-rank" :class="{ top: item._rank <= 3 }">{{ item._rank }}</span>
+          <span class="hot-title">{{ item.title }}</span>
+        </div>
+        <el-empty v-if="!hotList.length" description="暂无" :image-size="60"/>
+      </div>
+      <div class="sidebar-card">
+        <h3>站内统计</h3>
+        <div class="stats-grid">
+          <div><strong>{{ totalPosts }}</strong><span>帖子</span></div>
+          <div><strong>{{ totalUsers || '-' }}</strong><span>用户</span></div>
+        </div>
+      </div>
+    </aside>
   </div>
-
 </template>
 
-<script>
-import {listAll} from '@/api/banner'
-import {getPage} from '@/api/posts'
-import {setStore} from '@/utils/store'
-import {listAllCategory} from '../../api/posts'
+<script setup>
+import {ref, onMounted, onBeforeUnmount, nextTick} from 'vue'
+import {useRouter} from 'vue-router'
+import {View, ChatLineRound, Star} from '@element-plus/icons-vue'
+import {useUserStore} from '@/store/user'
+import {listHotPosts, getPostPage, getCategoryListAll} from '@/api'
+import {getLineCount} from '@/api/admin/dashboard'
 
-export default {
-  data () {
-    return {
-      select: '',
-      loading: false,
-      banners: [],
-      posts: [],
-      tabs: [],
-      page: {
-        total: 0,
-        pageSize: 10,
-        currentPage: 1,
-        postsType: 1,
-        categoryId: null,
-        title: null,
-        status: 3
+// Note: getLineCount is used here for sidebar stats (已加入 SaToken 白名单)
+// Consider moving to a dedicated stats API if needed
+
+const router = useRouter()
+const userStore = useUserStore()
+const tab = ref('hot')
+const posts = ref([])
+const hotList = ref([])
+const loading = ref(false)
+const loadingMore = ref(false)
+const totalPosts = ref(0)
+const totalUsers = ref(0)
+const categories = ref([])
+const categoryId = ref(null)
+const pageNum = ref(1)
+const hasMore = ref(true)
+const sentinel = ref(null)
+let observer = null
+
+function getPostsType() {
+  if (tab.value === 'campus') return 2
+  if (tab.value === 'idle') return 1
+  return null
+}
+
+async function loadPosts(reset = true) {
+  if (reset) {
+    pageNum.value = 1
+    hasMore.value = true
+    posts.value = []
+    loading.value = true
+  }
+
+  if (tab.value === 'hot') {
+    try {
+      const res = await listHotPosts()
+      if (res.code === 200) {
+        posts.value = (res.data || []).map((p, i) => ({...p, _rank: i + 1}))
       }
+    } catch {
+      posts.value = []
+    } finally {
+      loading.value = false
+      loadingMore.value = false
     }
-  },
-  watch: {
-    'page.categoryId': {
-      handler: 'getPageFun', // 监听 page.categoryId 的变化，执行 loadData 方法
-      immediate: true // 当组件首次加载时，立即执行一次 loadData 方法
+    return
+  }
+
+  const params = { pageSize: 10, currentPage: pageNum.value }
+  const postsType = getPostsType()
+  if (postsType !== null) params.postsType = postsType
+  if (categoryId.value) params.categoryId = categoryId.value
+
+  try {
+    const res = await getPostPage(params)
+    if (res.code === 200) {
+      const records = res.data || []
+      if (reset) {
+        posts.value = records
+      } else {
+        posts.value.push(...records)
+      }
+      hasMore.value = records.length >= params.size
     }
-  },
-  beforeCreate () {
-    const data = {total: 0, pageSize: 10, currentPage: 1, categoryName: null}
-    listAllCategory(data).then(res => {
-      this.tabs = res.data
-    })
-  },
-  mounted () {
-    this.listAllFun()
-    // this.getPageFun()
-  },
-  methods: {
-    resetQuery () {
-      this.page.tltle = null
-      this.page.categoryId = null
-      this.posts = []
-      this.getPageFun()
-    },
-    listAllFun () {
-      this.banners = []
-      listAll().then(res => {
-        if (res.code === 200) {
-          this.banners = res.data
-        }
-      })
-    },
-    sizeChange (pageSize) { // 页数
-      this.page.pageSize = pageSize
-      this.getPageFun()
-    },
-    currentChange (currentPage) { // 当前页
-      this.page.currentPage = currentPage
-      this.getPageFun()
-    },
-    getPageFun () {
-      this.loading = true
-      this.posts = []
-      getPage(this.page).then(res => {
-        this.loading = false
-        if (res.code === 200) {
-          let count = 0
-          let arr = []
-          for (let i = 0; i < res.data.length; i++) {
-            count++
-            if (count <= 5) {
-              arr.push(res.data[i])
-            }
-            if (count === 5 || i === (res.data.length - 1)) {
-              this.posts.push(arr)
-              arr = []
-              count = 0
-            }
-          }
-          this.page.total = res.dataTotal
-        }
-      }, error => {
-        this.loading = false
-      })
-    },
-    detailFun (posts) {
-      setStore({name: 'posts', content: posts})
-      this.$router.push({path: '/detail'})
-    }
+  } finally {
+    loading.value = false
+    loadingMore.value = false
   }
 }
+
+async function loadMore() {
+  if (loadingMore.value || !hasMore.value || tab.value === 'hot') return
+  loadingMore.value = true
+  pageNum.value++
+  await loadPosts(false)
+}
+
+function setupObserver() {
+  observer = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) loadMore()
+  }, { rootMargin: '100px' })
+  nextTick(() => {
+    if (sentinel.value) observer.observe(sentinel.value)
+  })
+}
+
+function goPost(id) {
+  router.push(`/post/${id}`)
+}
+
+onMounted(() => {
+  loadPosts()
+  listHotPosts().then(r => {
+    if (r.code === 200) hotList.value = (r.data || []).slice(0, 8).map((p, i) => ({...p, _rank: i + 1}))
+  }).catch(e => console.error('加载热门帖子失败', e))
+  getCategoryListAll().then(r => {
+    if (r.code === 200) categories.value = r.data || []
+  }).catch(e => console.error('加载分类列表失败', e))
+  getLineCount().then(r => {
+    if (r.code === 200) {
+      totalPosts.value = r.data?.postsCount || 0
+      totalUsers.value = r.data?.userCount || 0
+    }
+  }).catch(e => console.error('加载站内统计失败', e))
+  setupObserver()
+})
+
+onBeforeUnmount(() => observer?.disconnect())
 </script>
 
 <style scoped>
-.el-select__input {
-  width: auto !important;
+.home-tabs {
+  margin-bottom: 20px;
 }
 
-.posts-box {
+.category-bar {
   display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 18px;
+  padding: 12px 16px;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #ebeef5;
+  flex-wrap: wrap;
 }
 
-.posts-item {
-  width: calc(20% - 10px);
-  height: 300px;
-  margin: 5px;
-  background-color: #ffffff;
+.cat-label {
+  font-size: 13px;
+  color: #999;
+  flex-shrink: 0;
+  margin-right: 4px;
+}
+
+.cat-item {
+  display: inline-block;
+  padding: 4px 14px;
+  font-size: 13px;
+  color: #555;
+  background: #f5f7fa;
+  border-radius: 20px;
   cursor: pointer;
-  transition: .2s;
-  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.08);
+  transition: all .2s;
 }
 
-.posts-item:hover {
-  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
+.cat-item:hover {
+  color: #409EFF;
+  background: #ecf5ff;
 }
 
-.posts-item:hover img {
-  transform: translate(0px, 0px) scale(1.01) rotate(0deg);
+.cat-item.active {
+  color: #fff;
+  background: #409EFF;
 }
 
-.posts-item-price {
-  color: #f30;
-  font-size: 16px;
+.post-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+  border: 1px solid #ebeef5;
+  cursor: pointer;
+  transition: all .25s;
 }
 
-.posts-item-des {
-  color: #666;
-  font-size: 12px;
+.post-card:hover {
+  border-color: transparent;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, .08);
+  transform: translateY(-1px);
+}
+
+.post-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.post-user {
   flex: 1;
-  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.post-nickname {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.post-time {
+  font-size: 12px;
+  color: #bbb;
+}
+
+.post-cover {
+  margin-bottom: 14px;
+  border-radius: 10px;
+  overflow: hidden;
+  max-height: 260px;
+}
+
+.post-cover :deep(.el-image) {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.img-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 120px;
+  background: #f5f5f5;
+  color: #ccc;
+  font-size: 13px;
+  border-radius: 8px;
+}
+
+.cover-img {
+  display: block;
+  width: 100%;
+  max-height: 260px;
+  object-fit: cover;
+}
+
+.post-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a2e;
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.post-desc {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.7;
+  margin-bottom: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.post-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.tag-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  font-size: 12px;
+  color: #409EFF;
+  background: #ecf5ff;
+  border-radius: 20px;
+}
+
+.post-footer {
+  display: flex;
+  gap: 20px;
+  padding-top: 14px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.post-stat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: #999;
+}
+
+.sidebar-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+  border: 1px solid #ebeef5;
+}
+
+.sidebar-card h3 {
+  font-size: 15px;
+  color: #1a1a2e;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.notice-text {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.8;
+}
+
+/* 用户信息卡 */
+.user-info-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.user-info-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.user-info-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.user-info-bio {
+  font-size: 12px;
+  color: #bbb;
+}
+
+.user-stats {
+  display: flex;
+  justify-content: space-around;
+  padding-top: 14px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.user-stats div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.user-stats strong {
+  font-size: 18px;
+  color: #409EFF;
+}
+
+.user-stats span {
+  font-size: 12px;
+  color: #999;
+}
+
+.hot-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  cursor: pointer;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.hot-item:last-child {
+  border-bottom: none;
+}
+
+.hot-rank {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #999;
+  background: #f5f5f5;
+  flex-shrink: 0;
+}
+
+.hot-rank.top {
+  background: #ff6b6b;
+  color: #fff;
+}
+
+.hot-title {
+  flex: 1;
+  font-size: 13px;
+  color: #555;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stats-grid {
+  display: flex;
+  gap: 24px;
+}
+
+.stats-grid div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stats-grid strong {
+  font-size: 22px;
+  color: #409EFF;
+}
+
+.stats-grid span {
+  font-size: 12px;
+  color: #999;
+  margin-top: 2px;
 }
 </style>

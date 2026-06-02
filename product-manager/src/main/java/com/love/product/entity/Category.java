@@ -34,7 +34,6 @@ public class Category implements Serializable {
 
     @JsonSerialize(using = ToStringSerializer.class)
     @TableId(type = IdType.AUTO)
-    @TableField(fill = FieldFill.INSERT)
     @ApiModelProperty(name = "id", value = "表主键")
     public Integer id;
 

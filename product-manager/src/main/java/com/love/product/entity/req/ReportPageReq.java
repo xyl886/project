@@ -29,10 +29,6 @@ public class ReportPageReq extends PageQuery {
     @JsonSerialize(using = ToStringSerializer.class)
     public Long postsId;
 
-    @ApiModelProperty(value = "帖子所属用户主键")
-    @JsonSerialize(using = ToStringSerializer.class)
-    public Long postsUserId;
-
     @ApiModelProperty(value = "评论内容")
     public String content;
 

@@ -30,8 +30,6 @@ public interface UserInfoService extends IService<UserInfo> {
      */
     UserInfoVO getUserInfoById(Long id);
 
-    String getOAuthToken(UserInfoVO userInfoVO);
-
     void setRefreshToken(Long userId, String refreshToken);
 
     /**

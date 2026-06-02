@@ -9,7 +9,6 @@
             nickname,
             email,
             password,
-            original_password,
             avatar,
             gender,
             status,

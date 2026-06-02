@@ -7,7 +7,6 @@ import com.love.product.entity.base.BaseEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
-import java.util.Date;
 
 /**
  * @PackageName: com.love.product.entity

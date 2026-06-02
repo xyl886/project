@@ -15,7 +15,7 @@ import java.util.List;
  */
 public interface PostsCommentService extends IService<PostsComment> {
 
-    Result<?> add(Long userId,Long postsId,String content);
+    Result<?> add(Long userId,Long postsId,String content, Long parentCommentId);
 
     Result<List<PostsCommentVO>> listByPostsId(Long postsId);
 

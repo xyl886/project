@@ -28,5 +28,5 @@ public class TagVO {
     private Long id;
 
     @ApiModelProperty(value = "名称")
-    private String tag_name;
+    private String tagName;
 }

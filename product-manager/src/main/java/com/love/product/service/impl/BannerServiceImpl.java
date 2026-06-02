@@ -6,7 +6,6 @@ import com.love.product.entity.Banner;
 import com.love.product.entity.base.Result;
 import com.love.product.mapper.BannerMapper;
 import com.love.product.service.BannerService;
-import com.love.product.service.FileUploadService;
 import com.love.product.service.OssService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,8 +23,6 @@ import java.util.List;
 @Service
 public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> implements BannerService {
 
-    @Resource
-    private FileUploadService fileUploadService;
     @Resource
     private OssService ossService;
 
@@ -73,7 +70,8 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
 
     @Override
     public Result deleteBatch(List<Long> ids) {
-        return null;
+        removeByIds(ids);
+        return Result.OK();
     }
 
 

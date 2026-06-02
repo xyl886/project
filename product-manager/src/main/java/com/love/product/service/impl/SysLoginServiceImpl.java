@@ -8,14 +8,14 @@ import com.love.product.entity.vo.UserInfoVO;
 import com.love.product.entity.vo.ValidateCodeVO;
 import com.love.product.enums.Gender;
 import com.love.product.mapper.SysUserMapper;
-import com.love.product.service.FileUploadService;
 import com.love.product.service.LoginService;
 import com.love.product.service.RedisService;
 import com.love.product.service.UserInfoService;
 import com.love.product.util.CommonUtil;
-import lombok.extern.slf4j.Slf4j;
+import cn.dev33.satoken.stp.StpUtil;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -39,8 +39,6 @@ public class SysLoginServiceImpl implements LoginService {
     private RedisService redisService;
     @Resource
     private SysUserMapper sysUserMapper;
-    @Resource
-    private FileUploadService fileUploadService;
     public void getValidateCode(Result result) {
         long startTime = System.currentTimeMillis();
         try {
@@ -71,22 +69,27 @@ public class SysLoginServiceImpl implements LoginService {
 
         //校验用户名和密码
         UserInfoVO userInfoVO = sysUserMapper.selectNameAndPassword(loginDTO.getEmail());
+        if (userInfoVO == null) {
+            return Result.failMsg("用户不存在");
+        }
         PasswordEncoder encoder = new BCryptPasswordEncoder();
-        Assert.isTrue(userInfoVO!=null && encoder.matches(loginDTO.getPassword(), userInfoVO.password),
-                       "无权限！");
+        if (!encoder.matches(loginDTO.getPassword(), userInfoVO.password)) {
+            return Result.failMsg("密码错误");
+        }
+        // 仅允许管理员登录管理后台
+        if (userInfoVO.getRole() == null || userInfoVO.getRole() != 3) {
+            return Result.failMsg("无管理员权限");
+        }
 
-            //一定要在获取token前缓存redis，否则可能报错,并且要删除验证码
+            // Sa-Token 登录
+            StpUtil.login(userInfoVO.getId());
+            //缓存用户信息到Redis
             redisService.set(USER_USERINFO + userInfoVO.getId(), userInfoVO);
             redisService.expire(USER_USERINFO + userInfoVO.getId(), 1, TimeUnit.DAYS);
-            String accessToken = userInfoService.getOAuthToken(userInfoVO);
-            if(accessToken == null){
-                return Result.failMsg("登录失败，请重试");
-            }
-            userInfoVO.setAccessToken(accessToken);
+            userInfoVO.setAccessToken(StpUtil.getTokenValue());
             userInfoVO.setEmail(loginDTO.getEmail());
             Gender gender = Gender.valueOf(userInfoVO.getGender());
             userInfoVO.setGenderText(gender.getText());
-//            userInfoVO.setAvatar(fileUploadService.getImgPath(userInfoVO.getAvatar()));
 
             return Result.OK(userInfoVO);
     }

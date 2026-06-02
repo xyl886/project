@@ -19,14 +19,13 @@ import com.love.product.service.HomeService;
 import com.love.product.service.RedisService;
 import com.love.product.util.DateUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.love.product.constant.CommonConstant.ak;
-import static com.love.product.constant.CommonConstant.sk;
 import static com.love.product.enums.PostStatus.PUBLISHED;
 
 /**
@@ -38,6 +37,10 @@ import static com.love.product.enums.PostStatus.PUBLISHED;
 @Service
 @Slf4j
 public class HomeServiceImpl implements HomeService {
+    @Value("${coderutil.api.access-key}")
+    private String accessKey;
+    @Value("${coderutil.api.secret-key}")
+    private String secretKey;
     @Resource
     private PostsMapper postsMapper;
     @Resource
@@ -73,8 +76,8 @@ public class HomeServiceImpl implements HomeService {
     public Result hot(String type) {
         String url = "https://www.coderutil.com/api/resou/v1/" + type;
         HashMap<String, Object> paramMap = new HashMap<>();
-        paramMap.put("access-key", ak);
-        paramMap.put("secret-key", sk);
+        paramMap.put("access-key", accessKey);
+        paramMap.put("secret-key", secretKey);
         String result= HttpUtil.get(url, paramMap);
         JSONArray data = JSONObject.parseObject(result).getJSONArray("data");
         // 遍历data数组

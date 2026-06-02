@@ -1,6 +1,5 @@
 package com.love.product.service;
 
-import com.google.common.collect.ImmutableList;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.GeoResults;

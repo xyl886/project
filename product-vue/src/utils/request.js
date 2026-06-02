@@ -1,104 +1,54 @@
 import axios from 'axios'
-import { Message, Notification } from 'element-ui'
-import { getToken, setToken, removeToken } from '@/utils/auth'
+import { ElMessage } from 'element-plus'
 import router from '@/router'
 
-// create an axios instance
-const service = axios.create({
-  baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
-  // withCredentials: true, // send cookies when cross-domain requests
-  timeout: 1000 * 30 // request timeout
+const request = axios.create({
+  baseURL: '/api',
+  timeout: 15000
 })
 
-// request interceptor
-service.interceptors.request.use(
-  config => {
-    // 全局请求头
-    if (getToken()) {
-      // console.info('token='+getToken());
-      config.headers['Authorization'] = 'bearer' + getToken()
+request.interceptors.request.use(config => {
+  const token = localStorage.getItem('token')
+  if (token) config.headers.Authorization = token
+  return config
+})
+
+request.interceptors.response.use(
+  res => {
+    if (res.data.code === 401) {
+      const isAdmin = /^\/system\//.test(res.config.url)
+      const redirect = encodeURIComponent(router.currentRoute?.value?.fullPath || '/')
+      localStorage.removeItem('token')
+      localStorage.removeItem('adminInfo')
+      localStorage.removeItem('userInfo')
+      router.push(isAdmin ? '/admin/login' : `/login?redirect=${redirect}`)
+      ElMessage.error('登录已过期，请重新登录')
+      return Promise.reject(new Error(res.data.msg))
     }
-    return config
+    if (res.data.code === 500) {
+      ElMessage.error(res.data.msg || '服务异常')
+      return Promise.reject(new Error(res.data.msg))
+    }
+    return res.data
   },
-  error => {
-    // do something with request error
-    console.log(error) // for debug
-    return Promise.reject(error)
+  err => {
+    const status = err.response?.status
+    if (status === 401) {
+      localStorage.removeItem('token')
+      localStorage.removeItem('adminInfo')
+      localStorage.removeItem('userInfo')
+      const isAdmin = /^\/system\//.test(err.config?.url || '')
+      router.push(isAdmin ? '/admin/login' : '/login')
+      ElMessage.error('登录已过期，请重新登录')
+    } else if (status === 500) {
+      ElMessage.error(err.response?.data?.msg || '服务异常')
+    } else if (status === 413) {
+      ElMessage.error('文件大小超过限制')
+    } else {
+      ElMessage.error(err.message === 'Network Error' ? '网络连接失败，请检查网络' : '网络错误')
+    }
+    return Promise.reject(err)
   }
 )
 
-// response interceptor
-service.interceptors.response.use(
-  /**
-   * If you want to get http information such as headers or status
-   * Please return  response => response
-  */
-
-  /**
-   * Determine the request status by custom code
-   * Here is just an example
-   * You can also judge the status by HTTP Status Code
-   */
-  response => {
-    const res = response.data
-    if (res.refreshTokenFlag && res.refreshToken) {
-      setToken(res.refreshToken)
-    }
-    if (res.code === 403) {
-      Notification({
-        title: '提示',
-        message: '请登录~',
-        type: 'warning'
-      })
-      // this.$message.fail(res.msg)
-      removeToken()
-      // location.reload();
-      router.push({ path: '/login' })
-    } else if (res.code !== 200) {
-      Message({
-        message: '系统异常，请联系技术人员',
-        type: 'error',
-        duration: 2 * 1000
-      })
-      return Promise.reject(new Error(res.msg || 'Error'))
-    }
-    return res
-    // const res = response.data;
-    // if the custom code is not 20000, it is judged as an error.
-    // if (res.code !== 200) {
-    //   Message({
-    //     message: res.message || 'Error',
-    //     type: 'error',
-    //     duration: 5 * 1000
-    //   })
-    //
-    //   // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
-    //   if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
-    //     // to re-login
-    //     MessageBox.confirm('You have been logged out, you can cancel to stay on this page, or log in again', 'Confirm logout', {
-    //       confirmButtonText: 'Re-Login',
-    //       cancelButtonText: 'Cancel',
-    //       type: 'warning'
-    //     }).then(() => {
-    //       store.dispatch('user/resetToken').then(() => {
-    //         location.reload()
-    //       })
-    //     })
-    //   }
-    //   return Promise.reject(new Error(res.message || 'Error'))
-    // } else {
-    //   return res
-    // }
-  },
-  error => {
-    console.log(error) // for debug
-    Message({
-      message: error.message,
-      type: 'error',
-      duration: 30 * 1000
-    })
-    return Promise.reject(error)
-  }
-)
-
-export default service
+export default request

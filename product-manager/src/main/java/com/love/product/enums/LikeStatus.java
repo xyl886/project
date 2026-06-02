@@ -1,10 +1,7 @@
 package com.love.product.enums;
 
-import com.love.product.service.PostsService;
-import com.love.product.util.JwtUtil;
 import lombok.Getter;
 
-import javax.annotation.Resource;
 import java.util.HashMap;
 
 /**
@@ -30,9 +27,6 @@ public enum LikeStatus {
         this.code = code;
         this.msg = msg;
     }
-
-    @Resource
-    private PostsService postsService;
 
     public HashMap<String, Object> setHashValue() {
         HashMap<String, Object> map = new HashMap<>();

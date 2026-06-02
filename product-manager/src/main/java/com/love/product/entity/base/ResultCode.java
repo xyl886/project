@@ -44,19 +44,11 @@ public enum ResultCode {
         return code;
     }
 
-    public void setCode(int code) {
-        this.code = code;
-    }
-
     public String getMsg() {
         return msg;
     }
 
-    public void setMsg(String msg) {
-        this.msg = msg;
-    }
-
-    public static ResultCode valueOf(int code) {
+    public static ResultCode fromCode(int code) {
         for (ResultCode item : ResultCode.values()) {
             if (code == item.code) {
                 return item;

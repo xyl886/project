@@ -1,65 +1,37 @@
-mybatis-plus:
-  mapper-locations: classpath*:mapper/*.xml
-#  type-aliases-package: com.love.*.mapper
-  #配置mybatisPlus日志
-  configuration:
-      log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 server:
-  # 应用服务 WEB 访问端口
   port: 8089
-#  servlet:
-#    context-path: /api
+
 logging:
   level:
     root: info
   file:
-      # 默认情况下：会在项目的根目录下生成/output/logs/spring.log，默认的日志名是：spring.log
     path: logs
-      # 如果不想把日志存放在logging.file.path目录下，可以采用name来重新定义存储的位置和日志文件的名称
 
-#decorator:
-#  datasource:
-#    p6spy:
-#      logging: slf4j
 spring:
   profiles:
     active: dev
   datasource:
-#    driver-class-name: com.p6spy.engine.spy.P6SpyDriver
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username:
-    password:
-    url: jdbc:mysql://localhost:3306/school?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowMultiQueries=true&useAffectedRows=true&allowPublicKeyRetrieval=true
   redis:
     database: 1
-    host:
     max-active: 20
     max-idle: 0
     max-wait: 1
     min-idle: 0
-    password:
-    port: 6379
     timeout: 2000
   servlet:
     multipart:
-      max-file-size: -1
-      max-request-size: -1
-#  http://127.0.0.1:5672
+      max-file-size: 10MB
+      max-request-size: 10MB
   rabbitmq:
-    host: 127.0.0.1
-    port: 5672
-    username:
-    password:
     listener:
       simple:
         retry:
           enabled: true
           max-attempts: 3
           initial-interval: 3000
+    virtual-host: /
   mail:
-    host:
-    username:
-    password:
     default-encoding: UTF-8
     protocol: smtp
     port: 465
@@ -75,43 +47,20 @@ spring:
           starttls:
             enable: true
             required: true
-  elasticsearch:
-    rest:
-      uris:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
 
-token:
-  config:
-    accessTokenValidity: 1800
-    clientId: SOJ_DEMO
-    grantTypes: password
-    refreshTokenValidity: 36000
-    scopes: all
-    secret: soj@123
-  isRefreshToken: false
-  resourceId: SOJ_DEMO
-  signingKey: SOJ_SYMMETRY
+mybatis-plus:
+  mapper-locations: classpath*:mapper/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
-search:
-  mode: elasticsearch
-
-# 本地存储图片上传地址
-file-upload-config:
-  #图片存储路径
-  image-real-path:
-  #图片的映射路径
-  image-mapper-path:
-  #后端地址
-  host-ip:
-  #默认头像
-  default-avatar:
-  #默认昵称
-  default-nickname:
-
-#阿里云 OSS存储
-aliyun:
-  oss:
-    endpoint:
-    accessKeyId:
-    accessKeySecret:
-    bucketName:
-
+sa-token:
+  token-name: Authorization
+  timeout: 604800
+  active-timeout: 8640000
+  is-concurrent: true
+  is-share: true
+  token-style: uuid
+  is-log: false

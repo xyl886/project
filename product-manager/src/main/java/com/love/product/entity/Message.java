@@ -42,7 +42,7 @@ public class Message implements Serializable {
     @ApiModelProperty(value = "内容")
     public String content;
 
-    @ApiModelProperty(name = "展示时间", value = "逻辑删除标记 是否已删除: 0否  1是")
+    @ApiModelProperty(value = "展示时间")
     public Integer time;
 
     @ApiModelProperty(name = "deleted", value = "逻辑删除标记 是否已删除: 0否  1是")

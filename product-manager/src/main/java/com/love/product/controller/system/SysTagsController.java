@@ -29,6 +29,12 @@ public class SysTagsController {
     @Resource
     private TagsService tagsService;
 
+    @RequestMapping(value = "/webList",method = RequestMethod.GET)
+    @ApiOperation(value = "标签列表(前端用)", httpMethod = "GET", response = Result.class, notes = "标签列表")
+    public Result webList(){
+        return tagsService.webList();
+    }
+
     @RequestMapping(value = "/list",method = RequestMethod.POST)
     @ApiOperation(value = "标签列表", httpMethod = "POST", response = Result.class, notes = "标签列表")
     public ResultPage<Tags> list(@RequestBody TagPageReq tagPageReq){

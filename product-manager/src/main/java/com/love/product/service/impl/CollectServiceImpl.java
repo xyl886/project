@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.love.product.enums.PostStatus.ALL;
 
 /**
  * @author Administrator
@@ -41,8 +40,6 @@ import static com.love.product.enums.PostStatus.ALL;
 @Slf4j
 @Service
 public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> implements CollectService {
-    @Resource
-    private  CollectService collectService;
     @Resource
     private CategoryService categoryService;
     @Resource
@@ -60,35 +57,35 @@ public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> impl
             yesOrNo = YesOrNo.NO;
         }
         LocalDateTime now = LocalDateTime.now();
+        int successCount = 0;
 
         for (Long postsId : postsIds) {
             Posts posts = postsMapper.getPostsById(postsId);
-            if (posts != null) { // && !posts.getStatus().equals(YesOrNo.YES.getValue())
+            if (posts != null) {
                 Collect collect = new Collect();
                 collect.setId(IdWorker.getId());
                 collect.setUserId(userId);
                 collect.setPostsId(posts.getId());
-                collect.setPostsUserId(posts.getUserId());
                 collect.setDeleted(yesOrNo.getValue());
                 collect.setCreateTime(now);
                 collect.setUpdateTime(now);
                 collectMapper.add(collect);
                 if (yesOrNo.equals(YesOrNo.YES)) {
                     posts.setCollectNum(Math.max(posts.getCollectNum() - 1, 0));
-                    postsService.updatePostsCollectNum(posts.id,posts.collectNum);
-                    return Result.OKMsg("已取消收藏");
+                    postsService.updatePostsCollectNum(posts.id, posts.collectNum);
                 } else {
                     posts.setCollectNum(posts.getCollectNum() + 1);
-                    postsService.updatePostsCollectNum(posts.id,posts.collectNum);
-                    return Result.OKMsg("收藏成功");
+                    postsService.updatePostsCollectNum(posts.id, posts.collectNum);
                 }
+                successCount++;
             }
         }
-        LambdaQueryWrapper<Collect> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Collect::getUserId, userId)
-                .in(Collect::getPostsId,postsIds);
-        collectService.remove(queryWrapper);
-        return Result.OKMsg("取消收藏成功");
+        if (successCount == 0) {
+            return Result.failMsg("收藏失败，帖子不存在");
+        }
+        return yesOrNo.equals(YesOrNo.YES)
+                ? Result.OKMsg("已取消收藏")
+                : Result.OKMsg("收藏成功");
     }
 
 
@@ -108,11 +105,11 @@ public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> impl
     public ResultPage<CollectVO> getPage(Long userId, CollectPageReq pageQuery) {
         LambdaQueryWrapper<Collect> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Collect::getUserId, userId)
-                .inSql(pageQuery.getCategoryId()!=null,Collect::getPostsId,
-                        "SELECT id FROM s_posts " +
-                                "WHERE school  = " +pageQuery.getCategoryId())
-                .orderByDesc(Collect::getCreateTime)
-                .eq(Collect::getStatus,ALL);
+                .orderByDesc(Collect::getCreateTime);
+        if (pageQuery.getCategoryId() != null) {
+            queryWrapper.apply("posts_id IN (SELECT id FROM s_posts WHERE category_id = {0})",
+                    pageQuery.getCategoryId());
+        }
         Page<Collect> page = page(pageQuery.build(), queryWrapper);
         List<CollectVO> list = new ArrayList<>();
         List<Long> postsIds = new ArrayList<>();
@@ -131,7 +128,7 @@ public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> impl
                 PostsDetailVO postsDetailVO = finalPostsHashMap.get(item.getPostsId());
                 log.info(String.valueOf(postsDetailVO));
                 if(postsDetailVO!=null){
-                    postsDetailVO.setCategoryName(categoryService.getCategoryById(Long.valueOf(postsDetailVO.school)));
+                    postsDetailVO.setCategoryName(categoryService.getCategoryById(Long.valueOf(postsDetailVO.categoryId)));
                     postsDetailVO.setPostStatus(PostStatus.valueOf(postsDetailVO.status).getText());
                     item.setPosts(postsDetailVO);
                 }else {
@@ -163,7 +160,7 @@ public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> impl
         LambdaQueryWrapper<Collect> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Collect::getUserId, userId)
                 .in(Collect::getPostsId,postsIds);
-        boolean rows = collectService.remove(queryWrapper);
+        boolean rows = remove(queryWrapper);
 //        int rows = baseMapper.deleteBatchIds(postsIds);
         return rows ? Result.OK(): Result.failMsg("批量取消失败");
     }

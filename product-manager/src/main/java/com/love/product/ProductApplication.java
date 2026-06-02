@@ -6,11 +6,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.web.client.RestTemplate;
 
 @MapperScan("com.love.product.mapper")
 @SpringBootApplication
 @EnableScheduling
+@EnableRabbit
 public class ProductApplication {
 
     public static void main(String[] args) {
