@@ -2,7 +2,6 @@ package com.love.product.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.love.product.entity.UserInfo;
-import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.req.UserPageReq;
 import com.love.product.entity.vo.*;
@@ -18,86 +17,39 @@ import java.util.Map;
  */
 public interface UserInfoService extends IService<UserInfo> {
 
-    /**
-     * 用户登录
-     */
-    Result<UserVO> login(LoginVO loginVO);
+    UserVO login(LoginVO loginVO);
 
     UserInfoVO getByEmail(String email);
 
-    /**
-     * 用户详情
-     */
     UserInfoVO getUserInfoById(Long id);
 
+    UserInfoVO userRegister(RegisterVO registerVO);
 
-    /**
-     * 用户注册
-     *
-     * @param registerVO
-     * @return
-     */
-    Result<UserInfoVO> userRegister(RegisterVO registerVO);
-
-    /**
-     * 用户列表
-     */
     Map<Long, UserInfoVO> listByIds(List<Long> ids);
 
-    /**
-     * 修改用户信息
-     *
-     * @param userId
-     * @param nickname
-     * @param file
-     * @param gender
-     * @param hobby
-     * @param remark
-     * @return
-     */
-    Result<UserInfoVO> update(Long userId, String nickname, MultipartFile file, Integer gender, String hobby, String remark);
+    UserInfoVO update(Long userId, String nickname, MultipartFile file, Integer gender, String hobby, String remark);
 
-    /**
-     * @param id
-     * @return
-     */
-    Result<UserInfoVO> getUserInfoAndFansById(Long id);
+    UserInfoVO getUserInfoAndFansById(Long id);
 
-    /**
-     * 修改用户密码
-     *
-     * @param id
-     * @param currentPassword
-     * @param newPassword
-     * @param confirmPassword
-     * @return
-     */
+    void updatePwd(Long id, String currentPassword, String newPassword, String confirmPassword);
 
-    Result<?> updatePwd(Long id, String currentPassword, String newPassword, String confirmPassword);
+    void sendCode(String email, String type);
 
-    /**
-     * 发送邮箱验证码
-     *
-     * @param email 邮箱
-     * @param type  类型
-     * @return
-     */
-    Result<?> sendCode(String email, String type);
-
-    Result<?> reset(Long userId, RegisterVO resetVO);
+    void reset(Long userId, RegisterVO resetVO);
 
     ResultPage<UserVO> listUser(UserPageReq userPageReq);
 
+    UserInfoVO getUserById(Integer id);
 
-    Result getUserById(Integer id);
+    void updateUser(UserInfo user);
 
-    Result updateUser(UserInfo user);
+    void deleteBatch(List<Integer> ids);
 
-    Result deleteBatch(List<Integer> ids);
+    UserInfoVO getCurrentUserInfo();
 
-    Result getCurrentUserInfo();
+    void updatePassword(Map<String, String> map);
 
+    UserInfoVO getUserProfile(Long targetId, Long currentUserId);
 
-    Result updatePassword(Map<String, String> map);
-
+    List<Map<String, Object>> searchUser(String keyword);
 }

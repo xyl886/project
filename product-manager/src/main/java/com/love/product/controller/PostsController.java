@@ -44,12 +44,12 @@ public class PostsController {
         if (files != null && files.length > 0) {
             postsVO.setFiles(files);
         }
-        return postsService.add(postsVO);
+        return Result.OK("已提交，等待管理员审核！", postsService.add(postsVO));
     }
 
     @GetMapping("/listHot")
     public Result<List<PostsDetailVO>> listHot() {
-        return postsService.listHot();
+        return Result.OK(postsService.listHot());
     }
 
     @ApiOperation("分页")
@@ -63,7 +63,7 @@ public class PostsController {
     @GetMapping("/getDetail")
     @ApiImplicitParam(name = "id", value = "帖子主键", required = true, dataType = "String", paramType = "query")
     public Result<PostsDetailVO> getDetail(@RequestParam("id") Long id) {
-        return postsService.getDetail(id);
+        return Result.OK(postsService.getDetail(id));
     }
 
     @ApiOperation("浏览")
@@ -73,7 +73,8 @@ public class PostsController {
     })
     @GetMapping("/browse")
     public Result<?> browse(@RequestParam(value = "userId", required = false) Long userId, @RequestParam("id") Long id) {
-        return postsService.browse(userId, id);
+        postsService.browse(userId, id);
+        return Result.OK();
     }
 
     @PostMapping("/update")
@@ -89,7 +90,16 @@ public class PostsController {
             @ApiImplicitParam(name = "oldFiles", value = "图片列表", required = false, dataType = "String", paramType = "query")
     })
     public Result<?> update(@Validated PostsVO postsVO) {
-        return postsService.update(postsVO);
+        postsService.update(postsVO);
+        return Result.OK("修改成功");
+    }
+
+    @ApiOperation("获取指定用户的帖子列表")
+    @GetMapping("/userPosts")
+    public Result<List<PostsDetailVO>> userPosts(@RequestParam Long userId,
+                                                  @RequestParam(defaultValue = "1") Integer page,
+                                                  @RequestParam(defaultValue = "20") Integer size) {
+        return Result.OK(postsService.getUserPosts(userId, page, size));
     }
 
     @ApiOperation(value = "搜索文章")
@@ -101,18 +111,21 @@ public class PostsController {
     @ApiOperation("删除")
     @DeleteMapping("/del")
     public Result<?> del(Long userId, Long id) {
-        return postsService.del(userId, id);
+        postsService.del(userId, id);
+        return Result.OK("删除成功");
     }
 
     @ApiOperation("彻底删除")
     @DeleteMapping("/delete")
     public Result<?> delete(Long userId, Long id) {
-        return postsService.delete(userId, id);
+        postsService.delete(userId, id);
+        return Result.OK("彻底删除成功");
     }
 
     @ApiOperation("还原")
     @PostMapping("/restore")
     public Result<?> restore(Long userId, Long id) {
-        return postsService.restore(userId, id);
+        postsService.restore(userId, id);
+        return Result.OK("成功还原！");
     }
 }

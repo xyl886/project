@@ -1,6 +1,5 @@
 package com.love.product.entity.base;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -18,13 +17,21 @@ import java.util.List;
 @Data
 @Builder
 @Accessors(chain = true)
-@ToString(callSuper = true)
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true)
-public class ResultPage<T> extends Result implements Serializable {
+public class ResultPage<T> implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    @ApiModelProperty("返回状态码： (200操作成功) (500操作失败)")
+    private Integer code = 200;
+
+    @ApiModelProperty(value = "前端toast展示的信息")
+    private String msg = "操作成功";
+
+    @ApiModelProperty(value = "返回数据")
+    private T data;
 
     @ApiModelProperty(value = "当前页，从1开始")
     private int currentPage = 1;
@@ -38,40 +45,23 @@ public class ResultPage<T> extends Result implements Serializable {
     @ApiModelProperty(value = "数据总数")
     private int dataTotal;
 
-    public static ResultPage OK(int dataTotal,int currentPage, int pageSize, List<?> data) {
-        if(pageSize == 0){//防止pageSize等于0引发的错误：java.lang.ArithmeticException: / by zero
-            pageSize = 10;
-        }
-        ResultPage resultPage = new ResultPage();
-        resultPage.setCode(ResultCode.SUCCESS.getCode());
-        resultPage.setMsg(ResultCode.SUCCESS.getMsg());
-        resultPage.setData(data);
-        resultPage.setDataTotal(dataTotal);
-        resultPage.setCurrentPage(currentPage);
-        resultPage.setPageSize(pageSize);
-        int pageTotal = dataTotal / pageSize;
-        if(dataTotal % pageSize != 0){
-            pageTotal += 1;
-        }
-        resultPage.setPageTotal(pageTotal);
-        return resultPage;
-    }
-
     public static <T> ResultPage<T> OK(long dataTotal, long currentPage, long pageSize, Collection<T> data) {
-        if (pageSize == 0) {//防止pageSize等于0引发的错误：java.lang.ArithmeticException: / by zero
+        if (pageSize == 0) {
             pageSize = 10;
         }
-        ResultPage<T> resultPage = new ResultPage();
-        resultPage.setData(data);
-        resultPage.setDataTotal(Integer.parseInt(String.valueOf(dataTotal)));
-        resultPage.setCode(ResultCode.SUCCESS.getCode());
-        resultPage.setMsg(ResultCode.SUCCESS.getMsg());
-        resultPage.setCurrentPage(Integer.parseInt(String.valueOf(currentPage)));
-        resultPage.setPageSize(Integer.parseInt(String.valueOf(pageSize)));
-        int pageTotal = Integer.parseInt(String.valueOf(dataTotal)) / Integer.parseInt(String.valueOf(pageSize));
-        if(dataTotal % pageSize != 0){
+        int ps = (int) pageSize;
+        int total = (int) dataTotal;
+        int pageTotal = total / ps;
+        if (total % ps != 0) {
             pageTotal += 1;
         }
+        ResultPage<T> resultPage = new ResultPage<>();
+        resultPage.setCode(ResultCode.SUCCESS.getCode());
+        resultPage.setMsg(ResultCode.SUCCESS.getMsg());
+        resultPage.setData((T) data);
+        resultPage.setDataTotal(total);
+        resultPage.setCurrentPage((int) currentPage);
+        resultPage.setPageSize(ps);
         resultPage.setPageTotal(pageTotal);
         return resultPage;
     }

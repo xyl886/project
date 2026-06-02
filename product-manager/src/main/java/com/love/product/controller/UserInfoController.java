@@ -1,6 +1,5 @@
 package com.love.product.controller;
 
-import com.love.product.entity.UserInfo;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.vo.RegisterVO;
 import com.love.product.entity.vo.UserInfoVO;
@@ -15,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Administrator
@@ -46,12 +47,12 @@ public class UserInfoController {
             @RequestParam("hobby") String hobby,
             @RequestParam("remark") String remark
     ) {
-        return userInfoService.update(JwtUtil.getUserId(),nickname,file,gender,hobby,remark);
+        return Result.OK("保存成功", userInfoService.update(JwtUtil.getUserId(), nickname, file, gender, hobby, remark));
     }
     @ApiOperation(value = "用户详情", notes = "用户详情")
     @GetMapping("/detail")
     public Result<UserInfoVO> detail() {
-     return userInfoService.getUserInfoAndFansById(JwtUtil.getUserId());
+     return Result.OK(userInfoService.getUserInfoAndFansById(JwtUtil.getUserId()));
     }
     @PostMapping ("/updateUserPwd")
     @ApiOperation(value = "更改用户密码", notes = "更改用户密码")
@@ -60,11 +61,25 @@ public class UserInfoController {
             @RequestParam("newPassword") String newPassword,
             @RequestParam("confirmPassword") String confirmPassword
     ) {
-        return userInfoService.updatePwd(JwtUtil.getUserId(), currentPassword, newPassword, confirmPassword);
+        userInfoService.updatePwd(JwtUtil.getUserId(), currentPassword, newPassword, confirmPassword);
+        return Result.OKMsg("修改成功！");
     }
     @PostMapping ("/reset")
     @ApiOperation(value = "重置密码", notes = "重置密码")
     public Result<?> updateUserPwd(RegisterVO resetVO) {
-        return userInfoService.reset(JwtUtil.getUserId(), resetVO);
+        userInfoService.reset(JwtUtil.getUserId(), resetVO);
+        return Result.OKMsg("重置成功！");
+    }
+
+    @GetMapping("/search")
+    @ApiOperation(value = "搜索用户", notes = "搜索用户")
+    public Result<List<Map<String, Object>>> search(@RequestParam String keyword) {
+        return Result.OK(userInfoService.searchUser(keyword));
+    }
+
+    @GetMapping("/profile")
+    @ApiOperation(value = "查看用户主页", notes = "查看用户主页")
+    public Result<UserInfoVO> profile(@RequestParam Long id) {
+        return Result.OK(userInfoService.getUserProfile(id, JwtUtil.getUserId()));
     }
 }

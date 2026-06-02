@@ -6,8 +6,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.love.product.config.BizException;
 import com.love.product.entity.Message;
-import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.dto.MessageDTO;
 import com.love.product.entity.req.MessagePageReq;
@@ -47,7 +47,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
      * @return
      */
     @Override
-    public Result listMessage(MessagePageReq messagePageReq) {
+    public ResultPage listMessage(MessagePageReq messagePageReq) {
         LambdaQueryWrapper<Message> lambdaQueryWrapper = new QueryWrapper<Message>().lambda()
                 .orderByDesc(Message::getCreateTime);
         Page<Message> page=page(messagePageReq.build(),lambdaQueryWrapper);
@@ -58,38 +58,35 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
     /**
      * 批量通过留言
      * @param ids
-     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Result passBatch(List<Integer> ids) {
-        Assert.notEmpty(ids,PARAMS_ILLEGAL.getMsg());
+    public void passBatch(List<Integer> ids) {
+        Assert.notEmpty(ids, PARAMS_ILLEGAL.getMsg());
         baseMapper.passBatch(ids);
-        return Result.OK();
     }
 
     /**
      * 删除留言
      * @param id
-     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Result deleteMessageById(int id) {
+    public void deleteMessageById(int id) {
         baseMapper.deleteById(id);
-        return Result.OK();
     }
 
     /**
      * 批量删除留言
      * @param ids
-     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Result deleteBatch(List<Integer> ids) {
+    public void deleteBatch(List<Integer> ids) {
         int rows = baseMapper.deleteBatchIds(ids);
-        return rows > 0 ? Result.OK(): Result.failMsg("批量删除留言失败");
+        if (rows <= 0) {
+            throw new BizException("批量删除留言失败");
+        }
     }
 
 
@@ -100,7 +97,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
      * @return
      */
     @Override
-    public Result selectMessageList() {
+    public List<MessageDTO> selectMessageList() {
         // 查询留言列表
         List<Message> messageList = baseMapper.selectList(
                 new LambdaQueryWrapper<Message>().select(
@@ -120,17 +117,16 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
             messageDTOList.add(messageDTO);
         }
 log.info(messageDTOList.toString());
-        return Result.OK(messageDTOList);
+        return messageDTOList;
     }
 
     /**
      * 添加留言
      * @param messageDTO
-     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Result insertMessage(MessageDTO messageDTO) {
+    public void insertMessage(MessageDTO messageDTO) {
         // 获取用户ip
 //        String ipAddress = IpUtil.getIp(request);
 //        String ipSource = IpUtil.getCityInfo(ipAddress);
@@ -142,6 +138,5 @@ log.info(messageDTOList.toString());
         BeanUtil.copyProperties(messageDTO,message);
         log.info(String.valueOf(message));
         baseMapper.insert(message);
-        return Result.OK("留言成功");
     }
 }

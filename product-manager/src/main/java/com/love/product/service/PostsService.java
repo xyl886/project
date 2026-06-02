@@ -1,16 +1,13 @@
 package com.love.product.service;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.love.product.entity.Posts;
-import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.dto.PostsDTO;
 import com.love.product.entity.req.PostsPageReq;
 import com.love.product.entity.vo.PostsVO;
 import com.love.product.entity.vo.ConditionVO;
 import com.love.product.entity.vo.PostsDetailVO;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -21,29 +18,33 @@ import java.util.Map;
  */
 public interface PostsService extends IService<Posts> {
 
-    Result<Posts> add(PostsVO postsVO);
+    Posts add(PostsVO postsVO);
 
     ResultPage<PostsDetailVO> getPage(PostsPageReq postsPageReq);
 
-    Result<PostsDetailVO> getDetail(Long id);
+    PostsDetailVO getDetail(Long id);
 
-    Result<?> browse(Long userId,Long id);
+    void browse(Long userId, Long id);
 
     Map<Long, PostsDetailVO> listByIds(List<Long> postsIds);
 
-    Result<?> update(PostsVO postsVO);
+    void update(PostsVO postsVO);
 
-    Result<?> del(Long userId, Long id);
-     Result<?> delete(Long userId,Long id);
+    void del(Long userId, Long id);
+
+    void delete(Long userId, Long id);
+
     String getImgPathById(Long id);
 
     List<Posts> listPostsBySearch(ConditionVO condition);
 
-    void updatePostsCollectNum(Long postsId,Integer collectNum);
+    void updatePostsCollectNum(Long postsId, Integer collectNum);
 
-    Result<List<PostsDetailVO>> listHot();
+    List<PostsDetailVO> listHot();
 
-    Result<?> audit(PostsDTO postsDTO);
+    void audit(PostsDTO postsDTO);
 
-    Result<?> restore(Long userId, Long id);
+    void restore(Long userId, Long id);
+
+    List<PostsDetailVO> getUserPosts(Long userId, Integer page, Integer size);
 }

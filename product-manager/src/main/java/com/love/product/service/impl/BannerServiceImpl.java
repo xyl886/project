@@ -2,8 +2,8 @@ package com.love.product.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.love.product.config.BizException;
 import com.love.product.entity.Banner;
-import com.love.product.entity.base.Result;
 import com.love.product.mapper.BannerMapper;
 import com.love.product.service.BannerService;
 import com.love.product.service.OssService;
@@ -27,16 +27,14 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
     private OssService ossService;
 
     @Override
-    public Result<List<Banner>> listAll() {
+    public List<Banner> listAll() {
         LambdaQueryWrapper<Banner> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.orderByDesc(Banner::getSort).orderByAsc(Banner::getCreateTime);
-        List<Banner> banners = list(queryWrapper);
-//        banners.forEach(item-> item.setImgPath(item.getImgPath()));
-        return Result.OK(banners);
+        return list(queryWrapper);
     }
 
     @Override
-    public Result<List<Banner>> updateBanner(MultipartFile file, Long id) {
+    public List<Banner> updateBanner(MultipartFile file, Long id) {
         String imgPath;
         try {
             imgPath = ossService.uploadFile(file);
@@ -46,11 +44,11 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
         Banner banner = Banner.builder().imgPath(imgPath).build();
         banner.setId(id);
         baseMapper.updateById(banner);
-        return Result.OK(this.listAll().getData());
+        return this.listAll();
     }
 
     @Override
-    public Result add(MultipartFile file) {
+    public List<Banner> add(MultipartFile file) {
         String imgPath;
         try {
             imgPath = ossService.uploadFile(file);
@@ -59,19 +57,20 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
         }
         Banner banner = Banner.builder().imgPath(imgPath).build();
         baseMapper.insert(banner);
-        return Result.OK(this.listAll().getData());
+        return this.listAll();
     }
 
     @Override
-    public Result deleteBanner(Long id) {
-        baseMapper.deleteById(id);
-        return Result.OKMsg("删除成功！");
+    public void deleteBanner(Long id) {
+        int rows = baseMapper.deleteById(id);
+        if (rows <= 0) {
+            throw new BizException("删除失败！");
+        }
     }
 
     @Override
-    public Result deleteBatch(List<Long> ids) {
+    public void deleteBatch(List<Long> ids) {
         removeByIds(ids);
-        return Result.OK();
     }
 
 

@@ -19,8 +19,9 @@ public class SysPostsController {
 
     @PostMapping(value = "/audit")
     @ApiOperation(value = "发布或下架文章", httpMethod = "POST", response = Result.class, notes = "发布或下架文章")
-    public Result publishAndShelf(@RequestBody PostsDTO postsDTO) {
-        return postsService.audit(postsDTO);
+    public Result<?> publishAndShelf(@RequestBody PostsDTO postsDTO) {
+        postsService.audit(postsDTO);
+        return Result.OK();
     }
 
 }

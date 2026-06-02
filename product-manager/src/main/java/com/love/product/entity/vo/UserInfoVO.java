@@ -26,6 +26,9 @@ public class UserInfoVO extends UserInfo {
     public Integer followNum;
     @ApiModelProperty(value = "粉丝数量")
     public Integer fansNum;
+
+    @ApiModelProperty(value = "当前登录用户是否已关注")
+    public Boolean followed;
 //    @ApiModelProperty(value = "发布帖子数量")
 //    public Integer postNum;
 //    @ApiModelProperty(value = "角色名称")

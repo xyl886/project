@@ -9,10 +9,10 @@ import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.love.product.entity.History;
+import com.love.product.config.BizException;
 import com.love.product.entity.Posts;
 import com.love.product.entity.PostsLike;
 import com.love.product.entity.Tags;
-import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.dto.*;
 import com.love.product.entity.req.PostsPageReq;
@@ -86,20 +86,20 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
      */
     @SneakyThrows
     @Override
-    public Result<Posts> add(PostsVO postsVO) {
+    public Posts add(PostsVO postsVO) {
         PostsType postsType = PostsType.valueOf(postsVO.getPostsType());
         List<String> imgPathList = new ArrayList<>();
         if (postsType.equals(PostsType.LEAVE)) {//闲置帖
             if (postsVO.getPrice() == null || postsVO.getPrice().doubleValue() <= 0) {
-                return Result.failMsg("请正确输入价格");
+                throw new BizException("请正确输入价格");
             }
             if (postsVO.getFiles() == null || postsVO.getFiles().length == 0) {
-                return Result.failMsg("请至少上传一张图片");
+                throw new BizException("请至少上传一张图片");
             }
         }
         if (postsVO.getFiles() != null) {
             if (postsVO.getFiles().length > 9) {
-                return Result.failMsg("最多可上传9张图片");
+                throw new BizException("最多可上传9张图片");
             }
             //上传图片
             for (MultipartFile multipartFile : postsVO.getFiles()) {
@@ -122,12 +122,6 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
         posts.setUserId(JwtUtil.getUserId());
         posts.setCreateTime(now);
         posts.setUpdateTime(now);
-        //审核内容
-//        if(discernSensitiveWords(postsVO.content,null)) {
-//            posts.setStatus(PostStatus.PUBLISHED.getValue());
-//        }else{
-//            posts.setStatus(PostStatus.PENDING.getValue());
-//        }
         posts.setStatus(PostStatus.PENDING.getValue());
         if (!imgPathList.isEmpty()) {
             posts.setCoverPath(imgPathList.get(0));
@@ -139,9 +133,9 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
         log.info(tagIdList.toString());
         if (flag) {
             if (!tagIdList.isEmpty()) tagsMapper.savePostsTags(posts.id, tagIdList);
-            return Result.OK("已提交，等待管理员审核！", posts);
+            return posts;
         }
-        return Result.failMsg("发布失败，请重试");
+        throw new BizException("发布失败，请重试");
     }
 
     /**
@@ -262,11 +256,11 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
      * @return Result<PostsDetailVO>
      */
     @Override
-    public Result<PostsDetailVO> getDetail(Long id) {
+    public PostsDetailVO getDetail(Long id) {
         Long userId = JwtUtil.getUserId();
         Posts posts = getById(id);
         if (posts == null) {
-            return Result.failMsg("帖子不存在或已下架");
+            throw new BizException("帖子不存在或已下架");
         }
         PostsDetailVO postsDetailVO = BeanUtil.copyProperties(posts, PostsDetailVO.class);
         UserInfoVO userInfoVO = userInfoService.getUserInfoById(posts.getUserId());
@@ -286,23 +280,41 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
             postsDetailVO.setFollow(true);
         }
         log.info(String.valueOf(postsDetailVO));
-        return Result.OK(postsDetailVO);
+        return postsDetailVO;
+    }
+
+    @Override
+    public List<PostsDetailVO> getUserPosts(Long targetUserId, Integer page, Integer size) {
+        Page<Posts> p = lambdaQuery().eq(Posts::getUserId, targetUserId)
+                .orderByDesc(Posts::getCreateTime).page(new Page<>(page, size));
+        List<PostsDetailVO> list = new ArrayList<>();
+        for (Posts post : p.getRecords()) {
+            PostsDetailVO vo = BeanUtil.copyProperties(post, PostsDetailVO.class);
+            vo.setCategoryName(categoryService.getCategoryById(Long.valueOf(post.getCategoryId())));
+            UserInfoVO userInfo = userInfoService.getUserInfoById(targetUserId);
+            if (userInfo != null) {
+                UserBasicInfoVO basic = new UserBasicInfoVO();
+                BeanUtil.copyProperties(userInfo, basic);
+                vo.setUserInfo(basic);
+            }
+            list.add(vo);
+        }
+        return list;
     }
 
     /**
      * 更新浏览次数
      */
     @Override
-    public Result<?> browse(Long userId, Long id) {
+    public void browse(Long userId, Long id) {
         Posts posts = getById(id);
         if (posts == null) {
-            return Result.OK();
+            return;
         }
         LocalDateTime now = LocalDateTime.now();
         if (userId == null) { // 未登录用户
             posts.setBrowseNum(posts.getBrowseNum() + 1);
             saveOrUpdate(posts);
-            return Result.OK();
         } else { // 已登录用户
             // 检查是否存在浏览记录
             History existingHistory = historyService.findHistory(userId, id);
@@ -314,8 +326,8 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
                 History history = new History();
                 history.setUserId(userId);
                 history.setPostsId(id);
-                history.setCreateTime(now); // 填充创建时间
-                history.setUpdateTime(now); // 填充更新时间
+                history.setCreateTime(now);
+                history.setUpdateTime(now);
 
                 // 将浏览记录保存到history表
                 historyService.saveHistory(history);
@@ -323,7 +335,6 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
             posts.setBrowseNum(posts.getBrowseNum() + 1);
             saveOrUpdate(posts);
         }
-        return Result.OK();
     }
 
     /**
@@ -363,28 +374,25 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
      * 帖子修改
      */
     @Override
-    public Result<?> update(PostsVO postsVO) {
+    public void update(PostsVO postsVO) {
         if (!Objects.equals(JwtUtil.getUserId(), postsVO.getUserId())) {
-            return Result.fail("您无权操作!");
+            throw new BizException("您无权操作!");
         }
         log.info("帖子id:" + postsVO.getId());
         log.info("修改前Posts:" + getById(postsVO.getId()));
         if (postsVO.getId() == null) {
-            return Result.fail("修改失败，请重试!!!!");
+            throw new BizException("修改失败，请重试!!!!");
         }
         if (StringUtils.isEmpty(postsVO.getTitle())) {
-            return Result.fail("请输入标题");
+            throw new BizException("请输入标题");
         }
         if (StringUtils.isEmpty(postsVO.getContent())) {
-            return Result.fail("请输入内容");
+            throw new BizException("请输入内容");
         }
         Posts posts = new Posts();
         BeanUtil.copyProperties(postsVO, posts);
         posts.setTitle(postsVO.getTitle());
         posts.setCategoryId(postsVO.getCategoryId());
-        //dfa过滤
-//            postsVO.setContent(HTMLUtils.deleteTag(postsVO.content));
-//            postsVO.setDescription(HTMLUtils.deleteTag(postsVO.description));
 
         List<String> imgPathList = new ArrayList<>();
         Collections.addAll(imgPathList, postsService.getImgPathById(postsVO.getId()).split(","));
@@ -392,7 +400,7 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
 
         if (postsVO.getFiles() != null) {//上传新加的图片
             if ((postsVO.getFiles().length) > 9) {
-                return Result.fail("最多可上传9张图片");
+                throw new BizException("最多可上传9张图片");
             }
             for (MultipartFile file : postsVO.getFiles()) {
                 String imgPath;
@@ -422,12 +430,11 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
             posts.setCoverPath(imgPathList.get(0));
             posts.setImgPath(imgPathList.stream().map(String::valueOf).collect(Collectors.joining(",")));
         } else {
-            return Result.failMsg("请至少上传一张图片!");
+            throw new BizException("请至少上传一张图片!");
         }
 
         saveOrUpdate(posts);
         BeanUtil.copyProperties(postsVO, getById(postsVO.getId()));
-        return Result.OK("修改成功", getById(postsVO.getId()));
     }
 
     /**
@@ -458,48 +465,39 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
      * @return
      */
     @Override
-    public Result<?> del(Long userId, Long id) {
+    public void del(Long userId, Long id) {
         Posts post = getById(id);
         Assert.notNull(post, "帖子不存在或已删除");
-        if (post.getUserId().equals(userId)) {
-            post.setStatus(PostStatus.TRASHED.getValue());
-            UpdateWrapper<Posts> updateWrapper = new UpdateWrapper<>();
-            updateWrapper.eq("id", id);
-            update(post, updateWrapper);
-            //更新帖子
-            return Result.OK("删除成功");
-        } else {
-            return Result.fail("抱歉，您无权操作");
+        if (!post.getUserId().equals(userId)) {
+            throw new BizException("抱歉，您无权操作");
         }
+        post.setStatus(PostStatus.TRASHED.getValue());
+        UpdateWrapper<Posts> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", id);
+        update(post, updateWrapper);
     }
 
     @Override
-    public Result<?> delete(Long userId, Long id) {
+    public void delete(Long userId, Long id) {
         Posts post = getById(id);
         Assert.notNull(post, "帖子不存在或已删除");
-        if (post.getUserId().equals(userId)) {
-            baseMapper.deleteById(id);
-            //更新帖子
-            return Result.OK("彻底删除成功");
-        } else {
-            return Result.fail("抱歉，您无权操作");
+        if (!post.getUserId().equals(userId)) {
+            throw new BizException("抱歉，您无权操作");
         }
+        baseMapper.deleteById(id);
     }
 
     @Override
-    public Result<?> restore(Long userId, Long id) {
+    public void restore(Long userId, Long id) {
         Posts post = getById(id);
         Assert.notNull(post, "帖子不存在或已删除");
-        if (post.getUserId().equals(userId)) {
-            post.setStatus(PostStatus.PUBLISHED.getValue());
-            UpdateWrapper<Posts> updateWrapper = new UpdateWrapper<>();
-            updateWrapper.eq("id", id);
-            update(post, updateWrapper);
-            //更新帖子
-            return Result.OK("成功还原！");
-        } else {
-            return Result.fail("抱歉，您无权操作");
+        if (!post.getUserId().equals(userId)) {
+            throw new BizException("抱歉，您无权操作");
         }
+        post.setStatus(PostStatus.PUBLISHED.getValue());
+        UpdateWrapper<Posts> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", id);
+        update(post, updateWrapper);
     }
 
     /**
@@ -532,7 +530,7 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
 
 
     @Override
-    public Result<List<PostsDetailVO>> listHot() {
+    public List<PostsDetailVO> listHot() {
         QueryWrapper<Posts> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("posts_type", 2)
                 .eq("status", 3)
@@ -543,7 +541,7 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
         for (Posts p : posts) {
             PostsDetailVO vo = BeanUtil.copyProperties(p, PostsDetailVO.class);
             // 填充用户信息
-            UserInfoVO userInfo = userInfoService.getUserInfoAndFansById(p.userId).getData();
+            UserInfoVO userInfo = userInfoService.getUserInfoAndFansById(p.userId);
             if (userInfo != null) {
                 UserBasicInfoVO basicInfo = new UserBasicInfoVO();
                 BeanUtil.copyProperties(userInfo, basicInfo);
@@ -552,38 +550,23 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
             vo.setCategoryName(categoryService.getCategoryById(Long.valueOf(p.categoryId)));
             list.add(vo);
         }
-        return Result.OK(list);
+        return list;
     }
 
     @Override
-    public Result audit(PostsDTO postsDTO) {
+    public void audit(PostsDTO postsDTO) {
         // 校验管理员权限
         Long userId = JwtUtil.getUserId();
         if (userId == null) {
-            return Result.failMsg("请先登录");
+            throw new BizException("请先登录");
         }
-        UserInfoVO userInfo = userInfoService.getUserInfoAndFansById(userId).getData();
+        UserInfoVO userInfo = userInfoService.getUserInfoAndFansById(userId);
         if (userInfo == null || !Role.MANAGER.getValue().equals(userInfo.getRole())) {
-            return Result.failMsg("无权限操作，仅管理员可审核");
+            throw new BizException("无权限操作，仅管理员可审核");
         }
         Posts posts = getById(postsDTO.id);
         Assert.isTrue(posts != null, "帖子不存在！");
         postsMapper.audit(postsDTO);
-        return Result.OK(posts);
     }
-//    public void sendEmail(PostsDTO postsDTO){
-//        Map<String, Object> map = new HashMap<>();
-//        map.put("content", "尊敬的用户，您好!<br><br>" +
-//                "您在校园墙<span style='font-weight:bold;'> </span>操作，本次请求的邮件验证码是：<br><br><span style='font-weight:bold; font-size:25px;'>" + code +
-//                "</span><br><br>本验证码5分钟内有效，为了保证您账号的安全性，请及时输入。请不要告诉他人哦！");
-//        EmailDTO emailDTO = EmailDTO.builder()
-//                .email(email)
-//                .subject("校园墙"+CodeType.getType(type)+CAPTCHA)
-//                .template("common.html")
-//                .commentMap(map)
-//                .build();
-//        rabbitTemplate.convertAndSend(EMAIL_EXCHANGE, "*",
-//                new Message(JSON.toJSONBytes(emailDTO),
-//                        new MessageProperties()));
-//    }
+
 }

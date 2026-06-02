@@ -32,7 +32,8 @@ public class PostsLikeController {
     @ApiOperation("新增点赞")
     @PostMapping("/add")
     public Result<?> add(@RequestParam("postsId") Long postsId, @RequestParam("deleted") Integer deleted) {
-        return postsLikeService.add(JwtUtil.getUserId(), postsId, deleted);
+        postsLikeService.add(JwtUtil.getUserId(), postsId, deleted);
+        return Result.OKMsg(deleted != null && deleted.equals(1) ? "已取消点赞" : "点赞成功");
     }
 
     @ApiOperation("查询点赞状态")
@@ -47,13 +48,15 @@ public class PostsLikeController {
     @ApiOperation("点赞")
     @PostMapping("like")
     public Result<?> like(@RequestParam("postsId") Long postsId) {
-        return postsLikeService.like(postsId, JwtUtil.getUserId());
+        postsLikeService.like(postsId, JwtUtil.getUserId());
+        return Result.OKMsg("点赞成功！");
     }
 
     @ApiOperation("取消点赞")
     @PostMapping("dislike")
     public Result<?> dislike(@RequestParam("postsId") Long postsId) {
-        return postsLikeService.dislike(postsId, JwtUtil.getUserId());
+        postsLikeService.dislike(postsId, JwtUtil.getUserId());
+        return Result.OKMsg("取消点赞成功！");
     }
 
     @ApiOperation("分页")

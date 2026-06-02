@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(BizException.class)
     @ResponseBody
-    public Result bizExceptionHandler(BizException e) {
+    public Result<?> bizExceptionHandler(BizException e) {
         log.error("发生业务异常！原因是：{}", e.getErrorMsg());
         return Result.failMsg(e.getErrorCode(), e.getErrorMsg());
     }

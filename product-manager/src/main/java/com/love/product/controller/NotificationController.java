@@ -12,6 +12,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 @Api(tags = "通知")
@@ -22,28 +23,31 @@ public class NotificationController {
     @Resource
     private NotificationMapper notificationMapper;
 
-    @ApiOperation("获取通知列表")
+    @ApiOperation("获取通知列表（支持按类型筛选）")
     @GetMapping("/list")
     public Result<List<Notification>> list(@RequestParam(defaultValue = "1") Integer page,
-                                           @RequestParam(defaultValue = "20") Integer size) {
+                                           @RequestParam(defaultValue = "20") Integer size,
+                                           @RequestParam(required = false) Integer type) {
         Long userId = JwtUtil.getUserId();
-        if (userId == null) return Result.OK(new java.util.ArrayList<>());
+        if (userId == null) return Result.OK(new ArrayList<>());
         LambdaQueryWrapper<Notification> qw = new LambdaQueryWrapper<Notification>()
                 .eq(Notification::getUserId, userId)
+                .eq(type != null && type > 0, Notification::getType, type)
                 .orderByDesc(Notification::getCreateTime);
         Page<Notification> p = notificationMapper.selectPage(new Page<>(page, size), qw);
         return Result.OK(p.getRecords());
     }
 
-    @ApiOperation("获取未读通知数")
+    @ApiOperation("获取未读数（按类型）")
     @GetMapping("/unreadCount")
-    public Result<Long> unreadCount() {
+    public Result<Long> unreadCount(@RequestParam(required = false) Integer type) {
         Long userId = JwtUtil.getUserId();
         if (userId == null) return Result.OK(0L);
-        long count = notificationMapper.selectCount(new LambdaQueryWrapper<Notification>()
+        LambdaQueryWrapper<Notification> qw = new LambdaQueryWrapper<Notification>()
                 .eq(Notification::getUserId, userId)
-                .eq(Notification::getIsRead, 0));
-        return Result.OK(count);
+                .eq(Notification::getIsRead, 0);
+        if (type != null && type > 0) qw.eq(Notification::getType, type);
+        return Result.OK(notificationMapper.selectCount(qw));
     }
 
     @ApiOperation("标记已读")

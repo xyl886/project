@@ -31,24 +31,28 @@ private RoleService roleService;
     }
     @RequestMapping(value = "/add",method = RequestMethod.POST)
     @ApiOperation(value = "新增角色", httpMethod = "POST", response = Result.class, notes = "新增标签")
-    public Result insert(@RequestBody UserAuth userAuth){
-        return roleService.insertRole(userAuth);
+    public Result<?> insert(@RequestBody UserAuth userAuth){
+        roleService.insertRole(userAuth);
+        return Result.OK();
     }
     @RequestMapping(value = "/update",method = RequestMethod.POST)
     @ApiOperation(value = "修改角色", httpMethod = "POST", response = Result.class, notes = "修改标签")
-    public Result update(@RequestBody UserAuth userAuth){
-        return roleService.updateRole(userAuth);
+    public Result<?> update(@RequestBody UserAuth userAuth){
+        roleService.updateRole(userAuth);
+        return Result.OK();
     }
 
     @RequestMapping(value = "/remove",method = RequestMethod.DELETE)
     @ApiOperation(value = "删除角色", httpMethod = "DELETE", response = Result.class, notes = "删除标签")
-    public Result deleteById(Integer  id){
-        return roleService.deleteById(id);
+    public Result<?> deleteById(Integer  id){
+        roleService.deleteById(id);
+        return Result.OK();
     }
 
     @RequestMapping(value = "/deleteBatch",method = RequestMethod.DELETE)
     @ApiOperation(value = "批量删除角色", httpMethod = "DELETE", response = Result.class, notes = "批量删除标签")
-    public Result deleteBatch(@RequestBody List<Integer> ids){
-        return roleService.deleteBatch(ids);
+    public Result<?> deleteBatch(@RequestBody List<Integer> ids){
+        roleService.deleteBatch(ids);
+        return Result.OK();
     }
 }

@@ -5,8 +5,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.love.product.config.BizException;
 import com.love.product.entity.History;
-import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.req.HistoryPageReq;
 import com.love.product.entity.vo.HistoryVO;
@@ -107,26 +107,23 @@ public class HistoryServiceImpl extends ServiceImpl<HistoryMapper, History> impl
      * 删除历史记录
      * @param userId 用户id
      * @param ids 帖子ids
-     * @return Result<?>
      */
     @Override
-    public Result<?> del(Long userId, Long... ids) {
+    public void del(Long userId, Long... ids) {
         List<History> histories = listByIds(Arrays.asList(ids));
         if (histories.isEmpty()) {
-            return Result.failMsg("未找到历史记录!");
+            throw new BizException("未找到历史记录!");
         }
         for (History history : histories) {
             if (!history.getUserId().equals(userId)) {
-                return Result.failMsg("您无权删除此历史记录!");
+                throw new BizException("您无权删除此历史记录!");
             }
         }
         boolean success = remove(new QueryWrapper<History>()
                 .eq("user_id", userId)
                 .in("id", ids));
-        if (success) {
-            return Result.OK("删除成功!");
-        } else {
-            return Result.failMsg("删除失败!");
+        if (!success) {
+            throw new BizException("删除失败!");
         }
     }
 }

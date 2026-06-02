@@ -36,3 +36,8 @@ export function getCategoryListAll() {
 export function getTagList() {
   return request.get('/system/tags/webList')
 }
+
+// 获取指定用户的帖子列表
+export function getUserPosts(userId, page, size) {
+  return request.get('/posts/userPosts', { params: { userId, page, size } })
+}

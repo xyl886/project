@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.love.product.config.BizException;
 import com.love.product.entity.UserAuth;
-import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.req.RolePageReq;
 import com.love.product.mapper.RoleMapper;
@@ -45,34 +44,42 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, UserAuth> implement
     }
 
     @Override
-    public Result insertRole(UserAuth userAuth) {
+    public void insertRole(UserAuth userAuth) {
         UserAuth vo = baseMapper.selectOne(new QueryWrapper<UserAuth>()
                 .eq("role_name", userAuth.roleName));
         if (!ObjectUtil.isNull(vo)) {
             throw new BizException("该角色名称已存在!");
         }
         int rows = baseMapper.insert(userAuth);
-        return rows > 0 ? Result.OK("添加成功"): Result.failMsg("添加角色失败");
+        if (rows <= 0) {
+            throw new BizException("添加角色失败");
+        }
     }
 
     @Override
-    public Result updateRole(UserAuth userAuth) {
+    public void updateRole(UserAuth userAuth) {
         UserAuth vo = baseMapper.selectOne(new QueryWrapper<UserAuth>()
                 .eq("role_name", userAuth.roleName));
         assert vo == null || vo.getId().equals(userAuth.getId()) : ROLE_IS_EXIST.getMsg();
         int rows = baseMapper.updateById(userAuth);
-        return rows > 0 ? Result.OK(): Result.failMsg("修改角色失败");
+        if (rows <= 0) {
+            throw new BizException("修改角色失败");
+        }
     }
 
     @Override
-    public Result deleteById(Integer id) {
+    public void deleteById(Integer id) {
         int rows = baseMapper.deleteById(id);
-        return rows > 0 ? Result.OK(): Result.failMsg("删除角色失败");
+        if (rows <= 0) {
+            throw new BizException("删除角色失败");
+        }
     }
 
     @Override
-    public Result deleteBatch(List<Integer> ids) {
+    public void deleteBatch(List<Integer> ids) {
         int rows = baseMapper.deleteBatchIds(ids);
-        return rows > 0 ? Result.OK(): Result.failMsg("批量删除角色失败");
+        if (rows <= 0) {
+            throw new BizException("批量删除角色失败");
+        }
     }
 }

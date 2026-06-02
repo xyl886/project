@@ -32,7 +32,8 @@ public class FollowController {
     public Result<?> add(
             @RequestParam("beFollowedUserId") Long beFollowedUserId,
             @RequestParam("deleted") Integer deleted) {
-        return followService.add(JwtUtil.getUserId(),beFollowedUserId,deleted);
+        followService.add(JwtUtil.getUserId(), beFollowedUserId, deleted);
+        return Result.OKMsg(deleted != null && deleted.equals(1) ? "已取消关注" : "关注成功");
     }
 
     @ApiOperation("分页")

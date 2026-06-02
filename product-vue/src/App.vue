@@ -25,8 +25,8 @@
           </div>
           <div class="topbar-right">
             <template v-if="!!store.token">
-              <el-badge :value="0" :hidden="true" class="notice-badge">
-                <el-icon size="20" style="color:#666;cursor:pointer"><Bell /></el-icon>
+              <el-badge :value="unreadCount" :hidden="!unreadCount" class="notice-badge">
+                <el-icon size="20" style="color:#666;cursor:pointer" @click="$router.push('/messages')"><Bell /></el-icon>
               </el-badge>
               <el-button type="primary" size="small" round @click="$router.push('/create')">
                 <el-icon><Plus/></el-icon> 发布
@@ -67,12 +67,14 @@ import {ElMessage} from 'element-plus'
 import {Bell, Plus, Search as SearchIcon} from '@element-plus/icons-vue'
 import {useUserStore} from './store/user'
 import {useAdminStore} from './store/admin'
+import {useWebSocket} from './utils/websocket'
 
 const route = useRoute()
 const router = useRouter()
 const store = useUserStore()
 const adminStore = useAdminStore()
 const searchKeyword = ref('')
+const { unreadCount, connect, disconnect } = useWebSocket()
 
 const isAdminRoute = computed(() => route.path.startsWith('/admin'))
 const isCurrentAdmin = computed(() => adminStore.isAdmin || store.userInfo?.role === 3)
@@ -84,8 +86,8 @@ function goSearch() {
 
 onMounted(() => {
   if (!isAdminRoute.value && store.token) {
-    store.fetchUserInfo().catch(() => {
-    })
+    store.fetchUserInfo().catch(() => {})
+    connect()
   }
 })
 
@@ -94,6 +96,7 @@ function handleCommand(cmd) {
   else if (cmd === 'admin') router.push('/admin/dashboard')
   else if (cmd === 'logout') {
     store.logout()
+    disconnect()
     ElMessage.success('已退出')
     router.push('/login')
   }

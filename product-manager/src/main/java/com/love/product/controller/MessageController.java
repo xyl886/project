@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @PackageName: com.love.product.controller
@@ -28,14 +29,15 @@ public class MessageController {
     private MessageService messageService;
     @RequestMapping(value = "/",method = RequestMethod.GET)
     @ApiOperation(value = "留言列表", httpMethod = "GET", response = Result.class, notes = "留言列表")
-    public Result selectMessageList(){
-        return messageService.selectMessageList();
+    public Result<List<MessageDTO>> selectMessageList(){
+        return Result.OK(messageService.selectMessageList());
     }
 
 
     @RequestMapping(value = "/",method = RequestMethod.POST)
     @ApiOperation(value = "添加留言", httpMethod = "POST", response = Result.class, notes = "添加留言")
-    public Result insertMessage(@RequestBody MessageDTO messageDTO){
-        return messageService.insertMessage(messageDTO);
+    public Result<?> insertMessage(@RequestBody MessageDTO messageDTO){
+        messageService.insertMessage(messageDTO);
+        return Result.OK("留言成功");
     }
 }

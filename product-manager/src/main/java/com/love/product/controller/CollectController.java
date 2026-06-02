@@ -40,12 +40,14 @@ public class CollectController {
     @ApiOperation("新增收藏")
     @PostMapping("/add")
     public Result<?> add(@RequestParam("postsIds")Long[] postsIds,@RequestParam("deleted") Integer deleted) {
-        return collectService.add(JwtUtil.getUserId(), deleted, postsIds);
+        collectService.add(JwtUtil.getUserId(), deleted, postsIds);
+        return Result.OKMsg(deleted != null && deleted.equals(1) ? "已取消收藏" : "收藏成功");
     }
     @ApiOperation("批量取消收藏")
     @PostMapping("/deleteBatch")
     public Result<?> deleteBatch(@RequestBody List<Long> postsIds) {
-        return collectService.deleteBatch(JwtUtil.getUserId(),postsIds);
+        collectService.deleteBatch(JwtUtil.getUserId(),postsIds);
+        return Result.OK();
     }
     @ApiOperation("分页")
     @PostMapping("/getPage")

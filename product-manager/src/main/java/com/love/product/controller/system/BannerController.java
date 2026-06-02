@@ -31,7 +31,7 @@ public class BannerController {
     @ApiOperation("列表")
     @GetMapping("/listAll")
     public Result<List<Banner>> listAll() {
-        return bannerService.listAll();
+        return Result.OK(bannerService.listAll());
     }
 
     @ApiOperation("修改")
@@ -40,23 +40,25 @@ public class BannerController {
             @RequestParam(value = "file",required = false) MultipartFile file,
             @RequestParam(value = "id") Long id) throws IOException {
         log.info(String.valueOf(file));
-        return bannerService.updateBanner(file,id);
+        return Result.OK(bannerService.updateBanner(file, id));
     }
 
     @ApiOperation("新增首页轮播图")
     @PostMapping("/add")
-    public Result add(MultipartFile file) {
-        return bannerService.add(file);
+    public Result<List<Banner>> add(MultipartFile file) {
+        return Result.OK(bannerService.add(file));
     }
     @PostMapping(value = "/delete")
     @ApiOperation(value = "删除分类", httpMethod = "POST", response = Result.class, notes = "修改文章")
-    public Result delete(Long id) {
-        return bannerService.deleteBanner(id);
+    public Result<?> delete(Long id) {
+        bannerService.deleteBanner(id);
+        return Result.OK();
     }
     @RequestMapping(value = "/deleteBatch")
     @ApiOperation(value = "批量删除分类", httpMethod = "POST", response = Result.class, notes = "批量删除分类")
-    public Result deleteBatch(@RequestBody List<Long > ids){
-        return bannerService.deleteBatch(ids);
+    public Result<?> deleteBatch(@RequestBody List<Long > ids){
+        bannerService.deleteBatch(ids);
+        return Result.OK();
     }
 
 }

@@ -9,8 +9,8 @@
         </div>
         <h1 class="detail-title">{{ post.title }}</h1>
         <div class="detail-meta">
-          <el-avatar :size="32" :src="post.userInfo?.avatar">{{ (post.userInfo?.nickname || '?')[0] }}</el-avatar>
-          <span>{{ post.userInfo?.nickname || '匿名' }}</span>
+          <el-avatar :size="32" :src="post.userInfo?.avatar" style="cursor:pointer" @click.stop="$router.push(`/user/${post.userId}`)">{{ (post.userInfo?.nickname || '?')[0] }}</el-avatar>
+          <span style="cursor:pointer" @click.stop="$router.push(`/user/${post.userId}`)">{{ post.userInfo?.nickname || '匿名' }}</span>
           <span class="dot">·</span>
           <span>{{ post.createTime }}</span>
           <span class="dot">·</span>
@@ -97,7 +97,7 @@
     <aside class="sidebar">
       <div class="sidebar-card">
         <h3>👤 作者信息</h3>
-        <div v-if="post" style="display:flex;align-items:center;gap:12px;margin-top:12px;cursor:pointer" @click="$router.push('/user')">
+        <div v-if="post" style="display:flex;align-items:center;gap:12px;margin-top:12px;cursor:pointer" @click="$router.push(`/user/${post.userId}`)">
           <el-avatar :size="48" :src="post.userInfo?.avatar">{{ (post.userInfo?.nickname || '?')[0] }}</el-avatar>
           <div>
             <div style="font-weight:600">{{ post.userInfo?.nickname || '匿名' }}</div>

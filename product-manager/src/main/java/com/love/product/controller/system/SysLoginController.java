@@ -2,6 +2,7 @@ package com.love.product.controller.system;
 
 import com.love.product.entity.base.Result;
 import com.love.product.entity.dto.LoginDTO;
+import com.love.product.entity.vo.UserInfoVO;
 import com.love.product.service.LoginService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -24,13 +25,12 @@ public class SysLoginController {
     private LoginService loginService;
     @ApiOperation(value = "账密登录", notes = "账密登录")
     @PostMapping("/login")
-    public Result login(
+    public Result<UserInfoVO> login(
             @RequestBody @Validated LoginDTO  loginDTO) {
-        return loginService.login(loginDTO);
+        return Result.OK(loginService.login(loginDTO));
     }
     @PostMapping("logout")
-    public Result logout() {
-
+    public Result<?> logout() {
         return Result.OK("退出成功");
     }
 }

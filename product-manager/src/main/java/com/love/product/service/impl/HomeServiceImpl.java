@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.love.product.entity.Posts;
 import com.love.product.entity.UserInfo;
-import com.love.product.entity.base.Result;
 import com.love.product.entity.dto.CategoryPostCountDTO;
 import com.love.product.entity.vo.ContributeVO;
 import com.love.product.entity.vo.HomeVO;
@@ -57,7 +56,7 @@ public class HomeServiceImpl implements HomeService {
      * 文章、留言、用户、已认证
      * @return
      */
-    public Result<Map<String,Integer>> lineCount(){
+    public Map<String,Integer> lineCount(){
         Map<String,Integer> map = new HashMap<>();
         map.put("postsCount", postsMapper.selectList(null).size());
         map.put("pendingPostsCount", postsMapper.selectList(
@@ -69,11 +68,11 @@ public class HomeServiceImpl implements HomeService {
                 new LambdaQueryWrapper<UserInfo>()
                         .ne(UserInfo::getRole, Role.VISITOR.getValue())).size());
         map.put("categoryCount",categoryMapper.selectList(null).size());
-        return Result.OK(map);
+        return map;
     }
 
     @Override
-    public Result hot(String type) {
+    public JSONArray hot(String type) {
         String url = "https://www.coderutil.com/api/resou/v1/" + type;
         HashMap<String, Object> paramMap = new HashMap<>();
         paramMap.put("access-key", accessKey);
@@ -91,10 +90,10 @@ public class HomeServiceImpl implements HomeService {
                 item.put("summary", keyword);
             }
         }
-        return Result.OK(data);
+        return data;
     }
 
-    public Result<HomeVO> init() {
+    public HomeVO init() {
         //文章排行
         List<Posts> postsList =postsMapper.selectList(new QueryWrapper<Posts>()
                 .orderByDesc("browse_num")
@@ -111,11 +110,11 @@ public class HomeServiceImpl implements HomeService {
                 .contribute(contribute)
                 .posts(postsList)
                 .TagVO(tagsList).build()));
-        return Result.OK(HomeVO.builder()
+        return HomeVO.builder()
                 .CategoryPostCountDTO(categoryCount)
                 .contribute(contribute)
                 .posts(postsList)
-                .TagVO(tagsList).build());
+                .TagVO(tagsList).build();
     }
 
     private List<TagVO> tagsCount() {

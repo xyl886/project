@@ -38,6 +38,7 @@ public class HistoryController {
     @DeleteMapping("/del")
     public Result<?> del(@RequestParam("userId") Long userId,@RequestParam("ids")Long[] ids) {
         log.info(Arrays.toString(ids));
-        return historyService.del(userId, ids);
+        historyService.del(userId, ids);
+        return Result.OK("删除成功!");
     }
 }

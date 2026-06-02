@@ -21,19 +21,17 @@ public class FriendController {
     @Resource
     private FriendService friendService;
     @PostMapping("/addFriend")
-    public Result addFriend(@RequestParam("id") Long friendUserId){
-        return  friendService.addFriend(friendUserId);
-
+    public Result<?> addFriend(@RequestParam("id") Long friendUserId){
+        friendService.addFriend(friendUserId);
+        return Result.OK();
     }
     @PostMapping("/getFriendList")
     public ResultPage getFriendList(@RequestBody FriendPageReq friendPageReq){
-        return  friendService.getFriendList(JwtUtil.getUserId(),friendPageReq);
-
+        return  friendService.getFriendList(JwtUtil.getUserId(), friendPageReq);
     }
     @DeleteMapping("/deleteFriend")
-    public Result deleteFriend(@RequestParam("friendUserId") Long friendUserId){
-
-        return  friendService.deleteFriend(friendUserId);
-
+    public Result<?> deleteFriend(@RequestParam("friendUserId") Long friendUserId){
+        friendService.deleteFriend(friendUserId);
+        return Result.OK();
     }
 }

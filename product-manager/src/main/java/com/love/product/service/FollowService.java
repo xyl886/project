@@ -2,7 +2,6 @@ package com.love.product.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.love.product.entity.Follow;
-import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.req.FollowPageReq;
 import com.love.product.entity.vo.FollowVO;
@@ -15,7 +14,7 @@ import java.util.List;
  */
 public interface FollowService extends IService<Follow> {
 
-    Result<?> add(Long userId, Long beFollowedUserId,Integer deleted);
+    void add(Long userId, Long beFollowedUserId, Integer deleted);
 
     Follow getDetail(Long userId, Long beFollowedUserId);
 

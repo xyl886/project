@@ -12,7 +12,6 @@ import com.love.product.config.BizException;
 import com.love.product.entity.Posts;
 import com.love.product.entity.UserAuth;
 import com.love.product.entity.UserInfo;
-import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.dto.EmailDTO;
 import com.love.product.entity.req.UserPageReq;
@@ -113,7 +112,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
      * @return
      */
     @Override
-    public Result<?> sendCode(String email, String type) {
+    public void sendCode(String email, String type) {
         isValidType(type);
         checkEmail(email);
         String code = getRandomCode();
@@ -133,7 +132,6 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
                 "*",
                 new Message(JSON.toJSONBytes(emailDTO), new MessageProperties()));
         redisService.set(EMAIL_CODE + email, code, 5 * 60);
-        return Result.OKMsg("验证码已发送，请查收！");
     }
 
     /**
@@ -142,16 +140,16 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
      * @return Result<UserInfo>
      */
     @Override
-    public Result<UserVO> login(LoginVO loginVO) {
+    public UserVO login(LoginVO loginVO) {
         UserInfoVO userInfoVO = getByEmail(loginVO.email);
         if (userInfoVO == null) {
-            return Result.failMsg("账号不存在!");
+            throw new BizException("账号不存在!");
         }
         if (userInfoVO.getDeleted().equals(YesOrNo.YES.getValue())) {
-            return Result.failMsg("登录失败，账号已注销");
+            throw new BizException("登录失败，账号已注销");
         }
         if (userInfoVO.getStatus().equals(YesOrNo.YES.getValue())) {
-            return Result.failMsg("登录失败，账号已禁用，请联系客服人员");
+            throw new BizException("登录失败，账号已禁用，请联系客服人员");
         }
         if (loginVO.emailCode != null && !loginVO.emailCode.isEmpty() && loginVO.password.isEmpty()) {
             checkCode(EMAIL_CODE + loginVO.email, loginVO.emailCode);
@@ -159,7 +157,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             PasswordEncoder encoder = new BCryptPasswordEncoder();
             boolean matches = encoder.matches(loginVO.password, userInfoVO.password);
             if (!matches) {
-                return Result.failMsg("账号或密码错误");
+                throw new BizException("账号或密码错误");
             }
         }
         // Sa-Token 登录 + 缓存用户信息到Redis
@@ -171,7 +169,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         userInfoVO.setEmail(loginVO.email);
         UserVO userVO = new UserVO();
         BeanUtils.copyProperties(userInfoVO, userVO);
-        return Result.OK(userVO);
+        return userVO;
     }
 
     /**
@@ -180,21 +178,21 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
      * @return Result<UserInfo>
      */
     @Override
-    public Result<UserInfoVO> userRegister(RegisterVO registerVO) {
+    public UserInfoVO userRegister(RegisterVO registerVO) {
         UserInfoVO userInfoVO = getByEmail(registerVO.email);
         if (userInfoVO != null) {
-            return Result.failMsg("邮箱已注册，请修改！");
+            throw new BizException("邮箱已注册，请修改！");
         }
         checkEmail(registerVO.email);
         if (registerVO.emailCode.isEmpty()) {
-            return Result.failMsg("请输入验证码！");
+            throw new BizException("请输入验证码！");
         }
         if (registerVO.password.isEmpty()) {
-            return Result.failMsg("请设置密码！");
+            throw new BizException("请设置密码！");
         }
         checkCode(EMAIL_CODE + registerVO.email, registerVO.emailCode);
         if (!registerVO.password.equals(registerVO.confirmPassword)) {
-            return Result.failMsg("两次输入密码不一致，请重新输入！");
+            throw new BizException("两次输入密码不一致，请重新输入！");
         }
         LocalDateTime now = LocalDateTime.now();
         userInfoVO = new UserInfoVO();
@@ -210,35 +208,34 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         userInfoVO.setCreateTime(now);
         userInfoVO.setUpdateTime(now);
         save(userInfoVO);
-        return Result.OK(userInfoVO);
+        return userInfoVO;
     }
 
     /**
      * 修改密码
      */
     @Override
-    public Result<?> updatePwd(Long id, String currentPassword, String newPassword, String confirmPassword) {
+    public void updatePwd(Long id, String currentPassword, String newPassword, String confirmPassword) {
         UserInfo userInfo = getById(id);
         if (userInfo == null) {
-            return Result.failMsg("用户不存在！");
+            throw new BizException("用户不存在！");
         }
         PasswordEncoder encoder = new BCryptPasswordEncoder();
         boolean matches = encoder.matches(currentPassword, userInfo.password);
         if (!matches) {
-            return Result.failMsg("当前密码不正确！");
+            throw new BizException("当前密码不正确！");
         }
         if (!newPassword.equals(confirmPassword)) {
-            return Result.failMsg("新密码与确认密码不匹配！");
+            throw new BizException("新密码与确认密码不匹配！");
         }
         if (currentPassword.equals(newPassword)) {
-            return Result.OKMsg("您的密码并未改动！");
+            throw new BizException("您的密码并未改动！");
         }
         if (!CommonUtil.isValidPassword(newPassword)) {
-            return Result.failMsg("新密码不符合要求！");
+            throw new BizException("新密码不符合要求！");
         }
         userInfo.setPassword(new BCryptPasswordEncoder().encode(newPassword));
         saveOrUpdate(userInfo);
-        return Result.OKMsg("修改成功！");
     }
 
     /**
@@ -250,20 +247,19 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
      */
 
     @Override
-    public Result<?> reset(Long userId, RegisterVO resetVO) {
+    public void reset(Long userId, RegisterVO resetVO) {
         UserInfo userInfo = getById(userId);
         if (userInfo == null) {
-            return Result.failMsg("用户异常，请联系管理员！");
+            throw new BizException("用户异常，请联系管理员！");
         }
         if (!resetVO.password.equals(resetVO.confirmPassword)) {
-            return Result.failMsg("新密码与确认密码不匹配！");
+            throw new BizException("新密码与确认密码不匹配！");
         }
         if (!CommonUtil.isValidPassword(resetVO.password)) {
-            return Result.failMsg("新密码不符合要求！");
+            throw new BizException("新密码不符合要求！");
         }
         userInfo.setPassword(new BCryptPasswordEncoder().encode(resetVO.password));
         saveOrUpdate(userInfo);
-        return Result.OKMsg("重置成功！");
     }
 
     @Override
@@ -323,17 +319,17 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
      */
     @SneakyThrows
     @Override
-    public Result<UserInfoVO> update(Long userId, String nickname, MultipartFile file, Integer gender, String hobby, String remark) {
+    public UserInfoVO update(Long userId, String nickname, MultipartFile file, Integer gender, String hobby, String remark) {
         UserInfo userInfo = getById(userId);
         if (userInfo == null) {
-            return Result.failMsg("用户不存在，请重试");
+            throw new BizException("用户不存在，请重试");
         }
         if (StringUtils.isEmpty(nickname)) {
-            return Result.failMsg("请输入昵称");
+            throw new BizException("请输入昵称");
         }
         Gender genderObj = Gender.valueOf(gender);
         if (genderObj == null) {
-            return Result.failMsg("请选择性别");
+            throw new BizException("请选择性别");
         }
         userInfo.setNickname(nickname);
         userInfo.setGender(genderObj.getValue());
@@ -346,26 +342,25 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         saveOrUpdate(userInfo);
         UserInfoVO userInfoVO = new UserInfoVO();
         BeanUtil.copyProperties(userInfo, userInfoVO);
-//            userInfoVO.setAvatar(fileUploadService.getImgPath(userInfoVO.getAvatar()));
         userInfoVO.setGenderText(genderObj.getText());
-        return Result.OK("保存成功", userInfoVO);
+        return userInfoVO;
     }
 
     /**
      * 获取单个用户详情
      */
     @Override
-    public Result<UserInfoVO> getUserInfoAndFansById(Long id) {
+    public UserInfoVO getUserInfoAndFansById(Long id) {
         // 先查 Redis 缓存
         String cacheKey = USER_INFO + id;
         Object cached = redisService.get(cacheKey);
         if (cached instanceof UserInfoVO) {
-            return Result.OK((UserInfoVO) cached);
+            return (UserInfoVO) cached;
         }
         // 缓存未命中，查 DB
         UserInfo userInfo = getById(id);
         if (userInfo == null) {
-            return Result.failMsg("用户不存在!");
+            throw new BizException("用户不存在!");
         }
         UserInfoVO userInfoVO = new UserInfoVO();
         BeanUtil.copyProperties(userInfo, userInfoVO);
@@ -377,7 +372,15 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         userInfoVO.setFansNum(fansNum);
         // 写入缓存，1小时过期
         redisService.set(cacheKey, userInfoVO, 3600L);
-        return Result.OK(userInfoVO);
+        return userInfoVO;
+    }
+
+    @Override
+    public UserInfoVO getUserProfile(Long targetId, Long currentUserId) {
+        UserInfoVO vo = getUserInfoAndFansById(targetId);
+        vo.setFollowed(currentUserId != null && !currentUserId.equals(targetId)
+                && followService.getDetail(currentUserId, targetId) != null);
+        return vo;
     }
 
     @Override
@@ -417,69 +420,80 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     }
 
     @Override
-    public Result getUserById(Integer id) {
+    public UserInfoVO getUserById(Integer id) {
         UserInfo userInfo = getById(id);
         if (userInfo == null) {
-            return Result.failMsg("用户不存在");
+            throw new BizException("用户不存在");
         }
         UserInfoVO userInfoVO = new UserInfoVO();
         BeanUtil.copyProperties(userInfo, userInfoVO);
-        return Result.OK(userInfoVO);
+        return userInfoVO;
     }
 
     @Override
-    public Result updateUser(UserInfo user) {
+    public void updateUser(UserInfo user) {
         Assert.isTrue(!Objects.equals(JwtUtil.getUserId(), user.id), "无权限！");
         baseMapper.updateById(user);
-        return Result.OK();
     }
 
     @Override
-    public Result deleteBatch(List<Integer> ids) {
+    public void deleteBatch(List<Integer> ids) {
         if (ids == null || ids.isEmpty()) {
-            return Result.failMsg("请选择要删除的用户");
+            throw new BizException("请选择要删除的用户");
         }
         removeByIds(ids);
-        return Result.OK();
     }
 
     @Override
-    public Result getCurrentUserInfo() {
+    public UserInfoVO getCurrentUserInfo() {
         Long userId = JwtUtil.getUserId();
         if (userId == null) {
-            return Result.failMsg("用户未登录");
+            throw new BizException("用户未登录");
         }
         UserInfo userInfo = getById(userId);
         if (userInfo == null) {
-            return Result.failMsg("用户不存在");
+            throw new BizException("用户不存在");
         }
         UserInfoVO userInfoVO = new UserInfoVO();
         BeanUtil.copyProperties(userInfo, userInfoVO);
-        return Result.OK(userInfoVO);
+        return userInfoVO;
     }
 
     @Override
-    public Result updatePassword(Map<String, String> map) {
+    public void updatePassword(Map<String, String> map) {
         Long userId = JwtUtil.getUserId();
         if (userId == null) {
-            return Result.failMsg("用户未登录");
+            throw new BizException("用户未登录");
         }
         String oldPwd = map.get("oldPassword");
         String newPwd = map.get("newPassword");
         if (oldPwd == null || newPwd == null) {
-            return Result.failMsg("参数不完整");
+            throw new BizException("参数不完整");
         }
         UserInfo userInfo = getById(userId);
         if (userInfo == null) {
-            return Result.failMsg("用户不存在");
+            throw new BizException("用户不存在");
         }
         PasswordEncoder encoder = new BCryptPasswordEncoder();
         if (!encoder.matches(oldPwd, userInfo.password)) {
-            return Result.failMsg("原密码不正确");
+            throw new BizException("原密码不正确");
         }
         userInfo.setPassword(encoder.encode(newPwd));
         saveOrUpdate(userInfo);
-        return Result.OKMsg("密码修改成功");
     }
 
+    @Override
+    public List<Map<String, Object>> searchUser(String keyword) {
+        LambdaQueryWrapper<UserInfo> qw = new LambdaQueryWrapper<UserInfo>()
+                .like(UserInfo::getNickname, keyword).or().like(UserInfo::getEmail, keyword)
+                .last("LIMIT 20");
+        List<UserInfo> list = list(qw);
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (UserInfo u : list) {
+            Map<String, Object> m = new HashMap<>();
+            m.put("id", u.getId()); m.put("nickname", u.getNickname()); m.put("avatar", u.getAvatar());
+            result.add(m);
+        }
+        return result;
+    }
 }

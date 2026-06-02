@@ -4,6 +4,7 @@ import com.love.product.entity.Tags;
 import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.req.TagPageReq;
+import com.love.product.entity.vo.TagVO;
 import com.love.product.service.TagsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -31,8 +32,8 @@ public class SysTagsController {
 
     @RequestMapping(value = "/webList",method = RequestMethod.GET)
     @ApiOperation(value = "标签列表(前端用)", httpMethod = "GET", response = Result.class, notes = "标签列表")
-    public Result webList(){
-        return tagsService.webList();
+    public Result<List<TagVO>> webList(){
+        return Result.OK(tagsService.webList());
     }
 
     @RequestMapping(value = "/list",method = RequestMethod.POST)
@@ -43,32 +44,36 @@ public class SysTagsController {
 
     @RequestMapping(value = "/add",method = RequestMethod.POST)
     @ApiOperation(value = "新增标签", httpMethod = "POST", response = Result.class, notes = "新增标签")
-    public Result insert(@RequestBody Tags tags){
-        return tagsService.insertTag(tags);
+    public Result<?> insert(@RequestBody Tags tags){
+        tagsService.insertTag(tags);
+        return Result.OK();
     }
 
     @RequestMapping(value = "/info",method = RequestMethod.GET)
     @ApiOperation(value = "标签详情", httpMethod = "GET", response = Result.class, notes = "标签详情")
-    public Result getTagsById(Long id){
-        return tagsService.getTagsById(id);
+    public Result<Tags> getTagsById(Long id){
+        return Result.OK(tagsService.getTagsById(id));
     }
 
     @RequestMapping(value = "/update",method = RequestMethod.POST)
     @ApiOperation(value = "修改标签", httpMethod = "POST", response = Result.class, notes = "修改标签")
-    public Result update(@RequestBody Tags tags){
-        return tagsService.updateTag(tags);
+    public Result<?> update(@RequestBody Tags tags){
+        tagsService.updateTag(tags);
+        return Result.OK();
     }
 
     @RequestMapping(value = "/remove",method = RequestMethod.DELETE)
     @ApiOperation(value = "删除标签", httpMethod = "DELETE", response = Result.class, notes = "删除标签")
-    public Result deleteById(Long  id){
-        return tagsService.deleteById(id);
+    public Result<?> deleteById(Long  id){
+        tagsService.deleteById(id);
+        return Result.OK();
     }
 
     @RequestMapping(value = "/deleteBatch",method = RequestMethod.DELETE)
     @ApiOperation(value = "批量删除标签", httpMethod = "DELETE", response = Result.class, notes = "批量删除标签")
-    public Result deleteBatch(@RequestBody List<Long> ids){
-        return tagsService.deleteBatch(ids);
+    public Result<?> deleteBatch(@RequestBody List<Long> ids){
+        tagsService.deleteBatch(ids);
+        return Result.OK();
     }
 
 }

@@ -2,7 +2,6 @@ package com.love.product.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.love.product.entity.Friend;
-import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.req.FriendPageReq;
 
@@ -14,9 +13,9 @@ import com.love.product.entity.req.FriendPageReq;
  */
 
 public interface FriendService extends IService<Friend> {
-    Result addFriend(Long friendUserId);
+    void addFriend(Long friendUserId);
 
     ResultPage getFriendList(Long userId, FriendPageReq friendPageReq);
 
-    Result deleteFriend(Long friendUserId);
+    void deleteFriend(Long friendUserId);
 }

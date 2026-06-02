@@ -73,7 +73,8 @@ public class LoginController {
     @GetMapping("/code")
     public Result<?> sendCode(@RequestParam("email") String email,
                               @RequestParam("type") String type) {
-        return userInfoService.sendCode(email, type);
+        userInfoService.sendCode(email, type);
+        return Result.OKMsg("验证码已发送，请查收！");
     }
 
     @ApiOperation(value = "账密登录", notes = "账密登录")
@@ -84,7 +85,7 @@ public class LoginController {
     ) {
         log.info(String.valueOf(loginVO));
         verifyCaptcha(loginVO.verKey,loginVO.verCode);
-        return userInfoService.login(loginVO);
+        return Result.OK(userInfoService.login(loginVO));
     }
 
     @ApiOperation(value = "用户注册", notes = "用户注册")
@@ -92,7 +93,7 @@ public class LoginController {
     @PostMapping("/userRegister")
     public Result<UserInfoVO> userRegister(@RequestBody @Validated RegisterVO registerVO) {
         verifyCaptcha(registerVO.verKey,registerVO.verCode);
-        return userInfoService.userRegister(registerVO);
+        return Result.OK(userInfoService.userRegister(registerVO));
     }
 
     @ApiOperation(value = "用户退出登录", notes = "用户退出登录")

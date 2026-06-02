@@ -6,9 +6,9 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.love.product.config.BizException;
 import com.love.product.entity.Friend;
 import com.love.product.entity.UserInfo;
-import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.req.FriendPageReq;
 import com.love.product.entity.vo.FollowVO;
@@ -41,15 +41,17 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
     @Resource
     private UserInfoService userInfoService;
     @Override
-    public Result addFriend(Long friendUserId) {
+    public void addFriend(Long friendUserId) {
         UserInfo userInfo = userInfoService.getById(friendUserId);
-        if(userInfo != null){
-            Friend friend =  Friend.builder()
-                    .userId(JwtUtil.getUserId())
-                    .friendId(userInfo.id)
-                    .status(0)
-                    .build();
-            friend.setDeleted(0);
+        if(userInfo == null){
+            throw new BizException("用户不存在");
+        }
+        Friend friend =  Friend.builder()
+                .userId(JwtUtil.getUserId())
+                .friendId(userInfo.id)
+                .status(0)
+                .build();
+        friend.setDeleted(0);
      Friend row=  baseMapper.selectOne(new QueryWrapper<Friend>()
              .eq("friend_id",userInfo.id)
                   .eq(("user_id"),JwtUtil.getUserId()).last("limit 1"));
@@ -57,10 +59,6 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
             if(row==null) {
                 baseMapper.add(friend);
             }
-            return Result.OK();
-        }else{
-            return Result.failMsg("用户不存在");
-        }
     }
 
     @Override
@@ -117,17 +115,15 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
      * @return
      */
     @Override
-    public Result deleteFriend(Long friendUserId) {
+    public void deleteFriend(Long friendUserId) {
         Long id=JwtUtil.getUserId();
         LambdaUpdateWrapper<Friend> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
         lambdaUpdateWrapper.eq(Friend::getUserId,id)
                 .eq(Friend::getFriendId, friendUserId)
                 .set(Friend::getStatus, 1);
         boolean success = update(lambdaUpdateWrapper);
-        if (success) {
-            return Result.OK();
-        } else {
-            return Result.failMsg("删除失败！");
+        if (!success) {
+            throw new BizException("删除失败！");
         }
     }
 }

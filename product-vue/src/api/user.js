@@ -31,3 +31,13 @@ export function sendEmailCode(email, type) {
 export function registerUser(params) {
   return request.post('/login/userRegister', params)
 }
+
+// 搜索用户
+export function searchUser(keyword) {
+  return request.get('/user/search', { params: { keyword } })
+}
+
+// 查看用户主页
+export function getUserProfile(id) {
+  return request.get('/user/profile', { params: { id } })
+}

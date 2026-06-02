@@ -26,8 +26,9 @@ public class SysReportController {
     private ReportService reportService;
     @PostMapping(value = "/add")
     @ApiOperation(value = "添加反馈", httpMethod = "POST", response = Result.class, notes = "添加反馈")
-    public Result addFeedback(@RequestBody Report feedBack) {
-        return  reportService.insertFeedback(feedBack);
+    public Result<?> addFeedback(@RequestBody Report feedBack) {
+        reportService.insertFeedback(feedBack);
+        return Result.OK();
     }
     @PostMapping(value = "/list")
     @ApiOperation(value = "反馈列表", httpMethod = "POST", response = Result.class, notes = "反馈列表")
@@ -36,13 +37,15 @@ public class SysReportController {
     }
     @DeleteMapping(value = "/delete")
     @ApiOperation(value = "删除反馈", httpMethod = "POST", response = Result.class, notes = "修改文章")
-    public Result delete(Long id) {
-        return reportService.deleteReport(id);
+    public Result<?> delete(Long id) {
+        reportService.deleteReport(id);
+        return Result.OK();
     }
     @DeleteMapping(value = "/deleteBatch")
     @ApiOperation(value = "删除反馈", httpMethod = "DELETE", response = Result.class, notes = "删除反馈")
-    public Result deleteBatch(@RequestBody List<Long> ids) {
-        return reportService.deleteBatch(ids);
+    public Result<?> deleteBatch(@RequestBody List<Long> ids) {
+        reportService.deleteBatch(ids);
+        return Result.OK();
     }
 
 }

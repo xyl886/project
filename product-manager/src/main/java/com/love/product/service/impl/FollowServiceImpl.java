@@ -5,9 +5,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.love.product.constant.RedisKeyConstant;
+import com.love.product.config.BizException;
 import com.love.product.entity.Follow;
 import com.love.product.entity.UserInfo;
-import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.req.FollowPageReq;
 import com.love.product.entity.vo.FollowVO;
@@ -17,6 +17,7 @@ import com.love.product.enums.Role;
 import com.love.product.enums.YesOrNo;
 import com.love.product.mapper.FollowMapper;
 import com.love.product.service.FollowService;
+import com.love.product.service.NotificationService;
 import com.love.product.service.RedisService;
 import com.love.product.service.UserInfoService;
 import lombok.extern.slf4j.Slf4j;
@@ -42,33 +43,32 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
     private FollowMapper followMapper;
     @Resource
     private RedisService redisService;
+    @Resource
+    private NotificationService notificationService;
 
     @Override
-    public Result<?> add(Long userId, Long beFollowedUserId,Integer deleted) {
+    public void add(Long userId, Long beFollowedUserId,Integer deleted) {
         UserInfo userInfo = userInfoService.getById(beFollowedUserId);
         YesOrNo yesOrNo = YesOrNo.fromValue(deleted);
         if(yesOrNo == null){
             yesOrNo = YesOrNo.NO;
         }
-        if(userInfo != null){
-            LocalDateTime now = LocalDateTime.now();
-            Follow follow = new Follow();
-            follow.setUserId(userId);
-            follow.setBeFollowedUserId(userInfo.id);
-            follow.setDeleted(yesOrNo.getValue());
-            follow.setCreateTime(now);
-            follow.setUpdateTime(now);
-            followMapper.add(follow);
-            //清除redis缓存
-            redisService.del(RedisKeyConstant.FOLLOW_FOLLOWING + userId);
-            redisService.del(RedisKeyConstant.FOLLOW_FANS + beFollowedUserId);
-            if(yesOrNo.equals(YesOrNo.YES)){
-                return Result.OKMsg("已取消关注");
-            }else{
-                return Result.OKMsg("关注成功");
-            }
-        }else{
-            return Result.failMsg("关注的对象不存在");
+        if(userInfo == null){
+            throw new BizException("关注的对象不存在");
+        }
+        LocalDateTime now = LocalDateTime.now();
+        Follow follow = new Follow();
+        follow.setUserId(userId);
+        follow.setBeFollowedUserId(userInfo.id);
+        follow.setDeleted(yesOrNo.getValue());
+        follow.setCreateTime(now);
+        follow.setUpdateTime(now);
+        followMapper.add(follow);
+        //清除redis缓存
+        redisService.del(RedisKeyConstant.FOLLOW_FOLLOWING + userId);
+        redisService.del(RedisKeyConstant.FOLLOW_FANS + beFollowedUserId);
+        if(!yesOrNo.equals(YesOrNo.YES)){
+            notificationService.notify(beFollowedUserId, userId, 4, "关注了你", null, null);
         }
     }
 

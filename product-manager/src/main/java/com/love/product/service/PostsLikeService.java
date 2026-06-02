@@ -2,7 +2,6 @@ package com.love.product.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.love.product.entity.PostsLike;
-import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.dto.LikeCountDTO;
 import com.love.product.entity.req.HistoryPageReq;
@@ -69,7 +68,7 @@ public interface PostsLikeService extends IService<PostsLike> {
      */
     List<LikeCountDTO> getLikeCountFromRedis();
 
-    Result<?> add(Long userId, Long postsId, Integer deleted);
+    void add(Long userId, Long postsId, Integer deleted);
 
     PostsLike getDetail(Long userId, Long postsId);
 
@@ -77,9 +76,9 @@ public interface PostsLikeService extends IService<PostsLike> {
 
     ResultPage<HistoryVO> getPage(Long userId, HistoryPageReq pageQuery);
 
-    Result<?> like(Long postsId, Long userId);
+    void like(Long postsId, Long userId);
 
-    Result<?> dislike(Long infoId, Long userId);
+    void dislike(Long infoId, Long userId);
 
     void transLikeFromRedisToMysql();
 

@@ -2,9 +2,11 @@ package com.love.product.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.love.product.entity.ChatMessage;
-import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
+import com.love.product.entity.dto.ChatMessageDTO;
 import com.love.product.entity.req.FriendPageReq;
+
+import java.util.List;
 
 /**
  * @PackageName: com.love.product.service.impl
@@ -14,14 +16,15 @@ import com.love.product.entity.req.FriendPageReq;
  */
 
 public interface ChatMessageService extends IService<ChatMessage> {
-    Result<?> listMessages(Long formId, Long toId);
-    Result<?> remove(Long Id,Long fromId, Long toId);
+    List<ChatMessageDTO> listMessages(Long formId, Long toId);
+    boolean canSendMessage(Long fromId, Long toId);
+    void remove(Long Id, Long fromId, Long toId);
 
     void sendChatMessage(ChatMessage chatMessage);
 
-    Result addFriend(Long friendUserId);
+    void addFriend(Long friendUserId);
 
     ResultPage getFriendList(Long id, FriendPageReq friendPageReq);
 
-    Result deleteFriend(Long friendUserId);
+    void deleteFriend(Long friendUserId);
 }

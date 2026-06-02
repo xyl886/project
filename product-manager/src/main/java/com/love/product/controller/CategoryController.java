@@ -31,38 +31,42 @@ public class CategoryController {
 
     @PostMapping("/listAll")
     @ApiOperation(value = "分类列表", httpMethod = "POST", response = Result.class, notes = "分类列表")
-    public ResultPage<CategoryVO> listAll(@RequestBody CategoryPageReq categoryPageReq){
+    public ResultPage<CategoryVO> listAll(@RequestBody CategoryPageReq categoryPageReq) {
         return categoryService.listAll(categoryPageReq);
     }
 
     @GetMapping("/info")
     @ApiOperation(value = "分类详情", httpMethod = "GET", response = Result.class, notes = "分类详情")
-    public Result getCategoryById(@RequestParam() Long id){
+    public Result<String> getCategoryById(@RequestParam() Long id) {
         return Result.OK(categoryService.getCategoryById(id));
     }
 
-    @RequestMapping(value = "/add",method = RequestMethod.POST)
+    @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation(value = "新增分类", httpMethod = "POST", response = Result.class, notes = "新增分类")
-    public Result insertCategory(@RequestBody Category category){
-        return categoryService.insertCategory(category);
+    public Result<?> insertCategory(@RequestBody Category category) {
+        categoryService.insertCategory(category);
+        return Result.OKMsg("添加成功！");
     }
 
-    @RequestMapping(value = "/update",method = RequestMethod.POST)
+    @RequestMapping(value = "/update", method = RequestMethod.POST)
     @ApiOperation(value = "修改分类", httpMethod = "POST", response = Result.class, notes = "修改分类")
-    public Result update(@RequestBody CategoryDTO categoryDTO){
-        return categoryService.updateCategory(categoryDTO);
+    public Result<?> update(@RequestBody CategoryDTO categoryDTO) {
+        categoryService.updateCategory(categoryDTO);
+        return Result.OKMsg("修改成功！");
     }
 
-    @RequestMapping(value = "/delete",method = RequestMethod.DELETE)
+    @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
     @ApiOperation(value = "删除分类", httpMethod = "DELETE", response = Result.class, notes = "删除分类")
-    public Result deleteCategory(Integer id){
-        return categoryService.deleteCategory(id);
+    public Result<?> deleteCategory(Integer id) {
+        categoryService.deleteCategory(id);
+        return Result.OKMsg("成功删除！");
     }
 
-    @RequestMapping(value = "/deleteBatch",method = RequestMethod.DELETE)
+    @RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
     @ApiOperation(value = "批量删除分类", httpMethod = "DELETE", response = Result.class, notes = "批量删除分类")
-    public Result deleteBatch(@RequestBody List<Category> list){
-        return categoryService.deleteBatch(list);
+    public Result<?> deleteBatch(@RequestBody List<Category> list) {
+        categoryService.deleteBatch(list);
+        return Result.OKMsg("成功删除！");
     }
 
 

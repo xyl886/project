@@ -27,13 +27,21 @@ export const useUserStore = defineStore('user', () => {
     if (res.code === 200) {
       token.value = res.data.accessToken
       userInfo.value = res.data
+      localStorage.setItem('userId', res.data.id)
+      localStorage.setItem('nickname', res.data.nickname || '')
     }
     return res
   }
 
   async function fetchUserInfo() {
     const res = await fetchUserDetail()
-    if (res.code === 200) userInfo.value = res.data
+    if (res.code === 200) {
+      userInfo.value = res.data
+      if (res.data.id) {
+        localStorage.setItem('userId', res.data.id)
+        localStorage.setItem('nickname', res.data.nickname || '')
+      }
+    }
     return res
   }
 

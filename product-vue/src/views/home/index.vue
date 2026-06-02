@@ -18,9 +18,9 @@
       <div v-loading="loading" style="min-height:200px">
         <div v-for="item in posts" :key="item.id" class="post-card" @click="goPost(item.id)">
           <div class="post-header">
-            <el-avatar :size="32" :src="item.userInfo?.avatar">{{ (item.userInfo?.nickname || '?')[0] }}</el-avatar>
+            <el-avatar :size="32" :src="item.userInfo?.avatar" style="cursor:pointer" @click.stop="$router.push(`/user/${item.userId}`)">{{ (item.userInfo?.nickname || '?')[0] }}</el-avatar>
             <div class="post-user">
-              <span class="post-nickname">{{ item.userInfo?.nickname || '匿名' }}</span>
+              <span class="post-nickname" style="cursor:pointer" @click.stop="$router.push(`/user/${item.userId}`)">{{ item.userInfo?.nickname || '匿名' }}</span>
               <span class="post-time">{{ item.createTime }}</span>
             </div>
             <el-tag v-if="item.categoryName" size="small" effect="plain" round>{{ item.categoryName }}</el-tag>

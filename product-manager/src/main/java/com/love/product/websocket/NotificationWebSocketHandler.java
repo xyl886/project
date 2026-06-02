@@ -1,5 +1,6 @@
 package com.love.product.websocket;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import org.slf4j.Logger;
@@ -20,12 +21,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class NotificationWebSocketHandler extends TextWebSocketHandler {
 
     private static final Logger log = LoggerFactory.getLogger(NotificationWebSocketHandler.class);
-    // userId -> WebSocketSession
     private static final Map<Long, WebSocketSession> userSessions = new ConcurrentHashMap<>();
 
-    /**
-     * 连接建立后，用 userId 标识会话
-     */
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
         Long userId = extractUserId(session);
@@ -37,7 +34,6 @@ public class NotificationWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) {
-        // 前端可能发心跳或聊天消息
         String payload = message.getPayload();
         try {
             JSONObject json = JSON.parseObject(payload);
@@ -45,7 +41,6 @@ public class NotificationWebSocketHandler extends TextWebSocketHandler {
             if ("ping".equals(type)) {
                 session.sendMessage(new TextMessage("{\"type\":\"pong\"}"));
             } else if ("chat".equals(type)) {
-                // 转发私信
                 Long toUserId = json.getLong("toUserId");
                 WebSocketSession toSession = userSessions.get(toUserId);
                 if (toSession != null && toSession.isOpen()) {
@@ -66,9 +61,6 @@ public class NotificationWebSocketHandler extends TextWebSocketHandler {
         }
     }
 
-    /**
-     * 向指定用户推送通知
-     */
     public static void sendNotification(Long userId, String title, String content, int type) {
         WebSocketSession session = userSessions.get(userId);
         if (session != null && session.isOpen()) {
@@ -85,9 +77,6 @@ public class NotificationWebSocketHandler extends TextWebSocketHandler {
         }
     }
 
-    /**
-     * 向指定用户推送私信
-     */
     public static void sendChatMessage(Long toUserId, Long fromUserId, String fromNickname, String message) {
         WebSocketSession session = userSessions.get(toUserId);
         if (session != null && session.isOpen()) {
@@ -106,6 +95,17 @@ public class NotificationWebSocketHandler extends TextWebSocketHandler {
 
     private Long extractUserId(WebSocketSession session) {
         String query = session.getUri() != null ? session.getUri().getQuery() : "";
+        // 优先用 token 换取 userId
+        if (query != null && query.contains("token=")) {
+            try {
+                String token = query.split("token=")[1].split("&")[0];
+                Object loginId = StpUtil.getLoginIdByToken(token);
+                if (loginId != null) return Long.valueOf(loginId.toString());
+            } catch (Exception e) {
+                log.warn("通过 token 获取 userId 失败", e);
+            }
+        }
+        // 兼容旧版：直接传 userId
         if (query != null && query.contains("userId=")) {
             try {
                 return Long.parseLong(query.split("userId=")[1].split("&")[0]);
@@ -113,7 +113,6 @@ public class NotificationWebSocketHandler extends TextWebSocketHandler {
                 log.warn("提取 userId 失败: {}", query);
             }
         }
-        // 尝试从 session 属性获取
         Object userId = session.getAttributes().get("userId");
         return userId instanceof Long ? (Long) userId : null;
     }

@@ -1,9 +1,8 @@
 package com.love.product.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.love.product.entity.ChatMessage;
 import com.love.product.entity.Message;
-import com.love.product.entity.base.Result;
+import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.dto.MessageDTO;
 import com.love.product.entity.req.MessagePageReq;
 
@@ -18,15 +17,15 @@ import java.util.List;
 
 public interface MessageService extends IService<Message> {
 
-    Result listMessage(MessagePageReq messagePageReq);
+    ResultPage listMessage(MessagePageReq messagePageReq);
 
-    Result passBatch(List<Integer> ids);
+    void passBatch(List<Integer> ids);
 
-    Result deleteMessageById(int id);
+    void deleteMessageById(int id);
 
-    Result deleteBatch(List<Integer> ids);
+    void deleteBatch(List<Integer> ids);
 
-    Result insertMessage(MessageDTO messageDTO);
+    void insertMessage(MessageDTO messageDTO);
 
-    Result selectMessageList();
+    List<MessageDTO> selectMessageList();
 }

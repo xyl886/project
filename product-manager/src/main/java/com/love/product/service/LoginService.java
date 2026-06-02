@@ -1,7 +1,7 @@
 package com.love.product.service;
 
-import com.love.product.entity.base.Result;
 import com.love.product.entity.dto.LoginDTO;
+import com.love.product.entity.vo.UserInfoVO;
 
 /**
  * @PackageName: com.love.product.service
@@ -11,5 +11,5 @@ import com.love.product.entity.dto.LoginDTO;
  */
 
 public interface LoginService {
-    Result login(LoginDTO vo);
+    UserInfoVO login(LoginDTO vo);
 }

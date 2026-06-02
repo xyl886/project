@@ -30,12 +30,14 @@ public class SysCommentController {
     }
     @DeleteMapping(value = "/delete")
     @ApiOperation(value = "删除评论", httpMethod = "POST", response = Result.class, notes = "修改文章")
-    public Result delete(@RequestParam("id") Long id) {
-        return postsCommentService.deleteComment(id);
+    public Result<?> delete(@RequestParam("id") Long id) {
+        postsCommentService.deleteComment(id);
+        return Result.OK();
     }
     @RequestMapping(value = "/deleteBatch",method = RequestMethod.DELETE)
     @ApiOperation(value = "批量删除评论", httpMethod = "DELETE", response = Result.class, notes = "批量删除评论")
-    public Result deleteBatch(@RequestBody List<Long> ids){
-        return postsCommentService.deleteBatch(ids);
+    public Result<?> deleteBatch(@RequestBody List<Long> ids){
+        postsCommentService.deleteBatch(ids);
+        return Result.OK();
     }
 }

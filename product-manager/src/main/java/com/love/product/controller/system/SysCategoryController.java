@@ -24,18 +24,21 @@ public class SysCategoryController {
     private CategoryService categoryService;
     @PostMapping(value = "/update")
     @ApiOperation(value = "修改or新增分类", httpMethod = "POST", response = Result.class, notes = "修改文章")
-    public Result update(@RequestBody CategoryDTO categoryDTO) {
-        return categoryService.updateCategory(categoryDTO);
+    public Result<?> update(@RequestBody CategoryDTO categoryDTO) {
+        categoryService.updateCategory(categoryDTO);
+        return Result.OK();
     }
     @PostMapping(value = "/delete")
     @ApiOperation(value = "删除分类", httpMethod = "POST", response = Result.class, notes = "修改文章")
-    public Result delete(Integer id) {
-        return categoryService.deleteCategory(id);
+    public Result<?> delete(Integer id) {
+        categoryService.deleteCategory(id);
+        return Result.OK();
     }
     @RequestMapping(value = "/deleteBatch")
     @ApiOperation(value = "批量删除分类", httpMethod = "POST", response = Result.class, notes = "批量删除分类")
-    public Result deleteBatch(@RequestBody List<Category> list){
-        return categoryService.deleteBatch(list);
+    public Result<?> deleteBatch(@RequestBody List<Category> list){
+        categoryService.deleteBatch(list);
+        return Result.OK();
     }
 
 }

@@ -25,16 +25,16 @@ public class DruidConfig {
         servletRegistrationBean.addInitParameter("loginUsername", "druid_admin"); // 用户名
         servletRegistrationBean.addInitParameter("loginPassword", System.getenv("DRUID_PASSWORD") != null ? System.getenv("DRUID_PASSWORD") : "Druid@2024!"); // 密码
         servletRegistrationBean.addInitParameter("resetEnable", "false"); // 是否可以重置数据源
-        return servletRegistrationBean ;
+        return servletRegistrationBean;
     }
 
     @Bean
     public FilterRegistrationBean filterRegistrationBean() {
-        FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean() ;
+        FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
         filterRegistrationBean.setFilter(new WebStatFilter());
         filterRegistrationBean.addUrlPatterns("/*"); // 所有请求进行监控处理
         filterRegistrationBean.addInitParameter("exclusions", "*.js,*.gif,*.jpg,*.css,/druid/*");
-        return filterRegistrationBean ;
+        return filterRegistrationBean;
     }
 
     @Bean

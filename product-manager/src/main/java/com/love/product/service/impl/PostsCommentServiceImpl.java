@@ -6,10 +6,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.love.product.config.BizException;
 import com.love.product.entity.CommentLike;
 import com.love.product.entity.Posts;
 import com.love.product.entity.PostsComment;
-import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.req.CommentPageReq;
 import com.love.product.entity.vo.CommentVO;
@@ -27,6 +27,7 @@ import com.love.product.service.PostsService;
 import com.love.product.service.UserInfoService;
 import com.love.product.util.JwtUtil;
 import com.love.product.util.XssUtils;
+import com.love.product.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -55,33 +56,39 @@ public class PostsCommentServiceImpl extends ServiceImpl<PostsCommentMapper, Pos
     private UserInfoService userInfoService;
     @Resource
     private CommentLikeMapper commentLikeMapper;
+    @Resource
+    private NotificationService notificationService;
     @Override
-    public Result<?> add(Long userId, Long postsId, String content, Long parentCommentId) {
+    public void add(Long userId, Long postsId, String content, Long parentCommentId) {
         log.info(content);
         Posts posts = postsService.getById(postsId);
-        if(posts != null && !posts.getStatus().equals(YesOrNo.YES.getValue())){
-            PostsComment comment = new PostsComment();
-            comment.setUserId(userId);
-            comment.setPostsId(posts.getId());
-            comment.setContent(XssUtils.filter(content));
-            if (parentCommentId != null) {
-                comment.setParentId(parentCommentId);
-                PostsComment parent = getById(parentCommentId);
-                if (parent != null) {
-                }
-            }
-            save(comment);
-            int commentNum = posts.getCommentNum();
-            commentNum = commentNum + 1;
-            if(commentNum < 0){
-                commentNum = 0;
-            }
-            posts.setCommentNum(commentNum);
-            //更新评论数
-            postsService.saveOrUpdate(posts);
-            return Result.OK("评论成功",comment);
-        }else{
-            return Result.failMsg("帖子不存在或已下架");
+        if(posts == null || posts.getStatus().equals(YesOrNo.YES.getValue())){
+            throw new BizException("帖子不存在或已下架");
+        }
+        PostsComment comment = new PostsComment();
+        comment.setUserId(userId);
+        comment.setPostsId(posts.getId());
+        comment.setContent(XssUtils.filter(content));
+        if (parentCommentId != null) {
+            comment.setParentId(parentCommentId);
+        }
+        save(comment);
+        int commentNum = posts.getCommentNum();
+        commentNum = commentNum + 1;
+        if(commentNum < 0){
+            commentNum = 0;
+        }
+        posts.setCommentNum(commentNum);
+        //更新评论数
+        postsService.saveOrUpdate(posts);
+        //通知帖子作者
+        if (!posts.getUserId().equals(userId))
+            notificationService.notify(posts.getUserId(), userId, 2, "评论了你的帖子", postsId, 1);
+        //通知被回复的人
+        if (parentCommentId != null) {
+            PostsComment parent = getById(parentCommentId);
+            if (parent != null && !parent.getUserId().equals(userId))
+                notificationService.notify(parent.getUserId(), userId, 3, "回复了你的评论", parentCommentId, 2);
         }
     }
 
@@ -97,7 +104,7 @@ public class PostsCommentServiceImpl extends ServiceImpl<PostsCommentMapper, Pos
                 .collect(Collectors.toMap(CommentLike::getCommentId, Function.identity()));
     }
     @Override
-    public Result<List<PostsCommentVO>> listByPostsId(Long postsId) {
+    public List<PostsCommentVO> listByPostsId(Long postsId) {
         List<PostsCommentVO> commentVOS = new ArrayList<>();
         LambdaQueryWrapper<PostsComment> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(PostsComment::getPostsId,postsId)
@@ -128,35 +135,32 @@ public class PostsCommentServiceImpl extends ServiceImpl<PostsCommentMapper, Pos
                 VO.setLike(true);
             }
         });
-        return Result.OK(commentVOS);
+        return commentVOS;
     }
 
     @Override
-    public Result<?> del(Long userId, Long id) {
+    public void del(Long userId, Long id) {
         PostsComment comment = getById(id);
-        if(comment != null){
-            if(comment.getUserId().equals(userId)){
-                removeById(id);
-                Posts posts = postsService.getById(comment.getPostsId());
-                int commentNum = posts.getCommentNum();
-                commentNum = commentNum - 1;
-                if(commentNum < 0){
-                    commentNum = 0;
-                }
-                posts.setCommentNum(commentNum);
-                //更新评论数
-                postsService.saveOrUpdate(posts);
-                return Result.OK("删除成功",comment);
-            }else{
-                return Result.failMsg("抱歉，您无权操作");
-            }
-        }else{
-            return Result.failMsg("评论不存在或已删除");
+        if(comment == null){
+            throw new BizException("评论不存在或已删除");
         }
+        if(!comment.getUserId().equals(userId)){
+            throw new BizException("抱歉，您无权操作");
+        }
+        removeById(id);
+        Posts posts = postsService.getById(comment.getPostsId());
+        int commentNum = posts.getCommentNum();
+        commentNum = commentNum - 1;
+        if(commentNum < 0){
+            commentNum = 0;
+        }
+        posts.setCommentNum(commentNum);
+        //更新评论数
+        postsService.saveOrUpdate(posts);
     }
 
     @Override
-    public Result<?> addCommentLike(Long userId, Long commentId, Integer deleted) {
+    public void addCommentLike(Long userId, Long commentId, Integer deleted) {
         PostsComment comment = getById(commentId);
         YesOrNo yesOrNo = YesOrNo.valueOf(deleted);
         if(yesOrNo == null){
@@ -182,10 +186,8 @@ public class PostsCommentServiceImpl extends ServiceImpl<PostsCommentMapper, Pos
         }else {
             commentLikeMapper.insert(like);
         }
-        String msg = "点赞成功";
         if(yesOrNo.equals(YesOrNo.YES)){
             comment.likeNum -= 1;
-            msg = "已取消点赞";
         }else {
             comment.likeNum += 1;
         }
@@ -194,7 +196,6 @@ public class PostsCommentServiceImpl extends ServiceImpl<PostsCommentMapper, Pos
             comment.likeNum=0;
         }
         saveOrUpdate(comment);
-        return Result.OKMsg(msg);
     }
     @Override
     public ResultPage<CommentVO> listComment(CommentPageReq commentPageReq) {
@@ -207,28 +208,25 @@ public class PostsCommentServiceImpl extends ServiceImpl<PostsCommentMapper, Pos
         return ResultPage.OK(Page.getTotal(), Page.getCurrent(), Page.getSize(), list);
     }
     @Override
-    public Result<?> deleteComment(Long id) {
+    public void deleteComment(Long id) {
         PostsComment comment = getById(id);
-        if(comment != null){
-                removeById(id);
-                Posts posts = postsService.getById(comment.getPostsId());
-                int commentNum = posts.getCommentNum();
-                commentNum = commentNum - 1;
-                if(commentNum < 0){
-                    commentNum = 0;
-                }
-                posts.setCommentNum(commentNum);
-                //更新评论数
-                postsService.saveOrUpdate(posts);
-                return Result.OK("删除成功",comment);
-        }else{
-            return Result.failMsg("评论不存在或已删除");
+        if(comment == null){
+            throw new BizException("评论不存在或已删除");
         }
+        removeById(id);
+        Posts posts = postsService.getById(comment.getPostsId());
+        int commentNum = posts.getCommentNum();
+        commentNum = commentNum - 1;
+        if(commentNum < 0){
+            commentNum = 0;
+        }
+        posts.setCommentNum(commentNum);
+        //更新评论数
+        postsService.saveOrUpdate(posts);
     }
 
     @Override
-    public Result deleteBatch(List<Long> ids) {
+    public void deleteBatch(List<Long> ids) {
         baseMapper.deleteBatchIds(ids);
-        return Result.OK();
     }
 }

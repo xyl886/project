@@ -8,7 +8,6 @@ import com.love.product.config.BizException;
 import com.love.product.entity.ChatMessage;
 import com.love.product.entity.Friend;
 import com.love.product.entity.UserInfo;
-import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.dto.ChatMessageDTO;
 import com.love.product.entity.req.FriendPageReq;
@@ -54,29 +53,23 @@ public class ChatMessageServiceImpl extends ServiceImpl<ChatMessageMapper, ChatM
     }
 
     @Override
-    public Result addFriend(Long friendUserId) {
+    public void addFriend(Long friendUserId) {
         UserInfo userInfo = userInfoService.getById(friendUserId);
-        YesOrNo yesOrNo = YesOrNo.fromValue(0);
-        if(yesOrNo == null){
-            yesOrNo = YesOrNo.NO;
+        if(userInfo == null){
+            throw new BizException("用户不存在");
         }
-        if(userInfo != null){
-            LocalDateTime now = LocalDateTime.now();
-            Friend follow = new Friend();
-            follow.setUserId(JwtUtil.getUserId());
-            follow.setFriendId(userInfo.id);
-            follow.setDeleted(yesOrNo.getValue());
-            follow.setCreateTime(now);
-            follow.setUpdateTime(now);
-            friendMapper.add(follow);
-            return Result.OKMsg("操作成功");
-        }else{
-            return Result.failMsg("用户不存在");
-        }
+        LocalDateTime now = LocalDateTime.now();
+        Friend follow = new Friend();
+        follow.setUserId(JwtUtil.getUserId());
+        follow.setFriendId(userInfo.id);
+        follow.setDeleted(YesOrNo.NO.getValue());
+        follow.setCreateTime(now);
+        follow.setUpdateTime(now);
+        friendMapper.add(follow);
     }
 
     @Override
-    public ResultPage getFriendList(Long id, FriendPageReq friendPageReq) {
+    public ResultPage<?> getFriendList(Long id, FriendPageReq friendPageReq) {
         LambdaQueryWrapper<Friend> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Objects.equals(friendPageReq.getFollowType(), 1), Friend::getUserId, id);
         queryWrapper.eq(Objects.equals(friendPageReq.getFollowType(), 2), Friend::getFriendId, id);
@@ -86,24 +79,23 @@ public class ChatMessageServiceImpl extends ServiceImpl<ChatMessageMapper, ChatM
     }
 
     @Override
-    public Result deleteFriend(Long friendUserId) {
+    public void deleteFriend(Long friendUserId) {
         LambdaQueryWrapper<Friend> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Friend::getUserId, JwtUtil.getUserId())
                 .eq(Friend::getFriendId, friendUserId);
         friendMapper.delete(queryWrapper);
-        return Result.OKMsg("删除好友成功");
     }
 
     @Override
-    public Result<List<ChatMessageDTO>> listMessages(Long fromId, Long toId) {
+    public List<ChatMessageDTO> listMessages(Long fromId, Long toId) {
         List<ChatMessageDTO> messages=chatMessageMapper.listMessages(fromId,toId);
         messages.forEach(message -> message.setSentByMe(message.getFromId().equals(fromId)));
         log.info(messages.toString());
-        return Result.OK(messages);
+        return messages;
     }
 
     @Override
-    public Result<?> remove(Long Id, Long fromId, Long toId) {
+    public void remove(Long Id, Long fromId, Long toId) {
         remove((Wrappers
                 .<ChatMessage>lambdaQuery()
                 .and(q -> q
@@ -116,6 +108,13 @@ public class ChatMessageServiceImpl extends ServiceImpl<ChatMessageMapper, ChatM
                         .eq(ChatMessage::getToId, fromId)
                         .eq(ChatMessage::getId,Id)
                 )));
-        return Result.OK();
+    }
+    @Override
+    public boolean canSendMessage(Long fromId, Long toId) {
+        long count = lambdaQuery().eq(ChatMessage::getFromId, fromId).eq(ChatMessage::getToId, toId).count();
+        if (count == 0) return true;
+        long replyCount = lambdaQuery().eq(ChatMessage::getFromId, toId).eq(ChatMessage::getToId, fromId).count();
+        if (replyCount > 0) return true;
+        return count < 1;
     }
 }

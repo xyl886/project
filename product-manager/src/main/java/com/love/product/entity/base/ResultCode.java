@@ -6,34 +6,20 @@ package com.love.product.entity.base;
  * @describe 返回结果集code枚举
  */
 public enum ResultCode {
-    /**
-     *
-     */
+
     SUCCESS(200, "操作成功"),
 
     FAILED(500, "操作失败，请重试"),
-    PARAM_ERROR(400, "参数错误"),
-    AUTH_ERROR(401, "认证错误"),
-    PERMISSION_ERROR(403, "权限错误"),
-    NOT_FOUND(404, "资源不存在"),
-    SERVER_ERROR(500, "服务器错误"),
-    TIMEOUT(504, "请求超时"),
-    EMAIL_ERROR(-10,"邮箱格式不对，请检查后重试!"),
-    ERROR_EXCEPTION_MOBILE_CODE(10003,"验证码不正确或已过期，请重新输入"),
-    PARAMS_ILLEGAL(10018,"参数不合法!!"),
-    ROLE_IS_EXIST(10019,"该角色已存在！"),
-    CATEGORY_IS_EXIST(10019,"该分类名称已存在!");
 
+    EMAIL_ERROR(-10, "邮箱格式不对，请检查后重试!"),
+    ERROR_EXCEPTION_MOBILE_CODE(10003, "验证码不正确或已过期，请重新输入"),
+    PARAMS_ILLEGAL(10018, "参数不合法!!"),
+    ROLE_IS_EXIST(10019, "该角色已存在！"),
+    CATEGORY_IS_EXIST(10020, "该分类名称已存在!");
 
-    /**
-     * 状态码
-     */
-    private int code;
+    private final int code;
 
-    /**
-     * 状态码含义
-     */
-    private String msg;
+    private final String msg;
 
     ResultCode(int code, String msg) {
         this.code = code;
@@ -46,14 +32,5 @@ public enum ResultCode {
 
     public String getMsg() {
         return msg;
-    }
-
-    public static ResultCode fromCode(int code) {
-        for (ResultCode item : ResultCode.values()) {
-            if (code == item.code) {
-                return item;
-            }
-        }
-        return null;
     }
 }

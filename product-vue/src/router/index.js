@@ -7,8 +7,10 @@ const routes = [
   { path: '/home', name: 'Home', component: () => import('../views/home/index.vue'), meta: { noAuth: true, title: '首页' } },
   { path: '/post/:id', name: 'PostDetail', component: () => import('../views/postDetail/index.vue'), meta: { noAuth: true, title: '帖子详情' } },
   { path: '/user', name: 'User', component: () => import('../views/user/index.vue'), meta: { title: '个人中心' } },
+  { path: '/user/:id', name: 'UserProfile', component: () => import('../views/profile/index.vue'), meta: { noAuth: true, title: '用户主页' } },
   { path: '/search', name: 'Search', component: () => import('../views/search/index.vue'), meta: { noAuth: true, title: '搜索' } },
   { path: '/create', name: 'Create', component: () => import('../views/create/index.vue'), meta: { title: '发布帖子' } },
+  { path: '/messages', name: 'Messages', component: () => import('../views/messages/index.vue'), meta: { title: '消息中心' } },
 
   // Admin routes
   { path: '/admin/login', name: 'AdminLogin', component: () => import('@/views/admin/login/index.vue'), meta: { noAuth: true, title: '管理登录' } },

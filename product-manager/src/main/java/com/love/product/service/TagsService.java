@@ -2,9 +2,9 @@ package com.love.product.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.love.product.entity.Tags;
-import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.req.TagPageReq;
+import com.love.product.entity.vo.TagVO;
 
 import java.util.List;
 
@@ -18,17 +18,17 @@ import java.util.List;
 public interface TagsService extends IService<Tags>{
     String getTagNameById(Long tagId);
 
-    Result getTagsById(Long id);
+    Tags getTagsById(Long id);
 
-    Result deleteBatch(List<Long> ids);
+    void deleteBatch(List<Long> ids);
 
-    Result deleteById(Long id);
+    void deleteById(Long id);
 
-    Result updateTag(Tags tags);
+    void updateTag(Tags tags);
 
-    Result insertTag(Tags tags);
+    void insertTag(Tags tags);
 
     ResultPage<Tags> listTags(TagPageReq tagPageReq);
 
-    Result webList();
+    List<TagVO> webList();
 }

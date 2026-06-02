@@ -32,4 +32,5 @@ public class PostsPageReq extends PageQuery {
 
     @ApiModelProperty(value = "状态id")
     public Integer status;
+
 }

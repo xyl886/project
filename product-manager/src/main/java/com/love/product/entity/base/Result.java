@@ -7,7 +7,6 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
-import java.util.Map;
 
 @Data
 @ToString
@@ -28,89 +27,41 @@ public class Result<T> implements Serializable {
     public Result(){
     }
 
-
+    // ========== 成功 ==========
 
     public static <T> Result<T> OK() {
-        Result<T> result = new Result<>();
-        result.setCode(ResultCode.SUCCESS.getCode());
-        result.setMsg(ResultCode.SUCCESS.getMsg());
-        return result;
+        return ok(ResultCode.SUCCESS.getCode(), ResultCode.SUCCESS.getMsg(), null);
     }
 
     public static <T> Result<T> OK(T data) {
-        Result<T> result = new Result<>();
-        result.setCode(ResultCode.SUCCESS.getCode());
-        result.setMsg(ResultCode.SUCCESS.getMsg());
-        result.setData(data);
-        return result;
+        return ok(ResultCode.SUCCESS.getCode(), ResultCode.SUCCESS.getMsg(), data);
     }
 
     public static <T> Result<T> OK(String msg, T data) {
-        Result<T> result = new Result<>();
-        result.setCode(ResultCode.SUCCESS.getCode());
-        result.setMsg(msg);
-        result.setData(data);
-        return result;
+        return ok(ResultCode.SUCCESS.getCode(), msg, data);
     }
 
-    public static <T> Result<T> OK(Integer code, String msg, T data) {
-        Result<T> result = new Result<>();
-        result.setCode(code);
-        result.setMsg(msg);
-        result.setData(data);
-        return result;
-    }
-
-    public static <T> Result<T> OKMsg(Integer code, String msg) {
-        Result<T> result = new Result<>();
-        result.setCode(code);
-        result.setMsg(msg);
-        return result;
-    }
-
-    public static <T> Result<T> OK(Integer code) {
-        Result<T> result = new Result<>();
-        result.setCode(code);
-        result.setMsg(ResultCode.SUCCESS.getMsg());
-        return result;
-    }
-
+    /** 仅带消息的成功响应（无 data） */
     public static <T> Result<T> OKMsg(String msg) {
-        Result<T> result = new Result<>();
-        result.setCode(ResultCode.SUCCESS.getCode());
-        result.setMsg(msg);
-        return result;
+        return ok(ResultCode.SUCCESS.getCode(), msg, null);
     }
 
-    /**
-     * 返回单参数（比如String、Long等）时，如不确定后续会不会增加参数，则尽量使用该方法
-     * @param dataMap 返回的map
-     */
-    public static <T> Result<Map<String, T>> OKMap(Map<String, T> dataMap) {
-        Result<Map<String, T>> result = new Result<>();
-        result.setCode(ResultCode.SUCCESS.getCode());
-        result.setData(dataMap);
-        return result;
-    }
+    // ========== 失败 ==========
 
     public static <T> Result<T> fail() {
-        Result<T> result = new Result<>();
-        result.setCode(ResultCode.FAILED.getCode());
-        result.setMsg(ResultCode.FAILED.getMsg());
-        return result;
+        return fail(ResultCode.FAILED.getCode(), ResultCode.FAILED.getMsg(), null);
     }
-    public static <T> Result<T> failMsg(ResultCode resultCode) {
-        Result<T> result = new Result<>();
-        result.setCode(resultCode.getCode());
-        result.setMsg(resultCode.getMsg());
-        return result;
+
+    public static <T> Result<T> failMsg(String msg) {
+        return fail(ResultCode.FAILED.getCode(), msg, null);
     }
+
+    public static <T> Result<T> failMsg(Integer code, String msg) {
+        return fail(code, msg, null);
+    }
+
     public static <T> Result<T> fail(String msg, T data) {
-        Result<T> result = new Result<>();
-        result.setCode(ResultCode.FAILED.getCode());
-        result.setMsg(msg);
-        result.setData(data);
-        return result;
+        return fail(ResultCode.FAILED.getCode(), msg, data);
     }
 
     public static <T> Result<T> fail(Integer code, String msg, T data) {
@@ -121,41 +72,13 @@ public class Result<T> implements Serializable {
         return result;
     }
 
-    public static <T> Result<T> failMsg(Integer code, String msg) {
+    // ========== 内部 helper ==========
+
+    private static <T> Result<T> ok(Integer code, String msg, T data) {
         Result<T> result = new Result<>();
         result.setCode(code);
-        result.setMsg(msg);
-        return result;
-    }
-
-    public static <T> Result<T> failMsg(String msg, T data) {
-        Result<T> result = new Result<>();
-        result.setCode(ResultCode.FAILED.getCode());
         result.setMsg(msg);
         result.setData(data);
         return result;
     }
-
-    public static <T> Result<T> fail(Integer code) {
-        Result<T> result = new Result<>();
-        result.setCode(code);
-        result.setMsg(ResultCode.FAILED.getMsg());
-        return result;
-    }
-
-    public static <T> Result<T> failMsg(String msg) {
-        Result<T> result = new Result<>();
-        result.setCode(ResultCode.FAILED.getCode());
-        result.setMsg(msg);
-        return result;
-    }
-
-    public static <T> Result<T> fail(T data) {
-        Result<T> result = new Result<>();
-        result.setCode(ResultCode.FAILED.getCode());
-        result.setMsg(ResultCode.FAILED.getMsg());
-        result.setData(data);
-        return result;
-    }
-
 }

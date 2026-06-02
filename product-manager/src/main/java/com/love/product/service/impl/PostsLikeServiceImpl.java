@@ -4,9 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.love.product.config.BizException;
 import com.love.product.entity.Posts;
 import com.love.product.entity.PostsLike;
-import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.dto.LikeCountDTO;
 import com.love.product.entity.req.HistoryPageReq;
@@ -51,6 +51,8 @@ public class PostsLikeServiceImpl extends ServiceImpl<PostsLikeMapper, PostsLike
     private RedisService redisService;
     @Resource
     private CategoryService categoryService;
+    @Resource
+    private NotificationService notificationService;
 
     public Integer getLikeStatus(Long postId, Long userId) {
         String hashKey = userId + ":" + postId;
@@ -137,34 +139,33 @@ public class PostsLikeServiceImpl extends ServiceImpl<PostsLikeMapper, PostsLike
     }
 
     @Override
-    public Result<?> add(Long userId, Long postsId, Integer deleted) {
+    public void add(Long userId, Long postsId, Integer deleted) {
         Posts posts = postsMapper.selectById(postsId);
         YesOrNo yesOrNo = YesOrNo.valueOf(deleted);
         if (yesOrNo == null) yesOrNo = YesOrNo.NO;
-        if (posts != null && !posts.getStatus().equals(YesOrNo.YES.getValue())) {
-            LocalDateTime now = LocalDateTime.now();
-            String key = userId + ":" + postsId;
-            boolean isLike = !yesOrNo.equals(YesOrNo.YES);
-            redisService.hSet(LIKE_STATUS, key, isLike ? LikeStatus.LIKE.getCode() : LikeStatus.UNLIKE.getCode());
-            if (isLike) incrementLikeCount(postsId);
-            else decrementLikeCount(postsId);
-
-            PostsLike postsLike = new PostsLike();
-            postsLike.setId(IdWorker.getId());
-            postsLike.setUserId(userId);
-            postsLike.setPostsId(posts.getId());
-            postsLike.setDeleted(yesOrNo.getValue());
-            postsLike.setCreateTime(now);
-            postsLike.setUpdateTime(now);
-            postsLikeMapper.add(postsLike);
-
-            int likeNum = posts.getLikeNum();
-            likeNum = isLike ? likeNum + 1 : likeNum - 1;
-            if (likeNum < 0) likeNum = 0;
-            postsMapper.updateLikeNum(postsId, likeNum);
-            return Result.OKMsg(isLike ? "点赞成功" : "已取消点赞");
+        if (posts == null || posts.getStatus().equals(YesOrNo.YES.getValue())) {
+            throw new BizException("帖子不存在或已下架");
         }
-        return Result.failMsg("帖子不存在或已下架");
+        LocalDateTime now = LocalDateTime.now();
+        String key = userId + ":" + postsId;
+        boolean isLike = !yesOrNo.equals(YesOrNo.YES);
+        redisService.hSet(LIKE_STATUS, key, isLike ? LikeStatus.LIKE.getCode() : LikeStatus.UNLIKE.getCode());
+        if (isLike) incrementLikeCount(postsId);
+        else decrementLikeCount(postsId);
+
+        PostsLike postsLike = new PostsLike();
+        postsLike.setId(IdWorker.getId());
+        postsLike.setUserId(userId);
+        postsLike.setPostsId(posts.getId());
+        postsLike.setDeleted(yesOrNo.getValue());
+        postsLike.setCreateTime(now);
+        postsLike.setUpdateTime(now);
+        postsLikeMapper.add(postsLike);
+
+        int likeNum = posts.getLikeNum();
+        likeNum = isLike ? likeNum + 1 : likeNum - 1;
+        if (likeNum < 0) likeNum = 0;
+        postsMapper.updateLikeNum(postsId, likeNum);
     }
 
     @Override
@@ -197,10 +198,11 @@ public class PostsLikeServiceImpl extends ServiceImpl<PostsLikeMapper, PostsLike
     }
 
     @Override
-    public Result<?> like(Long postId, Long userId) {
+    public void like(Long postId, Long userId) {
         Integer status = getLikeStatus(postId, userId);
-        if (Objects.equals(status, LikeStatus.LIKE.getCode()))
-            return Result.failMsg("已经点赞该内容啦，请勿重复点赞！");
+        if (Objects.equals(status, LikeStatus.LIKE.getCode())) {
+            throw new BizException("已经点赞该内容啦，请勿重复点赞！");
+        }
         saveLikeToRedis(userId, postId);
         incrementLikeCount(postId);
         PostsLike dbLike = getDetail(userId, postId);
@@ -216,14 +218,17 @@ public class PostsLikeServiceImpl extends ServiceImpl<PostsLikeMapper, PostsLike
             nl.setCreateTime(LocalDateTime.now());
             save(nl);
         }
-        return Result.OKMsg("点赞成功！");
+        Posts post = postsMapper.selectById(postId);
+        if (post != null && !post.getUserId().equals(userId))
+            notificationService.notify(post.getUserId(), userId, 1, "赞了你的帖子", postId, 1);
     }
 
     @Override
-    public Result<?> dislike(Long postId, Long userId) {
+    public void dislike(Long postId, Long userId) {
         Integer status = getLikeStatus(postId, userId);
-        if (Objects.equals(status, LikeStatus.UNLIKE.getCode()))
-            return Result.failMsg("已经取消点赞该内容啦，请勿重复取消点赞！");
+        if (Objects.equals(status, LikeStatus.UNLIKE.getCode())) {
+            throw new BizException("已经取消点赞该内容啦，请勿重复取消点赞！");
+        }
         unlikeFromRedis(userId, postId);
         decrementLikeCount(postId);
         PostsLike dbLike = getDetail(userId, postId);
@@ -240,7 +245,6 @@ public class PostsLikeServiceImpl extends ServiceImpl<PostsLikeMapper, PostsLike
             nl.setCreateTime(LocalDateTime.now());
             save(nl);
         }
-        return Result.OKMsg("取消点赞成功！");
     }
 
     public void initLikeFromMysqlToRedis() {

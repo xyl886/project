@@ -5,9 +5,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.love.product.config.BizException;
 import com.love.product.entity.Collect;
 import com.love.product.entity.Posts;
-import com.love.product.entity.base.Result;
 import com.love.product.entity.base.ResultPage;
 import com.love.product.entity.req.CollectPageReq;
 import com.love.product.enums.PostStatus;
@@ -21,6 +21,7 @@ import com.love.product.entity.vo.UserInfoVO;
 import com.love.product.mapper.PostsMapper;
 import com.love.product.service.CategoryService;
 import com.love.product.service.CollectService;
+import com.love.product.service.NotificationService;
 import com.love.product.service.PostsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -50,8 +51,10 @@ public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> impl
     private CollectMapper collectMapper;
     @Resource
     private PostsMapper postsMapper;
+    @Resource
+    private NotificationService notificationService;
     @Override
-    public Result<?> add(Long userId, Integer deleted, Long... postsIds) {
+    public void add(Long userId, Integer deleted, Long... postsIds) {
         YesOrNo yesOrNo = YesOrNo.valueOf(deleted);
         if (yesOrNo == null) {
             yesOrNo = YesOrNo.NO;
@@ -81,11 +84,9 @@ public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> impl
             }
         }
         if (successCount == 0) {
-            return Result.failMsg("收藏失败，帖子不存在");
+            throw new BizException("收藏失败，帖子不存在");
         }
-        return yesOrNo.equals(YesOrNo.YES)
-                ? Result.OKMsg("已取消收藏")
-                : Result.OKMsg("收藏成功");
+        for (Long pid : postsIds) { Posts post = postsMapper.getPostsById(pid); if (post != null && !post.getUserId().equals(userId)) notificationService.notify(post.getUserId(), userId, 5, "收藏了你的帖子", pid, 1); }
     }
 
 
@@ -155,13 +156,13 @@ public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> impl
     }
 
     @Override
-    public Result<?> deleteBatch(Long userId, List<Long> postsIds) {
-//        baseMapper.update(Collect::new UpdateWrapper<Collect>().eq("posts_id",postsIds));
+    public void deleteBatch(Long userId, List<Long> postsIds) {
         LambdaQueryWrapper<Collect> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Collect::getUserId, userId)
                 .in(Collect::getPostsId,postsIds);
         boolean rows = remove(queryWrapper);
-//        int rows = baseMapper.deleteBatchIds(postsIds);
-        return rows ? Result.OK(): Result.failMsg("批量取消失败");
+        if (!rows) {
+            throw new BizException("批量取消失败");
+        }
     }
 }
