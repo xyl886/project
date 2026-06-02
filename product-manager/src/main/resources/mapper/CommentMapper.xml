@@ -15,7 +15,7 @@
         s_posts_comment c
         LEFT JOIN ( SELECT id, avatar, nickname FROM s_user_info ) au ON c.user_id = au.id
         LEFT JOIN ( SELECT id, title FROM s_posts ) p ON c.posts_id = p.id
-        LEFT JOIN ( SELECT id, avatar, nickname FROM s_user_info ) ru ON c.posts_user_id = ru.id
+        LEFT JOIN ( SELECT id, avatar, nickname FROM s_user_info ) ru ON c.user_id = ru.id
         <where>
             <if test="pageQuery.content != null and pageQuery.content != ''">
                 au.nickname like concat('%',#{pageQuery.content},'%')

@@ -26,7 +26,7 @@ public interface RedisService {
      * @param num 过期时间数值
      * @param i   过期时间单位
      */
-    void set(String s, long num, Long i, TimeUnit timeUnit);
+    void set(String key, Object value, long time, TimeUnit timeUnit);
 
     /**
      * 设置缓存，指定过期时间（单位：毫秒）

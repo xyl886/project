@@ -79,7 +79,7 @@
           <el-tab-pane label="我的关注" name="following">
             <div v-loading="tabLoading" class="tab-body">
               <div v-for="item in followList" :key="item.id" class="user-item">
-                <el-avatar :size="40">{{ item.userInfo?.nickname?.[0] || '?' }}</el-avatar>
+                <el-avatar :size="40" :src="item.userInfo?.avatar">{{ (item.userInfo?.nickname || '?')[0] }}</el-avatar>
                 <div class="user-item-info">
                   <span class="user-item-name">{{ item.userInfo?.nickname || '未知' }}</span>
                   <span class="user-item-bio">{{ item.userInfo?.remark || '' }}</span>
@@ -93,7 +93,7 @@
           <el-tab-pane label="我的粉丝" name="fans">
             <div v-loading="tabLoading" class="tab-body">
               <div v-for="item in fansList" :key="item.id" class="user-item">
-                <el-avatar :size="40">{{ item.userInfo?.nickname?.[0] || '?' }}</el-avatar>
+                <el-avatar :size="40" :src="item.userInfo?.avatar">{{ (item.userInfo?.nickname || '?')[0] }}</el-avatar>
                 <div class="user-item-info">
                   <span class="user-item-name">{{ item.userInfo?.nickname || '未知' }}</span>
                   <span class="user-item-bio">{{ item.userInfo?.remark || '' }}</span>

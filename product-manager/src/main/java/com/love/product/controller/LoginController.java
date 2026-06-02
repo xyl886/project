@@ -9,7 +9,6 @@ import com.love.product.entity.vo.UserInfoVO;
 import com.love.product.entity.vo.UserVO;
 import com.love.product.service.RedisService;
 import com.love.product.service.UserInfoService;
-import com.love.product.util.JwtUtil;
 import com.wf.captcha.SpecCaptcha;
 import cn.dev33.satoken.stp.StpUtil;
 import io.swagger.annotations.Api;
@@ -29,8 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.love.product.constant.RedisKeyConstant.REFRESH_TOKEN;
-import static com.love.product.constant.RedisKeyConstant.USER_USERINFO;
+import static com.love.product.constant.RedisKeyConstant.IMAGE_CAPTCHA;
 import static com.love.product.entity.base.ResultCode.ERROR_EXCEPTION_MOBILE_CODE;
 
 /**
@@ -54,9 +52,8 @@ public class LoginController {
     public Result getCaptcha() {
         SpecCaptcha specCaptcha = new SpecCaptcha(130, 48, 4);
         String verCode = specCaptcha.text().toLowerCase();
-        String key = UUID.randomUUID().toString();
-        // 存入redis并设置过期时间为5分钟
-        redisService.set(key, verCode, 5 * 60);
+        String key = IMAGE_CAPTCHA + UUID.randomUUID();
+        redisService.set(key, verCode, 5 * 60L);
         Map<String, String> captchaMap = new HashMap<>();
         captchaMap.put("key", key);
         captchaMap.put("image", specCaptcha.toBase64());
@@ -69,7 +66,6 @@ public class LoginController {
         if (verCode == null || redisCode == null || !redisCode.equals(verCode.trim().toLowerCase())) {
             throw new BizException(ERROR_EXCEPTION_MOBILE_CODE);
         }
-
     }
     @ApiOperation(value = "发送邮箱验证码")
     @AccessLimit(prefix = "limit", key = "code", name = "邮箱验证码接口", period = 60, count = 1)
@@ -102,8 +98,6 @@ public class LoginController {
     @ApiOperation(value = "用户退出登录", notes = "用户退出登录")
     @PostMapping("/userLogout")
     public Result<?> userLogout() {
-        redisService.del(REFRESH_TOKEN + JwtUtil.getUserId());
-        redisService.del(USER_USERINFO + JwtUtil.getUserId());
         StpUtil.logout();
         return Result.OK();
     }

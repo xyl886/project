@@ -35,8 +35,8 @@ public class RedisServiceImpl implements RedisService {
         return redisTemplate.execute(redisScript, keys, args);
     }
     @Override
-    public void set(String key, long num, Long i, TimeUnit timeUnit) {
-        redisTemplate.opsForValue().set(key, num, 7, TimeUnit.DAYS);
+    public void set(String key, Object value, long time, TimeUnit timeUnit) {
+        redisTemplate.opsForValue().set(key, value, time, timeUnit);
     }
 
     @Override

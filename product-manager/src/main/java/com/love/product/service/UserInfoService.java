@@ -30,7 +30,6 @@ public interface UserInfoService extends IService<UserInfo> {
      */
     UserInfoVO getUserInfoById(Long id);
 
-    void setRefreshToken(Long userId, String refreshToken);
 
     /**
      * 用户注册
@@ -89,7 +88,6 @@ public interface UserInfoService extends IService<UserInfo> {
 
     ResultPage<UserVO> listUser(UserPageReq userPageReq);
 
-    Result insertUser(UserInfo user);
 
     Result getUserById(Integer id);
 
@@ -99,9 +97,7 @@ public interface UserInfoService extends IService<UserInfo> {
 
     Result getCurrentUserInfo();
 
-    Result getCurrentUserMenu();
 
     Result updatePassword(Map<String, String> map);
 
-    Object getCaptcha(Captcha captcha);
 }

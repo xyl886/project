@@ -1,58 +1,60 @@
 package com.love.product.constant;
 
-import java.io.Serializable;
-
 /**
- * @author Administrator
- * @date 2023-01-03 16:09
- * @describe redis key 常量
+ * Redis Key 常量
+ * <pre>
+ * 命名规范: 模块:业务:标识
+ *
+ * user:info:1611899...        → 用户信息缓存
+ * email:code:xxx@qq.com       → 邮箱验证码
+ * image:captcha:uuid          → 图形验证码
+ * limit:captcha:192.168.1.1   → 接口限流
+ * follow:fans:1611899...      → 粉丝数
+ * follow:following:1611899... → 关注数
+ * like:status                 → 点赞状态哈希 {userId:postId → 0/1}
+ * like:count                  → 点赞计数哈希 {postId → 123}
+ * </pre>
  */
+public class RedisKeyConstant {
 
-public class RedisKeyConstant implements Serializable {
+    /**
+     * 接口限流
+     */
+    public static final String RATE_LIMIT = "limit:";
 
-    public static final String POSTS = "posts:";
-    public static final String HOTLIST = "hotList";
-    public static final String POST_TITLES = "posts_titles";
     /**
-     * 用户信息
+     * 用户信息缓存
      */
-    public static final String USER_USERINFO = "user:userinfo:";
+    public static final String USER_INFO = "user:info:";
+
     /**
-     * 验证码
+     * 邮箱验证码
      */
-    public static final String CODE = "code:";
-    public static final String REFRESH_TOKEN = "refresh_token:";
+    public static final String EMAIL_CODE = "email:code:";
+
     /**
      * 图形验证码
      */
-    public static final String IMAGE_CODE = "imageCode:";
-    /**
-     * 关注
-     */
-    public static final String FOLLOW = "follow";
-    /**
-     * 用户粉丝数量
-     */
-    public static final String FANS_NUM = RedisKeyConstant.FOLLOW + "fans_num:";
+    public static final String IMAGE_CAPTCHA = "image:captcha:";
 
     /**
-     * 用户关注数量
+     * 粉丝数
      */
-    public static final String FOLLOW_NUM = RedisKeyConstant.FOLLOW + "follow_num:";
-
-    //保存用户点赞数据的key
-    public static final String MAP_KEY_USER_LIKED = "MAP_USER_LIKED";
-
-    //保存用户被点赞数量的key
-    public static final String MAP_KEY_USER_LIKED_COUNT = "MAP_USER_LIKED_COUNT";
+    public static final String FOLLOW_FANS = "follow:fans:";
 
     /**
-     * 拼接被点赞的用户id和点赞的人的id作为key。格式 222222::333333
-     * @param UserId 被点赞的人id
-     * @param PostId 点赞的人的id
-     * @return
+     * 关注数
      */
-    public static String getLikedKey(Long UserId, Long PostId){
-        return UserId + "::" + PostId;
-    }
+    public static final String FOLLOW_FOLLOWING = "follow:following:";
+
+    /**
+     * 点赞状态哈希
+     */
+    public static final String LIKE_STATUS = "like:status";
+
+    /**
+     * 点赞计数哈希
+     */
+    public static final String LIKE_COUNT = "like:count";
+
 }

@@ -60,8 +60,8 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
             follow.setUpdateTime(now);
             followMapper.add(follow);
             //清除redis缓存
-            redisService.del(RedisKeyConstant.FOLLOW_NUM + userId);
-            redisService.del(RedisKeyConstant.FANS_NUM + beFollowedUserId);
+            redisService.del(RedisKeyConstant.FOLLOW_FOLLOWING + userId);
+            redisService.del(RedisKeyConstant.FOLLOW_FANS + beFollowedUserId);
             if(yesOrNo.equals(YesOrNo.YES)){
                 return Result.OKMsg("已取消关注");
             }else{
@@ -83,26 +83,26 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
 
     @Override
     public int getFansNumByUserId(Long userId){
-        Integer num = (Integer) redisService.get(RedisKeyConstant.FANS_NUM + userId);
+        Integer num = (Integer) redisService.get(RedisKeyConstant.FOLLOW_FANS + userId);
         if(num == null){
             LambdaQueryWrapper<Follow> queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.eq(Follow::getBeFollowedUserId,userId);
             long fansNum = count(queryWrapper);
             num = Integer.parseInt(String.valueOf(fansNum));
-            redisService.set(RedisKeyConstant.FANS_NUM + userId, num, 7L, TimeUnit.DAYS);
+            redisService.set(RedisKeyConstant.FOLLOW_FANS + userId, num, 7L, TimeUnit.DAYS);
         }
         return num;
     }
 
     @Override
     public int getFollowNumByUserId(Long userId){
-        Integer num = (Integer) redisService.get(RedisKeyConstant.FOLLOW_NUM + userId);
+        Integer num = (Integer) redisService.get(RedisKeyConstant.FOLLOW_FOLLOWING + userId);
         if(num == null){
             LambdaQueryWrapper<Follow> queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.eq(Follow::getUserId,userId);
             long followNum = count(queryWrapper);
             num = Integer.parseInt(String.valueOf(followNum));
-            redisService.set(RedisKeyConstant.FOLLOW_NUM + userId, num, 7L, TimeUnit.DAYS);
+            redisService.set(RedisKeyConstant.FOLLOW_FOLLOWING + userId, num, 7L, TimeUnit.DAYS);
         }
         return num;
     }

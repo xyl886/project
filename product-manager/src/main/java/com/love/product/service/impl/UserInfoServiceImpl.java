@@ -82,7 +82,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         boolean matches = Pattern.compile("\\w+@{1}\\w+\\.{1}\\w+").matcher(email).matches();
         try {
             Assert.isTrue(matches, EMAIL_ERROR.getMsg());
-        }catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             throw new BizException(EMAIL_ERROR);
         }
     }
@@ -92,9 +92,10 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         try {
             Assert.isTrue(code != null && code.equals(emailCode), ERROR_EXCEPTION_MOBILE_CODE.getMsg());
         } catch (IllegalArgumentException e) {
-             throw new BizException(ERROR_EXCEPTION_MOBILE_CODE);
+            throw new BizException(ERROR_EXCEPTION_MOBILE_CODE);
         }
     }
+
     private void isValidType(String type) {
         try {
             CodeType emailCodeType = CodeType.valueOf(type.toUpperCase());
@@ -103,6 +104,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             throw new BizException(PARAMS_ILLEGAL);
         }
     }
+
     /**
      * 发送邮箱验证码
      *
@@ -130,7 +132,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
                 EMAIL_EXCHANGE,
                 "*",
                 new Message(JSON.toJSONBytes(emailDTO), new MessageProperties()));
-        redisService.set(CODE + email, code, 5 * 60);
+        redisService.set(EMAIL_CODE + email, code, 5 * 60);
         return Result.OKMsg("验证码已发送，请查收！");
     }
 
@@ -152,7 +154,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             return Result.failMsg("登录失败，账号已禁用，请联系客服人员");
         }
         if (loginVO.emailCode != null && !loginVO.emailCode.isEmpty() && loginVO.password.isEmpty()) {
-            checkCode(CODE + loginVO.email, loginVO.emailCode);
+            checkCode(EMAIL_CODE + loginVO.email, loginVO.emailCode);
         } else {
             PasswordEncoder encoder = new BCryptPasswordEncoder();
             boolean matches = encoder.matches(loginVO.password, userInfoVO.password);
@@ -160,17 +162,15 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
                 return Result.failMsg("账号或密码错误");
             }
         }
-        // Sa-Token 登录
+        // Sa-Token 登录 + 缓存用户信息到Redis
         StpUtil.login(userInfoVO.getId());
-        // 缓存用户信息到Redis，设置过期时间为7天，并删除验证码
-        redisService.set(USER_USERINFO + userInfoVO.getId(), userInfoVO);
-        redisService.expire(USER_USERINFO + userInfoVO.getId(), 7, TimeUnit.DAYS);
-        redisService.del(CODE + loginVO.email);
+        redisService.set(USER_INFO + userInfoVO.getId(), userInfoVO, 7 * 24 * 3600L);
+        redisService.del(EMAIL_CODE + loginVO.email);
 
         userInfoVO.setAccessToken(StpUtil.getTokenValue());
         userInfoVO.setEmail(loginVO.email);
-        UserVO userVO=new UserVO();
-        BeanUtils.copyProperties(userInfoVO,userVO);
+        UserVO userVO = new UserVO();
+        BeanUtils.copyProperties(userInfoVO, userVO);
         return Result.OK(userVO);
     }
 
@@ -192,7 +192,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         if (registerVO.password.isEmpty()) {
             return Result.failMsg("请设置密码！");
         }
-        checkCode(CODE + registerVO.email, registerVO.emailCode);
+        checkCode(EMAIL_CODE + registerVO.email, registerVO.emailCode);
         if (!registerVO.password.equals(registerVO.confirmPassword)) {
             return Result.failMsg("两次输入密码不一致，请重新输入！");
         }
@@ -297,16 +297,6 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     }
 
     /**
-     * 更新用户的刷新令牌
-     */
-    @Override
-    public void setRefreshToken(Long userId, String refreshToken) {
-        if (refreshToken != null) {
-            redisService.set(REFRESH_TOKEN + userId, refreshToken);
-        }
-    }
-
-    /**
      * 用户列表
      */
     @Override
@@ -366,6 +356,13 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
      */
     @Override
     public Result<UserInfoVO> getUserInfoAndFansById(Long id) {
+        // 先查 Redis 缓存
+        String cacheKey = USER_INFO + id;
+        Object cached = redisService.get(cacheKey);
+        if (cached instanceof UserInfoVO) {
+            return Result.OK((UserInfoVO) cached);
+        }
+        // 缓存未命中，查 DB
         UserInfo userInfo = getById(id);
         if (userInfo == null) {
             return Result.failMsg("用户不存在!");
@@ -374,11 +371,12 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         BeanUtil.copyProperties(userInfo, userInfoVO);
         Gender gender = Gender.valueOf(userInfoVO.getGender());
         userInfoVO.setGenderText(gender.getText());
-//            userInfoVO.setAvatar(fileUploadService.getImgPath(userInfoVO.getAvatar()));
         int followNum = followService.getFollowNumByUserId(userInfoVO.getId());
         userInfoVO.setFollowNum(followNum);
         int fansNum = followService.getFansNumByUserId(userInfoVO.getId());
         userInfoVO.setFansNum(fansNum);
+        // 写入缓存，1小时过期
+        redisService.set(cacheKey, userInfoVO, 3600L);
         return Result.OK(userInfoVO);
     }
 
@@ -416,15 +414,6 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         } else {
             return role.roleName;
         }
-    }
-
-    @Override
-    public Result insertUser(UserInfo user) {
-        user.setId(IdWorker.getId());
-        user.setCreateTime(LocalDateTime.now());
-        user.setUpdateTime(LocalDateTime.now());
-        save(user);
-        return Result.OKMsg("新增成功");
     }
 
     @Override
@@ -470,11 +459,6 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     }
 
     @Override
-    public Result getCurrentUserMenu() {
-        return Result.OK(new ArrayList<>());
-    }
-
-    @Override
     public Result updatePassword(Map<String, String> map) {
         Long userId = JwtUtil.getUserId();
         if (userId == null) {
@@ -498,70 +482,4 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         return Result.OKMsg("密码修改成功");
     }
 
-    @Override
-    public Object getCaptcha(Captcha captcha) {
-        /**
-         * 获取验证码拼图（生成的抠图和带抠图阴影的大图及抠图坐标）
-         **/
-        //参数校验
-        CaptchaUtils.checkCaptcha(captcha);
-        //获取画布的宽高
-        int canvasWidth = captcha.getCanvasWidth();
-        int canvasHeight = captcha.getCanvasHeight();
-        //获取阻塞块的宽高/半径
-        int blockWidth = captcha.getBlockWidth();
-        int blockHeight = captcha.getBlockHeight();
-        int blockRadius = captcha.getBlockRadius();
-        //获取资源图
-        BufferedImage canvasImage = CaptchaUtils.getBufferedImage(captcha.getPlace());
-        //调整原图到指定大小
-        canvasImage = CaptchaUtils.imageResize(canvasImage, canvasWidth, canvasHeight);
-        //随机生成阻塞块坐标
-        int blockX = CaptchaUtils.getNonceByRange(blockWidth, canvasWidth - blockWidth - 10);
-        int blockY = CaptchaUtils.getNonceByRange(10, canvasHeight - blockHeight + 1);
-        //阻塞块
-        BufferedImage blockImage = new BufferedImage(blockWidth, blockHeight, BufferedImage.TYPE_4BYTE_ABGR);
-        //新建的图像根据轮廓图颜色赋值，源图生成遮罩
-        CaptchaUtils.cutByTemplate(canvasImage, blockImage, blockWidth, blockHeight, blockRadius, blockX, blockY);
-        // 移动横坐标
-        String nonceStr = UUID.randomUUID().toString().replaceAll("-", "");
-        // 缓存
-        saveImageCode(nonceStr, String.valueOf(blockX));
-        //设置返回参数
-        captcha.setNonceStr(nonceStr);
-        captcha.setBlockY(blockY);
-        captcha.setBlockSrc(CaptchaUtils.toBase64(blockImage, "png"));
-        captcha.setCanvasSrc(CaptchaUtils.toBase64(canvasImage, "png"));
-        return captcha;
-
-    }
-
-    /**
-     * 缓存验证码，有效期15分钟
-     *
-     * @param key
-     * @param code
-     **/
-    public void saveImageCode(String key, String code) {
-        redisService.set(IMAGE_CODE + key, Long.parseLong(code), 15L, TimeUnit.MINUTES);
-    }
-
-    /**
-     * 校验验证码
-     *
-     * @param imageKey
-     * @param imageCode
-     * @return boolean
-     **/
-    public String checkImageCode(String imageKey, String imageCode) {
-        String text = (String) redisService.get(IMAGE_CODE + imageKey);
-        if (org.apache.commons.lang3.StringUtils.isBlank(text)) {
-            return "验证码已失效";
-        }
-        // 根据移动距离判断验证是否成功
-        if (Math.abs(Integer.parseInt(text) - Integer.parseInt(imageCode)) > 3) {
-            return "验证失败，请控制拼图对齐缺口";
-        }
-        return null;
-    }
 }

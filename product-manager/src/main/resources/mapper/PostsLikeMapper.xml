@@ -11,7 +11,6 @@
         id,
         user_id,
         posts_id,
-        posts_user_id,
         deleted,
         create_time,
         update_time
@@ -21,7 +20,6 @@
             #{id},
             #{userId},
             #{postsId},
-            #{postsUserId},
             #{deleted},
             #{createTime},
             #{updateTime}

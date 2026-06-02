@@ -22,7 +22,6 @@ import org.springframework.util.Assert;
 import javax.annotation.Resource;
 import java.util.concurrent.TimeUnit;
 
-import static com.love.product.constant.RedisKeyConstant.USER_USERINFO;
 
 /**
  * @PackageName: com.love.product.service.impl
@@ -84,8 +83,6 @@ public class SysLoginServiceImpl implements LoginService {
             // Sa-Token 登录
             StpUtil.login(userInfoVO.getId());
             //缓存用户信息到Redis
-            redisService.set(USER_USERINFO + userInfoVO.getId(), userInfoVO);
-            redisService.expire(USER_USERINFO + userInfoVO.getId(), 1, TimeUnit.DAYS);
             userInfoVO.setAccessToken(StpUtil.getTokenValue());
             userInfoVO.setEmail(loginDTO.getEmail());
             Gender gender = Gender.valueOf(userInfoVO.getGender());

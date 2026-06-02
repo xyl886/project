@@ -5,6 +5,7 @@ import com.love.product.entity.base.Result;
 import com.love.product.service.RedisService;
 import com.love.product.util.IpUtil;
 import com.love.product.util.StringUtils;
+import static com.love.product.constant.RedisKeyConstant.RATE_LIMIT;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -52,7 +53,7 @@ public class AccessLimitAspect {
         //过期次数
         int limitCount = annotation.count();
 
-        List<String> keys = List.of(StringUtils.join(annotation.prefix() + "_", key + "_", ip));
+        List<String> keys = List.of(StringUtils.join(RATE_LIMIT + key + ":", ip));
         String source = "limit.lua";
         Long count = redisService.executeLuaScript(source, keys, limitCount, limitPeriod);
         log.info("IP:{} 第 {} 次访问key为 {}，描述为 [{}] 的接口", ip, count, keys, name);
